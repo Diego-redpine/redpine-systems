@@ -13,7 +13,11 @@ import uuid
 from datetime import datetime
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-CORS(app, origins=['http://localhost:3000'])
+CORS(app, origins=[
+    'http://localhost:3000',
+    'https://redpine-systems.vercel.app',
+    os.environ.get('DASHBOARD_URL', ''),
+])
 
 # Config storage - individual JSON files in configs folder
 CONFIGS_FOLDER = os.path.join(os.path.dirname(__file__), 'configs')
@@ -888,10 +892,11 @@ def configure():
         print(f"Saved local config with ID: {local_config_id}")
 
         # Also save to dashboard's Supabase via API
+        dashboard_base = os.environ.get('DASHBOARD_URL', 'http://localhost:3000')
         config_id = local_config_id  # fallback
         try:
             dashboard_resp = http_requests.post(
-                'http://localhost:3000/api/config',
+                f'{dashboard_base}/api/config',
                 json={
                     'businessName': config.get('business_name'),
                     'businessType': config.get('business_type'),
@@ -913,7 +918,7 @@ def configure():
         from urllib.parse import quote
         biz_name = quote(config.get('business_name', ''))
         biz_type = quote(config.get('business_type', ''))
-        redirect_url = f'http://localhost:3000/preview?config_id={config_id}&business_name={biz_name}&business_type={biz_type}'
+        redirect_url = f'{dashboard_base}/preview?config_id={config_id}&business_name={biz_name}&business_type={biz_type}'
 
         return jsonify({
             'success': True,
