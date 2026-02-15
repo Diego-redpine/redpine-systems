@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  --primary-red: #ce0707;
+  --background: #ffffff;
+  --sidebar-bg: #fafafa;
+  --text-primary: #000000;
+  --text-muted: #6b7280;
+  --border: #000000;
+  --border-light: #e5e5e5;
+  --locked-badge: #9ca3af;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--text-primary);
+  --color-primary: var(--primary-red);
+  --color-sidebar: var(--sidebar-bg);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-locked: var(--locked-badge);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: var(--font-fira-code), monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+/* Neo-brutalist button styles */
+.btn-primary {
+  background: #fff;
+  color: #ce0707;
+  border: 2px solid #000;
+  transition: all 0.15s ease;
+}
+.btn-primary:hover {
+  background: #ce0707;
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Neo-brutalist clean style */
+.nav-rounded {
+  @apply rounded-full px-4 py-2;
+}
+
+.nav-half-rounded {
+  @apply rounded-lg px-4 py-2;
+}
+
+.nav-square {
+  @apply rounded-none px-4 py-2;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,31 @@
+{
+  "624bc02f": {
+    "id": "624bc02f",
+    "created_at": "2026-01-29T22:04:39.606107",
+    "business_name": "The Boys Mechanic Shop",
+    "business_type": "service",
+    "modules_needed": [
+      "crm",
+      "sale_management",
+      "calendar"
+    ],
+    "labels": {
+      "contacts": "Customers",
+      "calendar": "Appointments"
+    },
+    "sample_contacts": [
+      {
+        "name": "Mike Johnson",
+        "email": "mike.johnson@email.com",
+        "phone": "555-0101"
+      },
+      {
+        "name": "Sarah Davis",
+        "email": "sarah.davis@email.com",
+        "phone": "555-0102"
+      }
+    ],
+    "summary": "Configured a mobile auto mechanic system for two partners offering on-site automotive repair services.",
+    "conversation_history": []
+  }
+}

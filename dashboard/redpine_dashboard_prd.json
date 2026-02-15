@@ -1,0 +1,518 @@
+{
+  "project": "Red Pine OS Dashboard",
+  "location": "~/redpine-os/dashboard",
+  "framework": "Next.js 14 with App Router",
+  "styling": "Tailwind CSS",
+  "description": "Interactive dashboard preview with collapsible chat, 7-category navigation, and payment flow",
+
+  "design": {
+    "theme": "neo-brutalist, clean, minimal",
+    "colors": {
+      "primary_red": "#ce0707",
+      "background": "#ffffff",
+      "sidebar_bg": "#fafafa",
+      "text_primary": "#000000",
+      "text_muted": "#6b7280",
+      "border": "#e5e5e5",
+      "locked_badge": "#9ca3af"
+    },
+    "nav_styles": {
+      "rounded": "rounded-full px-4 py-2",
+      "half_rounded": "rounded-lg px-4 py-2",
+      "square": "rounded-none px-4 py-2"
+    },
+    "nav_display_modes": ["icon_only", "text_only", "icon_and_text"]
+  },
+
+  "navigation": {
+    "structure": "single_sidebar_left",
+    "sections": [
+      {
+        "id": "operations",
+        "label": "Operations",
+        "description": "Dynamic per business - AI determines which to show",
+        "items": [
+          {
+            "id": "people",
+            "icon": "👥",
+            "default_label": "People",
+            "examples_by_business": {
+              "salon": "Clients & Staff",
+              "martial_arts": "Students & Instructors",
+              "landscaping": "Customers & Crews",
+              "restaurant": "Guests & Team"
+            },
+            "sub_items": ["Clients", "Leads", "Staff", "Vendors"],
+            "odoo_modules": ["contacts", "crm", "hr"]
+          },
+          {
+            "id": "things",
+            "icon": "📦",
+            "default_label": "Things",
+            "examples_by_business": {
+              "salon": "Products & Supplies",
+              "restaurant": "Menu & Inventory",
+              "ecommerce": "Products"
+            },
+            "sub_items": ["Products", "Inventory", "Equipment", "Assets"],
+            "odoo_modules": ["stock", "product", "purchase"]
+          },
+          {
+            "id": "time",
+            "icon": "🕐",
+            "default_label": "Time",
+            "examples_by_business": {
+              "salon": "Appointments",
+              "martial_arts": "Class Schedule",
+              "landscaping": "Job Schedule",
+              "restaurant": "Reservations"
+            },
+            "sub_items": ["Calendar", "Appointments", "Schedules", "Shifts"],
+            "odoo_modules": ["calendar", "hr_attendance", "planning"]
+          },
+          {
+            "id": "money",
+            "icon": "💰",
+            "default_label": "Money",
+            "examples_by_business": {
+              "all": "Invoices & Payments"
+            },
+            "sub_items": ["Invoices", "Payments", "Expenses", "Payroll", "Estimates"],
+            "odoo_modules": ["account", "sale_management", "hr_expense"]
+          },
+          {
+            "id": "tasks",
+            "icon": "✓",
+            "default_label": "Tasks",
+            "examples_by_business": {
+              "landscaping": "Work Orders",
+              "cleaning": "Job Tickets",
+              "construction": "Projects"
+            },
+            "sub_items": ["To-dos", "Jobs", "Projects", "Workflows"],
+            "odoo_modules": ["project", "project_todo"]
+          },
+          {
+            "id": "comms",
+            "icon": "💬",
+            "default_label": "Comms",
+            "examples_by_business": {
+              "all": "Messages & Notes"
+            },
+            "sub_items": ["Messages", "Notes", "Announcements", "Reviews"],
+            "odoo_modules": ["mail", "sms"]
+          },
+          {
+            "id": "files",
+            "icon": "📁",
+            "default_label": "Files",
+            "examples_by_business": {
+              "all": "Documents"
+            },
+            "sub_items": ["Documents", "Contracts", "Images", "Uploads"],
+            "odoo_modules": ["documents"]
+          }
+        ]
+      },
+      {
+        "id": "platform",
+        "label": "Platform",
+        "description": "Fixed items - always visible",
+        "show_divider_above": true,
+        "items": [
+          {
+            "id": "site",
+            "icon": "🌐",
+            "label": "Site",
+            "description": "Website editor, booking page, online store",
+            "locked": false,
+            "sub_items": ["Pages", "Booking Widget", "Online Store", "Domain", "SEO"]
+          },
+          {
+            "id": "analytics",
+            "icon": "📊",
+            "label": "Analytics",
+            "description": "Reports, insights, dashboards",
+            "locked": false,
+            "sub_items": ["Overview", "Revenue", "Clients", "Performance"]
+          },
+          {
+            "id": "marketplace",
+            "icon": "🏪",
+            "label": "Marketplace",
+            "description": "Hire help, buy templates, add-ons",
+            "locked": true,
+            "locked_message": "Coming Soon",
+            "sub_items": ["Hire Help", "Templates", "Add-ons"]
+          },
+          {
+            "id": "settings",
+            "icon": "⚙️",
+            "label": "Settings",
+            "description": "Account, billing, integrations",
+            "locked": false,
+            "sub_items": ["Account", "Billing", "Integrations", "Team", "Customize Nav"]
+          }
+        ]
+      }
+    ]
+  },
+
+  "preview_mode": {
+    "description": "User sees dashboard with dummy data before paying",
+    "layout": {
+      "chat_panel": {
+        "position": "left",
+        "width": "320px",
+        "collapsible": true,
+        "default_state": "collapsed"
+      },
+      "dashboard": {
+        "position": "right",
+        "width": "calc(100% - chat_width)",
+        "when_chat_collapsed": "100%"
+      }
+    },
+    "features": {
+      "dummy_data": {
+        "description": "Pre-populated fake data based on business type",
+        "examples": {
+          "salon": {
+            "clients": ["Sarah Johnson", "Emily Chen", "Maria Garcia"],
+            "appointments": ["Today 2pm - Sarah - Manicure", "Today 4pm - Emily - Pedicure"],
+            "revenue": "$2,450 this week"
+          }
+        }
+      },
+      "interactive": true,
+      "can_click_tabs": true,
+      "can_view_all_sections": true
+    },
+    "edit_limit": {
+      "free_edits": 3,
+      "after_limit": {
+        "show_popup": true,
+        "options": [
+          {"label": "Save Design", "action": "create_free_account", "description": "Come back later"},
+          {"label": "Launch Now", "action": "stripe_checkout", "price": "$100/month"}
+        ]
+      }
+    }
+  },
+
+  "chat_panel": {
+    "description": "Collapsible chat on left side for edits",
+    "states": {
+      "collapsed": {
+        "width": "60px",
+        "shows": "chat icon + expand button"
+      },
+      "expanded": {
+        "width": "320px",
+        "shows": "full chat history + input"
+      }
+    },
+    "features": {
+      "continues_conversation": true,
+      "edit_requests": [
+        "Change People to Clients",
+        "Add a Services section",
+        "Hide the Tasks tab",
+        "Make the nav icons only"
+      ],
+      "shows_edit_count": true,
+      "format": "3 edits remaining"
+    }
+  },
+
+  "customization_options": {
+    "nav_style": {
+      "options": ["rounded", "half_rounded", "square"],
+      "changeable_via": "chat or settings"
+    },
+    "nav_display": {
+      "options": ["icon_only", "text_only", "icon_and_text"],
+      "changeable_via": "chat or settings"
+    },
+    "tab_labels": {
+      "description": "Rename any tab",
+      "example": "People → Students",
+      "changeable_via": "chat or settings"
+    },
+    "tab_visibility": {
+      "description": "Show/hide tabs",
+      "example": "Hide Tasks tab",
+      "changeable_via": "chat or settings"
+    }
+  },
+
+  "pages": {
+    "preview": {
+      "route": "/preview",
+      "description": "Main preview page with chat + dashboard",
+      "receives": "config from onboarding Flask app",
+      "query_params": ["config_id", "business_type", "business_name"]
+    },
+    "dashboard": {
+      "route": "/dashboard",
+      "description": "Full dashboard after payment",
+      "requires": "authentication"
+    },
+    "checkout": {
+      "route": "/checkout",
+      "description": "Stripe checkout page",
+      "price": "$100/month"
+    },
+    "signup": {
+      "route": "/signup",
+      "description": "Free account creation to save design"
+    }
+  },
+
+  "api_routes": {
+    "get_config": {
+      "route": "/api/config/[id]",
+      "description": "Get saved configuration from onboarding"
+    },
+    "update_config": {
+      "route": "/api/config/update",
+      "method": "POST",
+      "description": "Update config based on chat edits"
+    },
+    "chat": {
+      "route": "/api/chat",
+      "method": "POST",
+      "description": "Send edit request, get AI response + updated config"
+    },
+    "checkout": {
+      "route": "/api/checkout",
+      "method": "POST",
+      "description": "Create Stripe checkout session"
+    }
+  },
+
+  "odoo_integration": {
+    "description": "Dashboard pulls/pushes data to Odoo",
+    "connection": {
+      "url": "http://localhost:8069",
+      "method": "XML-RPC",
+      "database": "redpine_dev"
+    },
+    "operations": {
+      "read": "Fetch contacts, invoices, calendar events",
+      "write": "Create/update records",
+      "configure": "Activate modules, set labels"
+    }
+  },
+
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Initialize Next.js project",
+      "command": "npx create-next-app@latest dashboard --typescript --tailwind --app",
+      "priority": "high"
+    },
+    {
+      "id": 2,
+      "name": "Create layout with sidebar navigation",
+      "description": "Left sidebar with operations + platform sections, divider between them",
+      "priority": "high"
+    },
+    {
+      "id": 3,
+      "name": "Build collapsible chat panel",
+      "description": "Left panel, 320px expanded, 60px collapsed, smooth animation",
+      "priority": "high"
+    },
+    {
+      "id": 4,
+      "name": "Create navigation components",
+      "description": "Nav items with icons, labels, dropdowns, 3 style options",
+      "priority": "high"
+    },
+    {
+      "id": 5,
+      "name": "Build People section",
+      "description": "Contacts list, lead cards, staff directory with dummy data",
+      "priority": "high"
+    },
+    {
+      "id": 6,
+      "name": "Build Time section",
+      "description": "Calendar view, appointments list with dummy data",
+      "priority": "high"
+    },
+    {
+      "id": 7,
+      "name": "Build Money section",
+      "description": "Invoices list, payments table, quick stats with dummy data",
+      "priority": "high"
+    },
+    {
+      "id": 8,
+      "name": "Build remaining sections",
+      "description": "Things, Tasks, Comms, Files - basic layouts with dummy data",
+      "priority": "medium"
+    },
+    {
+      "id": 9,
+      "name": "Build Site section placeholder",
+      "description": "Website editor placeholder UI",
+      "priority": "medium"
+    },
+    {
+      "id": 10,
+      "name": "Build Analytics section",
+      "description": "Charts, stats cards with dummy data",
+      "priority": "medium"
+    },
+    {
+      "id": 11,
+      "name": "Build Settings section",
+      "description": "Account, billing, integrations, customize tabs",
+      "priority": "medium"
+    },
+    {
+      "id": 12,
+      "name": "Build Marketplace locked state",
+      "description": "Coming soon badge, preview of what's coming",
+      "priority": "low"
+    },
+    {
+      "id": 13,
+      "name": "Implement chat edit functionality",
+      "description": "Send edits, AI processes, updates config, re-renders dashboard",
+      "priority": "high"
+    },
+    {
+      "id": 14,
+      "name": "Implement 3-edit limit",
+      "description": "Track edits, show counter, trigger popup at limit",
+      "priority": "high"
+    },
+    {
+      "id": 15,
+      "name": "Build save/launch popup",
+      "description": "Modal with Save Design and Launch Now options",
+      "priority": "high"
+    },
+    {
+      "id": 16,
+      "name": "Integrate Stripe checkout",
+      "description": "Create checkout session, handle success/cancel",
+      "priority": "high"
+    },
+    {
+      "id": 17,
+      "name": "Connect to Odoo API",
+      "description": "Fetch real data after payment, replace dummy data",
+      "priority": "medium"
+    },
+    {
+      "id": 18,
+      "name": "Connect Flask onboarding to Next.js preview",
+      "description": "Pass config from Flask to Next.js via redirect or API",
+      "priority": "high"
+    }
+  ],
+
+  "dummy_data_templates": {
+    "salon": {
+      "people": {
+        "clients": [
+          {"name": "Sarah Johnson", "email": "sarah@email.com", "visits": 12, "last_visit": "Jan 25"},
+          {"name": "Emily Chen", "email": "emily@email.com", "visits": 8, "last_visit": "Jan 22"},
+          {"name": "Maria Garcia", "email": "maria@email.com", "visits": 15, "last_visit": "Jan 28"}
+        ],
+        "staff": [
+          {"name": "Jessica (Owner)", "role": "Nail Tech", "clients": 45},
+          {"name": "Amanda", "role": "Nail Tech", "clients": 32}
+        ]
+      },
+      "time": {
+        "today": [
+          {"time": "10:00 AM", "client": "Sarah Johnson", "service": "Gel Manicure"},
+          {"time": "11:30 AM", "client": "Walk-in", "service": "Pedicure"},
+          {"time": "2:00 PM", "client": "Emily Chen", "service": "Full Set"}
+        ]
+      },
+      "money": {
+        "today_revenue": "$340",
+        "week_revenue": "$2,450",
+        "month_revenue": "$9,800",
+        "pending_invoices": 3
+      }
+    },
+    "landscaping": {
+      "people": {
+        "clients": [
+          {"name": "Johnson Residence", "address": "123 Oak St", "contract": "Weekly"},
+          {"name": "Smith Property", "address": "456 Maple Ave", "contract": "Bi-weekly"},
+          {"name": "ABC Office Park", "address": "789 Business Blvd", "contract": "Weekly"}
+        ],
+        "crews": [
+          {"name": "Crew A", "lead": "Mike", "members": 3},
+          {"name": "Crew B", "lead": "Carlos", "members": 2}
+        ]
+      },
+      "time": {
+        "today": [
+          {"time": "7:00 AM", "client": "Johnson Residence", "service": "Lawn + Trim", "crew": "A"},
+          {"time": "10:00 AM", "client": "ABC Office Park", "service": "Full Service", "crew": "A"},
+          {"time": "8:00 AM", "client": "Smith Property", "service": "Lawn Only", "crew": "B"}
+        ]
+      },
+      "money": {
+        "today_revenue": "$850",
+        "week_revenue": "$4,200",
+        "month_revenue": "$18,500",
+        "pending_estimates": 5
+      }
+    },
+    "barber": {
+      "people": {
+        "clients": [
+          {"name": "James Wilson", "visits": 24, "usual": "Fade + Beard"},
+          {"name": "Marcus Brown", "visits": 18, "usual": "Low Taper"},
+          {"name": "David Lee", "visits": 12, "usual": "Buzz Cut"}
+        ]
+      },
+      "time": {
+        "today": [
+          {"time": "9:00 AM", "client": "James Wilson", "service": "Fade + Beard"},
+          {"time": "10:00 AM", "client": "Walk-in", "service": "TBD"},
+          {"time": "11:00 AM", "client": "Marcus Brown", "service": "Low Taper"}
+        ]
+      },
+      "money": {
+        "today_revenue": "$180",
+        "week_revenue": "$1,100",
+        "month_revenue": "$4,400"
+      }
+    }
+  },
+
+  "handoff_from_flask": {
+    "description": "How onboarding passes data to dashboard",
+    "method": "redirect_with_params",
+    "flow": [
+      "1. User completes onboarding chat in Flask",
+      "2. Flask saves config to database or temp storage",
+      "3. Flask redirects to: http://localhost:3000/preview?config_id=abc123",
+      "4. Next.js fetches config and renders dashboard"
+    ],
+    "config_structure": {
+      "id": "abc123",
+      "business_name": "Bob's Cuts",
+      "business_type": "barber",
+      "visible_tabs": ["people", "time", "money", "comms"],
+      "hidden_tabs": ["things", "tasks", "files"],
+      "labels": {
+        "people": "Clients"
+      },
+      "nav_style": "rounded",
+      "nav_display": "icon_and_text",
+      "modules_to_activate": ["contacts", "calendar", "account"]
+    }
+  }
+}

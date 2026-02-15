@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examples - Red Pine OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
+        * { font-family: 'Fira Code', monospace; }
+
+        .btn-primary {
+            background: #fff;
+            color: #ce0707;
+            border: 2px solid #000;
+            transition: all 0.15s ease;
+        }
+        .btn-primary:hover,
+        .btn-primary:active {
+            background: #ce0707;
+            color: #fff;
+        }
+
+        .portfolio-card {
+            transition: all 0.15s ease;
+        }
+        .portfolio-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Scroll animations */
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-scale {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .scroll-scale.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-white text-black min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="py-8 px-6 border-b border-gray-200">
+            <div class="max-w-6xl mx-auto flex justify-center">
+                <a href="/">
+                    <img src="/static/images/logo.png" alt="Red Pine OS" class="h-20">
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 px-6 py-16">
+            <div class="max-w-6xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-black text-center mb-4 scroll-fade">
+                    See what's possible
+                </h1>
+                <p class="text-gray-500 text-center text-lg mb-12 max-w-2xl mx-auto scroll-fade" style="transition-delay: 0.1s;">
+                    Real platforms built with <span style="color: #ce0707; font-weight: 600;">Red Pine</span> for businesses like yours. Each one is customized to fit the way they work.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Card 1: Nail Salon -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.1s;">
+                        <div class="h-48 bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center">
+                            <span class="text-6xl">💅</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Nail Salon</h3>
+                            <p class="text-gray-500 text-sm">Appointments, client history, loyalty rewards, and retail inventory all in one place.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Landscaping -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.15s;">
+                        <div class="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                            <span class="text-6xl">🌿</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Landscaping</h3>
+                            <p class="text-gray-500 text-sm">Route planning, estimates, job tracking, and seasonal contract management.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Barbershop -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.2s;">
+                        <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                            <span class="text-6xl">💈</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Barbershop</h3>
+                            <p class="text-gray-500 text-sm">Walk-ins, appointments, chair rental tracking, and product sales.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Martial Arts -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.25s;">
+                        <div class="h-48 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
+                            <span class="text-6xl">🥋</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Martial Arts Studio</h3>
+                            <p class="text-gray-500 text-sm">Class schedules, belt progression, memberships, and family accounts.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Bakery -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.3s;">
+                        <div class="h-48 bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+                            <span class="text-6xl">🥐</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Bakery</h3>
+                            <p class="text-gray-500 text-sm">Custom orders, wholesale accounts, production scheduling, and POS integration.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: Auto Detailing -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.35s;">
+                        <div class="h-48 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                            <span class="text-6xl">🚗</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Auto Detailing</h3>
+                            <p class="text-gray-500 text-sm">Service packages, mobile routing, before/after photos, and membership plans.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 7: Photography -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.4s;">
+                        <div class="h-48 bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                            <span class="text-6xl">📸</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Photography Studio</h3>
+                            <p class="text-gray-500 text-sm">Session booking, client galleries, contracts, and package pricing.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 8: Yoga Studio -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.45s;">
+                        <div class="h-48 bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center">
+                            <span class="text-6xl">🧘</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Yoga Studio</h3>
+                            <p class="text-gray-500 text-sm">Class registration, instructor schedules, drop-ins, and class packs.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 9: Restaurant -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.5s;">
+                        <div class="h-48 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                            <span class="text-6xl">🍽️</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Restaurant</h3>
+                            <p class="text-gray-500 text-sm">Reservations, table management, online orders, and kitchen display.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 10: Cleaning Service -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.55s;">
+                        <div class="h-48 bg-gradient-to-br from-cyan-100 to-cyan-200 flex items-center justify-center">
+                            <span class="text-6xl">🧹</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Cleaning Service</h3>
+                            <p class="text-gray-500 text-sm">Recurring schedules, team assignments, supply tracking, and client portals.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11: Pet Grooming -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.6s;">
+                        <div class="h-48 bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center">
+                            <span class="text-6xl">🐕</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Pet Grooming</h3>
+                            <p class="text-gray-500 text-sm">Pet profiles, appointment booking, grooming notes, and vaccination tracking.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12: Tutoring -->
+                    <div class="portfolio-card bg-white  overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.65s;">
+                        <div class="h-48 bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center">
+                            <span class="text-6xl">📚</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl mb-2">Tutoring</h3>
+                            <p class="text-gray-500 text-sm">Student management, session scheduling, progress tracking, and parent updates.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA Section -->
+                <div class="text-center mt-16 py-12 bg-gray-50  border-2 border-black scroll-scale" style="transition-delay: 0.2s;">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Ready to build yours?</h2>
+                    <p class="text-gray-500 mb-6">Describe your business and we'll set it up in minutes.</p>
+                    <a href="/" class="inline-block btn-primary font-semibold px-8 py-4  text-lg">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="py-8 px-6 border-t border-gray-200">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <img src="/static/images/logo.png" alt="Red Pine OS" class="h-8">
+                </div>
+                <div class="flex gap-6 text-sm text-gray-500">
+                    <a href="/privacy" class="hover:text-black">Privacy Policy</a>
+                    <a href="/terms" class="hover:text-black">Terms & Conditions</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Scroll animations
+        function initScrollAnimations() {
+            const scrollElements = document.querySelectorAll('.scroll-fade, .scroll-scale');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            scrollElements.forEach(el => observer.observe(el));
+        }
+
+        document.addEventListener('DOMContentLoaded', initScrollAnimations);
+    </script>
+</body>
+</html>

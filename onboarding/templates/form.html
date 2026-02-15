@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - Red Pine OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
+        * { font-family: 'Fira Code', monospace; }
+
+        .btn-primary {
+            background: #fff;
+            color: #ce0707;
+            border: 2px solid #000;
+            transition: all 0.15s ease;
+        }
+        .btn-primary:hover,
+        .btn-primary:active {
+            background: #ce0707;
+            color: #fff;
+        }
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            border: 2px solid #000;
+            transition: all 0.15s ease;
+        }
+        .btn-secondary:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .option-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .option-card:hover {
+            border-color: #ce0707;
+        }
+        .option-card.selected {
+            border-color: #ce0707;
+            background: #fef2f2;
+        }
+
+        .progress-dot {
+            transition: all 0.3s ease;
+        }
+        .progress-dot.completed {
+            background: #ce0707;
+        }
+        .progress-dot.current {
+            background: #ce0707;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body class="bg-white text-black min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="py-6 px-6 border-b border-gray-200">
+            <div class="max-w-2xl mx-auto flex justify-between items-center">
+                <a href="/">
+                    <img src="/static/images/logo.png" alt="Red Pine OS" class="h-10">
+                </a>
+                <a href="/" class="text-gray-500 hover:text-black text-sm">Back to home</a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex items-center justify-center px-6 py-12">
+            <div class="w-full max-w-xl">
+                <!-- Progress Indicator -->
+                <div class="flex justify-center gap-2 mb-12">
+                    <div class="progress-dot w-3 h-3 rounded-full bg-gray-300" data-step="1"></div>
+                    <div class="progress-dot w-3 h-3 rounded-full bg-gray-300" data-step="2"></div>
+                    <div class="progress-dot w-3 h-3 rounded-full bg-gray-300" data-step="3"></div>
+                    <div class="progress-dot w-3 h-3 rounded-full bg-gray-300" data-step="4"></div>
+                    <div class="progress-dot w-3 h-3 rounded-full bg-gray-300" data-step="5"></div>
+                    <div class="progress-dot w-3 h-3 rounded-full bg-gray-300" data-step="6"></div>
+                    <div class="progress-dot w-3 h-3 rounded-full bg-gray-300" data-step="7"></div>
+                </div>
+
+                <!-- Step 1: Business Type -->
+                <div class="step active" data-step="1">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">What type of business do you have?</h2>
+                    <p class="text-gray-500 mb-8">Select the category that best describes your business.</p>
+
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="salon">
+                            <span class="text-2xl mb-2 block">💇</span>
+                            <span class="font-medium">Salon / Spa</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="fitness">
+                            <span class="text-2xl mb-2 block">🏋️</span>
+                            <span class="font-medium">Fitness / Wellness</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="food">
+                            <span class="text-2xl mb-2 block">🍽️</span>
+                            <span class="font-medium">Food / Restaurant</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="home_services">
+                            <span class="text-2xl mb-2 block">🔧</span>
+                            <span class="font-medium">Home Services</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="retail">
+                            <span class="text-2xl mb-2 block">🛍️</span>
+                            <span class="font-medium">Retail / Shop</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="professional">
+                            <span class="text-2xl mb-2 block">💼</span>
+                            <span class="font-medium">Professional Services</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <input type="text" id="business_type_other" placeholder="Or type something else..."
+                            class="w-full border-2 border-gray-200  px-4 py-3 focus:outline-none focus:border-gray-400">
+                    </div>
+                </div>
+
+                <!-- Step 2: Business Name -->
+                <div class="step" data-step="2">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">What's your business called?</h2>
+                    <p class="text-gray-500 mb-8">Enter your business name or what you'd like to call it.</p>
+
+                    <input type="text" id="business_name" placeholder="e.g., Joe's Barbershop"
+                        class="w-full border-2 border-gray-200  px-4 py-4 text-lg focus:outline-none focus:border-gray-400 mb-8">
+                </div>
+
+                <!-- Step 3: Team Size -->
+                <div class="step" data-step="3">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">How many people work with you?</h2>
+                    <p class="text-gray-500 mb-8">Include yourself and any employees or contractors.</p>
+
+                    <div class="grid grid-cols-2 gap-3 mb-8">
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="1">
+                            <span class="text-2xl mb-2 block">👤</span>
+                            <span class="font-medium">Just me</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="2-5">
+                            <span class="text-2xl mb-2 block">👥</span>
+                            <span class="font-medium">2-5 people</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="6-20">
+                            <span class="text-2xl mb-2 block">👥👥</span>
+                            <span class="font-medium">6-20 people</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-4 text-center" data-value="20+">
+                            <span class="text-2xl mb-2 block">🏢</span>
+                            <span class="font-medium">20+ people</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Sell Products -->
+                <div class="step" data-step="4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Do you sell products?</h2>
+                    <p class="text-gray-500 mb-8">Physical items, digital products, or merchandise.</p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="yes">
+                            <span class="text-3xl mb-2 block">✓</span>
+                            <span class="font-medium text-lg">Yes</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="no">
+                            <span class="text-3xl mb-2 block">✗</span>
+                            <span class="font-medium text-lg">No</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Book Appointments -->
+                <div class="step" data-step="5">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Do you book appointments?</h2>
+                    <p class="text-gray-500 mb-8">Scheduled services, consultations, or meetings.</p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="yes">
+                            <span class="text-3xl mb-2 block">✓</span>
+                            <span class="font-medium text-lg">Yes</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="no">
+                            <span class="text-3xl mb-2 block">✗</span>
+                            <span class="font-medium text-lg">No</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Need Website -->
+                <div class="step" data-step="6">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Do you need a website?</h2>
+                    <p class="text-gray-500 mb-8">We can set up a simple site for your business.</p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="yes">
+                            <span class="text-3xl mb-2 block">✓</span>
+                            <span class="font-medium text-lg">Yes</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="no">
+                            <span class="text-3xl mb-2 block">✗</span>
+                            <span class="font-medium text-lg">No, I have one</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Invoice Customers -->
+                <div class="step" data-step="7">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Do you invoice customers?</h2>
+                    <p class="text-gray-500 mb-8">Send bills or quotes for your work.</p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="yes">
+                            <span class="text-3xl mb-2 block">✓</span>
+                            <span class="font-medium text-lg">Yes</span>
+                        </div>
+                        <div class="option-card border-2 border-gray-200  p-6 text-center" data-value="no">
+                            <span class="text-3xl mb-2 block">✗</span>
+                            <span class="font-medium text-lg">No</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="step" data-step="loading">
+                    <div class="text-center py-12">
+                        <div class="inline-block w-12 h-12 border-4 border-[#ce0707] border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p class="text-lg text-gray-600">Building your system...</p>
+                    </div>
+                </div>
+
+                <!-- Success State -->
+                <div class="step" data-step="success">
+                    <div class="text-center mb-4">
+                        <h3 class="text-2xl font-bold">System Ready!</h3>
+                    </div>
+                    <div id="form-config-details" class="space-y-1 mb-6 text-sm text-gray-500 text-center"></div>
+
+                    <!-- Branding Options -->
+                    <div class="mb-8">
+                        <div class="flex gap-3 items-stretch justify-center">
+                            <!-- Logo Upload - Big Square -->
+                            <label for="form-logo-upload" class="w-48 h-48 border-2 border-black cursor-pointer flex items-center justify-center bg-white hover:bg-gray-50 transition-colors shrink-0 relative overflow-hidden">
+                                <input type="file" id="form-logo-upload" accept="image/*" class="hidden" onchange="handleFormLogoUpload(event)">
+                                <div id="form-logo-preview" class="w-full h-full flex items-center justify-center">
+                                    <div class="text-center">
+                                        <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span class="text-sm text-gray-500">Upload Logo</span>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Color Palette - 3 Vertical Rectangles -->
+                            <div class="flex h-48 border-2 border-black">
+                                <div class="w-28 h-full relative group cursor-pointer">
+                                    <input type="color" id="form-color-1" value="#ce0707" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                    <div id="form-color-preview-1" class="w-full h-full" style="background: #ce0707;"></div>
+                                    <button onclick="randomizeFormColor(1, event)" class="absolute top-2 left-2 w-8 h-8 bg-white border-2 border-black text-black hover:bg-black hover:text-white transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 z-20">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="w-28 h-full relative group cursor-pointer border-l-2 border-black">
+                                    <input type="color" id="form-color-2" value="#000000" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                    <div id="form-color-preview-2" class="w-full h-full" style="background: #000000;"></div>
+                                    <button onclick="randomizeFormColor(2, event)" class="absolute top-2 left-2 w-8 h-8 bg-white border-2 border-black text-black hover:bg-black hover:text-white transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 z-20">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="w-28 h-full relative group cursor-pointer border-l-2 border-black">
+                                    <input type="color" id="form-color-3" value="#ffffff" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                    <div id="form-color-preview-3" class="w-full h-full" style="background: #ffffff;"></div>
+                                    <button onclick="randomizeFormColor(3, event)" class="absolute top-2 left-2 w-8 h-8 bg-white border-2 border-black text-black hover:bg-black hover:text-white transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 z-20">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="launchFormDashboard()" class="w-full btn-primary font-semibold px-8 py-4 text-lg text-center">
+                        Launch Dashboard
+                    </button>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div id="nav-buttons" class="flex justify-between mt-8">
+                    <button onclick="prevStep()" id="prev-btn" class="btn-secondary bg-white text-black font-semibold px-6 py-3  hidden">
+                        ← Back
+                    </button>
+                    <button onclick="nextStep()" id="next-btn" class="btn-primary font-semibold px-8 py-3  ml-auto" disabled>
+                        Continue →
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="py-6 px-6 border-t border-gray-200">
+            <div class="max-w-2xl mx-auto flex justify-center gap-6 text-sm text-gray-500">
+                <a href="/privacy" class="hover:text-black">Privacy Policy</a>
+                <a href="/terms" class="hover:text-black">Terms & Conditions</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 7;
+        const formData = {};
+
+        // Check for prefilled data from chat
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefill = urlParams.get('prefill');
+        if (prefill) {
+            // Store prefill for later use in description
+            formData.prefill = prefill;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+            setupOptionCards();
+            setupTextInputs();
+
+            // Setup color input listeners for success page
+            ['1', '2', '3'].forEach(num => {
+                const input = document.getElementById(`form-color-${num}`);
+                if (input) {
+                    input.addEventListener('input', (e) => {
+                        updateFormColorSwatch(num, e.target.value);
+                    });
+                }
+            });
+        });
+
+        function setupOptionCards() {
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const step = card.closest('.step');
+                    step.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+
+                    const stepNum = parseInt(step.dataset.step);
+                    const value = card.dataset.value;
+
+                    switch(stepNum) {
+                        case 1: formData.business_type = value; break;
+                        case 3: formData.team_size = value; break;
+                        case 4: formData.sells_products = value; break;
+                        case 5: formData.books_appointments = value; break;
+                        case 6: formData.needs_website = value; break;
+                        case 7: formData.sends_invoices = value; break;
+                    }
+
+                    updateNextButton();
+                });
+            });
+        }
+
+        function setupTextInputs() {
+            // Business type other field
+            const otherInput = document.getElementById('business_type_other');
+            otherInput.addEventListener('input', () => {
+                if (otherInput.value.trim()) {
+                    document.querySelectorAll('[data-step="1"] .option-card').forEach(c => c.classList.remove('selected'));
+                    formData.business_type = otherInput.value.trim();
+                }
+                updateNextButton();
+            });
+
+            // Business name field
+            const nameInput = document.getElementById('business_name');
+            nameInput.addEventListener('input', () => {
+                formData.business_name = nameInput.value.trim();
+                updateNextButton();
+            });
+        }
+
+        function updateNextButton() {
+            const nextBtn = document.getElementById('next-btn');
+            let isValid = false;
+
+            switch(currentStep) {
+                case 1: isValid = !!formData.business_type; break;
+                case 2: isValid = !!formData.business_name; break;
+                case 3: isValid = !!formData.team_size; break;
+                case 4: isValid = !!formData.sells_products; break;
+                case 5: isValid = !!formData.books_appointments; break;
+                case 6: isValid = !!formData.needs_website; break;
+                case 7: isValid = !!formData.sends_invoices; break;
+            }
+
+            nextBtn.disabled = !isValid;
+        }
+
+        function updateProgress() {
+            document.querySelectorAll('.progress-dot').forEach(dot => {
+                const step = parseInt(dot.dataset.step);
+                dot.classList.remove('completed', 'current');
+                if (step < currentStep) {
+                    dot.classList.add('completed');
+                } else if (step === currentStep) {
+                    dot.classList.add('current');
+                }
+            });
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const navButtons = document.getElementById('nav-buttons');
+
+            if (step === 'loading' || step === 'success') {
+                navButtons.classList.add('hidden');
+            } else {
+                navButtons.classList.remove('hidden');
+                prevBtn.classList.toggle('hidden', step === 1);
+                nextBtn.textContent = step === totalSteps ? 'Build System →' : 'Continue →';
+            }
+
+            updateNextButton();
+        }
+
+        function nextStep() {
+            if (currentStep === totalSteps) {
+                submitForm();
+                return;
+            }
+            currentStep++;
+            showStep(currentStep);
+            updateProgress();
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+                updateProgress();
+            }
+        }
+
+        // Form logo and color handling
+        let formLogoData = null;
+        let formBaseRedirectUrl = null;
+
+        function handleFormLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    formLogoData = e.target.result;
+                    const preview = document.getElementById('form-logo-preview');
+                    preview.innerHTML = `<img src="${formLogoData}" class="w-full h-full object-contain p-2">`;
+                    updateFormLaunchUrl();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateFormColorSwatch(num, value) {
+            document.getElementById(`form-color-preview-${num}`).style.background = value;
+            document.getElementById(`form-color-${num}`).value = value;
+            updateFormLaunchUrl();
+        }
+
+        // Randomize color function for form
+        function randomizeFormColor(num, event) {
+            event.stopPropagation();
+            event.preventDefault();
+            const newColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            updateFormColorSwatch(num, newColor);
+        }
+
+        // Color label names for form
+        const formColorNames = { 1: 'Primary', 2: 'Secondary', 3: 'Background' };
+
+        // Show hex code on hover
+        function showFormHex(num) {
+            const label = document.getElementById(`form-color-label-${num}`);
+            const color = document.getElementById(`form-color-${num}`).value;
+            label.textContent = color.toUpperCase();
+        }
+
+        // Show name when not hovering
+        function hideFormHex(num) {
+            const label = document.getElementById(`form-color-label-${num}`);
+            label.textContent = formColorNames[num];
+        }
+
+        function getFormLaunchUrl() {
+            if (!formBaseRedirectUrl) return '#';
+
+            try {
+                let url = new URL(formBaseRedirectUrl);
+
+                // Add colors to URL
+                const color1 = document.getElementById('form-color-1')?.value || '#ce0707';
+                const color2 = document.getElementById('form-color-2')?.value || '#000000';
+                const color3 = document.getElementById('form-color-3')?.value || '#ffffff';
+
+                url.searchParams.set('primary_color', color1);
+                url.searchParams.set('secondary_color', color2);
+                url.searchParams.set('bg_color', color3);
+
+                // Add logo if uploaded (skip if too large for URL)
+                if (formLogoData && formLogoData.length < 50000) {
+                    url.searchParams.set('logo', encodeURIComponent(formLogoData));
+                }
+
+                return url.toString();
+            } catch (e) {
+                console.error('Error building form launch URL:', e);
+                return formBaseRedirectUrl || '#';
+            }
+        }
+
+        function updateFormLaunchUrl() {
+            // Keep for compatibility - no longer sets href since we use a button now
+        }
+
+        function launchFormDashboard() {
+            const url = getFormLaunchUrl();
+            if (url && url !== '#') {
+                window.location.href = url;
+            }
+        }
+
+        async function submitForm() {
+            showStep('loading');
+
+            // Build description from form data
+            let description = '';
+            if (formData.prefill) {
+                description = formData.prefill + '. ';
+            }
+            description += `${formData.business_name} is a ${formData.business_type} business with ${formData.team_size} people.`;
+            if (formData.sells_products === 'yes') description += ' We sell products.';
+            if (formData.books_appointments === 'yes') description += ' We book appointments.';
+            if (formData.needs_website === 'yes') description += ' We need a website.';
+            if (formData.sends_invoices === 'yes') description += ' We invoice customers.';
+
+            try {
+                const response = await fetch('/configure', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        description,
+                        conversation_history: []
+                    })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show business details
+                    document.getElementById('form-config-details').innerHTML = `
+                        <p>Business: <strong class="text-black">${result.config.business_name}</strong></p>
+                        <p>Type: <strong class="text-black">${result.config.business_type}</strong></p>
+                    `;
+                    formBaseRedirectUrl = result.redirect_url;
+                    // Set href directly first
+                    document.getElementById('form-launch-btn').href = result.redirect_url;
+                    updateFormLaunchUrl();
+                    showStep('success');
+                } else {
+                    alert('Error: ' + result.error);
+                    currentStep = totalSteps;
+                    showStep(currentStep);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+                currentStep = totalSteps;
+                showStep(currentStep);
+            }
+        }
+    </script>
+</body>
+</html>

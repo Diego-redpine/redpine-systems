@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+venv*/
+.venv/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+*.egg-info/
+
+# Environment / Secrets
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Playwright MCP (local tool state)
+.playwright-mcp/
+
+# Claude local state
+.claude/
+
+# Configs (local onboarding test outputs)
+onboarding/configs/
+
+# Design screenshots (local dev only)
+design-reference/screenshots/
+
+# Social media (separate project, not integrated yet)
+social-media/
+
+# Misc
+*.orig
+*.log
+npm-debug.log*
