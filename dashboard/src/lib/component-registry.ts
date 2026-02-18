@@ -72,7 +72,8 @@ export const componentRegistry: ComponentDefinition[] = [
 
   // Education & Programs
   { id: 'classes', defaultLabel: 'Classes', icon: 'calendar', category: 'education', description: 'Class schedules, enrollment, instructors' },
-  { id: 'memberships', defaultLabel: 'Memberships', icon: 'users', category: 'education', description: 'Membership program — plans as pipeline stages, members as cards' },
+  { id: 'membership_plans', defaultLabel: 'Plans', icon: 'credit-card', category: 'education', description: 'Membership plans — name, price, features, interval' },
+  { id: 'memberships', defaultLabel: 'Members', icon: 'users', category: 'education', description: 'Members pipeline — stages are plans, cards are members' },
   { id: 'courses', defaultLabel: 'Courses', icon: 'book', category: 'education', description: 'Course catalog, modules, progress' },
   { id: 'attendance', defaultLabel: 'Attendance', icon: 'check', category: 'education', description: 'Check-in logs and participation tracking' },
 

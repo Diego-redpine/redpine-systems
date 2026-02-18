@@ -686,6 +686,15 @@ export const componentDummyData: Record<string, ComponentData> = {
       { id: 'cls_4', title: 'HIIT Training', start_time: daysFromNow(2, 7), end_time: daysFromNow(2, 8), status: 'confirmed', instructor: 'Coach Sarah', max_capacity: 25, event_type: 'class', color_primary: '#8B5CF6' },
     ]
   },
+  membership_plans: {
+    type: 'cards',
+    items: [
+      { id: 'plan_1', title: 'Basic', subtitle: '1 service per month', meta: '$29/mo', status: 'active', metric: '$29' },
+      { id: 'plan_2', title: 'Premium', subtitle: '4 services per month', meta: '$59/mo', status: 'active', metric: '$59' },
+      { id: 'plan_3', title: 'VIP Unlimited', subtitle: 'Unlimited services + priority booking', meta: '$99/mo', status: 'active', metric: '$99' },
+      { id: 'plan_4', title: 'Day Pass', subtitle: 'Single visit, any service', meta: '$15', status: 'active', metric: '$15' },
+    ]
+  },
   memberships: {
     type: 'pipeline',
     stages: [

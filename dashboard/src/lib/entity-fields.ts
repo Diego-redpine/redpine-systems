@@ -362,6 +362,13 @@ export const ENTITY_FIELDS: Record<string, EntityFieldConfig> = {
     calendar: { title: 'name', startField: 'start_time', endField: 'end_time' },
     pipeline: null,
   },
+  membership_plans: {
+    card: { title: 'name', subtitle: 'description', badge: 'interval', meta: ['price_cents', 'status'] },
+    list: { primary: 'name', secondary: 'description', trailing: 'interval' },
+    table: { columns: ['name', 'description', 'price_cents', 'interval', 'status', 'max_members'] },
+    calendar: null,
+    pipeline: null,
+  },
   memberships: {
     card: { title: 'client_name', subtitle: 'plan_name', badge: 'status', meta: ['start_date', 'payment_status'] },
     list: { primary: 'client_name', secondary: 'plan_name', trailing: 'status' },

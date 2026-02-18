@@ -42,6 +42,7 @@ _TEMPLATES = {
             {
                 'id': 'tab_3', 'label': 'Memberships', 'icon': 'users',
                 'components': [
+                    {'id': 'membership_plans', 'label': 'Plans', 'view': 'cards'},
                     {'id': 'memberships', 'label': 'Members', 'view': 'pipeline',
                      'stages': ['Basic', 'Premium', 'VIP', 'Cancelled']},
                 ],
@@ -383,6 +384,7 @@ _TEMPLATES = {
             {
                 'id': 'tab_5', 'label': 'Memberships', 'icon': 'users',
                 'components': [
+                    {'id': 'membership_plans', 'label': 'Plans', 'view': 'cards'},
                     {'id': 'memberships', 'label': 'Members', 'view': 'pipeline',
                      'stages': ['Day Pass', 'Relaxation', 'Wellness', 'VIP', 'Cancelled']},
                 ],

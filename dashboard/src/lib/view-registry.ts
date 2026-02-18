@@ -209,6 +209,10 @@ export const VIEW_REGISTRY: Record<string, ViewConfig> = {
     defaultView: 'calendar',
     availableViews: ['calendar', 'table', 'cards'],
   },
+  membership_plans: {
+    defaultView: 'cards',
+    availableViews: ['cards', 'table', 'list'],
+  },
   memberships: {
     defaultView: 'pipeline',
     availableViews: ['pipeline', 'table', 'cards', 'list'],

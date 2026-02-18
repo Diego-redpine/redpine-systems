@@ -726,7 +726,8 @@ Example component with pipeline:
 
 **Education & Programs:**
 - classes: Class schedules, enrollment, instructors, capacity
-- memberships: Membership program as pipeline — stages ARE the plans (e.g. Basic, Premium, VIP), cards ARE the members. Add plan = add stage. Move member = change plan. ALWAYS gets its own "Memberships" tab. Use pipeline view.
+- membership_plans: Plan management — name, price, description, features, interval. Use cards view. Always paired with `memberships` as sub-tabs.
+- memberships: Members pipeline — stages ARE the plans (e.g. Basic, Premium, VIP), cards ARE the members. Move member = change plan. Use pipeline view. Always paired with `membership_plans` in a "Memberships" tab.
 - courses: Course catalog, modules, duration, progress
 - attendance: Check-in logs, participation tracking
 
@@ -775,7 +776,7 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 - Dashboard: (empty — platform-managed)
 - Students: clients (Students, view: pipeline, stages: use belt stages user provides e.g. ["White Belt", "Yellow Belt", "Orange Belt", "Green Belt", "Blue Belt", "Brown Belt", "Black Belt"]), contacts (Families, view: list)
 - Schedule: calendar (Schedule, view: calendar)
-- Memberships: memberships (Members, view: pipeline, stages: ["Basic", "Advanced", "Elite", "Cancelled"])
+- Memberships: membership_plans (Plans, view: cards), memberships (Members, view: pipeline, stages: ["Basic", "Advanced", "Elite", "Cancelled"])
 - Programs: classes (Class Types, view: cards), waivers (Waivers, view: pipeline), client_portal (Client Portal)
 - Team: staff (Instructors), shifts (Staff Shifts, view: table)
 - Billing: payments (Payments), invoices (Invoices)
@@ -783,7 +784,7 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 **Fitness Studio/Gym:**
 - Dashboard: (empty — platform-managed)
 - Members: clients (Members, view: pipeline, stages: ["Trial", "New Member", "Active", "Loyal", "Champion"]), leads (Prospects)
-- Memberships: memberships (Members, view: pipeline, stages: ["Day Pass", "Basic", "Premium", "VIP", "Cancelled"])
+- Memberships: membership_plans (Plans, view: cards), memberships (Members, view: pipeline, stages: ["Day Pass", "Basic", "Premium", "VIP", "Cancelled"])
 - Schedule: calendar (Schedule, view: calendar)
 - Programs: classes (Class Types, view: cards), waivers (Waivers), client_portal (Client Portal)
 - Team: staff (Trainers), shifts (Staff Schedule, view: table)
@@ -836,7 +837,7 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 - Students: clients (Students), leads (Inquiries), attendance (Attendance), client_portal (Student Portal)
 - Schedule: calendar (Schedule, view: calendar)
 - Materials: documents (Curriculum), notes (Session Notes), courses (Courses)
-- Memberships: memberships (Enrolled Students, view: pipeline, stages: ["Trial", "Monthly", "Semester", "Annual", "Cancelled"])
+- Memberships: membership_plans (Plans, view: cards), memberships (Enrolled Students, view: pipeline, stages: ["Trial", "Monthly", "Semester", "Annual", "Cancelled"])
 - Billing: invoices (Invoices), payments (Payments)
 
 **Pet Grooming/Veterinary:**
@@ -952,13 +953,12 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
     - The system auto-colors stages based on color words in the name (e.g. "White Belt" → white, "Gold Plan" → gold, "Black Belt" → black)
     - Generic CRM stages (New, Active, Loyal, VIP) are ONLY for businesses with no specific progression described
     - ALWAYS include the stages array on pipeline components: {{"id": "clients", "label": "Students", "view": "pipeline", "stages": ["White Belt", "Yellow Belt", "Orange Belt", "Green Belt", "Blue Belt", "Brown Belt", "Black Belt"]}}
-13. **Membership program = ONE pipeline component (`memberships`) in its own tab:**
-    - Pipeline stages = the plans you sell (e.g. "Basic", "Premium", "VIP", "Cancelled")
-    - Pipeline cards = the members (who's on which plan)
-    - Adding a plan = adding a stage. Moving a member = changing their plan.
+13. **Membership program uses TWO sub-tabs in its own "Memberships" tab:**
+    - `membership_plans` (label: "Plans", view: cards) — create/manage plans with name, price, description, features
+    - `memberships` (label: "Members", view: pipeline) — stages = plan names, cards = members
     - ALWAYS give memberships its own tab labeled "Memberships" — never nest inside another tab.
     - Any business with recurring memberships (fitness, martial arts, salon, spa, tutoring, yoga, dance) should use this.
-    - Example: {{"id": "memberships", "label": "Members", "view": "pipeline", "stages": ["Basic", "Premium", "VIP", "Cancelled"]}}
+    - Example: {{"id": "membership_plans", "label": "Plans", "view": "cards"}}, {{"id": "memberships", "label": "Members", "view": "pipeline", "stages": ["Basic", "Premium", "VIP", "Cancelled"]}}
 14. **Kids/family businesses need Families, not Prospects:**
     - Kids martial arts, daycare, tutoring, dance → use contacts as "Families" or "Parents & Guardians" (view: list)
     - Do NOT add leads/prospects pipeline for businesses that primarily serve families with children
