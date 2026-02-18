@@ -871,9 +871,16 @@ def examples():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    """Handle chat messages for clarifying vague business descriptions"""
+    """Handle chat messages for clarifying vague business descriptions.
+    Uses Haiku for cost efficiency (~10x cheaper than Sonnet).
+    Capped at 10 messages to prevent runaway conversations."""
     data = request.json
     messages = data.get('messages', [])
+
+    # Cap at 10 user messages — force READY_TO_BUILD after that
+    user_message_count = sum(1 for m in messages if m.get('role') == 'user')
+    if user_message_count >= 10:
+        return jsonify({'success': True, 'response': 'READY_TO_BUILD'})
 
     system_prompt = """You're a CTO helping someone build their business platform. Short, casual, helpful.
 
@@ -908,7 +915,7 @@ Examples:
 
     try:
         response = claude.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=256,
             system=system_prompt,
             messages=messages
@@ -942,7 +949,7 @@ Respond with ONLY one word: "DETAILED" or "VAGUE" """
 
     try:
         response = claude.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             max_tokens=10,
             messages=[{"role": "user", "content": prompt}]
         )
