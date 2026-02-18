@@ -33,6 +33,7 @@
 | Feb 13 | 24 | Launch Sprint + Marketplace + Site Builder + Marketing + Data-Linked Widgets | Launch Blockers Sprint (6 features): password reset, mobile nav, settings tab, booking backend, ChaiBuilder site builder, Stripe Connect + Square OAuth. Website/Site redesign (8 batches): SiteView, SiteAnalytics, site_projects, SiteWizard, multi-project, floating AI chat, custom website widgets (4: BookingWidget, ProductGrid, ContactForm, ReviewCarousel). Freelancer Marketplace (5 batches): browse/hire, order flow, messaging, reviews, milestones. Marketing moved to ToolsStrip. Data-Linked Widgets: all 4 site widgets now start blank in editor with "Select" button → DataSelector popup → links to dashboard data. TopBar replaces Sidebar (no more sidebar). CenterModal popup system. ToolsStrip with 5 buttons (Chat, Edit, Website, Marketplace, Marketing). | Visual polish, Supabase migrations, deploy |
 | Feb 14 | 25 | Route Planner + Code Quality | Route Planner Batch 1: new `'route'` ViewType (6th view), Leaflet map with territory polygons + customer pins, dnd-kit sortable stop list, RouteDetailModal with zoomed map + route polyline, TerritoryDrawTool for polygon drawing. Installed leaflet + react-leaflet + @types/leaflet. Code Quality Sprint: extracted duplicate `getStatusBadgeStyle()` to shared `badge-styles.ts`, removed unused imports (getCardBorder, getHeadingColor), fixed TerritoryDrawTool array index keys, added error logging to silent catch blocks (useCustomFields, useUserRole, crud.ts), fixed 3 console 401 errors (ViewRenderer + PineTreeWidget now use `useDataMode()` hook to skip API calls in dummy mode). 3 Playwright tests passed (landscaping, plumbing, cleaning — all with different theme colors). 0 TypeScript errors, 0 console errors. | Supabase migrations, deploy, landing page |
 | Feb 17 | 28 | Phase C Planning | Gallery system, AI-generated websites, booking pipeline, multi-language chat, visual previews in onboarding — all added to Brain. Gallery build starting. | Build Gallery system end-to-end |
+| Feb 18 | 29 | Gallery + Templates Family 1 | Gallery system (13 steps). Cost optimization (Haiku chat, 10-msg cap). **Industry Templates Family 1 (Beauty & Body)**: template module (`templates/registry.py`, `beauty_body.py`), enterprise-first skeleton with locked components, 10 industry subtypes (nail_salon, barbershop, hair_salon, lash_brow, makeup_artist, tattoo, spa, med_spa, pet_grooming, salon), template-aware `/configure` route, `validate_locked_components()` safety net, 16 unit tests (all pass), 5 live API tests (all pass), Playwright E2E verified. Solo operators get Staff tab removed, enterprise keeps it. Locked components (calendar, clients, gallery, invoices, appointments) always present. Non-beauty industries fall back to existing build-from-scratch. | Test more industries, build Family 2-6 |
 | _next_ | _ | ________________ | ________________________________________________ | ________________ |
 
 ---
@@ -81,6 +82,8 @@
 | Route Planner (Leaflet maps, territory polygons) | COMPLETE | 100% |
 | Code Quality (dedup, unused imports, error logging) | COMPLETE | 100% |
 | Universal Calendar (per-event type picker) | COMPLETE | 100% |
+| Gallery System (upload, albums, lightbox, widget) | COMPLETE | 100% |
+| Industry Templates Family 1 (Beauty & Body) | COMPLETE | 100% |
 | **Visual Polish + Deploy** | **IN PROGRESS** | **60%** |
 | Drag-and-Drop Editor (F5) | NOT STARTED | 0% |
 
@@ -971,19 +974,128 @@ Platform is functionally complete. Deploy after: applying 12 Supabase migrations
 - **Mobile App** — React Native (future)
 - **White-label** — Agencies rebrand Red Pine for their clients
 
-### Phase C: Gallery System (NEXT UP)
-**Problem:** AI already generates gallery-like sections in some configs (food photos, nails, portfolios), but they're static placeholders. Business owners need to upload photos from the dashboard and have them appear on their website automatically — no developer, no website editor.
+### Phase C: Gallery System — BUILT ✅ (Feb 18, 2026)
+**Built:** Full gallery system — DB tables (gallery_albums + gallery_images), authenticated API (upload/CRUD/reorder), public API, GalleryManager (iOS Photos-style Albums + All Photos views, masonry grid, lightbox, upload wizard), GalleryWidget for ChaiBuilder, ensure_gallery() post-processing for visual industries. 8/8 industries tested.
 
-**Value prop:** Landscapers, nail techs, restaurants, photographers, tattoo artists — every visual business needs this. "Upload from your phone, it's on your site."
+### Phase C: Industry Templates + Locked Components (Family 1 COMPLETE ✅)
+**Problem:** AI generates configs from scratch every time. No skeleton to start from. Essential components randomly get omitted — gallery missing from nail salons, staff missing when they have 3 techs, pipeline stages generic instead of industry-specific. Every generation is a dice roll.
 
-**What to build:**
-1. **Dashboard side:** Gallery tab/sub-tab where users upload photos (react-dropzone to Supabase Storage)
-2. **DB:** `gallery_images` table (id, user_id, image_url, caption, category, display_order, created_at)
-3. **Website side:** Gallery widget/block for ChaiBuilder — responsive masonry grid, lightbox on click, pulls from `gallery_images`
-4. **AI integration:** When AI generates a config with a gallery component, it's already wired to this system
-5. **Categories/albums:** Optional grouping (e.g., "Nails" / "Lashes" / "Brows" for a beauty tech)
+**Insight from Diego:** "The config should be based off the enterprise version of that business. The AI should SUBTRACT what the user doesn't need, not try to BUILD from nothing."
 
-**Applies to:** Literally every business — landscaping, nails, restaurants, tattoo, photography, florists, bakeries, salons, auto detailing, interior design
+**Design principle:** Build templates enterprise-first (20-tech nail salon with 3 locations), then solo operators naturally use fewer features. The AI trims, never builds from scratch.
+
+**Architecture:**
+
+```
+Template (enterprise skeleton) → AI customizes → Post-processing validates locked components
+```
+
+**Template = JSON config with locked flags:**
+```json
+{
+  "industry": "nail_salon",
+  "aliases": ["nail tech", "nails", "nail art", "gel nails", "acrylics"],
+  "tabs": [
+    { "label": "Dashboard", "components": [
+      { "id": "calendar", "locked": true },
+      { "id": "clients" }
+    ]},
+    { "label": "Clients", "components": [
+      { "id": "clients", "locked": true, "pipeline_type": "booking" },
+      { "id": "contacts" }
+    ]},
+    { "label": "Schedule", "components": [
+      { "id": "calendar", "locked": true },
+      { "id": "appointments", "locked": true }
+    ]},
+    { "label": "Services", "components": [
+      { "id": "packages" },
+      { "id": "products" }
+    ]},
+    { "label": "Gallery", "components": [
+      { "id": "galleries", "locked": true }
+    ]},
+    { "label": "Staff", "components": [
+      { "id": "staff" },
+      { "id": "shifts" }
+    ]},
+    { "label": "Payments", "components": [
+      { "id": "invoices", "locked": true },
+      { "id": "payments" }
+    ]}
+  ]
+}
+```
+
+**Locked = AI cannot remove it.** Solo tech says "just me" → AI removes Staff tab. But Gallery, Calendar, Pipeline, Invoices stay no matter what.
+
+**Gallery placement: Its own tab (Diego's decision — easier to access)**
+
+Gallery is always its own tab in the TopBar for visual businesses. Never buried as a subtab.
+
+**Gallery also appears inside the Website tab** when the GalleryWidget is on the site:
+- **Visual businesses (nail, barber, tattoo, etc.):** Gallery tab pre-configured + GalleryWidget auto-added to site → gallery management shows in both Gallery tab AND Website tab
+- **Non-visual businesses (lawyer, consulting, etc.):** No Gallery tab by default. User can add GalleryWidget via ChaiBuilder editor → gallery management appears in Website tab only after they add it
+- Both read from the same `gallery_images` + `gallery_albums` tables — upload once, shows everywhere
+
+**6 Template Families (not 15 individual templates):**
+Industries within a family share 90% of the same tabs. Build one base per family, AI applies 1-2 tweaks per industry.
+
+**Family 1: Beauty & Body Services — BUILD FIRST**
+Base: Dashboard, Clients (booking pipeline), Schedule, Services, Gallery, Payments, Settings
+- Nail salon / nail tech — base
+- Barber / barbershop — base
+- Hair salon / stylist — base
+- Lash / brow tech — base
+- Makeup artist — base
+- Tattoo / piercing — base + Waivers, Portfolio alongside Gallery
+- Spa / massage — base, maybe +Rooms
+- Med spa — base + Waivers, +Treatments
+- Pet grooming — base + Waivers, Clients = "Pets & Owners"
+
+**Family 2: Food & Hospitality** (build after testing)
+Base: Dashboard, Reservations, Menu, Orders, Gallery, Staff, Payments, Settings
+- Restaurant, Bakery (no reservations), Cafe, Food truck (+Routes), Catering (+Events/Guests), Bar (+Events)
+
+**Family 3: Field Services** (build after testing)
+Base: Dashboard, Customers (jobs pipeline), Schedule, Jobs, Gallery, Fleet, Payments, Settings
+- Landscaping, Cleaning (no Fleet), Plumbing/HVAC (+Estimates), Auto detailing, Pest control, Roofing (+Estimates)
+
+**Family 4: Professional Services** (build after testing)
+Base: Dashboard, Clients (sales pipeline), Schedule, Projects, Payments, Settings — NO Gallery tab (add via website editor)
+- Law firm (+Cases/Contracts/Time tracking), Consulting (+Contracts), Accounting (+Documents), Recruiting (+Cases), Real estate (+Properties/Listings)
+
+**Family 5: Fitness & Education** (build after testing)
+Base: Dashboard, Members, Schedule (classes), Gallery, Payments, Settings
+- Gym (+Attendance), Martial arts (+Attendance/Progress/Waivers), Yoga/Dance (+Attendance), Tutoring (+Students/Progress), Music school (+Students)
+
+**Family 6: Retail & E-commerce** (build after testing)
+Base: Dashboard, Products, Orders, Inventory, Payments, Settings — NO Gallery tab by default
+- Retail store, E-commerce (+Shipping), Florist (+Gallery/Events)
+
+**Build order:** Family 1 first (beauty/body) — this is Diego's most tested area. Other families get built after Diego tests the platform from the perspective of those business owners (retail, law, restaurant, etc.) to identify what's actually missing.
+
+**How the AI uses templates:**
+1. `/check-input` determines business type → maps to a template family via alias list
+2. Template is injected into the `/configure` prompt as the starting point
+3. AI instructions: "Start from this template. Customize labels, add components the user mentioned, remove UNLOCKED components they don't need. NEVER remove components marked locked."
+4. Post-processing: `validate_locked_components()` — if any locked component is missing, re-inject it
+5. Fallback: if no template matches, fall back to current build-from-scratch behavior
+6. Result: consistent, industry-appropriate configs every time
+
+**What this replaces:**
+- The current 7,500-token "build from scratch" prompt gets simplified
+- MUST USE rules become unnecessary (templates enforce them)
+- `ensure_gallery()` becomes unnecessary (templates include it)
+- `consolidate_calendars()` still needed (calendar view dedup)
+- `transform_pipeline_stages()` still needed (stage formatting)
+
+**Open questions (resolve during Family 1 build):**
+- Template selection: AI picks family, or hardcoded alias map?
+- Website tab gallery: auto-detect GalleryWidget on site, or config flag?
+- What happens when user adds/removes tabs via chat editor after generation?
+
+**Revenue impact:** Every user gets a polished, enterprise-grade config on first try. No more "oh it didn't generate Gallery, let me try again." Conversion goes up because the platform immediately looks like it was built for them.
 
 ### Phase C: AI-Generated Websites
 **Problem:** Most users (especially on mobile) won't use the ChaiBuilder drag-and-drop editor. They expect a website to just exist when they sign up.

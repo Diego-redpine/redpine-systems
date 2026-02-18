@@ -10,7 +10,10 @@ load_dotenv(override=True)
 import json
 import re
 import uuid
+import copy
 from datetime import datetime
+from templates.registry import detect_template_type, get_template
+from templates.beauty_body import get_template_as_prompt_json
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 CORS(app, origins=[
@@ -93,6 +96,13 @@ INDUSTRY_COLOR_DEFAULTS = {
     'insurance': {'sidebar_bg': '#1E293B', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#94A3B8', 'sidebar_buttons': '#0EA5E9', 'background': '#F0F9FF', 'buttons': '#0EA5E9', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
     'professional': {'sidebar_bg': '#0F172A', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#94A3B8', 'sidebar_buttons': '#6366F1', 'background': '#EEF2FF', 'buttons': '#6366F1', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
     'freelancer': {'sidebar_bg': '#18181B', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#A0AEC0', 'sidebar_buttons': '#8B5CF6', 'background': '#F5F3FF', 'buttons': '#8B5CF6', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
+    # Beauty & Body subtypes
+    'nail_salon': {'sidebar_bg': '#4C0519', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#A0AEC0', 'sidebar_buttons': '#E11D48', 'background': '#FFF1F2', 'buttons': '#E11D48', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
+    'hair_salon': {'sidebar_bg': '#4C0519', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#A0AEC0', 'sidebar_buttons': '#E11D48', 'background': '#FFF1F2', 'buttons': '#E11D48', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
+    'lash_brow': {'sidebar_bg': '#2E1065', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#A0AEC0', 'sidebar_buttons': '#8B5CF6', 'background': '#F5F3FF', 'buttons': '#8B5CF6', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
+    'makeup_artist': {'sidebar_bg': '#831843', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#A0AEC0', 'sidebar_buttons': '#DB2777', 'background': '#FDF2F8', 'buttons': '#DB2777', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
+    'med_spa': {'sidebar_bg': '#134E4A', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#A0AEC0', 'sidebar_buttons': '#0D9488', 'background': '#F0FDFA', 'buttons': '#0D9488', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
+    'barbershop': {'sidebar_bg': '#0F172A', 'sidebar_text': '#F1F5F9', 'sidebar_icons': '#94A3B8', 'sidebar_buttons': '#3B82F6', 'background': '#F8FAFC', 'buttons': '#3B82F6', 'cards': '#FFFFFF', 'text': '#1A1A1A', 'headings': '#111827', 'borders': '#E5E7EB'},
 }
 
 # Default fallback palette for unknown business types
@@ -359,6 +369,126 @@ def transform_pipeline_stages(config):
                                 stage['color_secondary'] = inferred_secondary
     return config
 
+
+def analyze_with_template(description, template, business_type):
+    """Use AI to customize a template for a specific business.
+    Much shorter prompt than analyze_business since the template provides the skeleton."""
+    print(f"Template path: customizing {business_type} template")
+
+    template_json = json.dumps(template, indent=2)
+
+    prompt = f"""You are customizing a business platform template for a specific business.
+
+Business description: {description}
+Business type: {business_type}
+
+Here is the starting template (JSON):
+{template_json}
+
+Your job is to CUSTOMIZE this template for the specific business described above. Return ONLY valid JSON.
+
+## RULES:
+1. **NEVER remove components with "_locked": true** — these are essential and must stay
+2. **You CAN remove tabs marked "_removable": true** if the business is solo (no staff/team mentioned)
+3. **Customize labels** to match the business (e.g. "Staff" → "Barbers", "Clients" → "Pets & Owners")
+4. **Add components** the user specifically mentioned that aren't in the template
+5. **Remove unlocked components** the user clearly doesn't need
+6. **Keep the tab structure** — don't reorganize tabs, just add/remove within them
+7. **Set pipeline stages** if the user described specific progression (belt ranks, loyalty tiers, etc.)
+8. **Extract the business name** from the description
+
+## OUTPUT FORMAT:
+Return the FULL config as JSON (same structure as template):
+{{
+    "business_name": "extracted business name",
+    "business_type": "{business_type}",
+    "tabs": [ ... customized tabs ... ],
+    "summary": "one sentence about what was configured"
+}}
+
+Do NOT include "colors" — colors are handled separately.
+Keep "_locked" and "_removable" flags on components — they'll be stripped later.
+Every component MUST have a "view" field."""
+
+    response = claude.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=2000,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    raw_response = response.content[0].text
+    print(f"Template customization response: {raw_response[:200]}...")
+
+    # Strip markdown code blocks if present
+    cleaned = raw_response.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r'^```json?\n?', '', cleaned)
+        cleaned = re.sub(r'\n?```$', '', cleaned)
+
+    return json.loads(cleaned)
+
+
+def validate_locked_components(config, template, locked_ids):
+    """Re-inject any locked components the AI accidentally removed.
+    Compares config output against template and locked_ids set."""
+    if not locked_ids:
+        return config
+
+    # Build a map of which locked components exist in the output
+    existing_ids = set()
+    for tab in config.get('tabs', []):
+        for comp in tab.get('components', []):
+            if comp.get('id') in locked_ids:
+                existing_ids.add(comp['id'])
+
+    missing = locked_ids - existing_ids
+    if not missing:
+        return config
+
+    print(f"Re-injecting missing locked components: {missing}")
+
+    # For each missing locked component, find it in the template and re-inject
+    for template_tab in template.get('tabs', []):
+        for template_comp in template_tab.get('components', []):
+            comp_id = template_comp.get('id')
+            if comp_id not in missing:
+                continue
+
+            # Find the matching tab in the output config (by label)
+            target_tab = None
+            for tab in config.get('tabs', []):
+                if tab.get('label') == template_tab.get('label'):
+                    target_tab = tab
+                    break
+
+            if target_tab:
+                # Add to existing tab
+                target_tab['components'].append(copy.deepcopy(template_comp))
+            else:
+                # Tab was removed — create it
+                new_tab = {
+                    'id': f'tab_{len(config.get("tabs", [])) + 1}',
+                    'label': template_tab.get('label', 'Restored'),
+                    'icon': template_tab.get('icon', 'box'),
+                    'components': [copy.deepcopy(template_comp)],
+                }
+                # Insert before last tab (Payments is usually last)
+                tabs = config.get('tabs', [])
+                tabs.insert(max(0, len(tabs) - 1), new_tab)
+
+            missing.discard(comp_id)
+
+    return config
+
+
+def strip_locked_flags(config):
+    """Remove _locked and _removable flags from config before sending to frontend."""
+    for tab in config.get('tabs', []):
+        tab.pop('_removable', None)
+        for comp in tab.get('components', []):
+            comp.pop('_locked', None)
+    return config
+
+
 def analyze_business(description):
     print(f"Analyzing: {description}")
 
@@ -369,7 +499,7 @@ Business description: {description}
 Return ONLY valid JSON (no markdown, no code blocks):
 {{
     "business_name": "extracted or generated name",
-    "business_type": "barber, salon, landscaping, restaurant, cafe, retail, fitness, auto, cleaning, photography, tutoring, pet_grooming, dental, construction, real_estate, freelancer, martial_arts, legal, professional, accounting, consulting, medical, veterinary, plumbing, electrical, catering, event_planning, hotel, spa, bakery, florist, daycare, moving, pest_control, hvac, roofing, tattoo, music_studio, dance_studio, yoga, crossfit, coworking, property_management, insurance, recruiting, other",
+    "business_type": "barber, barbershop, salon, hair_salon, nail_salon, lash_brow, makeup_artist, med_spa, landscaping, restaurant, cafe, retail, fitness, auto, cleaning, photography, tutoring, pet_grooming, dental, construction, real_estate, freelancer, martial_arts, legal, professional, accounting, consulting, medical, veterinary, plumbing, electrical, catering, event_planning, hotel, spa, bakery, florist, daycare, moving, pest_control, hvac, roofing, tattoo, music_studio, dance_studio, yoga, crossfit, coworking, property_management, insurance, recruiting, other",
     "colors": {{
         "sidebar_bg": "#1A1A2E",
         "sidebar_icons": "#A0AEC0",
@@ -967,7 +1097,22 @@ def configure():
     print(f"Received request: {description}")
 
     try:
-        config = analyze_business(description)
+        # Try template path first — Beauty & Body industries get consistent configs
+        business_type, family = detect_template_type(description)
+        if business_type and family:
+            print(f"Template matched: {business_type} (family: {family})")
+            template, locked_ids = get_template(business_type, family)
+            if template:
+                config = analyze_with_template(description, template, business_type)
+                config = validate_locked_components(config, template, locked_ids)
+                config = strip_locked_flags(config)
+            else:
+                # Template family matched but no template for this type — fallback
+                config = analyze_business(description)
+        else:
+            # No template match — use original build-from-scratch
+            config = analyze_business(description)
+
         config = validate_colors(config)
         config = consolidate_calendars(config)
         config = ensure_gallery(config)
