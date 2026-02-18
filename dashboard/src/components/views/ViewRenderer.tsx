@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, lazy, Suspense } from 'react';
+import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { DashboardColors, TabComponent } from '@/types/config';
 import { getDefaultView, getAvailableViews } from '@/lib/view-registry';
 import { getCardFields, getCalendarFields, getPipelineFields, getListFields, getTableFields, getRouteFields } from '@/lib/entity-fields';
@@ -35,6 +35,7 @@ const StaffSetupWizard = lazy(() => import('./StaffSetupWizard'));
 const FormBuilder = lazy(() => import('./FormBuilder'));
 const AutomationBuilder = lazy(() => import('./AutomationBuilder'));
 const BlockTimeModal = lazy(() => import('./BlockTimeModal'));
+const BookingSetupWizard = lazy(() => import('./BookingSetupWizard'));
 const SocialMediaComposer = lazy(() => import('./SocialMediaComposer'));
 const ChatInboxView = lazy(() => import('./ChatInboxView'));
 const StatCards = lazy(() => import('./StatCards'));
@@ -192,6 +193,9 @@ export default function ViewRenderer({
   const isWorkflowsEntity = entityType === 'workflows';
 
   const [isBlockTimeOpen, setIsBlockTimeOpen] = useState(false);
+  const [isBookingSetupOpen, setIsBookingSetupOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [bookingSettings, setBookingSettings] = useState<any>(null);
   const isCalendarEntity = ['appointments', 'schedules', 'shifts', 'classes', 'reservations', 'calendar'].includes(entityType);
 
   // Add event modal state — universal calendar type picker
@@ -209,6 +213,25 @@ export default function ViewRenderer({
   // Custom fields for this entity type (only fetched in real mode)
   const { mode: dataMode } = useDataMode();
   const { fields: customFieldDefs } = useCustomFields(entityType, dataMode === 'dummy');
+
+  // Fetch booking settings for calendar entities (owner-only)
+  const fetchBookingSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/calendar-settings');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+          setBookingSettings(json.data[0]);
+        }
+      }
+    } catch { /* ignore — 401 in demo mode */ }
+  }, []);
+
+  useEffect(() => {
+    if (isCalendarEntity && dataMode === 'real') {
+      fetchBookingSettings();
+    }
+  }, [isCalendarEntity, dataMode, fetchBookingSettings]);
 
   // Show error via toast
   const showError = useCallback((message: string) => {
@@ -796,19 +819,38 @@ export default function ViewRenderer({
           </button>
         )}
         {isCalendarEntity && (
-          <button
-            onClick={() => setIsBlockTimeOpen(true)}
-            className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70 flex items-center gap-1.5"
-            style={{
-              borderColor: configColors.borders || '#E5E7EB',
-              color: textColor,
-            }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
-            Block Time
-          </button>
+          <>
+            {dataMode === 'real' && (
+              <button
+                onClick={() => setIsBookingSetupOpen(true)}
+                className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70 flex items-center gap-1.5"
+                style={{
+                  borderColor: configColors.borders || '#E5E7EB',
+                  color: textColor,
+                }}
+                title={bookingSettings ? 'Booking Settings' : 'Set Up Booking'}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {bookingSettings ? 'Booking Settings' : 'Set Up Booking'}
+              </button>
+            )}
+            <button
+              onClick={() => setIsBlockTimeOpen(true)}
+              className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70 flex items-center gap-1.5"
+              style={{
+                borderColor: configColors.borders || '#E5E7EB',
+                color: textColor,
+              }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+              Block Time
+            </button>
+          </>
         )}
         {/* Hide header add button for routes — RouteView has its own "+ New Route" inside the map layout */}
         {!isRouteEntity && (
@@ -992,6 +1034,17 @@ export default function ViewRenderer({
           onSave={handleBlockTimeSave}
           colors={configColors}
           isLoading={isCreating}
+        />
+      </Suspense>)}
+
+      {/* Booking setup wizard — owner-only, calendar entities */}
+      {isBookingSetupOpen && (<Suspense fallback={null}>
+        <BookingSetupWizard
+          isOpen={isBookingSetupOpen}
+          onClose={() => setIsBookingSetupOpen(false)}
+          onSave={() => fetchBookingSettings()}
+          configColors={configColors}
+          existingSettings={bookingSettings}
         />
       </Suspense>)}
 

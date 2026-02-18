@@ -274,8 +274,10 @@ export default function StaffSetupWizard({
                         boxShadow: selected ? `0 0 0 1px ${buttonBg}` : undefined,
                       }}
                     >
-                      <div style={{ color: selected ? buttonBg : mutedColor }}>
-                        {opt.icon}
+                      <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                        <div style={{ color: buttonBg }}>
+                          {opt.icon}
+                        </div>
                       </div>
                       <div>
                         <p className="font-semibold text-sm" style={{ color: textColor }}>

@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import CenterModal from '@/components/ui/CenterModal';
+import CustomSelect from '@/components/ui/CustomSelect';
 import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
 
@@ -249,8 +250,10 @@ export default function AddEventModal({
                         boxShadow: selected ? `0 0 0 1px ${buttonBg}` : undefined,
                       }}
                     >
-                      <div style={{ color: selected ? buttonBg : mutedColor }}>
-                        {opt.icon}
+                      <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                        <div style={{ color: buttonBg }}>
+                          {opt.icon}
+                        </div>
                       </div>
                       <div>
                         <p className="font-semibold text-sm" style={{ color: textColor }}>
@@ -421,16 +424,13 @@ export default function AddEventModal({
               {/* Recurrence */}
               <div>
                 <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>Repeat</label>
-                <select
+                <CustomSelect
                   value={data.recurrence}
-                  onChange={e => setData(d => ({ ...d, recurrence: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none cursor-pointer"
+                  onChange={value => setData(d => ({ ...d, recurrence: value }))}
+                  options={RECURRENCE_OPTIONS}
                   style={inputStyle}
-                >
-                  {RECURRENCE_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                  buttonColor={buttonBg}
+                />
               </div>
 
               {/* Notes */}

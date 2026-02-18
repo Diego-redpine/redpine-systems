@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
+import CustomSelect from '@/components/ui/CustomSelect';
 import QRCodeGenerator from './QRCodeGenerator';
 import ActivityFeedView from './ActivityFeedView';
 import type { CustomFieldDefinition } from '@/hooks/useCustomFields';
@@ -662,16 +663,16 @@ export default function SettingsContent({ colors }: { colors: DashboardColors })
 
         {/* Entity selector */}
         <div className="mb-4">
-          <select
+          <CustomSelect
             value={cfEntity}
-            onChange={e => setCfEntity(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border text-sm"
+            onChange={val => setCfEntity(val)}
+            options={['clients', 'appointments', 'invoices', 'leads', 'tasks', 'products', 'staff', 'reviews', 'waivers', 'workflows'].map(e => ({
+              value: e,
+              label: e.charAt(0).toUpperCase() + e.slice(1),
+            }))}
             style={{ borderColor, color: textMain, backgroundColor: colors.background || '#F9FAFB' }}
-          >
-            {['clients', 'appointments', 'invoices', 'leads', 'tasks', 'products', 'staff', 'reviews', 'waivers', 'workflows'].map(e => (
-              <option key={e} value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</option>
-            ))}
-          </select>
+            buttonColor={buttonColor}
+          />
         </div>
 
         {/* Existing fields */}
@@ -718,23 +719,25 @@ export default function SettingsContent({ colors }: { colors: DashboardColors })
               className="flex-1 px-3 py-2 rounded-lg border text-sm"
               style={{ borderColor, color: textMain, backgroundColor: colors.background || '#F9FAFB' }}
             />
-            <select
+            <CustomSelect
               value={cfNewType}
-              onChange={e => setCfNewType(e.target.value)}
-              className="px-3 py-2 rounded-lg border text-sm"
+              onChange={val => setCfNewType(val)}
+              options={[
+                { value: 'text', label: 'Text' },
+                { value: 'number', label: 'Number' },
+                { value: 'date', label: 'Date' },
+                { value: 'email', label: 'Email' },
+                { value: 'phone', label: 'Phone' },
+                { value: 'url', label: 'URL' },
+                { value: 'dropdown', label: 'Dropdown' },
+                { value: 'checkbox', label: 'Checkbox' },
+                { value: 'textarea', label: 'Text Area' },
+                { value: 'currency', label: 'Currency' },
+              ]}
+              className="w-40"
               style={{ borderColor, color: textMain, backgroundColor: colors.background || '#F9FAFB' }}
-            >
-              <option value="text">Text</option>
-              <option value="number">Number</option>
-              <option value="date">Date</option>
-              <option value="email">Email</option>
-              <option value="phone">Phone</option>
-              <option value="url">URL</option>
-              <option value="dropdown">Dropdown</option>
-              <option value="checkbox">Checkbox</option>
-              <option value="textarea">Text Area</option>
-              <option value="currency">Currency</option>
-            </select>
+              buttonColor={buttonColor}
+            />
           </div>
           {cfNewType === 'dropdown' && (
             <input

@@ -11,18 +11,42 @@ interface BusinessConfig {
   logoUrl?: string;
 }
 
-// Generate time slots from 9am to 5pm in 30-min intervals
-function generateTimeSlots(): string[] {
-  const slots: string[] = [];
-  for (let hour = 9; hour < 17; hour++) {
-    for (let min = 0; min < 60; min += 30) {
-      const h = hour > 12 ? hour - 12 : hour;
-      const ampm = hour >= 12 ? 'PM' : 'AM';
-      const m = min.toString().padStart(2, '0');
-      slots.push(`${h}:${m} ${ampm}`);
-    }
+interface SlotInfo {
+  time: string;
+  available: boolean;
+}
+
+// Generate time slots dynamically from business hours and slot duration
+function generateTimeSlotsFromHours(
+  startTime: string,
+  endTime: string,
+  durationMinutes: number,
+  takenSlots: string[]
+): SlotInfo[] {
+  const slots: SlotInfo[] = [];
+  const takenSet = new Set(takenSlots);
+
+  const [startH, startM] = startTime.split(':').map(Number);
+  const [endH, endM] = endTime.split(':').map(Number);
+  const startMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+
+  for (let mins = startMinutes; mins + durationMinutes <= endMinutes; mins += durationMinutes) {
+    const hour = Math.floor(mins / 60);
+    const minute = mins % 60;
+    const h = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const m = minute.toString().padStart(2, '0');
+    const label = `${h}:${m} ${ampm}`;
+    slots.push({ time: label, available: !takenSet.has(label) });
   }
+
   return slots;
+}
+
+// Fallback: Generate 9am–5pm in 30min intervals (original behavior)
+function generateFallbackSlots(): SlotInfo[] {
+  return generateTimeSlotsFromHours('09:00', '17:00', 30, []);
 }
 
 // Generate next 14 days
@@ -70,28 +94,68 @@ export default function BookingPage() {
   const [bookingError, setBookingError] = useState('');
 
   const dates = useMemo(() => generateDates(), []);
-  const timeSlots = useMemo(() => generateTimeSlots(), []);
+
+  // Dynamic slot state (replaces old hardcoded timeSlots)
+  const [timeSlots, setTimeSlots] = useState<SlotInfo[]>(() => generateFallbackSlots());
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [dayIsClosed, setDayIsClosed] = useState(false);
+
+  // Staff picker state
+  const [staffList, setStaffList] = useState<{ id: string; name: string }[] | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState('');
+  const [assignmentMode, setAssignmentMode] = useState('manual');
 
   // Fetch real availability when date is selected
-  const [unavailableSlots, setUnavailableSlots] = useState<Set<string>>(new Set());
-  const [loadingSlots, setLoadingSlots] = useState(false);
-
   useEffect(() => {
     if (selectedDate === null) return;
     const dateObj = dates[selectedDate].date;
     const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
     setLoadingSlots(true);
+    setDayIsClosed(false);
+    setSelectedStaff('');
+
     fetch(`/api/public/bookings/availability?subdomain=${subdomain}&date=${dateStr}`)
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.takenSlots) {
-          setUnavailableSlots(new Set(data.takenSlots));
+        if (!data.success) {
+          setTimeSlots(generateFallbackSlots());
+          return;
+        }
+
+        if (data.closed) {
+          setDayIsClosed(true);
+          setTimeSlots([]);
+          return;
+        }
+
+        // Generate real slots from business hours
+        if (data.businessHours) {
+          setTimeSlots(generateTimeSlotsFromHours(
+            data.businessHours.start,
+            data.businessHours.end,
+            data.slotDuration || 60,
+            data.takenSlots || []
+          ));
+        } else {
+          // No business hours configured — fallback with taken slots
+          setTimeSlots(generateTimeSlotsFromHours(
+            '09:00', '17:00', 30,
+            data.takenSlots || []
+          ));
+        }
+
+        // Staff for direct booking
+        setAssignmentMode(data.assignmentMode || 'manual');
+        if (data.assignmentMode === 'direct_booking' && data.staff?.length > 0) {
+          setStaffList(data.staff);
+        } else {
+          setStaffList(null);
         }
       })
       .catch(() => {
-        // If availability check fails, show all slots as available
-        setUnavailableSlots(new Set());
+        setTimeSlots(generateFallbackSlots());
+        setDayIsClosed(false);
       })
       .finally(() => setLoadingSlots(false));
   }, [selectedDate, dates, subdomain]);
@@ -139,18 +203,23 @@ export default function BookingPage() {
     const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
     try {
+      const body: Record<string, string> = {
+        subdomain,
+        name,
+        email,
+        phone,
+        date: dateStr,
+        time: selectedTime,
+        notes,
+      };
+      if (selectedStaff) {
+        body.staff_id = selectedStaff;
+      }
+
       const res = await fetch('/api/public/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subdomain,
-          name,
-          email,
-          phone,
-          date: dateStr,
-          time: selectedTime,
-          notes,
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -301,31 +370,107 @@ export default function BookingPage() {
                 {bookingError}
               </div>
             )}
+
+            {/* Loading spinner */}
             {loadingSlots ? (
               <div className="flex items-center justify-center py-12">
                 <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: accentColor, borderTopColor: 'transparent' }} />
               </div>
+            ) : dayIsClosed ? (
+              /* Closed day message */
+              <div className="py-8 text-center">
+                <div className="w-14 h-14 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <p className="text-base font-semibold text-gray-900 mb-1">Closed on this day</p>
+                <p className="text-sm text-gray-500 mb-4">This business is not available on the selected date.</p>
+                <button
+                  onClick={() => setStep('date')}
+                  className="text-sm font-medium hover:underline"
+                  style={{ color: accentColor }}
+                >
+                  Choose a different date
+                </button>
+              </div>
+            ) : timeSlots.length === 0 ? (
+              /* No slots */
+              <div className="py-8 text-center">
+                <p className="text-gray-500">No available times on this date</p>
+                <button
+                  onClick={() => setStep('date')}
+                  className="mt-3 text-sm font-medium hover:underline"
+                  style={{ color: accentColor }}
+                >
+                  Choose a different date
+                </button>
+              </div>
             ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {timeSlots.map((slot) => {
-                const isUnavailable = unavailableSlots.has(slot);
-                return (
-                  <button
-                    key={slot}
-                    disabled={isUnavailable}
-                    onClick={() => { setSelectedTime(slot); setStep('details'); }}
-                    className="p-3 rounded-xl border-2 text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-sm"
-                    style={{
-                      borderColor: selectedTime === slot ? accentColor : '#E5E7EB',
-                      backgroundColor: selectedTime === slot ? accentColor : '#FFFFFF',
-                      color: selectedTime === slot ? accentTextColor : isUnavailable ? '#9CA3AF' : '#374151',
-                    }}
-                  >
-                    {slot}
-                  </button>
-                );
-              })}
-            </div>
+              <>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {timeSlots.map((slot) => (
+                    <button
+                      key={slot.time}
+                      disabled={!slot.available}
+                      onClick={() => {
+                        if (slot.available) {
+                          setSelectedTime(slot.time);
+                          // If staff selection needed, don't advance yet
+                          if (!staffList || staffList.length === 0) {
+                            setStep('details');
+                          }
+                        }
+                      }}
+                      className="p-3 rounded-xl border-2 text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-sm"
+                      style={{
+                        borderColor: selectedTime === slot.time ? accentColor : '#E5E7EB',
+                        backgroundColor: selectedTime === slot.time ? accentColor : '#FFFFFF',
+                        color: selectedTime === slot.time ? accentTextColor : !slot.available ? '#9CA3AF' : '#374151',
+                        textDecoration: !slot.available ? 'line-through' : 'none',
+                      }}
+                    >
+                      {slot.time}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Staff picker (direct_booking mode) */}
+                {selectedTime && staffList && staffList.length > 0 && assignmentMode === 'direct_booking' && (
+                  <div className="mt-6">
+                    <p className="text-sm font-medium text-gray-700 mb-3">Choose your provider</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {staffList.map(s => {
+                        const isSel = selectedStaff === s.id;
+                        return (
+                          <button
+                            key={s.id}
+                            onClick={() => { setSelectedStaff(s.id); setStep('details'); }}
+                            className="flex items-center gap-3 p-3 rounded-xl border-2 transition-all hover:shadow-sm text-left"
+                            style={{
+                              borderColor: isSel ? accentColor : '#E5E7EB',
+                              backgroundColor: isSel ? `${accentColor}10` : '#FFFFFF',
+                            }}
+                          >
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                              style={{
+                                backgroundColor: isSel ? accentColor : '#E5E7EB',
+                                color: isSel ? accentTextColor : '#6B7280',
+                              }}
+                            >
+                              {s.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-sm font-medium" style={{ color: isSel ? accentColor : '#374151' }}>
+                              {s.name}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -338,6 +483,7 @@ export default function BookingPage() {
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">Your details</h2>
                 <p className="text-sm text-gray-500">
                   {selectedDate !== null ? dates[selectedDate].label : ''} at {selectedTime}
+                  {selectedStaff && staffList ? ` with ${staffList.find(s => s.id === selectedStaff)?.name}` : ''}
                 </p>
               </div>
               <button
@@ -439,6 +585,12 @@ export default function BookingPage() {
                 <span className="text-gray-500">Time</span>
                 <span className="font-medium text-gray-900">{selectedTime}</span>
               </div>
+              {selectedStaff && staffList && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Provider</span>
+                  <span className="font-medium text-gray-900">{staffList.find(s => s.id === selectedStaff)?.name}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Name</span>
                 <span className="font-medium text-gray-900">{name}</span>

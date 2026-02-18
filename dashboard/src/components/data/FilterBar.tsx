@@ -2,6 +2,7 @@
 
 import { DashboardColors } from '@/types/config';
 import { getTextColor, getCardBorder } from '@/lib/view-colors';
+import CustomSelect from '@/components/ui/CustomSelect';
 
 interface FilterConfig {
   field: string;
@@ -77,24 +78,20 @@ export default function FilterBar({
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {filters.map((filter) => (
-        <select
+        <CustomSelect
           key={filter.field}
           value={activeFilters[filter.field] || ''}
-          onChange={(e) => handleFilterChange(filter.field, e.target.value)}
-          className="px-2 py-1.5 rounded-md border text-sm outline-none cursor-pointer"
+          onChange={(value) => handleFilterChange(filter.field, value)}
+          options={filter.options.map(opt => ({ value: opt, label: formatOptionLabel(opt) }))}
+          placeholder={`All ${filter.label}`}
+          className="w-36"
           style={{
             backgroundColor: cardBg,
             borderColor: borderColor,
             color: textColor,
           }}
-        >
-          <option value="">All {filter.label}</option>
-          {filter.options.map((option) => (
-            <option key={option} value={option}>
-              {formatOptionLabel(option)}
-            </option>
-          ))}
-        </select>
+          buttonColor={configColors.buttons}
+        />
       ))}
 
       {/* Clear all filters button */}

@@ -77,7 +77,7 @@ export default function SaveLaunchPopup({
 
           <h2 className="text-xl font-bold mb-2">Unlock Your Platform</h2>
           <p className="text-muted mb-6">
-            Your dashboard is ready. Unlock unlimited edits and full access.
+            Your dashboard is ready. Try it free for 14 days — no charge until you're sure.
           </p>
 
           {/* Options */}
@@ -96,11 +96,11 @@ export default function SaveLaunchPopup({
               ) : (
                 <>
                   <div className="flex items-center justify-center gap-2">
-                    <span>Get Started</span>
+                    <span>Start Free Trial</span>
                     <span>-&gt;</span>
                   </div>
                   <p className="text-sm font-normal mt-1 opacity-80">
-                    $29/month - Unlimited everything
+                    14 days free, then $29/month
                   </p>
                 </>
               )}

@@ -162,10 +162,23 @@ def configure_odoo(config):
 
 CALENDAR_COMPONENT_IDS = {'calendar', 'appointments', 'schedules', 'shifts', 'classes', 'reservations'}
 
+REDUNDANT_WITH_CALENDAR = {'appointments', 'schedules', 'shifts', 'classes', 'reservations'}
+MAX_TABS = 8  # Including Dashboard
+
+
 def consolidate_calendars(config):
     """Enforce ONE calendar-view component across the ENTIRE config.
-    Dashboard may keep a calendar for 'today's overview'.
-    All other tabs: only ONE calendar total. Extras become table view."""
+    Dashboard is now a platform-managed tab — clear its components.
+    All other tabs: only ONE calendar total. Extras become table view.
+    Strip redundant calendar-entity sub-tabs from tabs that have a calendar."""
+
+    # PASS 0: Clear Dashboard components — Dashboard is platform-managed (empty for now)
+    for tab in config.get('tabs', []):
+        is_dashboard = tab.get('label', '').lower() == 'dashboard' or tab.get('id', '') == 'tab_1'
+        if is_dashboard:
+            tab['components'] = []
+
+    # PASS 1: Enforce ONE calendar-view component (existing logic)
     has_non_dashboard_calendar = False
     for tab in config.get('tabs', []):
         is_dashboard = tab.get('label', '').lower() == 'dashboard' or tab.get('id', '') == 'tab_1'
@@ -177,19 +190,38 @@ def consolidate_calendars(config):
             is_calendar = comp_view == 'calendar' or (not comp_view and comp_id in CALENDAR_COMPONENT_IDS)
             if is_calendar:
                 if is_dashboard and not seen_calendar_in_tab:
-                    # Dashboard gets ONE calendar (today's overview exception)
                     seen_calendar_in_tab = True
                     if not comp_view:
                         comp['view'] = 'calendar'
                 elif not is_dashboard and not has_non_dashboard_calendar and not seen_calendar_in_tab:
-                    # First non-dashboard calendar — keep it
                     has_non_dashboard_calendar = True
                     seen_calendar_in_tab = True
                     if not comp_view:
                         comp['view'] = 'calendar'
                 else:
-                    # Duplicate — switch to table
                     comp['view'] = 'table'
+
+    # PASS 2: Strip redundant calendar-entity sub-components from tabs that have a calendar.
+    # The calendar's filter chips (All | Appointments | Classes | Shifts) already handle these.
+    # Keep non-calendar entities (rooms, equipment, treatments) as valid sub-tabs.
+    for tab in config.get('tabs', []):
+        comps = tab.get('components', [])
+        has_calendar_view = any(c.get('view') == 'calendar' for c in comps)
+        if has_calendar_view and len(comps) > 1:
+            tab['components'] = [
+                c for c in comps
+                if c.get('id') not in REDUNDANT_WITH_CALENDAR
+            ]
+
+    return config
+
+
+def enforce_tab_limit(config):
+    """Cap tabs at MAX_TABS total. AI orders by importance so we keep the first ones."""
+    tabs = config.get('tabs', [])
+    if len(tabs) <= MAX_TABS:
+        return config
+    config['tabs'] = tabs[:MAX_TABS]
     return config
 
 
@@ -395,7 +427,8 @@ Your job is to CUSTOMIZE this template for the specific business described above
 5. **Remove unlocked components** the user clearly doesn't need
 6. **Keep the tab structure** — don't reorganize tabs, just add/remove within them
 7. **Set pipeline stages** if the user described specific progression (belt ranks, loyalty tiers, etc.)
-8. **Extract the business name** from the description
+8. **Extract the business name** from the description — keep it in the SAME LANGUAGE the user wrote in
+9. **Tab and component labels should be in English** — the dashboard UI is English, only business_name stays in the user's language
 
 ## OUTPUT FORMAT:
 Return the FULL config as JSON (same structure as template):
@@ -495,6 +528,8 @@ def analyze_business(description):
     prompt = f"""Analyze this business and create a custom dashboard configuration.
 
 Business description: {description}
+
+LANGUAGE: The description may be in any language. Extract the business_name in the user's original language. All tab labels and component labels should be in English (the dashboard UI is English).
 
 Return ONLY valid JSON (no markdown, no code blocks):
 {{
@@ -715,111 +750,111 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 ## INDUSTRY TEMPLATES (use as starting points, customize based on details)
 
 **Barber/Salon:**
-- Dashboard: calendar (Today's Appointments)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Clients, view: pipeline, stages: ["New Client", "Regular", "VIP", "Ambassador"]), loyalty (Rewards)
-- Schedule: calendar (Schedule, view: calendar), appointments (Appointments, view: table)
+- Schedule: calendar (Schedule, view: calendar)
 - Payments: payments (Payments), invoices (Receipts), packages (Packages)
 - Staff: staff (Barbers/Stylists), shifts (Shifts, view: table) [if multiple staff]
 
 **Landscaping:**
-- Dashboard: calendar (Today), jobs (Active Jobs)
+- Dashboard: (empty — platform-managed)
 - Customers: clients (Customers, view: pipeline, stages: ["Estimate", "Scheduled", "In Progress", "Complete", "Recurring"]), leads (Leads)
-- Jobs: jobs (Jobs), estimates (Estimates), routes (Routes)
-- Crew: staff (Crew), shifts (Assignments), equipment (Equipment), fleet (Vehicles)
+- Jobs: calendar (Schedule, view: calendar), jobs (Jobs), estimates (Estimates), routes (Routes)
+- Crew: staff (Crew), shifts (Assignments, view: table), equipment (Equipment), fleet (Vehicles)
 - Billing: invoices (Invoices), payments (Payments), expenses (Expenses)
 
 **Restaurant/Cafe:**
-- Dashboard: calendar (Today), orders (Orders, view: table)
-- Reservations: calendar (Schedule, view: calendar), reservations (Reservations, view: table), tables (Table Layout), waitlist (Waitlist)
+- Dashboard: (empty — platform-managed)
+- Reservations: calendar (Schedule, view: calendar), tables (Table Layout), waitlist (Waitlist)
 - Menu: menus (Menu Items), recipes (Recipes), inventory (Inventory)
 - Orders: orders (Online Orders), loyalty (Loyalty Program)
 - Team: staff (Staff, view: cards), shifts (Shifts, view: table), tip_pools (Tips)
 - Finances: payments (Sales), invoices (Invoices), expenses (Expenses), suppliers (Suppliers)
 
 **Martial Arts Studio:**
-- Dashboard: calendar (Today's Classes), attendance (Check-ins)
+- Dashboard: (empty — platform-managed)
 - Students: clients (Students, view: pipeline, stages: use belt stages user provides e.g. ["White Belt", "Yellow Belt", "Orange Belt", "Green Belt", "Blue Belt", "Brown Belt", "Black Belt"]), contacts (Families, view: list)
-- Schedule: calendar (Schedule, view: calendar), classes (Class Types, view: cards), appointments (Private Lessons, view: table)
-- Programs: memberships (Programs, view: pipeline, stages: use program tiers user provides e.g. ["Basic", "Advanced", "Elite"]), waivers (Waivers, view: pipeline), client_portal (Client Portal)
+- Schedule: calendar (Schedule, view: calendar)
+- Programs: classes (Class Types, view: cards), memberships (Programs, view: pipeline, stages: use program tiers user provides e.g. ["Basic", "Advanced", "Elite"]), waivers (Waivers, view: pipeline), client_portal (Client Portal)
 - Team: staff (Instructors), shifts (Staff Shifts, view: table)
 - Billing: payments (Payments), invoices (Invoices)
 
 **Fitness Studio/Gym:**
-- Dashboard: calendar (Today's Classes), attendance (Check-ins)
+- Dashboard: (empty — platform-managed)
 - Members: clients (Members, view: pipeline, stages: ["Trial", "New Member", "Active", "Loyal", "Champion"]), leads (Prospects)
-- Schedule: calendar (Schedule, view: calendar), classes (Class Types, view: cards), appointments (Personal Training, view: table)
-- Programs: memberships (Memberships), waivers (Waivers), packages (Packages), client_portal (Client Portal)
+- Schedule: calendar (Schedule, view: calendar)
+- Programs: classes (Class Types, view: cards), memberships (Memberships), waivers (Waivers), packages (Packages), client_portal (Client Portal)
 - Team: staff (Trainers), shifts (Staff Schedule, view: table)
 - Billing: payments (Payments), invoices (Invoices)
 
 **Real Estate:**
-- Dashboard: calendar (Today), leads (Hot Leads)
+- Dashboard: (empty — platform-managed)
 - Leads: leads (Leads), clients (Clients)
 - Properties: listings (Listings), properties (Properties), images (Photos)
 - Pipeline: jobs (Deals), todos (Tasks)
 - Documents: documents (Documents), contracts (Contracts), signatures (Signatures)
 
 **Freelancer/Consultant:**
-- Dashboard: calendar (Today), todos (Tasks)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Clients), leads (Prospects), client_portal (Client Portal)
 - Projects: projects (Projects), time_tracking (Time Tracking)
 - Billing: invoices (Invoices), payments (Payments), estimates (Quotes)
 - Files: documents (Documents), contracts (Contracts)
 
 **Retail Store:**
-- Dashboard: calendar (Today), payments (Recent Sales)
+- Dashboard: (empty — platform-managed)
 - Products: products (Products), inventory (Inventory), orders (Orders)
 - Customers: clients (Customers, view: pipeline, stages: ["First Purchase", "Returning", "Regular", "Gold Member", "VIP"]), leads (Leads), loyalty (Loyalty Program)
 - Sales: invoices (Invoices), payments (Payments)
 - Staff: staff (Staff), shifts (Shifts)
 
 **Auto Shop:**
-- Dashboard: calendar (Today)
+- Dashboard: (empty — platform-managed)
 - Customers: clients (Customers)
-- Schedule: calendar (Schedule, view: calendar), appointments (Appointments, view: table), jobs (Work Orders)
+- Schedule: calendar (Schedule, view: calendar), jobs (Work Orders)
 - Parts: inventory (Parts), products (Products), inspections (Inspections)
 - Billing: invoices (Invoices), payments (Payments), estimates (Estimates)
 
 **Cleaning Service:**
-- Dashboard: calendar (Today), jobs (Active Jobs)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Clients), leads (Leads)
 - Jobs: jobs (Jobs), routes (Routes), checklists (Checklists)
 - Team: staff (Cleaners), shifts (Assignments), fleet (Vehicles)
 - Billing: invoices (Invoices), payments (Payments), subscriptions (Subscriptions)
 
 **Photography/Creative:**
-- Dashboard: calendar (Upcoming Shoots)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Clients), leads (Inquiries)
-- Schedule: calendar (Schedule, view: calendar), appointments (Sessions, view: table)
+- Schedule: calendar (Schedule, view: calendar)
 - Gallery: galleries (Client Galleries), portfolios (Portfolio), images (Photos)
 - Business: invoices (Invoices), contracts (Contracts), payments (Payments)
 
 **Tutoring/Education:**
-- Dashboard: calendar (Today's Sessions)
+- Dashboard: (empty — platform-managed)
 - Students: clients (Students), leads (Inquiries), attendance (Attendance), client_portal (Student Portal)
-- Schedule: calendar (Schedule, view: calendar), classes (Class Types, view: cards), appointments (Private Lessons, view: table)
+- Schedule: calendar (Schedule, view: calendar)
 - Materials: documents (Curriculum), notes (Session Notes), courses (Courses)
 - Billing: invoices (Invoices), payments (Payments), memberships (Plans)
 
 **Pet Grooming/Veterinary:**
-- Dashboard: calendar (Today), appointments (Upcoming, view: table)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Pet Parents), notes (Pet Profiles)
-- Schedule: calendar (Schedule, view: calendar), appointments (Appointments, view: table)
+- Schedule: calendar (Schedule, view: calendar)
 - Medical: treatments (Treatments), prescriptions (Prescriptions) [vet only]
 - Team: staff (Groomers/Vets), shifts (Schedule, view: table)
 - Payments: payments (Payments), invoices (Receipts)
 
 **Dental/Medical:**
-- Dashboard: calendar (Today)
+- Dashboard: (empty — platform-managed)
 - Patients: clients (Patients), forms (Intake Forms), client_portal (Patient Portal)
-- Schedule: calendar (Schedule, view: calendar), appointments (Appointments, view: table)
+- Schedule: calendar (Schedule, view: calendar)
 - Clinical: treatments (Treatment Plans), prescriptions (Prescriptions), notes (Notes)
 - Records: documents (Records), waivers (Consent Forms), signatures (Signatures)
 - Billing: invoices (Invoices), payments (Payments)
 - Staff: staff (Staff), shifts (Schedule, view: table)
 
 **Construction/Electrical/Plumbing:**
-- Dashboard: calendar (Today), jobs (Active Projects)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Clients), leads (Leads)
 - Projects: jobs (Work Orders), schedules (Timeline), estimates (Estimates)
 - Resources: staff (Crew), equipment (Equipment), fleet (Vehicles), inventory (Materials)
@@ -827,38 +862,38 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 - Billing: invoices (Invoices), payments (Payments), expenses (Expenses)
 
 **Event Planning/Catering:**
-- Dashboard: calendar (Upcoming Events), projects (Active Events)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Clients), leads (Inquiries), guests (Guest Lists)
-- Events: calendar (Schedule, view: calendar), projects (Event Projects), venues (Venues)
+- Events: calendar (Schedule, view: calendar), venues (Venues)
 - Vendors: vendors (Vendors), menus (Menus) [catering]
 - Business: invoices (Invoices), payments (Payments), contracts (Contracts)
 
 **Legal/Accounting:**
-- Dashboard: calendar (Today), todos (Tasks)
+- Dashboard: (empty — platform-managed)
 - Clients: clients (Clients), leads (Prospects), client_portal (Client Portal)
 - Cases: cases (Cases), documents (Documents), contracts (Contracts)
 - Work: time_tracking (Time Tracking), todos (Tasks)
 - Billing: invoices (Invoices), payments (Payments), estimates (Proposals)
 
 **Hotel/Spa:**
-- Dashboard: calendar (Today), reservations (Reservations, view: table)
+- Dashboard: (empty — platform-managed)
 - Guests: clients (Guests), reservations (Reservations, view: table), client_portal (Guest Portal)
-- Schedule: calendar (Schedule, view: calendar), appointments (Appointments, view: table), rooms (Rooms)
+- Schedule: calendar (Schedule, view: calendar), rooms (Rooms)
 - Services: treatments (Treatments), packages (Packages)
 - Staff: staff (Staff), shifts (Shifts, view: table)
 - Billing: invoices (Invoices), payments (Payments)
 
 ## RULES FOR GOOD CONFIGS
 
-1. **ONE universal calendar in the entire config.** All time-based events (appointments, classes, shifts) go on ONE calendar with color-coded event types (Appointment=blue, Class=purple, Shift=green). Place the calendar on a "Schedule" or "Classes" tab. Do NOT create separate calendar views on different tabs for different event types.
-   EXCEPTION: Dashboard may ALSO have a calendar component for a "Today's overview" quick glance.
-   NEVER use calendar view for classes, shifts, schedules, or appointments components — those should be table/cards sub-tabs alongside the universal calendar. The ONLY component that should have view: "calendar" is the "calendar" component itself.
-   Example for a fitness Schedule tab:
+1. **ONE universal calendar — NO redundant sub-tabs.** The calendar component has built-in filter chips (All | Appointments | Classes | Shifts) and a view toggle (calendar/list). It already shows ALL time-based events with color coding (Appointment=blue, Class=purple, Shift=green).
+   Do NOT add appointments, classes, shifts, schedules, or reservations as sub-components on the same tab as a calendar — they are REDUNDANT because the calendar already displays them via filter chips.
+   Non-time entities (rooms, tables, equipment, venues, jobs) are fine alongside the calendar.
+   The ONLY component that should have view: "calendar" is the "calendar" component itself.
+   If you need a class-type catalog or shift management, put them on a SEPARATE tab (e.g., Programs for class types, Team for shifts).
+   Example for a fitness Schedule tab — just the calendar, nothing else:
    - {{"id": "calendar", "label": "Schedule", "view": "calendar"}}
-   - {{"id": "classes", "label": "Class Types", "view": "cards"}}
-   - {{"id": "shifts", "label": "Staff Shifts", "view": "table"}}
-2. **ALWAYS start with a Dashboard tab** containing calendar (today's overview) or relevant overview components
-3. **Use 3-5 tabs initially** - small businesses need simplicity
+2. **ALWAYS start with a Dashboard tab** but with EMPTY components: `[]`. Dashboard is platform-managed and will be populated by the system. The AI should include the Dashboard tab entry (for nav) but with no components.
+3. **Use 3-5 user tabs** (plus Dashboard = 4-6 total) - small businesses need simplicity
 4. **Each tab should have 1-4 components** - don't overwhelm
 5. **Use industry-appropriate labels:**
    - Barber: "Clients" not "Customers"
@@ -867,10 +902,10 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
    - Medical: "Patients" not "Clients"
    - Construction: "Projects" not "Jobs"
 6. **Solo operators don't need Staff tabs** - only add if they mention employees/team
-7. **Match complexity to business size:**
-   - Solo: 3 tabs, 4-6 components total
-   - Small team (2-5): 4 tabs, 6-10 components
-   - Larger team: 5-6 tabs, 8-14 components
+7. **Match complexity to business size (tab counts EXCLUDE Dashboard):**
+   - Solo: 3 tabs + Dashboard = 4 total, 4-6 components
+   - Small team (2-5): 4 tabs + Dashboard = 5 total, 6-10 components
+   - Larger team: 5-6 tabs + Dashboard = 6-7 total, 8-14 components
 8. **Group logically by workflow, not by component category**
 9. **Use industry-specific components when relevant:**
    - Restaurant/cafe: reservations, tables, menus, orders, recipes
@@ -933,19 +968,20 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
     - Programs represent client journeys (belt progression, membership tiers, course levels)
     - Use pipeline view as the default for the main component in Programs tab
     - Example for martial arts: {{"id": "programs", "label": "Programs", "view": "pipeline", "stages": ["White Belt", "Yellow Belt", "Green Belt", "Blue Belt", "Red Belt", "Black Belt"]}}
+17. **Maximum 7 user-configured tabs** (+ Dashboard = 8 total). If more are needed, consolidate related functions into one tab with sub-components.
 
 ## GOOD vs BAD CONFIG EXAMPLES
 
 **GOOD - Solo Barber "Tony's Cuts":**
 {{
     "tabs": [
-        {{ "id": "tab_1", "label": "Dashboard", "icon": "home", "components": [{{ "id": "calendar", "label": "Today", "view": "calendar" }}] }},
+        {{ "id": "tab_1", "label": "Dashboard", "icon": "home", "components": [] }},
         {{ "id": "tab_2", "label": "Clients", "icon": "people", "components": [{{ "id": "clients", "label": "Clients", "view": "pipeline" }}] }},
-        {{ "id": "tab_3", "label": "Schedule", "icon": "calendar", "components": [{{ "id": "calendar", "label": "Schedule", "view": "calendar" }}, {{ "id": "appointments", "label": "Appointments", "view": "table" }}] }},
+        {{ "id": "tab_3", "label": "Schedule", "icon": "calendar", "components": [{{ "id": "calendar", "label": "Schedule", "view": "calendar" }}] }},
         {{ "id": "tab_4", "label": "Payments", "icon": "dollar", "components": [{{ "id": "payments", "label": "Payments", "view": "table" }}] }}
     ]
 }}
-Why it's good: Simple, 4 tabs, ONE universal calendar on Schedule tab, Dashboard has today's overview, all components have explicit view.
+Why it's good: Simple, 4 tabs, Dashboard empty (platform-managed), ONE calendar on Schedule (no redundant appointments sub-tab), all views explicit.
 
 **BAD - Same barber:**
 {{
@@ -959,14 +995,14 @@ Why it's bad: Generic labels, too many components, includes Staff/Payroll for a 
 **GOOD - Landscaping company with 5 crew:**
 {{
     "tabs": [
-        {{ "id": "tab_1", "label": "Dashboard", "icon": "home", "components": [{{ "id": "calendar", "label": "Today", "view": "calendar" }}, {{ "id": "jobs", "label": "Active Jobs", "view": "pipeline" }}] }},
+        {{ "id": "tab_1", "label": "Dashboard", "icon": "home", "components": [] }},
         {{ "id": "tab_2", "label": "Customers", "icon": "people", "components": [{{ "id": "clients", "label": "Customers", "view": "pipeline" }}, {{ "id": "leads", "label": "Leads", "view": "pipeline" }}] }},
         {{ "id": "tab_3", "label": "Jobs", "icon": "briefcase", "components": [{{ "id": "calendar", "label": "Schedule", "view": "calendar" }}, {{ "id": "jobs", "label": "Jobs", "view": "pipeline" }}, {{ "id": "estimates", "label": "Estimates", "view": "table" }}] }},
         {{ "id": "tab_4", "label": "Crew", "icon": "users", "components": [{{ "id": "staff", "label": "Crew", "view": "cards" }}, {{ "id": "shifts", "label": "Assignments", "view": "table" }}] }},
         {{ "id": "tab_5", "label": "Billing", "icon": "dollar", "components": [{{ "id": "invoices", "label": "Invoices", "view": "table" }}, {{ "id": "payments", "label": "Payments", "view": "table" }}] }}
     ]
 }}
-Why it's good: Dashboard first, ONE universal calendar on Jobs tab, shifts are table (not calendar), all views explicit.
+Why it's good: Dashboard empty (platform-managed), ONE calendar on Jobs tab, no redundant sub-tabs alongside calendar, shifts on Crew tab (not calendar tab), all views explicit.
 
 Now analyze the business description and create a perfect config."""
 
@@ -1013,6 +1049,8 @@ def chat():
         return jsonify({'success': True, 'response': 'READY_TO_BUILD'})
 
     system_prompt = """You're a CTO helping someone build their business platform. Short, casual, helpful.
+
+LANGUAGE RULE: Always respond in the SAME LANGUAGE the user writes in. If they write in Spanish, respond in Spanish. If they write in French, respond in French. If they write in English, respond in English. Match their language exactly throughout the entire conversation.
 
 You need to gather these details (ask about them one at a time, across multiple messages):
 1. Business name
@@ -1115,6 +1153,7 @@ def configure():
 
         config = validate_colors(config)
         config = consolidate_calendars(config)
+        config = enforce_tab_limit(config)
         config = ensure_gallery(config)
         config = transform_pipeline_stages(config)
         print(f"Config: {config}")

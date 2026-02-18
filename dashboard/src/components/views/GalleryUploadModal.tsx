@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CenterModal from '@/components/ui/CenterModal';
+import CustomSelect from '@/components/ui/CustomSelect';
 import { DashboardColors } from '@/types/config';
 import { toast } from '@/components/ui/Toaster';
 
@@ -46,7 +47,10 @@ export default function GalleryUploadModal({
 
   const btnColor = configColors.buttons || '#1A1A1A';
   const textColor = configColors.text || '#1A1A1A';
+  const mutedColor = configColors.text ? `${configColors.text}99` : '#6B7280';
   const borderColor = configColors.borders || '#E5E7EB';
+  const cardBg = configColors.cards || '#FFFFFF';
+  const pageBg = configColors.background || '#F5F5F5';
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const withPreviews = acceptedFiles.map(file =>
@@ -167,53 +171,91 @@ export default function GalleryUploadModal({
   };
 
   const title = mode === 'choose' ? 'Add to Gallery' : mode === 'photo' ? 'Upload Photos' : 'Create Album';
+  const stepNum = mode === 'choose' ? 1 : 2;
+  const stepLabel = mode === 'choose' ? 'Choose Action' : mode === 'photo' ? 'Upload Photos' : 'Create Album';
 
   return (
     <CenterModal
       isOpen={isOpen}
       onClose={handleClose}
       title={title}
-      maxWidth="max-w-md"
+      subtitle={`Step ${stepNum} of 2 — ${stepLabel}`}
+      maxWidth="max-w-2xl"
       configColors={configColors}
+      noPadding
     >
+      <div className="flex flex-col" style={{ minHeight: 380 }}>
+        {/* Step indicators */}
+        <div className="flex items-center justify-center gap-2 px-5 pt-4 pb-2">
+          {[1, 2].map((s) => (
+            <div
+              key={s}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: s === stepNum ? 32 : 16,
+                backgroundColor: s <= stepNum ? btnColor : borderColor,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Step content */}
+        <div className="flex-1 px-5 py-4">
+
       {/* Step 1: Choose mode */}
       {mode === 'choose' && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setMode('photo')}
-            className="w-full p-4 rounded-xl border-2 text-left transition-colors hover:border-current"
-            style={{ borderColor, color: textColor }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${btnColor}15` }}>
-                <svg className="w-5 h-5" style={{ color: btnColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-medium text-sm">Upload Photos</p>
-                <p className="text-xs opacity-60">Add one or more photos to your gallery</p>
-              </div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setMode('album')}
-            className="w-full p-4 rounded-xl border-2 text-left transition-colors hover:border-current"
-            style={{ borderColor, color: textColor }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${btnColor}15` }}>
-                <svg className="w-5 h-5" style={{ color: btnColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-medium text-sm">Create Album</p>
-                <p className="text-xs opacity-60">Group photos into a named album</p>
-              </div>
-            </div>
-          </button>
+        <div className="space-y-4">
+          <p className="text-sm" style={{ color: mutedColor }}>
+            What would you like to do?
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              {
+                value: 'photo' as UploadMode,
+                title: 'Upload Photos',
+                desc: 'Add one or more photos to your gallery',
+                icon: (
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+                  </svg>
+                ),
+              },
+              {
+                value: 'album' as UploadMode,
+                title: 'Create Album',
+                desc: 'Group photos into a named album',
+                icon: (
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                  </svg>
+                ),
+              },
+            ].map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setMode(opt.value)}
+                className="flex flex-col items-center gap-3 p-5 rounded-xl border-2 text-center transition-all hover:shadow-md"
+                style={{
+                  borderColor,
+                  backgroundColor: cardBg,
+                }}
+              >
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${btnColor}15` }}>
+                  <div style={{ color: btnColor }}>
+                    {opt.icon}
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm" style={{ color: textColor }}>
+                    {opt.title}
+                  </p>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: mutedColor }}>
+                    {opt.desc}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -227,13 +269,15 @@ export default function GalleryUploadModal({
             style={{ borderColor: isDragActive ? btnColor : borderColor }}
           >
             <input {...getInputProps()} />
-            <svg className="w-8 h-8 mx-auto mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-            </svg>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-2" style={{ backgroundColor: `${btnColor}15` }}>
+              <svg className="w-5 h-5" style={{ color: btnColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              </svg>
+            </div>
             <p className="text-sm font-medium" style={{ color: textColor }}>
               {isDragActive ? 'Drop photos here' : 'Drag & drop photos or click to browse'}
             </p>
-            <p className="text-xs mt-1 opacity-50">JPG, PNG, GIF, WebP — max 20MB each</p>
+            <p className="text-xs mt-1" style={{ color: mutedColor }}>JPG, PNG, GIF, WebP — max 20MB each</p>
           </div>
 
           {/* File previews */}
@@ -261,32 +305,29 @@ export default function GalleryUploadModal({
           {/* Album picker */}
           {existingAlbums.length > 0 && (
             <div>
-              <label className="text-xs font-medium mb-1 block" style={{ color: textColor, opacity: 0.7 }}>Add to Album (optional)</label>
-              <select
+              <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>Add to Album (optional)</label>
+              <CustomSelect
                 value={selectedAlbumId}
-                onChange={e => setSelectedAlbumId(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor, color: textColor }}
-              >
-                <option value="">No album</option>
-                {existingAlbums.map(a => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
-                ))}
-              </select>
+                onChange={value => setSelectedAlbumId(value)}
+                options={existingAlbums.map(a => ({ value: a.id, label: a.name }))}
+                placeholder="No album"
+                style={{ borderColor, color: textColor, backgroundColor: pageBg }}
+                buttonColor={btnColor}
+              />
             </div>
           )}
 
           {/* Caption (single photo only) */}
           {files.length === 1 && (
             <div>
-              <label className="text-xs font-medium mb-1 block" style={{ color: textColor, opacity: 0.7 }}>Caption (optional)</label>
+              <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>Caption (optional)</label>
               <input
                 type="text"
                 value={caption}
                 onChange={e => setCaption(e.target.value)}
                 placeholder="Describe this photo..."
-                className="w-full px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor, color: textColor }}
+                className="w-full px-3 py-2.5 rounded-lg border text-sm"
+                style={{ borderColor, color: textColor, backgroundColor: pageBg }}
               />
             </div>
           )}
@@ -300,29 +341,9 @@ export default function GalleryUploadModal({
                   style={{ width: `${uploadProgress}%`, backgroundColor: btnColor }}
                 />
               </div>
-              <p className="text-xs text-center opacity-60">{uploadProgress}%</p>
+              <p className="text-xs text-center" style={{ color: mutedColor }}>{uploadProgress}%</p>
             </div>
           )}
-
-          {/* Actions */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => { setMode('choose'); setFiles([]); }}
-              className="px-4 py-2 rounded-lg border text-sm"
-              style={{ borderColor, color: textColor }}
-              disabled={uploading}
-            >
-              Back
-            </button>
-            <button
-              onClick={handleUploadPhotos}
-              disabled={files.length === 0 || uploading}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
-              style={{ backgroundColor: btnColor }}
-            >
-              {uploading ? 'Uploading...' : `Upload ${files.length} Photo${files.length !== 1 ? 's' : ''}`}
-            </button>
-          </div>
         </div>
       )}
 
@@ -330,40 +351,40 @@ export default function GalleryUploadModal({
       {mode === 'album' && (
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: textColor, opacity: 0.7 }}>Album Name</label>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>Album Name</label>
             <input
               type="text"
               value={albumName}
               onChange={e => setAlbumName(e.target.value)}
               placeholder="e.g., Summer Collection, Before & After"
-              className="w-full px-3 py-2 rounded-lg border text-sm"
-              style={{ borderColor, color: textColor }}
+              className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+              style={{ borderColor, color: textColor, backgroundColor: pageBg, '--tw-ring-color': btnColor } as React.CSSProperties}
               autoFocus
             />
           </div>
 
           <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: textColor, opacity: 0.7 }}>Description (optional)</label>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>Description (optional)</label>
             <input
               type="text"
               value={albumDescription}
               onChange={e => setAlbumDescription(e.target.value)}
               placeholder="What's this album about?"
-              className="w-full px-3 py-2 rounded-lg border text-sm"
-              style={{ borderColor, color: textColor }}
+              className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+              style={{ borderColor, color: textColor, backgroundColor: pageBg, '--tw-ring-color': btnColor } as React.CSSProperties}
             />
           </div>
 
           {/* Dropzone for initial album photos */}
           <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: textColor, opacity: 0.7 }}>Photos (optional — add later too)</label>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>Photos (optional — add later too)</label>
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors ${isDragActive ? 'border-current' : ''}`}
               style={{ borderColor: isDragActive ? btnColor : borderColor }}
             >
               <input {...getInputProps()} />
-              <p className="text-xs" style={{ color: textColor, opacity: 0.5 }}>
+              <p className="text-xs" style={{ color: mutedColor }}>
                 {isDragActive ? 'Drop photos here' : 'Drag & drop or click to add photos'}
               </p>
             </div>
@@ -399,30 +420,51 @@ export default function GalleryUploadModal({
                   style={{ width: `${uploadProgress}%`, backgroundColor: btnColor }}
                 />
               </div>
-              <p className="text-xs text-center opacity-60">{uploadProgress}%</p>
+              <p className="text-xs text-center" style={{ color: mutedColor }}>{uploadProgress}%</p>
             </div>
           )}
+        </div>
+      )}
 
-          <div className="flex gap-2">
+        </div>
+
+        {/* Footer */}
+        <div
+          className="flex items-center justify-between px-5 py-3.5 border-t shrink-0"
+          style={{ borderColor }}
+        >
+          <button
+            onClick={mode === 'choose' ? handleClose : () => { setMode('choose'); setFiles([]); setAlbumName(''); setAlbumDescription(''); }}
+            className="px-4 py-2 rounded-lg text-sm font-medium border transition-opacity hover:opacity-70"
+            style={{ borderColor, color: textColor }}
+            disabled={uploading}
+          >
+            {mode === 'choose' ? 'Cancel' : 'Back'}
+          </button>
+
+          {mode === 'photo' && (
             <button
-              onClick={() => { setMode('choose'); setFiles([]); setAlbumName(''); setAlbumDescription(''); }}
-              className="px-4 py-2 rounded-lg border text-sm"
-              style={{ borderColor, color: textColor }}
-              disabled={uploading}
+              onClick={handleUploadPhotos}
+              disabled={files.length === 0 || uploading}
+              className="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+              style={{ backgroundColor: btnColor }}
             >
-              Back
+              {uploading ? 'Uploading...' : `Upload ${files.length} Photo${files.length !== 1 ? 's' : ''}`}
             </button>
+          )}
+
+          {mode === 'album' && (
             <button
               onClick={handleCreateAlbum}
               disabled={!albumName.trim() || uploading}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-40"
+              className="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: btnColor }}
             >
               {uploading ? 'Creating...' : `Create Album${files.length > 0 ? ` (${files.length} photos)` : ''}`}
             </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </CenterModal>
   );
 }

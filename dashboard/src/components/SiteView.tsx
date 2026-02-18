@@ -7,6 +7,7 @@ import CenterModal from '@/components/ui/CenterModal';
 import SiteContent from './SiteContent';
 import SiteAnalytics from './SiteAnalytics';
 import PortalContent from './PortalContent';
+import GalleryManager from './views/GalleryManager';
 import { shouldHavePortal } from '@/lib/portal-templates';
 
 interface SiteViewProps {
@@ -17,6 +18,7 @@ interface SiteViewProps {
 
 const BASE_SUB_TABS = [
   { id: 'pages', label: 'Pages' },
+  { id: 'gallery', label: 'Gallery' },
   { id: 'portal', label: 'Portal' },
   { id: 'analytics', label: 'Analytics' },
   { id: 'seo', label: 'SEO' },
@@ -159,6 +161,7 @@ export default function SiteView({ colors, businessName, businessType }: SiteVie
 
       {/* Tab content */}
       {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} />}
+      {activeSubTab === 'gallery' && <GalleryManager configColors={colors} entityType="galleries" />}
       {activeSubTab === 'portal' && <PortalContent colors={colors} businessName={businessName} businessType={businessType} />}
       {activeSubTab === 'analytics' && <SiteAnalytics colors={colors} />}
       {activeSubTab === 'seo' && <SiteSEO cardBg={cardBg} textMain={textMain} textMuted={textMuted} borderColor={borderColor} buttonColor={buttonColor} />}

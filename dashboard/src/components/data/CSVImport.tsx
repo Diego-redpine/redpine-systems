@@ -5,6 +5,7 @@ import Papa from 'papaparse';
 import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
 import { toast } from '@/components/ui/Toaster';
+import CustomSelect from '@/components/ui/CustomSelect';
 
 interface CSVImportProps {
   entityType: string;
@@ -247,23 +248,22 @@ export default function CSVImport({
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#9CA3AF' }}>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
-                    <select
+                    <CustomSelect
                       value={columnMapping[header] || ''}
-                      onChange={e => handleMappingChange(header, e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg border"
+                      onChange={value => handleMappingChange(header, value)}
+                      options={targetColumns.map(col => ({
+                        value: col,
+                        label: col.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                      }))}
+                      placeholder="-- Skip --"
+                      className="flex-1"
+                      buttonColor={buttonBg}
                       style={{
                         borderColor,
                         backgroundColor: configColors.background || '#F9FAFB',
                         color: textColor,
                       }}
-                    >
-                      <option value="">-- Skip --</option>
-                      {targetColumns.map(col => (
-                        <option key={col} value={col}>
-                          {col.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                 ))}
               </div>

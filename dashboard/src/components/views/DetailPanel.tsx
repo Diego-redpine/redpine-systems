@@ -10,6 +10,7 @@ import RichTextEditor from '@/components/editors/RichTextEditor';
 import { generateInvoicePDF } from '@/lib/pdf-generator';
 import LinkedRecords from '@/components/editors/LinkedRecords';
 import CenterModal from '@/components/ui/CenterModal';
+import CustomSelect from '@/components/ui/CustomSelect';
 import type { CustomFieldDefinition } from '@/hooks/useCustomFields';
 
 interface DetailPanelProps {
@@ -284,20 +285,17 @@ export default function DetailPanel({
                 >
                   Repeat
                 </label>
-                <select
+                <CustomSelect
                   value={String(value || 'none')}
-                  onChange={(e) => handleFieldChange(key, e.target.value)}
-                  className="detail-panel-input w-full px-3 py-2 rounded-md border text-sm"
+                  onChange={(val) => handleFieldChange(key, val)}
+                  options={RECURRENCE_OPTIONS}
                   style={{
                     backgroundColor: configColors.background || '#F9FAFB',
                     borderColor: configColors.borders || '#E5E7EB',
                     color: configColors.text || '#111827',
                   }}
-                >
-                  {RECURRENCE_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                  buttonColor={buttonBg}
+                />
               </div>
             );
           }
@@ -419,21 +417,18 @@ export default function DetailPanel({
                     <label className="block text-sm font-medium mb-1" style={{ color: configColors.headings || '#111827' }}>
                       {cf.field_label}{cf.is_required && <span className="text-red-500 ml-0.5">*</span>}
                     </label>
-                    <select
+                    <CustomSelect
                       value={String(cfValue || '')}
-                      onChange={e => handleCustomFieldChange(e.target.value)}
-                      className="detail-panel-input w-full px-3 py-2 rounded-md border text-sm"
+                      onChange={val => handleCustomFieldChange(val)}
+                      options={(cf.options || []).map((opt: string) => ({ value: opt, label: opt }))}
+                      placeholder="Select..."
                       style={{
                         backgroundColor: configColors.background || '#F9FAFB',
                         borderColor: configColors.borders || '#E5E7EB',
                         color: configColors.text || '#111827',
                       }}
-                    >
-                      <option value="">Select...</option>
-                      {(cf.options || []).map((opt: string) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                      buttonColor={buttonBg}
+                    />
                   </div>
                 );
               }
