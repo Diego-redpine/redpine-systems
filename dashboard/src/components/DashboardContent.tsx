@@ -1918,17 +1918,21 @@ export default function DashboardContent({
     ? [...dedupedComponents.map(c => ({ id: c.id, label: c.label })), { id: 'analytics', label: 'Analytics' }]
     : [];
 
-  // Check if this is a platform tab (Dashboard = tab_1 or label 'Dashboard')
-  const isDashboardTab = activeTab === 'tab_1' || activeTab.toLowerCase() === 'dashboard';
-  const isPlatformTab = isDashboardTab || ['site', '__site__', 'analytics', 'settings', '__marketplace__', '__marketing__'].includes(activeTab);
+  // Check if this is a platform tab (Dashboard detected by label, not ID — tab_1 can be anything in demo mode)
+  const isDashboardTab = tabLabel.toLowerCase() === 'dashboard' || activeTab.toLowerCase() === 'dashboard';
+  const isSettingsTab = activeTab === 'settings' || activeTab === 'profile';
+  const isPlatformTab = isDashboardTab || isSettingsTab || ['site', '__site__', 'analytics', '__marketplace__', '__marketing__'].includes(activeTab);
   const toolbarPadding = toolbarSide === 'right' ? 'lg:pr-16' : 'lg:pl-16';
 
   if (isPlatformTab) {
     return (
       <div className={`flex-1 min-w-0 ${toolbarPadding} px-4 lg:px-10 py-6 lg:py-8 pb-20 lg:pb-8 overflow-auto`} style={containerStyle}>
-        <h2 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: headingColor }}>
-          {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : 'Settings'}
-        </h2>
+        {/* Settings/Profile has no heading — sub-tabs handle it */}
+        {!isSettingsTab && (
+          <h2 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: headingColor }}>
+            {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : ''}
+          </h2>
+        )}
         {isDashboardTab && (
           <div className="flex items-center justify-center min-h-[300px]">
             <p className="text-sm" style={{ color: textColor }}>Dashboard coming soon</p>
@@ -1936,7 +1940,7 @@ export default function DashboardContent({
         )}
         {(activeTab === 'site' || activeTab === '__site__') && <SiteView colors={colors} businessName={businessName} businessType={businessType} />}
         {activeTab === 'analytics' && <AnalyticsContent colors={colors} businessType={businessType} />}
-        {activeTab === 'settings' && <SettingsContent colors={colors} />}
+        {isSettingsTab && <SettingsContent colors={colors} defaultTab={activeTab === 'profile' ? 'profile' : 'settings'} />}
         {activeTab === '__marketplace__' && <MarketplaceView colors={colors} />}
         {activeTab === '__marketing__' && <MarketingContent colors={colors} />}
       </div>

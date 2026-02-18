@@ -22,7 +22,7 @@ interface Profile {
   subdomain: string;
 }
 
-export default function SettingsContent({ colors }: { colors: DashboardColors }) {
+export default function SettingsContent({ colors, defaultTab }: { colors: DashboardColors; defaultTab?: 'profile' | 'settings' | 'activity' }) {
   const textMain = colors.headings || '#1A1A1A';
   const textMuted = '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
@@ -30,8 +30,13 @@ export default function SettingsContent({ colors }: { colors: DashboardColors })
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonTextColor = getContrastText(buttonColor);
 
-  // Sub-tab: Settings | Activity
-  const [activeSubTab, setActiveSubTab] = useState<'settings' | 'activity'>('settings');
+  // Sub-tab: Profile | Settings | Activity
+  const [activeSubTab, setActiveSubTab] = useState<'profile' | 'settings' | 'activity'>(defaultTab || 'profile');
+
+  // Sync sub-tab when dropdown navigates to profile vs settings
+  useEffect(() => {
+    if (defaultTab) setActiveSubTab(defaultTab);
+  }, [defaultTab]);
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -273,7 +278,7 @@ export default function SettingsContent({ colors }: { colors: DashboardColors })
     <div className="space-y-6 max-w-2xl">
       {/* Sub-tab pills */}
       <div className="flex gap-2 mb-2">
-        {(['settings', 'activity'] as const).map(tab => (
+        {(['profile', 'settings', 'activity'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveSubTab(tab)}
@@ -284,14 +289,14 @@ export default function SettingsContent({ colors }: { colors: DashboardColors })
               border: activeSubTab === tab ? 'none' : '1px solid #E5E7EB',
             }}
           >
-            {tab === 'settings' ? 'Settings' : 'Activity'}
+            {tab === 'profile' ? 'Profile' : tab === 'settings' ? 'Settings' : 'Activity'}
           </button>
         ))}
       </div>
 
       {activeSubTab === 'activity' && <ActivityFeedView colors={colors} />}
 
-      {activeSubTab === 'settings' && <>
+      {activeSubTab === 'profile' && <>
       {/* Save confirmation */}
       {saveMessage && (
         <div className="fixed top-4 right-4 z-50 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-lg animate-fadeIn">
@@ -480,6 +485,61 @@ export default function SettingsContent({ colors }: { colors: DashboardColors })
           })}
         </div>
       </div>
+
+      {/* 9. Danger Zone */}
+      <div className="rounded-2xl p-6 shadow-sm border-2 border-red-200" style={{ backgroundColor: cardBg }}>
+        <h3 className="text-base font-semibold mb-2 text-red-600">Danger Zone</h3>
+        <p className="text-sm mb-4" style={{ color: textMuted }}>
+          Permanently delete your account and all associated data. This action cannot be undone.
+        </p>
+        {showDeleteConfirm ? (
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-red-600">
+              Type DELETE to confirm:
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              className={inputClass}
+              style={{ borderColor: '#FCA5A5' }}
+              placeholder="DELETE"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== 'DELETE'}
+                className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white disabled:opacity-50"
+              >
+                Delete My Account
+              </button>
+              <button
+                onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }}
+                className="px-4 py-2 text-sm font-medium rounded-lg border"
+                style={{ borderColor, color: textMuted }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="px-4 py-2 text-sm font-medium rounded-lg border-2 border-red-300 text-red-600 hover:bg-red-50 transition-colors"
+          >
+            Delete Account
+          </button>
+        )}
+      </div>
+      </>}
+
+      {activeSubTab === 'settings' && <>
+      {/* Save confirmation */}
+      {saveMessage && (
+        <div className="fixed top-4 right-4 z-50 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-lg animate-fadeIn">
+          {saveMessage}
+        </div>
+      )}
 
       {/* 5. Payment Integrations */}
       <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
@@ -760,51 +820,6 @@ export default function SettingsContent({ colors }: { colors: DashboardColors })
         </div>
       </div>
 
-      {/* 9. Danger Zone */}
-      <div className="rounded-2xl p-6 shadow-sm border-2 border-red-200" style={{ backgroundColor: cardBg }}>
-        <h3 className="text-base font-semibold mb-2 text-red-600">Danger Zone</h3>
-        <p className="text-sm mb-4" style={{ color: textMuted }}>
-          Permanently delete your account and all associated data. This action cannot be undone.
-        </p>
-        {showDeleteConfirm ? (
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-red-600">
-              Type DELETE to confirm:
-            </p>
-            <input
-              type="text"
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-              className={inputClass}
-              style={{ borderColor: '#FCA5A5' }}
-              placeholder="DELETE"
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={handleDeleteAccount}
-                disabled={deleteConfirmText !== 'DELETE'}
-                className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white disabled:opacity-50"
-              >
-                Delete My Account
-              </button>
-              <button
-                onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }}
-                className="px-4 py-2 text-sm font-medium rounded-lg border"
-                style={{ borderColor, color: textMuted }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border-2 border-red-300 text-red-600 hover:bg-red-50 transition-colors"
-          >
-            Delete Account
-          </button>
-        )}
-      </div>
       </>}
     </div>
   );

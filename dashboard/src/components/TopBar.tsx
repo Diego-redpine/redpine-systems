@@ -291,9 +291,9 @@ export default function TopBar({
             <button
               onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotificationsOpen(false); setIsMessagesOpen(false); }}
               className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:ring-2 hover:ring-gray-200"
-              style={{ backgroundColor: activeTab === 'settings' ? buttonColor : '#F3F4F6' }}
+              style={{ backgroundColor: (activeTab === 'settings' || activeTab === 'profile') ? buttonColor : '#F3F4F6' }}
             >
-              <svg className="w-4 h-4" style={{ color: activeTab === 'settings' ? getContrastText(buttonColor) : '#6B7280' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <svg className="w-4 h-4" style={{ color: (activeTab === 'settings' || activeTab === 'profile') ? getContrastText(buttonColor) : '#6B7280' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
               </svg>
             </button>
@@ -303,9 +303,12 @@ export default function TopBar({
                 style={{ backgroundColor: headerBg, borderColor }}
               >
                 <button
-                  onClick={() => { setIsProfileOpen(false); }}
+                  onClick={() => { onTabChange('profile'); setIsProfileOpen(false); }}
                   className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
-                  style={{ color: textColor }}
+                  style={{
+                    backgroundColor: activeTab === 'profile' ? buttonColor : 'transparent',
+                    color: activeTab === 'profile' ? getContrastText(buttonColor) : textColor,
+                  }}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
