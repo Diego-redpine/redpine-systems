@@ -216,11 +216,8 @@ function DashboardPageContent() {
     );
   }
 
-  // Inject Settings as a platform tab so it always appears in TopBar
-  const allTabs = [
-    ...(config?.tabs || []),
-    { id: 'settings', label: 'Settings', icon: 'settings', components: [] as { id: string; label: string }[] },
-  ];
+  // Settings is accessed via profile dropdown, not as a nav tab
+  const allTabs = config?.tabs || [];
 
   const currentTab = config?.tabs.find(tab => tab.id === activeTab);
   const currentComponents = currentTab?.components || [];

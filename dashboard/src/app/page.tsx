@@ -91,12 +91,6 @@ const DEFAULT_TABS: DashboardTab[] = [
       { id: 'galleries', label: 'Gallery', view: 'cards' },
     ],
   },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: 'settings',
-    components: [],
-  },
 ];
 
 export default function PreviewPage() {
