@@ -147,12 +147,12 @@ export default function PipelineView({
                 style={{ color: configColors.headings || '#1A1A1A' }}
               >
                 {fields?.title
-                  ? String(activeRecord[fields.title] || '')
+                  ? String(activeRecord[fields.title] || activeRecord.name || activeRecord.title || '')
                   : String(activeRecord.name || activeRecord.title || '')}
               </p>
               {fields?.subtitle && (
                 <p className="text-xs truncate mt-1" style={{ color: '#6B7280' }}>
-                  {String(activeRecord[fields.subtitle] || '')}
+                  {String(activeRecord[fields.subtitle] || activeRecord.subtitle || '')}
                 </p>
               )}
             </div>

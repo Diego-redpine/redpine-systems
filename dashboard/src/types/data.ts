@@ -287,6 +287,39 @@ export interface WorkflowRun {
   completed_at?: string;
 }
 
+export interface MembershipPlan {
+  id: string;
+  user_id: string;
+  name: string;
+  description?: string;
+  price_cents: number;
+  interval: 'monthly' | 'yearly' | 'one_time';
+  features?: string[];
+  status: 'active' | 'archived';
+  max_members?: number;
+  sort_order?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MembershipMember {
+  id: string;
+  user_id: string;
+  client_name: string;
+  client_email?: string;
+  client_phone?: string;
+  plan_id?: string;
+  plan_name?: string;
+  status: 'prospect' | 'trial' | 'active' | 'past_due' | 'cancelled';
+  start_date?: string;
+  end_date?: string;
+  payment_status?: 'pending' | 'current' | 'past_due' | 'cancelled';
+  notes?: string;
+  stage_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Paginated response wrapper
 export interface PaginatedResponse<T> {
   data: T[];

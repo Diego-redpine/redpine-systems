@@ -40,9 +40,9 @@ function DraggableCard({
   });
 
   const title = fields?.title
-    ? String(record[fields.title] || '')
+    ? String(record[fields.title] || record.name || record.title || '')
     : String(record.name || record.title || '');
-  const subtitle = fields?.subtitle ? String(record[fields.subtitle] || '') : '';
+  const subtitle = fields?.subtitle ? String(record[fields.subtitle] || record.subtitle || '') : '';
   const value = fields?.valueField ? record[fields.valueField] : null;
 
   const colorPrimary = record.color_primary as string | null | undefined;

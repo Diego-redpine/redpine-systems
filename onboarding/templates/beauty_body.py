@@ -36,8 +36,9 @@ _TEMPLATES = {
                 'components': [
                     {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
                      'stages': ['Requested', 'Confirmed', 'Checked In', 'In Service', 'Completed']},
-                    {'id': 'memberships', 'label': 'Members', 'view': 'pipeline',
-                     'stages': ['Prospect', 'Trial', 'Active', 'Up for Renewal']},
+                    {'id': 'membership_plans', 'label': 'Membership Plans', 'view': 'cards'},
+                    {'id': 'membership_members', 'label': 'Members', 'view': 'pipeline',
+                     'stages': ['Prospect', 'Trial', 'Active', 'Past Due', 'Cancelled']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -372,7 +373,9 @@ _TEMPLATES = {
                 'components': [
                     {'id': 'treatments', 'label': 'Treatments', 'view': 'table', '_locked': True},
                     {'id': 'packages', 'label': 'Spa Packages', 'view': 'cards'},
-                    {'id': 'memberships', 'label': 'Memberships', 'view': 'cards'},
+                    {'id': 'membership_plans', 'label': 'Membership Plans', 'view': 'cards'},
+                    {'id': 'membership_members', 'label': 'Members', 'view': 'pipeline',
+                     'stages': ['Prospect', 'Trial', 'Active', 'Past Due', 'Cancelled']},
                     {'id': 'products', 'label': 'Spa Products', 'view': 'table'},
                 ],
             },
@@ -393,7 +396,6 @@ _TEMPLATES = {
                 'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
                 'components': [
                     {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
-                    {'id': 'memberships_billing', 'label': 'Membership Billing', 'view': 'table'},
                     {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
                 ],
             },

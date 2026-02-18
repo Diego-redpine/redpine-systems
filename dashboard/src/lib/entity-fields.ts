@@ -369,6 +369,20 @@ export const ENTITY_FIELDS: Record<string, EntityFieldConfig> = {
     calendar: null,
     pipeline: null,
   },
+  membership_plans: {
+    card: { title: 'name', subtitle: 'description', badge: 'interval', meta: ['price_cents', 'status'] },
+    list: { primary: 'name', secondary: 'description', trailing: 'interval' },
+    table: { columns: ['name', 'description', 'price_cents', 'interval', 'status', 'max_members'] },
+    calendar: null,
+    pipeline: null,
+  },
+  membership_members: {
+    card: { title: 'client_name', subtitle: 'plan_name', badge: 'status', meta: ['start_date', 'payment_status'] },
+    list: { primary: 'client_name', secondary: 'plan_name', trailing: 'status' },
+    table: { columns: ['client_name', 'plan_name', 'status', 'start_date', 'end_date', 'payment_status'] },
+    calendar: null,
+    pipeline: { title: 'client_name', subtitle: 'plan_name', valueField: null },
+  },
   courses: {
     card: { title: 'name', subtitle: 'instructor', badge: 'enrolled', meta: ['duration', 'modules'] },
     list: { primary: 'name', secondary: 'instructor', trailing: 'enrolled' },

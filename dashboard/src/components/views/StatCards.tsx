@@ -301,6 +301,17 @@ const DEMO_STATS: Record<string, StatCard[]> = {
     { label: 'New This Month', value: 24 },
     { label: 'Expiring Soon', value: 18, change: '+5', changeType: 'negative' },
   ],
+  membership_plans: [
+    { label: 'Active Plans', value: 4 },
+    { label: 'Monthly Revenue', value: '$4,280', featured: true },
+    { label: 'Avg Price', value: '$49/mo' },
+  ],
+  membership_members: [
+    { label: 'Total Members', value: 42, change: '+15.2%', changeType: 'positive' as const },
+    { label: 'Active', value: 35, featured: true },
+    { label: 'New This Month', value: 6 },
+    { label: 'Past Due', value: 2, changeType: 'negative' as const },
+  ],
   courses: [
     { label: 'Total Courses', value: 12 },
     { label: 'Active', value: 8, featured: true },

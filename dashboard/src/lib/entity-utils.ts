@@ -74,6 +74,8 @@ export function singularize(entityType: string): string {
     treatments: 'treatment',
     attendance: 'check-in',
     memberships: 'membership',
+    membership_plans: 'membership plan',
+    membership_members: 'member',
     courses: 'course',
     venues: 'venue',
     guests: 'guest',
