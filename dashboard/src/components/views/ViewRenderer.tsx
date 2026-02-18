@@ -42,6 +42,7 @@ const DocumentEditor = lazy(() => import('@/components/editors/DocumentEditor'))
 const CSVImport = lazy(() => import('@/components/data/CSVImport'));
 const RouteView = lazy(() => import('./RouteView'));
 const AddEventModal = lazy(() => import('./AddEventModal'));
+const GalleryManager = lazy(() => import('./GalleryManager'));
 
 // Small SVG icons for view toggle buttons
 function ViewIcon({ type }: { type: ViewType }) {
@@ -202,6 +203,7 @@ export default function ViewRenderer({
   const [editingSocialPost, setEditingSocialPost] = useState<Record<string, unknown> | null>(null);
   const isSocialMediaEntity = entityType === 'social_media';
   const isChatWidgetEntity = entityType === 'chat_widget';
+  const isGalleryEntity = ['galleries', 'images', 'portfolios'].includes(entityType);
   const isRouteEntity = entityType === 'routes';
 
   // Custom fields for this entity type (only fetched in real mode)
@@ -716,6 +718,15 @@ export default function ViewRenderer({
     return (
       <Suspense fallback={null}>
         <ChatInboxView colors={configColors} />
+      </Suspense>
+    );
+  }
+
+  // Gallery/images/portfolios get custom gallery manager
+  if (isGalleryEntity) {
+    return (
+      <Suspense fallback={null}>
+        <GalleryManager configColors={configColors} entityType={entityType} />
       </Suspense>
     );
   }

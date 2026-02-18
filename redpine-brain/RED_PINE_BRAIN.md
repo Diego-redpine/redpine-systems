@@ -32,6 +32,7 @@
 | Feb 12 | 23 | Staff Wizard + Analytics | Staff Setup Wizard (5-step CenterModal), 9 analytics types covering all 70 entities, calendar consolidation AI rule, dummy mode optimistic fix, 2 more E2E tests (law firm A-, yoga A). 34 industries tested. | Calendar system OR Website builder |
 | Feb 13 | 24 | Launch Sprint + Marketplace + Site Builder + Marketing + Data-Linked Widgets | Launch Blockers Sprint (6 features): password reset, mobile nav, settings tab, booking backend, ChaiBuilder site builder, Stripe Connect + Square OAuth. Website/Site redesign (8 batches): SiteView, SiteAnalytics, site_projects, SiteWizard, multi-project, floating AI chat, custom website widgets (4: BookingWidget, ProductGrid, ContactForm, ReviewCarousel). Freelancer Marketplace (5 batches): browse/hire, order flow, messaging, reviews, milestones. Marketing moved to ToolsStrip. Data-Linked Widgets: all 4 site widgets now start blank in editor with "Select" button → DataSelector popup → links to dashboard data. TopBar replaces Sidebar (no more sidebar). CenterModal popup system. ToolsStrip with 5 buttons (Chat, Edit, Website, Marketplace, Marketing). | Visual polish, Supabase migrations, deploy |
 | Feb 14 | 25 | Route Planner + Code Quality | Route Planner Batch 1: new `'route'` ViewType (6th view), Leaflet map with territory polygons + customer pins, dnd-kit sortable stop list, RouteDetailModal with zoomed map + route polyline, TerritoryDrawTool for polygon drawing. Installed leaflet + react-leaflet + @types/leaflet. Code Quality Sprint: extracted duplicate `getStatusBadgeStyle()` to shared `badge-styles.ts`, removed unused imports (getCardBorder, getHeadingColor), fixed TerritoryDrawTool array index keys, added error logging to silent catch blocks (useCustomFields, useUserRole, crud.ts), fixed 3 console 401 errors (ViewRenderer + PineTreeWidget now use `useDataMode()` hook to skip API calls in dummy mode). 3 Playwright tests passed (landscaping, plumbing, cleaning — all with different theme colors). 0 TypeScript errors, 0 console errors. | Supabase migrations, deploy, landing page |
+| Feb 17 | 28 | Phase C Planning | Gallery system, AI-generated websites, booking pipeline, multi-language chat, visual previews in onboarding — all added to Brain. Gallery build starting. | Build Gallery system end-to-end |
 | _next_ | _ | ________________ | ________________________________________________ | ________________ |
 
 ---
@@ -969,6 +970,132 @@ Platform is functionally complete. Deploy after: applying 12 Supabase migrations
 - **Red Pine Print** — Physical goods (signs, merch, stickers) shipped to users
 - **Mobile App** — React Native (future)
 - **White-label** — Agencies rebrand Red Pine for their clients
+
+### Phase C: Gallery System (NEXT UP)
+**Problem:** AI already generates gallery-like sections in some configs (food photos, nails, portfolios), but they're static placeholders. Business owners need to upload photos from the dashboard and have them appear on their website automatically — no developer, no website editor.
+
+**Value prop:** Landscapers, nail techs, restaurants, photographers, tattoo artists — every visual business needs this. "Upload from your phone, it's on your site."
+
+**What to build:**
+1. **Dashboard side:** Gallery tab/sub-tab where users upload photos (react-dropzone to Supabase Storage)
+2. **DB:** `gallery_images` table (id, user_id, image_url, caption, category, display_order, created_at)
+3. **Website side:** Gallery widget/block for ChaiBuilder — responsive masonry grid, lightbox on click, pulls from `gallery_images`
+4. **AI integration:** When AI generates a config with a gallery component, it's already wired to this system
+5. **Categories/albums:** Optional grouping (e.g., "Nails" / "Lashes" / "Brows" for a beauty tech)
+
+**Applies to:** Literally every business — landscaping, nails, restaurants, tattoo, photography, florists, bakeries, salons, auto detailing, interior design
+
+### Phase C: AI-Generated Websites
+**Problem:** Most users (especially on mobile) won't use the ChaiBuilder drag-and-drop editor. They expect a website to just exist when they sign up.
+
+**Solution:** During onboarding, AI generates a full website alongside the dashboard config. The system already knows: business name, type, colors, logo, tabs/components. That's enough to build a solid site.
+
+**Approach — Template-based first:**
+1. 5-10 pre-built ChaiBuilder page templates per industry category (service, restaurant, retail, professional, creative)
+2. AI picks the best template, swaps in business name, colors, logo, relevant sections
+3. Website is live at `{business}.redpine.systems` immediately after signup
+4. User can still customize via ChaiBuilder later if they want
+5. Gallery widget auto-populated if gallery component exists in config
+
+**Why template-based > full AI generation:** Layouts need to be responsive and polished. AI-generated HTML/JSON has layout bugs. Templates guarantee quality, AI just fills in content.
+
+**Revenue angle:** "You're getting a website + the system that backs it. 14-day free trial, then $29/mo." The website alone would cost $500-2000 from a freelancer.
+
+### Phase C: Subdomain Routing for Business Websites
+**Structure:**
+- `app.redpine.systems` → Dashboard (login, manage your business)
+- `{business}.redpine.systems` → Public website + portal + booking + ordering
+
+**Technical:**
+- Wildcard DNS on `*.redpine.systems` (Cloudflare supports this)
+- Next.js middleware reads subdomain, routes to correct business's site data
+- `subdomain` field on business config = their public URL
+- Same pattern as Shopify (`admin.shopify.com` vs `yourstore.myshopify.com`)
+
+### Phase C: 14-Day Free Trial
+- Add `trial_period_days: 14` to Stripe checkout session
+- Website is live during trial — if they're running their business on it, they convert
+- Stripe handles trial expiration and first charge automatically
+
+### Phase C: Dashboard Onboarding Tour (Post-Launch Polish)
+**Problem:** New users land on their dashboard and don't know what anything does.
+
+**Solution:** First-login guided walkthrough:
+- Step-through modal or highlighted overlay
+- Each step highlights a toolbar button / tab / feature
+- Content is dynamic based on the user's config (different tabs = different tour)
+- "Welcome! Here's your platform. Let's walk through it."
+- Dismissible, can re-trigger from Settings
+
+**Priority:** Lower than gallery/website/trial — this is retention, not conversion.
+
+### Phase C: Booking Pipeline for Service Businesses
+**Problem:** AI generates client pipelines like "New → Regular → VIP → Ambassador" for solo nail techs, barbers, tattoo artists. That's a loyalty progression, not a daily workflow. It doesn't help them run their day.
+
+**Solution — Two pipelines for appointment-based service businesses:**
+
+**Primary: Booking Pipeline (operational — daily use)**
+| Stage | Meaning |
+|-------|---------|
+| Clients | Full client list — everyone lives here |
+| Booked | Has upcoming appointment |
+| Confirmed | Confirmed / deposit paid |
+| In Chair | Currently being served |
+| Completed | Done, ready for follow-up |
+| Rebook | Needs re-engagement for next visit |
+
+**Secondary: Rewards Pipeline (relational — client value over time)**
+| Stage | Meaning |
+|-------|---------|
+| New | First-time client |
+| Regular | 3+ visits |
+| VIP | 10+ visits or high spend |
+| Ambassador | Refers others, loyalty member |
+
+**AI logic — this is NOT universal, only for booking-based businesses:**
+- **Booking pipeline:** salon, barber, tattoo, nails, lash, massage, spa, pet grooming, auto detailing, cleaning, mobile car wash
+- **Sales/journey pipeline:** agencies, recruiting, consulting, SaaS — keep Lead → Proposal → Negotiation → Closed
+- **Legal pipeline:** law firms — keep New → Discovery → Trial → Closed
+- **Real estate pipeline:** keep Lead → Showing → Offer → Closing
+- **Medical pipeline:** keep Intake → Treatment → Follow-up → Discharged
+- The AI already knows the business type from onboarding — it picks the right pipeline automatically
+
+**Design principle:** Build industry templates enterprise-first (20-employee salon with 3 locations), then solo operators naturally use fewer features.
+
+### Phase C: Multi-Language Onboarding
+**Problem:** Non-English speakers land on Red Pine and can't use the AI chat effectively.
+
+**Solution (minimal effort, huge reach):**
+1. **Placeholder text:** "Describe your business in any language / Describa su negocio en cualquier idioma / Descreva seu negócio em qualquer idioma"
+2. **System prompt rule:** "Always respond in the same language the user writes in"
+3. Claude already speaks 50+ languages fluently — this is nearly free
+
+**Result:** Someone types in Spanish → entire onboarding, questions, config labels come back in Spanish. Dashboard UI stays English for now, but the onboarding barrier is gone.
+
+### Phase C: Visual Previews in Chat (Screenshots During Onboarding)
+**Problem:** When the AI suggests "I think a pipeline system would work great for managing your clients," the user has no idea what a pipeline looks like. Most people signing up have never seen a CRM, pipeline, or dashboard — photos paint the picture in their heads.
+
+**Phase 1 — Industry-specific screenshot library:**
+1. Capture screenshots per **industry + view type** combination, not just generic views
+2. Pipeline screenshots: booking pipeline (barber/nails/tattoo), sales pipeline (agency/recruiting), legal pipeline (law firm), etc.
+3. Calendar screenshots: appointment-based (salon), class-based (martial arts/yoga), shift-based (restaurant)
+4. Table/cards/gallery screenshots: per industry context
+5. AI picks the RIGHT screenshot for the business type — barber sees booking pipeline, not a sales funnel
+6. Frontend renders images inline in chat bubbles
+7. "I think an all-in-one calendar best suits your needs — here's what it looks like: [calendar screenshot]. What do you think?"
+
+**Screenshot categories needed:**
+| View Type | Industry Variants |
+|-----------|------------------|
+| Pipeline | Booking (barber/nails/tattoo), Sales (agency/recruiting), Legal (law), Real Estate (listings), Medical (patient journey) |
+| Calendar | Appointments (salon), Classes (martial arts/yoga), Shifts (restaurant), Mixed (multi-type) |
+| Table | Inventory (retail), Menu (restaurant), Products (e-commerce), Clients (professional) |
+| Cards | Staff (salon), Portfolio (creative), Properties (real estate) |
+| Gallery | Food (restaurant), Work samples (nails/tattoo/landscaping), Listings (real estate) |
+
+**Phase 2 (goal) — Live mini-previews:** Actually render interactive preview components inline in chat. Way harder but the ultimate UX.
+
+**Impact:** Massively improves conversion. Seeing > reading. A nail tech who sees the calendar with color-coded appointments immediately gets it.
 
 ---
 

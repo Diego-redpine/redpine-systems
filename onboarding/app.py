@@ -684,7 +684,13 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
    - Photography/creative: galleries, portfolios
    - Events/catering: venues, guests, menus
    - Legal: cases, time_tracking
-   - Salon/barber: loyalty, packages
+   - Salon/barber: loyalty, packages, galleries (showcase cuts/styles)
+   - Nail tech/lash/brows: galleries (showcase work)
+   - Tattoo artist: portfolios or galleries (showcase art)
+   - Landscaping/cleaning/detailing: galleries (before/after photos)
+   - Restaurant/bakery/food truck: galleries (food photos)
+   - Florist/wedding planner: galleries (arrangements/events)
+   - Interior design/architecture: portfolios (project showcase)
    - Service businesses with vehicles: fleet, routes
 10. **Waivers are important for physical activities** - martial arts, fitness, sports, adventure
 11. **ALWAYS prefer industry-specific components over generic ones:**
@@ -694,7 +700,13 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
     - Catering = MUST use menus, recipes, guests (not just products, clients)
     - Property mgmt = MUST use properties, inspections (not just clients, tickets)
     - Recruiting = MUST use cases for placements, time_tracking for billing
-    - Tattoo/piercing = MUST use waivers, portfolios
+    - Tattoo/piercing = MUST use waivers, portfolios or galleries
+    - Nail tech/lash/brows/salon/barber = MUST use galleries (to showcase work on website)
+    - Landscaping/cleaning/auto detailing = MUST use galleries (before/after photos)
+    - Restaurant/bakery/food truck = MUST use galleries (food photos)
+    - Florist/wedding/event planner = MUST use galleries (arrangements/events)
+    - Interior design/architecture = MUST use portfolios (project showcase)
+    - Any business that showcases visual work = MUST use galleries or portfolios (connects to website gallery widget automatically)
     - Any business with vehicles/trucks = MUST use fleet
     - Any business with food/cooking = MUST use recipes
     - Any business with class schedules = MUST use classes (not just appointments)

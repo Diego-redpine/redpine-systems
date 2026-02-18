@@ -85,14 +85,10 @@ const DEFAULT_TABS: DashboardTab[] = [
   },
   {
     id: 'tab_5',
-    label: 'Restaurant',
-    icon: 'utensils',
+    label: 'Gallery',
+    icon: 'image',
     components: [
-      { id: 'waitlist', label: 'Waitlist' },
-      { id: 'tip_pools', label: 'Tip Pool' },
-      { id: 'waste_log', label: 'Waste Log' },
-      { id: 'suppliers', label: 'Suppliers' },
-      { id: 'purchase_orders', label: 'Purchase Orders' },
+      { id: 'galleries', label: 'Gallery', view: 'cards' },
     ],
   },
   {

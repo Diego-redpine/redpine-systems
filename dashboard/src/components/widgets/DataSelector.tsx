@@ -10,7 +10,7 @@ export interface DataItem {
 }
 
 interface DataSelectorProps {
-  entityType: 'forms' | 'products' | 'services' | 'reviews';
+  entityType: 'forms' | 'products' | 'services' | 'reviews' | 'gallery';
   isOpen: boolean;
   onSelect: (item: DataItem) => void;
   onClose: () => void;
@@ -45,6 +45,11 @@ const DEMO_DATA: Record<string, DataItem[]> = {
     { id: 'rev_source_recent', name: 'Recent Reviews', type: 'Filter', meta: 'Last 30 days' },
     { id: 'rev_source_top', name: 'Top Rated', type: 'Filter', meta: '5-star only' },
   ],
+  gallery: [
+    { id: 'gal_all', name: 'All Photos', type: 'Gallery', meta: 'Show all photos' },
+    { id: 'gal_albums', name: 'Albums View', type: 'Albums', meta: 'Show by album' },
+    { id: 'gal_recent', name: 'Recent Photos', type: 'Filter', meta: 'Last 30 days' },
+  ],
 };
 
 const ENTITY_LABELS: Record<string, { title: string; icon: string }> = {
@@ -52,6 +57,7 @@ const ENTITY_LABELS: Record<string, { title: string; icon: string }> = {
   products: { title: 'Select Products', icon: 'M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z' },
   services: { title: 'Select a Service', icon: 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5' },
   reviews: { title: 'Select Review Source', icon: 'M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z' },
+  gallery: { title: 'Select Gallery Source', icon: 'M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z' },
 };
 
 export const DataSelector: React.FC<DataSelectorProps> = ({

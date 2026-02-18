@@ -7,6 +7,7 @@ import { BookingWidget } from '@/components/widgets/BookingWidget';
 import { ProductGrid } from '@/components/widgets/ProductGrid';
 import { ContactForm } from '@/components/widgets/ContactForm';
 import { ReviewCarousel } from '@/components/widgets/ReviewCarousel';
+import { GalleryWidget } from '@/components/widgets/GalleryWidget';
 import { PortalHeader } from '@/components/widgets/PortalHeader';
 import { PortalSchedule } from '@/components/widgets/PortalSchedule';
 import { PortalBilling } from '@/components/widgets/PortalBilling';
@@ -225,6 +226,82 @@ export function registerCustomBlocks() {
     },
     i18nProps: ['heading'],
     aiProps: ['heading', 'accentColor'],
+  });
+
+  // --- Gallery Widget ---
+  registerChaiBlock(GalleryWidget as never, {
+    type: 'GalleryWidget',
+    label: 'Photo Gallery',
+    group: 'Red Pine',
+    category: 'core',
+    description: 'Photo gallery with albums view, masonry layout, and lightbox',
+    props: {
+      schema: {
+        properties: {
+          styles: stylesProp('w-full'),
+          heading: {
+            type: 'string',
+            title: 'Heading',
+            default: 'Our Gallery',
+          },
+          viewMode: {
+            type: 'string',
+            title: 'View Mode',
+            default: 'gallery',
+            enum: ['albums', 'gallery'],
+          },
+          layout: {
+            type: 'string',
+            title: 'Layout',
+            default: 'masonry',
+            enum: ['grid', 'masonry'],
+          },
+          columns: {
+            type: 'number',
+            title: 'Columns',
+            default: 3,
+            enum: [2, 3, 4],
+          },
+          showCaptions: {
+            type: 'boolean',
+            title: 'Show Captions',
+            default: true,
+          },
+          lightbox: {
+            type: 'boolean',
+            title: 'Lightbox on Click',
+            default: true,
+          },
+          maxPhotos: {
+            type: 'number',
+            title: 'Max Photos',
+            default: 0,
+            enum: [6, 12, 0],
+          },
+          accentColor: {
+            type: 'string',
+            title: 'Accent Color',
+            default: '#1A1A1A',
+          },
+          linkedGalleryId: {
+            type: 'string',
+            title: 'Linked Gallery ID',
+            default: '',
+          },
+          linkedGalleryName: {
+            type: 'string',
+            title: 'Linked Gallery Name',
+            default: '',
+          },
+        },
+      },
+      uiSchema: {
+        linkedGalleryId: { 'ui:widget': 'hidden' },
+        linkedGalleryName: { 'ui:widget': 'hidden' },
+      },
+    },
+    i18nProps: ['heading'],
+    aiProps: ['heading', 'viewMode', 'layout', 'columns', 'showCaptions', 'accentColor'],
   });
 
   // ==============================
