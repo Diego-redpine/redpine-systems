@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDataMode } from './useDataMode';
 import { componentDummyData, ComponentData } from '@/lib/dummy-data';
+import { PipelineStage } from '@/types/config';
 
 export interface UseEntityDataOptions {
   search?: string;
@@ -13,6 +14,7 @@ export interface UseEntityDataOptions {
   pageSize?: number;
   dateRange?: { start: string; end: string };
   componentId?: string; // Original component ID for dummy data lookup
+  pipelineStages?: PipelineStage[]; // Config pipeline stages for dummy→config stage ID remapping
 }
 
 export interface UseEntityDataResult {
@@ -26,7 +28,7 @@ export interface UseEntityDataResult {
 }
 
 // Transform ComponentData to Record<string, unknown>[] for consistent output
-function transformDummyData(data: ComponentData, entityType: string): Record<string, unknown>[] {
+function transformDummyData(data: ComponentData, entityType: string, configStages?: PipelineStage[]): Record<string, unknown>[] {
   switch (data.type) {
     case 'table':
       return data.rows.map((row, i) => {
@@ -69,6 +71,17 @@ function transformDummyData(data: ComponentData, entityType: string): Record<str
 
     case 'pipeline':
       const records: Record<string, unknown>[] = [];
+      // Build dummy→config stage ID map by matching stage names
+      let stageIdMap: Record<string, string> | undefined;
+      if (configStages && configStages.length > 0) {
+        stageIdMap = {};
+        const configByName = new Map(configStages.map(s => [s.name.toLowerCase(), s.id]));
+        data.stages.forEach((dummyStage, i) => {
+          const nameMatch = configByName.get(dummyStage.name.toLowerCase());
+          const posMatch = configStages[i]?.id;
+          stageIdMap![dummyStage.id] = nameMatch || posMatch || dummyStage.id;
+        });
+      }
       data.stages.forEach((stage) => {
         stage.items.forEach((item, i) => {
           records.push({
@@ -78,7 +91,7 @@ function transformDummyData(data: ComponentData, entityType: string): Record<str
             subtitle: item.subtitle,
             value: item.value,
             meta: item.meta,
-            stage_id: stage.id,
+            stage_id: stageIdMap ? (stageIdMap[stage.id] || stage.id) : stage.id,
           });
         });
       });
@@ -238,7 +251,7 @@ export function useEntityData(
           }
 
           // Transform and filter dummy data client-side
-          let records = transformDummyData(dummyData, dummyDataKey);
+          let records = transformDummyData(dummyData, dummyDataKey, options.pipelineStages);
           records = applySearch(records, search);
           records = applyFilters(records, filters);
           records = applySort(records, sort, sortDir);

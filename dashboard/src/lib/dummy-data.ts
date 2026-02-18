@@ -691,33 +691,32 @@ export const componentDummyData: Record<string, ComponentData> = {
     items: [
       { id: 'plan_1', title: 'Basic', subtitle: '1 service per month', meta: '$29/mo', status: 'active', metric: '$29' },
       { id: 'plan_2', title: 'Premium', subtitle: '4 services per month', meta: '$59/mo', status: 'active', metric: '$59' },
-      { id: 'plan_3', title: 'VIP Unlimited', subtitle: 'Unlimited services + priority booking', meta: '$99/mo', status: 'active', metric: '$99' },
-      { id: 'plan_4', title: 'Day Pass', subtitle: 'Single visit, any service', meta: '$15', status: 'active', metric: '$15' },
+      { id: 'plan_3', title: 'VIP', subtitle: 'Unlimited services + priority booking', meta: '$99/mo', status: 'active', metric: '$99' },
     ]
   },
   memberships: {
     type: 'pipeline',
     stages: [
       {
-        id: 'plan_basic', name: 'Basic — $29/mo', color: '#3B82F6',
+        id: 'plan_basic', name: 'Basic', color: '#3B82F6',
         items: [
-          { id: 'mm_1', title: 'Sarah Johnson', subtitle: 'Since Feb 1', meta: 'Current' },
-          { id: 'mm_2', title: 'Tom Wilson', subtitle: 'Since Jan 15', meta: 'Current' },
-          { id: 'mm_3', title: 'Amy Liu', subtitle: 'Since Dec 10', meta: 'Current' },
+          { id: 'mm_1', title: 'Sarah Johnson', subtitle: 'Basic — $29/mo', meta: 'Since Feb 1' },
+          { id: 'mm_2', title: 'Tom Wilson', subtitle: 'Basic — $29/mo', meta: 'Since Jan 15' },
+          { id: 'mm_3', title: 'Amy Liu', subtitle: 'Basic — $29/mo', meta: 'Since Dec 10' },
         ],
       },
       {
-        id: 'plan_premium', name: 'Premium — $59/mo', color: '#8B5CF6',
+        id: 'plan_premium', name: 'Premium', color: '#8B5CF6',
         items: [
-          { id: 'mm_4', title: 'Mike Davis', subtitle: 'Since Dec 1', meta: 'Current' },
-          { id: 'mm_5', title: 'Emily Chen', subtitle: 'Since Jan 5', meta: 'Past Due' },
+          { id: 'mm_4', title: 'Mike Davis', subtitle: 'Premium — $59/mo', meta: 'Since Dec 1' },
+          { id: 'mm_5', title: 'Emily Chen', subtitle: 'Premium — $59/mo', meta: 'Past Due' },
         ],
       },
       {
-        id: 'plan_vip', name: 'VIP — $99/mo', color: '#F59E0B',
+        id: 'plan_vip', name: 'VIP', color: '#F59E0B',
         items: [
-          { id: 'mm_6', title: 'John Smith', subtitle: 'Since Jan 1', meta: 'Current' },
-          { id: 'mm_7', title: 'Rachel Kim', subtitle: 'Since Feb 10', meta: 'Current' },
+          { id: 'mm_6', title: 'John Smith', subtitle: 'VIP — $99/mo', meta: 'Since Jan 1' },
+          { id: 'mm_7', title: 'Rachel Kim', subtitle: 'VIP — $99/mo', meta: 'Since Feb 10' },
         ],
       },
       {

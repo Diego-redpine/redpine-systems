@@ -127,6 +127,7 @@ export default function ViewRenderer({
     pageSize: 25,
     dateRange,
     componentId, // Pass original component ID for dummy data lookup
+    pipelineStages: componentConfig.pipeline?.stages, // Remap dummy stage IDs to config stage IDs
   };
 
   // Fetch data using the hook
