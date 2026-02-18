@@ -34,8 +34,10 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['New Client', 'Regular', 'VIP', 'Ambassador']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Requested', 'Confirmed', 'Checked In', 'In Service', 'Completed']},
+                    {'id': 'memberships', 'label': 'Members', 'view': 'pipeline',
+                     'stages': ['Prospect', 'Trial', 'Active', 'Up for Renewal']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -86,8 +88,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['Walk-in', 'Regular', 'VIP']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Walk-in', 'Confirmed', 'Checked In', 'In Chair', 'Completed']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -137,8 +139,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['Consultation', 'New Client', 'Regular', 'VIP']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Requested', 'Confirmed', 'Checked In', 'In Service', 'Completed']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -190,8 +192,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['New Client', 'Regular', 'VIP']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Requested', 'Confirmed', 'Checked In', 'In Service', 'Completed']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -243,8 +245,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['Inquiry', 'Booked', 'Completed', 'Repeat']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Inquiry', 'Consultation', 'Booked', 'In Progress', 'Completed']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -296,8 +298,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['Consultation', 'Deposit Paid', 'Scheduled', 'Complete']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Consultation', 'Deposit Paid', 'Scheduled', 'In Session', 'Completed']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -354,8 +356,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Guests', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Guests', 'view': 'pipeline', '_locked': True,
-                     'stages': ['New Guest', 'Regular', 'Member', 'VIP']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Requested', 'Confirmed', 'Checked In', 'In Treatment', 'Completed']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -408,8 +410,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Patients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Patients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['Consultation', 'Treatment Plan', 'Active', 'Maintenance']},
+                    {'id': 'clients', 'label': 'Appointments', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Consultation', 'Treatment Plan', 'Scheduled', 'In Treatment', 'Completed']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
@@ -464,8 +466,8 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Pets & Owners', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Pets & Owners', 'view': 'pipeline', '_locked': True,
-                     'stages': ['New Pet', 'Regular', 'Frequent', 'Premium']},
+                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Drop-off', 'Checked In', 'Grooming', 'Ready for Pickup', 'Picked Up']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                     {'id': 'pet_profiles', 'label': 'Pet Profiles', 'view': 'cards'},
                 ],
