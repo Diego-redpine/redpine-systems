@@ -677,7 +677,7 @@ Example component with pipeline:
 - expenses: Expense logging, categories, receipts
 - payroll: Payroll management, pay periods, deductions
 - estimates: Quotes, proposals, estimate-to-invoice conversion
-- packages: Service packages, pricing bundles, included items
+- packages: Service menu — bookable services customers see during booking. Each service has a name, price, and duration
 - subscriptions: Recurring subscription management, billing cycles
 
 **Tasks - Work management:**
@@ -754,8 +754,9 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 - Dashboard: (empty — platform-managed)
 - Clients: clients (Clients, view: pipeline, stages: ["New Client", "Regular", "VIP", "Ambassador"]), loyalty (Rewards)
 - Schedule: calendar (Schedule, view: calendar)
-- Payments: payments (Payments), invoices (Receipts), packages (Packages)
+- Services: packages (Service Menu, view: cards)
 - Staff: staff (Barbers/Stylists), shifts (Shifts, view: table) [if multiple staff]
+- Payments: payments (Payments), invoices (Receipts)
 
 **Landscaping:**
 - Dashboard: (empty — platform-managed)
@@ -975,6 +976,11 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
     - Use pipeline view as the default for the main component in Programs tab
     - Example for martial arts: {{"id": "programs", "label": "Programs", "view": "pipeline", "stages": ["White Belt", "Yellow Belt", "Green Belt", "Blue Belt", "Red Belt", "Black Belt"]}}
 17. **Maximum 7 user-configured tabs** (+ Dashboard = 8 total). If more are needed, consolidate related functions into one tab with sub-components.
+18. **Services + Calendar + Staff family group:**
+    - `packages` (Service Menu), `calendar`, and `staff` form a logical unit for appointment-based businesses
+    - If a business offers bookable services, ensure it has all three: packages (Service Menu) + calendar + staff
+    - The booking flow connects them: customer picks service → picks date/time → optionally picks staff member
+    - Appointment-based businesses: salon, barber, spa, med spa, lash/brow, tattoo, pet grooming, massage, dental, chiropractic, photography
 
 ## GOOD vs BAD CONFIG EXAMPLES
 

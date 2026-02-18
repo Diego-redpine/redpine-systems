@@ -80,7 +80,7 @@ export function singularize(entityType: string): string {
     guests: 'guest',
     surveys: 'survey',
     knowledge: 'article',
-    packages: 'package',
+    packages: 'service',
     subscriptions: 'subscription',
     time_tracking: 'time entry',
     social_media: 'post',

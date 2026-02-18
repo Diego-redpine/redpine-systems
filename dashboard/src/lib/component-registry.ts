@@ -113,7 +113,7 @@ export const componentRegistry: ComponentDefinition[] = [
   { id: 'knowledge', defaultLabel: 'Knowledge Base', icon: 'book', category: 'comms', description: 'FAQ articles and help documentation' },
 
   // Business Operations
-  { id: 'packages', defaultLabel: 'Packages', icon: 'package', category: 'money', description: 'Service packages and pricing bundles' },
+  { id: 'packages', defaultLabel: 'Services', icon: 'package', category: 'money', description: 'Service menu — bookable services with name, price, and duration' },
   { id: 'subscriptions', defaultLabel: 'Subscriptions', icon: 'rotate', category: 'money', description: 'Recurring subscription management' },
   { id: 'time_tracking', defaultLabel: 'Time Tracking', icon: 'clock', category: 'time', description: 'Employee hours and billable time' },
 

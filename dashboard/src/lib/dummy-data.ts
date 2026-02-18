@@ -1030,9 +1030,12 @@ export const componentDummyData: Record<string, ComponentData> = {
   packages: {
     type: 'cards',
     items: [
-      { id: 'pkg_1', title: 'Basic Package', subtitle: '3 services included', meta: 'Most Popular', status: 'active', metric: '$99' },
-      { id: 'pkg_2', title: 'Premium Package', subtitle: '6 services included', meta: 'Best Value', status: 'active', metric: '$189' },
-      { id: 'pkg_3', title: 'VIP Package', subtitle: '10 services included', meta: 'All Access', status: 'active', metric: '$299' },
+      { id: 'svc_1', title: 'Gel Manicure', subtitle: 'Classic gel polish with nail shaping', meta: '$45 · 30 min', status: 'active', metric: '$45' },
+      { id: 'svc_2', title: 'Regular Pedicure', subtitle: 'Soak, scrub, nail shaping & polish', meta: '$35 · 45 min', status: 'active', metric: '$35' },
+      { id: 'svc_3', title: 'Acrylic Full Set', subtitle: 'Full acrylic extensions with polish', meta: '$65 · 1 hr', status: 'active', metric: '$65' },
+      { id: 'svc_4', title: 'Nail Art', subtitle: 'Custom designs per nail', meta: '$20+ · 15 min', status: 'active', metric: '$20' },
+      { id: 'svc_5', title: 'Dip Powder', subtitle: 'Dip powder manicure for lasting wear', meta: '$50 · 45 min', status: 'active', metric: '$50' },
+      { id: 'svc_6', title: 'Gel Removal', subtitle: 'Safe removal of gel or acrylic nails', meta: '$15 · 15 min', status: 'active', metric: '$15' },
     ]
   },
   subscriptions: {

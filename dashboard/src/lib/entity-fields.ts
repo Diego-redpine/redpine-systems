@@ -543,9 +543,9 @@ export const ENTITY_FIELDS: Record<string, EntityFieldConfig> = {
 
   // Business Operations
   packages: {
-    card: { title: 'name', subtitle: 'services', badge: 'price', meta: ['duration', 'popular'] },
-    list: { primary: 'name', secondary: 'services', trailing: 'price' },
-    table: { columns: ['name', 'services', 'price', 'duration', 'status'] },
+    card: { title: 'name', subtitle: 'meta', badge: 'status', meta: ['subtitle'] },
+    list: { primary: 'name', secondary: 'meta', trailing: 'status' },
+    table: { columns: ['name', 'subtitle', 'meta', 'status'] },
     calendar: null,
     pipeline: null,
   },

@@ -451,10 +451,10 @@ const DEMO_STATS: Record<string, StatCard[]> = {
 
   // Business Operations
   packages: [
-    { label: 'Total Packages', value: 16 },
-    { label: 'Popular', value: 4, featured: true },
-    { label: 'Revenue', value: '$8.6k', change: '+12%', changeType: 'positive' },
-    { label: 'Sold This Month', value: 34 },
+    { label: 'Total Services', value: 12 },
+    { label: 'Most Booked', value: 'Gel Mani', featured: true },
+    { label: 'Avg Price', value: '$38' },
+    { label: 'Bookings This Month', value: 86, change: '+15%', changeType: 'positive' },
   ],
   subscriptions: [
     { label: 'Total Subscriptions', value: 186, change: '+25%', changeType: 'positive' },
@@ -535,7 +535,11 @@ function computeStatsFromData(entityType: string, data: Record<string, unknown>[
   const stats: StatCard[] = [];
 
   // Format entity name for display
-  const entityLabel = entityType
+  const LABEL_OVERRIDES: Record<string, string> = {
+    packages: 'Services',
+    membership_plans: 'Membership Plans',
+  };
+  const entityLabel = LABEL_OVERRIDES[entityType] || entityType
     .replace(/_/g, ' ')
     .replace(/\b\w/g, c => c.toUpperCase());
 
