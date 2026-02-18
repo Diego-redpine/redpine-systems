@@ -86,6 +86,12 @@ const DEFAULT_PIPELINE_STAGES: Record<string, { name: string; color: string }[]>
     { name: 'Sent', color: '#F59E0B' },
     { name: 'Received', color: '#10B981' },
   ],
+  memberships: [
+    { name: 'Basic', color: '#3B82F6' },
+    { name: 'Premium', color: '#8B5CF6' },
+    { name: 'VIP', color: '#F59E0B' },
+    { name: 'Cancelled', color: '#6B7280' },
+  ],
 };
 
 function getDefaultPipelineConfig(componentId: string): PipelineConfig | undefined {

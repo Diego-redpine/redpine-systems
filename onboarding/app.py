@@ -595,12 +595,12 @@ Generate a cohesive color palette that matches the business personality. The sid
 ## VIEW ASSIGNMENT RULES
 
 Every component in a tab MUST have a "view" field. Use these defaults:
-- **pipeline**: clients, leads, jobs, workflows, cases, tickets, waivers (when tracking status flow). Clients should ALWAYS default to pipeline — every business has a client journey (new → active → loyal, belt stages, rewards tiers, etc.). Use "contacts" component with "list" view for the general address book.
+- **pipeline**: clients, leads, jobs, workflows, cases, tickets, waivers, memberships (when tracking status flow). Clients should ALWAYS default to pipeline — every business has a client journey (new → active → loyal, belt stages, rewards tiers, etc.). Use "contacts" component with "list" view for the general address book. Memberships pipeline: stages = plan names (e.g. Basic, Premium, VIP), cards = members.
 - **calendar**: calendar, appointments, schedules, shifts, classes, reservations, social_media
 - **cards**: staff, equipment, fleet, tables, rooms, menus, recipes, courses, packages, venues, portfolios, galleries, listings, images, reviews
 - **list**: contacts, todos, messages, notes, announcements, checklists, knowledge, community, chat_widget
 - **route**: routes (map view with territory polygons and stop lists — only for field service businesses like landscaping, plumbing, cleaning, pest control, delivery)
-- **table**: everything else (products, inventory, invoices, payments, expenses, payroll, estimates, vendors, assets, contracts, documents, uploads, forms, signatures, orders, membership_plans, attendance, inspections, permits, prescriptions, treatments, properties, guests, campaigns, loyalty, surveys, subscriptions, time_tracking, reputation, portal)
+- **table**: everything else (products, inventory, invoices, payments, expenses, payroll, estimates, vendors, assets, contracts, documents, uploads, forms, signatures, orders, attendance, inspections, permits, prescriptions, treatments, properties, guests, campaigns, loyalty, surveys, subscriptions, time_tracking, reputation, portal)
 
 ## PIPELINE STAGES
 
@@ -726,8 +726,7 @@ Example component with pipeline:
 
 **Education & Programs:**
 - classes: Class schedules, enrollment, instructors, capacity
-- membership_plans: Membership tiers/plans — name, price, interval (monthly/yearly/one-time), features, status. Use cards view.
-- membership_members: People subscribed to plans — client name, plan, status pipeline (Prospect/Trial/Active/Past Due/Cancelled), payment status. Use pipeline view. Always pair with membership_plans as adjacent sub-tabs.
+- memberships: Membership program as pipeline — stages ARE the plans (e.g. Basic, Premium, VIP), cards ARE the members. Add plan = add stage. Move member = change plan. ALWAYS gets its own "Memberships" tab. Use pipeline view.
 - courses: Course catalog, modules, duration, progress
 - attendance: Check-in logs, participation tracking
 
@@ -776,15 +775,17 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 - Dashboard: (empty — platform-managed)
 - Students: clients (Students, view: pipeline, stages: use belt stages user provides e.g. ["White Belt", "Yellow Belt", "Orange Belt", "Green Belt", "Blue Belt", "Brown Belt", "Black Belt"]), contacts (Families, view: list)
 - Schedule: calendar (Schedule, view: calendar)
-- Programs: classes (Class Types, view: cards), membership_plans (Membership Plans, view: cards), membership_members (Members, view: pipeline, stages: ["Prospect", "Trial", "Active", "Past Due", "Cancelled"]), waivers (Waivers, view: pipeline), client_portal (Client Portal)
+- Memberships: memberships (Members, view: pipeline, stages: ["Basic", "Advanced", "Elite", "Cancelled"])
+- Programs: classes (Class Types, view: cards), waivers (Waivers, view: pipeline), client_portal (Client Portal)
 - Team: staff (Instructors), shifts (Staff Shifts, view: table)
 - Billing: payments (Payments), invoices (Invoices)
 
 **Fitness Studio/Gym:**
 - Dashboard: (empty — platform-managed)
 - Members: clients (Members, view: pipeline, stages: ["Trial", "New Member", "Active", "Loyal", "Champion"]), leads (Prospects)
+- Memberships: memberships (Members, view: pipeline, stages: ["Day Pass", "Basic", "Premium", "VIP", "Cancelled"])
 - Schedule: calendar (Schedule, view: calendar)
-- Programs: classes (Class Types, view: cards), membership_plans (Membership Plans, view: cards), membership_members (Members, view: pipeline, stages: ["Prospect", "Trial", "Active", "Past Due", "Cancelled"]), waivers (Waivers), client_portal (Client Portal)
+- Programs: classes (Class Types, view: cards), waivers (Waivers), client_portal (Client Portal)
 - Team: staff (Trainers), shifts (Staff Schedule, view: table)
 - Billing: payments (Payments), invoices (Invoices)
 
@@ -835,7 +836,8 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 - Students: clients (Students), leads (Inquiries), attendance (Attendance), client_portal (Student Portal)
 - Schedule: calendar (Schedule, view: calendar)
 - Materials: documents (Curriculum), notes (Session Notes), courses (Courses)
-- Billing: invoices (Invoices), payments (Payments), membership_plans (Plans, view: cards), membership_members (Students Enrolled, view: pipeline, stages: ["Prospect", "Trial", "Active", "Past Due", "Cancelled"])
+- Memberships: memberships (Enrolled Students, view: pipeline, stages: ["Trial", "Monthly", "Semester", "Annual", "Cancelled"])
+- Billing: invoices (Invoices), payments (Payments)
 
 **Pet Grooming/Veterinary:**
 - Dashboard: (empty — platform-managed)
@@ -910,7 +912,7 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
 8. **Group logically by workflow, not by component category**
 9. **Use industry-specific components when relevant:**
    - Restaurant/cafe: reservations, tables, menus, orders, recipes
-   - Fitness/martial arts: classes, membership_plans, membership_members, waivers, attendance
+   - Fitness/martial arts: classes, memberships, waivers, attendance
    - Medical/dental: treatments, prescriptions, forms (intake)
    - Construction/electrical/plumbing: inspections, permits, fleet, checklists
    - Real estate: listings, properties
@@ -950,11 +952,13 @@ home, people, box, clock, dollar, check, chat, folder, briefcase, star, tool, ca
     - The system auto-colors stages based on color words in the name (e.g. "White Belt" → white, "Gold Plan" → gold, "Black Belt" → black)
     - Generic CRM stages (New, Active, Loyal, VIP) are ONLY for businesses with no specific progression described
     - ALWAYS include the stages array on pipeline components: {{"id": "clients", "label": "Students", "view": "pipeline", "stages": ["White Belt", "Yellow Belt", "Orange Belt", "Green Belt", "Blue Belt", "Brown Belt", "Black Belt"]}}
-13. **Membership programs use TWO paired components** — always add both together:
-    - `membership_plans` (view: cards) — the plans/tiers you sell (Basic, Premium, VIP, etc.)
-    - `membership_members` (view: pipeline, stages: ["Prospect", "Trial", "Active", "Past Due", "Cancelled"]) — people subscribed + their lifecycle
-    - These replace the old `memberships` component. NEVER use `memberships` for new configs.
-    - Any business with recurring memberships (fitness, martial arts, salon, spa, tutoring, yoga, dance) should use this pair.
+13. **Membership program = ONE pipeline component (`memberships`) in its own tab:**
+    - Pipeline stages = the plans you sell (e.g. "Basic", "Premium", "VIP", "Cancelled")
+    - Pipeline cards = the members (who's on which plan)
+    - Adding a plan = adding a stage. Moving a member = changing their plan.
+    - ALWAYS give memberships its own tab labeled "Memberships" — never nest inside another tab.
+    - Any business with recurring memberships (fitness, martial arts, salon, spa, tutoring, yoga, dance) should use this.
+    - Example: {{"id": "memberships", "label": "Members", "view": "pipeline", "stages": ["Basic", "Premium", "VIP", "Cancelled"]}}
 14. **Kids/family businesses need Families, not Prospects:**
     - Kids martial arts, daycare, tutoring, dance → use contacts as "Families" or "Parents & Guardians" (view: list)
     - Do NOT add leads/prospects pipeline for businesses that primarily serve families with children

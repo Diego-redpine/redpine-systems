@@ -687,56 +687,32 @@ export const componentDummyData: Record<string, ComponentData> = {
     ]
   },
   memberships: {
-    type: 'table',
-    headers: ['Member', 'Plan', 'Status', 'Start Date', 'Expiry'],
-    rows: [
-      ['John Smith', 'Premium', 'Active', 'Jan 1', 'Dec 31'],
-      ['Sarah Johnson', 'Basic', 'Active', 'Feb 1', 'Jan 31'],
-      ['Mike Davis', 'Family', 'Active', 'Dec 1', 'Nov 30'],
-      ['Emily Chen', 'Premium', 'Expiring', 'Mar 1', 'Feb 28'],
-    ]
-  },
-  membership_plans: {
-    type: 'cards',
-    items: [
-      { id: 'plan_1', title: 'Basic', subtitle: '1 service per month', meta: '$29/mo', status: 'active', metric: '$29' },
-      { id: 'plan_2', title: 'Premium', subtitle: '4 services per month', meta: '$59/mo', status: 'active', metric: '$59' },
-      { id: 'plan_3', title: 'VIP Unlimited', subtitle: 'Unlimited services + priority booking', meta: '$99/mo', status: 'active', metric: '$99' },
-      { id: 'plan_4', title: 'Day Pass', subtitle: 'Single visit, any service', meta: '$15', status: 'active', metric: '$15' },
-    ]
-  },
-  membership_members: {
     type: 'pipeline',
     stages: [
       {
-        id: 'stage_prospect', name: 'Prospect', color: '#3B82F6',
+        id: 'plan_basic', name: 'Basic — $29/mo', color: '#3B82F6',
         items: [
-          { id: 'mm_1', title: 'Rachel Kim', subtitle: 'Interested in Premium', meta: 'Inquired 2 days ago' },
-          { id: 'mm_2', title: 'Tom Wilson', subtitle: 'Walked in, asked about VIP', meta: 'Inquired 1 week ago' },
+          { id: 'mm_1', title: 'Sarah Johnson', subtitle: 'Since Feb 1', meta: 'Current' },
+          { id: 'mm_2', title: 'Tom Wilson', subtitle: 'Since Jan 15', meta: 'Current' },
+          { id: 'mm_3', title: 'Amy Liu', subtitle: 'Since Dec 10', meta: 'Current' },
         ],
       },
       {
-        id: 'stage_trial', name: 'Trial', color: '#F59E0B',
+        id: 'plan_premium', name: 'Premium — $59/mo', color: '#8B5CF6',
         items: [
-          { id: 'mm_3', title: 'Amy Liu', subtitle: 'Premium Trial', meta: 'Ends Feb 28' },
+          { id: 'mm_4', title: 'Mike Davis', subtitle: 'Since Dec 1', meta: 'Current' },
+          { id: 'mm_5', title: 'Emily Chen', subtitle: 'Since Jan 5', meta: 'Past Due' },
         ],
       },
       {
-        id: 'stage_active', name: 'Active', color: '#10B981',
+        id: 'plan_vip', name: 'VIP — $99/mo', color: '#F59E0B',
         items: [
-          { id: 'mm_4', title: 'John Smith', subtitle: 'VIP Unlimited', meta: 'Since Jan 1' },
-          { id: 'mm_5', title: 'Sarah Johnson', subtitle: 'Basic', meta: 'Since Feb 1' },
-          { id: 'mm_6', title: 'Mike Davis', subtitle: 'Premium', meta: 'Since Dec 1' },
+          { id: 'mm_6', title: 'John Smith', subtitle: 'Since Jan 1', meta: 'Current' },
+          { id: 'mm_7', title: 'Rachel Kim', subtitle: 'Since Feb 10', meta: 'Current' },
         ],
       },
       {
-        id: 'stage_past_due', name: 'Past Due', color: '#EF4444',
-        items: [
-          { id: 'mm_7', title: 'Emily Chen', subtitle: 'Premium — payment failed', meta: 'Due since Feb 15' },
-        ],
-      },
-      {
-        id: 'stage_cancelled', name: 'Cancelled', color: '#6B7280',
+        id: 'plan_cancelled', name: 'Cancelled', color: '#6B7280',
         items: [
           { id: 'mm_8', title: 'David Park', subtitle: 'Was Basic', meta: 'Cancelled Jan 20' },
         ],

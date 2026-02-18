@@ -1055,7 +1055,7 @@ DO $$ BEGIN
   END IF;
 END $$;
 
-CREATE TABLE IF NOT EXISTS public.membership_members (
+CREATE TABLE IF NOT EXISTS public.memberships (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   client_name TEXT NOT NULL,
@@ -1063,7 +1063,7 @@ CREATE TABLE IF NOT EXISTS public.membership_members (
   client_phone TEXT,
   plan_id UUID REFERENCES public.membership_plans(id) ON DELETE SET NULL,
   plan_name TEXT,
-  status TEXT NOT NULL DEFAULT 'prospect' CHECK (status IN ('prospect', 'trial', 'active', 'past_due', 'cancelled')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('prospect', 'trial', 'active', 'past_due', 'cancelled')),
   start_date DATE,
   end_date DATE,
   payment_status TEXT DEFAULT 'pending' CHECK (payment_status IN ('pending', 'current', 'past_due', 'cancelled')),
@@ -1073,14 +1073,14 @@ CREATE TABLE IF NOT EXISTS public.membership_members (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_membership_members_user ON public.membership_members(user_id);
-CREATE INDEX IF NOT EXISTS idx_membership_members_plan ON public.membership_members(plan_id);
+CREATE INDEX IF NOT EXISTS idx_memberships_user ON public.memberships(user_id);
+CREATE INDEX IF NOT EXISTS idx_memberships_plan ON public.memberships(plan_id);
 
-ALTER TABLE public.membership_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.memberships ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'membership_members' AND policyname = 'Users manage own membership members') THEN
-    CREATE POLICY "Users manage own membership members" ON public.membership_members
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'memberships' AND policyname = 'Users manage own memberships') THEN
+    CREATE POLICY "Users manage own memberships" ON public.memberships
       FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
   END IF;
 END $$;

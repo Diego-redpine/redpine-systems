@@ -36,20 +36,24 @@ _TEMPLATES = {
                 'components': [
                     {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
                      'stages': ['Requested', 'Confirmed', 'Checked In', 'In Service', 'Completed']},
-                    {'id': 'membership_plans', 'label': 'Membership Plans', 'view': 'cards'},
-                    {'id': 'membership_members', 'label': 'Members', 'view': 'pipeline',
-                     'stages': ['Prospect', 'Trial', 'Active', 'Past Due', 'Cancelled']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
                 ],
             },
             {
-                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'id': 'tab_3', 'label': 'Memberships', 'icon': 'users',
+                'components': [
+                    {'id': 'memberships', 'label': 'Members', 'view': 'pipeline',
+                     'stages': ['Basic', 'Premium', 'VIP', 'Cancelled']},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Schedule', 'icon': 'calendar',
                 'components': [
                     {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
                 ],
             },
             {
-                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'id': 'tab_5', 'label': 'Services', 'icon': 'box',
                 'components': [
                     {'id': 'packages', 'label': 'Service Menu', 'view': 'cards'},
                     {'id': 'nail_sets', 'label': 'Nail Sets & Add-Ons', 'view': 'cards'},
@@ -57,20 +61,20 @@ _TEMPLATES = {
                 ],
             },
             {
-                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'id': 'tab_6', 'label': 'Gallery', 'icon': 'image',
                 'components': [
                     {'id': 'galleries', 'label': 'Nail Art Gallery', 'view': 'cards', '_locked': True},
                 ],
             },
             {
-                'id': 'tab_6', 'label': 'Staff', 'icon': 'users',
+                'id': 'tab_7', 'label': 'Staff', 'icon': 'users',
                 '_removable': True,
                 'components': [
                     {'id': 'staff', 'label': 'Nail Techs', 'view': 'cards'},
                 ],
             },
             {
-                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'id': 'tab_8', 'label': 'Payments', 'icon': 'dollar',
                 'components': [
                     {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
                     {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
@@ -373,27 +377,31 @@ _TEMPLATES = {
                 'components': [
                     {'id': 'treatments', 'label': 'Treatments', 'view': 'table', '_locked': True},
                     {'id': 'packages', 'label': 'Spa Packages', 'view': 'cards'},
-                    {'id': 'membership_plans', 'label': 'Membership Plans', 'view': 'cards'},
-                    {'id': 'membership_members', 'label': 'Members', 'view': 'pipeline',
-                     'stages': ['Prospect', 'Trial', 'Active', 'Past Due', 'Cancelled']},
                     {'id': 'products', 'label': 'Spa Products', 'view': 'table'},
                 ],
             },
             {
-                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'id': 'tab_5', 'label': 'Memberships', 'icon': 'users',
+                'components': [
+                    {'id': 'memberships', 'label': 'Members', 'view': 'pipeline',
+                     'stages': ['Day Pass', 'Relaxation', 'Wellness', 'VIP', 'Cancelled']},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Gallery', 'icon': 'image',
                 'components': [
                     {'id': 'galleries', 'label': 'Spa Gallery', 'view': 'cards', '_locked': True},
                 ],
             },
             {
-                'id': 'tab_6', 'label': 'Therapists', 'icon': 'users',
+                'id': 'tab_7', 'label': 'Therapists', 'icon': 'users',
                 '_removable': True,
                 'components': [
                     {'id': 'staff', 'label': 'Therapists', 'view': 'cards'},
                 ],
             },
             {
-                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'id': 'tab_8', 'label': 'Payments', 'icon': 'dollar',
                 'components': [
                     {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
                     {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
