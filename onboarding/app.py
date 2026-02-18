@@ -182,6 +182,73 @@ def consolidate_calendars(config):
                     comp['view'] = 'table'
     return config
 
+
+# Industries that MUST have a gallery or portfolio component
+GALLERY_REQUIRED_TYPES = {
+    'salon', 'barber', 'barbershop', 'nails', 'nail_tech', 'lash', 'brows',
+    'tattoo', 'piercing', 'photography', 'photographer', 'creative',
+    'landscaping', 'cleaning', 'auto', 'auto_detailing', 'detailing', 'car_wash',
+    'restaurant', 'bakery', 'food_truck', 'cafe', 'catering',
+    'florist', 'wedding', 'wedding_planner', 'event_planner',
+    'interior_design', 'architecture', 'design',
+    'spa', 'beauty', 'makeup', 'hair', 'pet_grooming',
+}
+
+GALLERY_COMPONENT_IDS = {'galleries', 'images', 'portfolios'}
+
+
+def ensure_gallery(config):
+    """Post-processing: inject a galleries component for visual industries
+    that the AI missed. Similar to consolidate_calendars — enforces a rule
+    the AI sometimes ignores."""
+    btype = (config.get('business_type') or '').lower().replace(' ', '_')
+
+    # Check if this business type requires a gallery
+    needs_gallery = any(t in btype for t in GALLERY_REQUIRED_TYPES)
+    if not needs_gallery:
+        return config
+
+    # Check if any gallery/images/portfolios component already exists
+    for tab in config.get('tabs', []):
+        for comp in tab.get('components', []):
+            if comp.get('id', '') in GALLERY_COMPONENT_IDS:
+                return config  # Already has one — done
+
+    # Missing gallery — find the best tab to add it to, or create a new tab
+    # Prefer a tab with 'portfolio', 'gallery', 'photo', 'work', 'services' in the label
+    best_tab = None
+    for tab in config.get('tabs', []):
+        label = tab.get('label', '').lower()
+        if any(kw in label for kw in ('portfolio', 'gallery', 'photo', 'work', 'service')):
+            best_tab = tab
+            break
+
+    if best_tab:
+        best_tab['components'].append({
+            'id': 'galleries',
+            'label': 'Gallery',
+            'view': 'cards',
+        })
+    else:
+        # No suitable tab — add a Gallery tab before Settings
+        tabs = config.get('tabs', [])
+        new_tab = {
+            'id': f'tab_{len(tabs) + 1}',
+            'label': 'Gallery',
+            'icon': 'image',
+            'components': [
+                {'id': 'galleries', 'label': 'Gallery', 'view': 'cards'},
+            ],
+        }
+        # Insert before last tab (Settings) if it exists
+        if tabs and tabs[-1].get('label', '').lower() == 'settings':
+            tabs.insert(-1, new_tab)
+        else:
+            tabs.append(new_tab)
+
+    return config
+
+
 PIPELINE_COLORS = ['#3B82F6', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444', '#EC4899']
 
 # Color words → hex mapping for stage color inference
@@ -896,6 +963,7 @@ def configure():
         config = analyze_business(description)
         config = validate_colors(config)
         config = consolidate_calendars(config)
+        config = ensure_gallery(config)
         config = transform_pipeline_stages(config)
         print(f"Config: {config}")
 
