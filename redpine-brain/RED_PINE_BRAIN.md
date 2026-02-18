@@ -348,8 +348,42 @@ All SQL migrations consolidated into `supabase/LATEST_MIGRATIONS.sql` (idempoten
 
 # 11. FUTURE VISION
 
-- **Pine Tree Growth System** — Pixel-art tree grows as business grows (Seed to Mighty Pine)
-- **AI Agents ($5-50/mo)** — Receptionist, Content Writer, Review Manager, Route Planner, Bookkeeper — **BLOCKED: needs Diego's input.** Prices aren't set yet (need Stripe Price objects per agent), full agent roster isn't finalized, and agents don't DO anything yet (just catalog entries). Diego needs to decide pricing tiers + which agents to build first.
+**CORE PRINCIPLE: No half-launches.** We do not ship until EVERYTHING works for EVERY business. No v1/v2 mentality. If competitors have a feature, we must have it — and better. This is an all-in-one platform. Build it RIGHT, build it COMPLETE, then launch.
+
+### Dashboard — Goal Forest (replaces Pine Tree Growth)
+The Dashboard is a single-tab, no-sub-tabs platform view. Instead of "grow your business" as the only game, users SET THEIR OWN GOALS via a wizard. Each goal becomes a pine tree. Multiple goals = a forest that grows.
+
+- **Goal Wizard**: Choose type (revenue, reviews, clients, bookings) → set target ($10k/mo, 500 reviews) → set timeframe → plant a tree
+- **Trackable goals**: Revenue (invoices/payments), client count, review count, bookings/week, recurring revenue, staff growth, repeat client rate, utilization rate, custom goals
+- **Visual**: Forest grows denser as goals are achieved. Completed trees → background. Badges below for past milestones.
+- **Status**: Dashboard is hardcoded empty platform tab. PineTreeWidget exists but needs full redesign.
+
+### Review Management System — Platform Tab (NOT YET BUILT)
+Full reputation management modeled after GoHighLevel. Every business gets this as a platform tab in the toolbox.
+
+**Core features:**
+- **Multi-platform review inbox**: Google Business Profile, Facebook, Yelp (priority) + 40 others (TripAdvisor, Healthgrades, HomeAdvisor, etc.)
+- **AI review responses**: Suggestive mode (AI drafts, owner approves) + Auto-Pilot mode (auto-respond based on star rating rules — NEVER auto-respond to 1-2 stars)
+- **Review request automation**: SMS/email after completed appointments or paid invoices, smart timing, drip sequences, custom review links, QR codes for in-store
+- **Review widgets**: Connect real reviews to ChaiBuilder website (ReviewCarousel widget), star rating badges, "Leave a review" CTA
+- **Analytics**: Review volume over time, average rating trend, response rate, platform breakdown, sentiment analysis
+- **Notifications**: Instant alerts for new reviews, priority alerts for negative reviews, weekly digest
+
+**DB tables needed:** review_connections, reviews, review_requests, review_templates, review_settings, review_responses
+**APIs needed:** Google Business Profile API, Facebook Graph API, Yelp Fusion API, Claude API for response generation
+**Platform tab sub-tabs:** Reviews | Requests | Analytics | Settings
+
+### Calendar Consolidation (BUILT ✅ Feb 18, 2026)
+- ONE calendar per platform with built-in filter chips (All | Appointments | Classes | Shifts)
+- `consolidate_calendars()` strips redundant sub-tabs (appointments, schedules, shifts, classes, reservations) from calendar tabs
+- `enforce_tab_limit()` caps at 8 tabs (Dashboard + 7 user tabs)
+- Dashboard hardcoded empty (platform-managed, separate Goal Forest plan)
+- Frontend `dedupedComponents` also strips redundant sub-tabs for legacy configs
+- BookingSetupWizard moved from Settings to Calendar view (gear icon, owner-only)
+- Desktop TopBar "More" dropdown for 7+ tabs
+
+### Other Future Systems
+- **AI Agents ($5-50/mo)** — Receptionist, Content Writer, Route Planner, Bookkeeper — **BLOCKED: needs Diego's input** on pricing and roster
 - **The Forest (Community)** — Business owners growing together. Mighty Pines mentor Sprouts. Leaderboards
 - **Growth Courses** — Skill trees: Sales, Marketing, Operations. AI recommends based on user data
 - **Template Marketplace** — Users share configs. Clone and customize. Revenue share
@@ -358,6 +392,8 @@ All SQL migrations consolidated into `supabase/LATEST_MIGRATIONS.sql` (idempoten
 - **Red Pine Print** — Physical goods (signs, merch, stickers) shipped to users
 - **Mobile App** — React Native (future)
 - **White-label** — Agencies rebrand Red Pine for their clients
+- **SMS/Text Marketing** — Twilio configured for notifications only, needs full campaign system
+- **Customer Satisfaction** — Surveys, NPS tracking, satisfaction metrics
 
 ### Phase C: Gallery System — BUILT ✅ (Feb 18, 2026)
 Full gallery system — DB tables (gallery_albums + gallery_images), authenticated API (upload/CRUD/reorder), public API, GalleryManager (iOS Photos-style Albums + All Photos views, masonry grid, lightbox, upload wizard), GalleryWidget for ChaiBuilder, ensure_gallery() post-processing for visual industries. 8/8 industries tested.
