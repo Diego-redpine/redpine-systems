@@ -138,7 +138,7 @@ export default function TopBar({
         </div>
 
         {/* Tab navigation — centered */}
-        <nav className="flex-1 flex items-center justify-center gap-1 overflow-x-auto">
+        <nav className="flex-1 flex items-center justify-center gap-1 overflow-x-auto scrollbar-hide">
           {desktopInlineTabs.map(tab => {
             const isActive = activeTab === tab.id;
             return (
@@ -163,59 +163,60 @@ export default function TopBar({
               </button>
             );
           })}
-          {/* Desktop "More" dropdown for overflow tabs */}
-          {hasDesktopOverflow && (
-            <div ref={desktopMoreRef} className="relative">
-              <button
-                onClick={() => setIsDesktopMoreOpen(!isDesktopMoreOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
-                style={{
-                  backgroundColor: desktopOverflowTabs.some(t => t.id === activeTab) ? buttonColor : 'transparent',
-                  color: desktopOverflowTabs.some(t => t.id === activeTab) ? getContrastText(buttonColor) : textColor,
-                }}
+        </nav>
+
+        {/* Desktop "More" dropdown — outside nav to avoid overflow-x-auto pointer interception */}
+        {hasDesktopOverflow && (
+          <div ref={desktopMoreRef} className="relative shrink-0">
+            <button
+              onClick={() => setIsDesktopMoreOpen(!isDesktopMoreOpen)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+              style={{
+                backgroundColor: desktopOverflowTabs.some(t => t.id === activeTab) ? buttonColor : 'transparent',
+                color: desktopOverflowTabs.some(t => t.id === activeTab) ? getContrastText(buttonColor) : textColor,
+              }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+              </svg>
+              More
+            </button>
+            {isDesktopMoreOpen && (
+              <div
+                className="absolute top-full right-0 mt-1 min-w-[180px] rounded-xl border shadow-lg py-1 z-50"
+                style={{ backgroundColor: headerBg, borderColor }}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                </svg>
-                More
-              </button>
-              {isDesktopMoreOpen && (
-                <div
-                  className="absolute top-full right-0 mt-1 min-w-[180px] rounded-xl border shadow-lg py-1 z-50"
-                  style={{ backgroundColor: headerBg, borderColor }}
-                >
-                  {desktopOverflowTabs.map(tab => {
-                    const isActive = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => {
-                          onTabChange(tab.id);
-                          setIsDesktopMoreOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+                {desktopOverflowTabs.map(tab => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        onTabChange(tab.id);
+                        setIsDesktopMoreOpen(false);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+                      style={{
+                        backgroundColor: isActive ? buttonColor : 'transparent',
+                        color: isActive ? getContrastText(buttonColor) : textColor,
+                      }}
+                    >
+                      <NavIcon
+                        name={tab.icon}
+                        label={tab.label}
+                        className="w-4 h-4"
                         style={{
-                          backgroundColor: isActive ? buttonColor : 'transparent',
                           color: isActive ? getContrastText(buttonColor) : textColor,
                         }}
-                      >
-                        <NavIcon
-                          name={tab.icon}
-                          label={tab.label}
-                          className="w-4 h-4"
-                          style={{
-                            color: isActive ? getContrastText(buttonColor) : textColor,
-                          }}
-                        />
-                        {tab.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </nav>
+                      />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Right side: notifications, messages, profile */}
         <div className="flex items-center gap-1.5 shrink-0">
