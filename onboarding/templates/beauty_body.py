@@ -1,6 +1,7 @@
 """Beauty & Body Services — Template Family 1
 
-Enterprise-first template. AI trims for solo/small operators.
+Enterprise-first templates. Each business type has its OWN complete template.
+AI customizes labels, removes _removable tabs, adds user-requested components.
 Locked components (_locked: True) cannot be removed by AI.
 
 Covers: nail_salon, barbershop, hair_salon, lash_brow, makeup_artist,
@@ -16,201 +17,501 @@ BEAUTY_BODY_TYPES = {
     'tattoo', 'spa', 'med_spa', 'pet_grooming', 'salon',
 }
 
-# Enterprise base template — 7 tabs, all components included
-# Solo operators get Staff tab removed by AI
-_BASE_TEMPLATE = {
-    "tabs": [
-        {
-            "id": "tab_1",
-            "label": "Dashboard",
-            "icon": "home",
-            "components": [
-                {"id": "calendar", "label": "Today", "view": "calendar", "_locked": True},
-            ]
-        },
-        {
-            "id": "tab_2",
-            "label": "Clients",
-            "icon": "people",
-            "components": [
-                {
-                    "id": "clients", "label": "Clients", "view": "pipeline", "_locked": True,
-                    "stages": ["New Client", "Regular", "VIP", "Ambassador"],
-                },
-                {"id": "contacts", "label": "Contacts", "view": "list"},
-            ]
-        },
-        {
-            "id": "tab_3",
-            "label": "Schedule",
-            "icon": "calendar",
-            "components": [
-                {"id": "calendar", "label": "Schedule", "view": "calendar", "_locked": True},
-                {"id": "appointments", "label": "Appointments", "view": "table", "_locked": True},
-            ]
-        },
-        {
-            "id": "tab_4",
-            "label": "Services",
-            "icon": "box",
-            "components": [
-                {"id": "packages", "label": "Packages", "view": "cards"},
-                {"id": "products", "label": "Products", "view": "table"},
-            ]
-        },
-        {
-            "id": "tab_5",
-            "label": "Gallery",
-            "icon": "image",
-            "components": [
-                {"id": "galleries", "label": "Gallery", "view": "cards", "_locked": True},
-            ]
-        },
-        {
-            "id": "tab_6",
-            "label": "Staff",
-            "icon": "users",
-            "_removable": True,  # AI can remove this tab for solo operators
-            "components": [
-                {"id": "staff", "label": "Staff", "view": "cards"},
-                {"id": "shifts", "label": "Shifts", "view": "table"},
-            ]
-        },
-        {
-            "id": "tab_7",
-            "label": "Payments",
-            "icon": "dollar",
-            "components": [
-                {"id": "invoices", "label": "Invoices", "view": "table", "_locked": True},
-                {"id": "payments", "label": "Payments", "view": "table"},
-                {"id": "expenses", "label": "Expenses", "view": "table"},
-            ]
-        },
-    ]
-}
 
-# Per-industry tweaks applied on top of the base template
-_INDUSTRY_TWEAKS = {
+# ──────────────────────────────────────────────────────────────────────
+# Enterprise Templates — one complete template per business type
+# ──────────────────────────────────────────────────────────────────────
+
+_TEMPLATES = {
+
+    # ── NAIL SALON ─────────────────────────────────────────────────────
     'nail_salon': {
-        'stages': ["New Client", "Regular", "VIP", "Ambassador"],
-        # Base template as-is
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['New Client', 'Regular', 'VIP', 'Ambassador']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'packages', 'label': 'Service Menu', 'view': 'cards'},
+                    {'id': 'nail_sets', 'label': 'Nail Sets & Add-Ons', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Retail Products', 'view': 'table'},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Nail Art Gallery', 'view': 'cards', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Staff', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Nail Techs', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── BARBERSHOP ─────────────────────────────────────────────────────
     'barbershop': {
-        'stages': ["Walk-in", "Regular", "VIP"],
-        'staff_label': 'Barbers',
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Walk-in', 'Regular', 'VIP']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'packages', 'label': 'Service Menu', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Hair Products', 'view': 'table'},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Cuts & Styles', 'view': 'cards', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Barbers', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Barbers', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── HAIR SALON ─────────────────────────────────────────────────────
     'hair_salon': {
-        'stages': ["Consultation", "New Client", "Regular", "VIP"],
-        'staff_label': 'Stylists',
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Consultation', 'New Client', 'Regular', 'VIP']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'packages', 'label': 'Service Menu', 'view': 'cards'},
+                    {'id': 'color_services', 'label': 'Color Services', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Hair Care Products', 'view': 'table'},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Style Gallery', 'view': 'cards', '_locked': True},
+                    {'id': 'portfolios', 'label': 'Stylist Portfolios', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Stylists', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Stylists', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── LASH & BROW ────────────────────────────────────────────────────
     'lash_brow': {
-        'stages': ["New Client", "Regular", "VIP"],
-        'remove_staff': True,  # Usually solo
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['New Client', 'Regular', 'VIP']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'packages', 'label': 'Service Menu', 'view': 'cards'},
+                    {'id': 'lash_services', 'label': 'Lash Extensions', 'view': 'cards'},
+                    {'id': 'brow_services', 'label': 'Brow Services', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Aftercare Products', 'view': 'table'},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Before & After', 'view': 'cards', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Staff', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Lash Techs', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── MAKEUP ARTIST ──────────────────────────────────────────────────
     'makeup_artist': {
-        'stages': ["Inquiry", "Booked", "Completed", "Repeat"],
-        'remove_staff': True,  # Usually solo
-        'add_portfolios': True,  # Add portfolios component in Gallery tab
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Inquiry', 'Booked', 'Completed', 'Repeat']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'packages', 'label': 'Service Menu', 'view': 'cards'},
+                    {'id': 'bridal_packages', 'label': 'Bridal Packages', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Makeup Products', 'view': 'table'},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Portfolio', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Looks Gallery', 'view': 'cards', '_locked': True},
+                    {'id': 'portfolios', 'label': 'Portfolio', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Staff', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'MUA Team', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── TATTOO SHOP / STUDIO ──────────────────────────────────────────
     'tattoo': {
-        'stages': ["Consultation", "Deposit Paid", "Scheduled", "Complete"],
-        'staff_label': 'Artists',
-        'add_waivers': True,  # Locked waivers in Services tab
-        'add_portfolios': True,
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Consultation', 'Deposit Paid', 'Scheduled', 'Complete']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'custom_tattoos', 'label': 'Custom Tattoos', 'view': 'cards'},
+                    {'id': 'flash_designs', 'label': 'Flash Designs', 'view': 'cards'},
+                    {'id': 'cover_ups', 'label': 'Cover-Ups', 'view': 'cards'},
+                    {'id': 'piercings', 'label': 'Piercings', 'view': 'cards'},
+                    {'id': 'waivers', 'label': 'Waivers', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Draft', 'Sent', 'Viewed', 'Signed']},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Work Gallery', 'view': 'cards', '_locked': True},
+                    {'id': 'portfolios', 'label': 'Artist Portfolios', 'view': 'cards'},
+                    {'id': 'flash_gallery', 'label': 'Flash Sheet', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Artists', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Artists', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'deposits', 'label': 'Deposits', 'view': 'table'},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── SPA / MASSAGE ─────────────────────────────────────────────────
     'spa': {
-        'stages': ["New Guest", "Regular", "Member", "VIP"],
-        'staff_label': 'Therapists',
-        'add_treatments': True,  # Add treatments in Services tab
-        'clients_label': 'Guests',
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Guests', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Guests', 'view': 'pipeline', '_locked': True,
+                     'stages': ['New Guest', 'Regular', 'Member', 'VIP']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'treatments', 'label': 'Treatments', 'view': 'table', '_locked': True},
+                    {'id': 'packages', 'label': 'Spa Packages', 'view': 'cards'},
+                    {'id': 'memberships', 'label': 'Memberships', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Spa Products', 'view': 'table'},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Spa Gallery', 'view': 'cards', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Therapists', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Therapists', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'memberships_billing', 'label': 'Membership Billing', 'view': 'table'},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── MED SPA / AESTHETICS ──────────────────────────────────────────
     'med_spa': {
-        'stages': ["Consultation", "Treatment Plan", "Active", "Maintenance"],
-        'staff_label': 'Providers',
-        'add_treatments': True,  # Locked
-        'add_waivers': True,     # Locked
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Patients', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Patients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Consultation', 'Treatment Plan', 'Active', 'Maintenance']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'treatments', 'label': 'Treatments', 'view': 'table', '_locked': True},
+                    {'id': 'packages', 'label': 'Treatment Plans', 'view': 'cards'},
+                    {'id': 'injectables', 'label': 'Injectables', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Skincare Products', 'view': 'table'},
+                    {'id': 'waivers', 'label': 'Consent Forms', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Draft', 'Sent', 'Viewed', 'Signed']},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Before & After', 'view': 'cards', '_locked': True},
+                    {'id': 'portfolios', 'label': 'Provider Portfolios', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Providers', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Providers', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
+
+    # ── PET GROOMING ──────────────────────────────────────────────────
     'pet_grooming': {
-        'stages': ["New Pet", "Regular", "Frequent", "Premium"],
-        'staff_label': 'Groomers',
-        'clients_label': 'Pets & Owners',
-        'add_waivers': True,
-    },
-    'salon': {
-        # Generic "salon" → same as hair_salon
-        'stages': ["Consultation", "New Client", "Regular", "VIP"],
-        'staff_label': 'Stylists',
+        'tabs': [
+            {
+                'id': 'tab_1', 'label': 'Dashboard', 'icon': 'home',
+                'components': [],
+            },
+            {
+                'id': 'tab_2', 'label': 'Pets & Owners', 'icon': 'people',
+                'components': [
+                    {'id': 'clients', 'label': 'Pets & Owners', 'view': 'pipeline', '_locked': True,
+                     'stages': ['New Pet', 'Regular', 'Frequent', 'Premium']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                    {'id': 'pet_profiles', 'label': 'Pet Profiles', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
+                'components': [
+                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
+                'components': [
+                    {'id': 'packages', 'label': 'Groom Packages', 'view': 'cards'},
+                    {'id': 'add_ons', 'label': 'Add-Ons', 'view': 'cards'},
+                    {'id': 'products', 'label': 'Pet Products', 'view': 'table'},
+                    {'id': 'waivers', 'label': 'Waivers', 'view': 'pipeline', '_locked': True,
+                     'stages': ['Draft', 'Sent', 'Viewed', 'Signed']},
+                ],
+            },
+            {
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
+                'components': [
+                    {'id': 'galleries', 'label': 'Pet Gallery', 'view': 'cards', '_locked': True},
+                ],
+            },
+            {
+                'id': 'tab_6', 'label': 'Groomers', 'icon': 'users',
+                '_removable': True,
+                'components': [
+                    {'id': 'staff', 'label': 'Groomers', 'view': 'cards'},
+                ],
+            },
+            {
+                'id': 'tab_7', 'label': 'Payments', 'icon': 'dollar',
+                'components': [
+                    {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
+                    {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},
+                ],
+            },
+        ],
     },
 }
 
-
-def _apply_tweaks(template, business_type):
-    """Apply per-industry tweaks to the base template."""
-    tweaks = _INDUSTRY_TWEAKS.get(business_type, {})
-
-    # Update pipeline stages on clients component
-    stages = tweaks.get('stages')
-    if stages:
-        for tab in template['tabs']:
-            for comp in tab['components']:
-                if comp['id'] == 'clients' and comp.get('view') == 'pipeline':
-                    comp['stages'] = stages
-
-    # Rename clients label
-    clients_label = tweaks.get('clients_label')
-    if clients_label:
-        for tab in template['tabs']:
-            for comp in tab['components']:
-                if comp['id'] == 'clients':
-                    comp['label'] = clients_label
-
-    # Rename staff label
-    staff_label = tweaks.get('staff_label')
-    if staff_label:
-        for tab in template['tabs']:
-            if tab.get('label') == 'Staff':
-                for comp in tab['components']:
-                    if comp['id'] == 'staff':
-                        comp['label'] = staff_label
-
-    # Remove staff tab (for solo-default industries like lash_brow, makeup_artist)
-    if tweaks.get('remove_staff'):
-        template['tabs'] = [t for t in template['tabs'] if t.get('label') != 'Staff']
-        # Re-number tab IDs
-        for i, tab in enumerate(template['tabs']):
-            tab['id'] = f'tab_{i + 1}'
-
-    # Add waivers to Services tab
-    if tweaks.get('add_waivers'):
-        for tab in template['tabs']:
-            if tab.get('label') == 'Services':
-                tab['components'].append({
-                    "id": "waivers", "label": "Waivers", "view": "pipeline",
-                    "stages": ["Draft", "Sent", "Viewed", "Signed"],
-                    "_locked": True,
-                })
-                break
-
-    # Add treatments to Services tab
-    if tweaks.get('add_treatments'):
-        for tab in template['tabs']:
-            if tab.get('label') == 'Services':
-                tab['components'].insert(0, {
-                    "id": "treatments", "label": "Treatments", "view": "table",
-                    "_locked": True,
-                })
-                break
-
-    # Add portfolios to Gallery tab
-    if tweaks.get('add_portfolios'):
-        for tab in template['tabs']:
-            if tab.get('label') == 'Gallery':
-                tab['components'].append({
-                    "id": "portfolios", "label": "Portfolio", "view": "cards",
-                })
-                break
-
-    return template
+# Generic "salon" uses hair_salon template (most common salon type)
+_TEMPLATES['salon'] = copy.deepcopy(_TEMPLATES['hair_salon'])
 
 
 def get_beauty_body_template(business_type):
@@ -225,8 +526,11 @@ def get_beauty_body_template(business_type):
     if business_type not in BEAUTY_BODY_TYPES:
         return None, None
 
-    template = copy.deepcopy(_BASE_TEMPLATE)
-    template = _apply_tweaks(template, business_type)
+    template_data = _TEMPLATES.get(business_type)
+    if not template_data:
+        return None, None
+
+    template = copy.deepcopy(template_data)
 
     # Collect locked component IDs
     locked_ids = set()
