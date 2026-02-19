@@ -61,6 +61,7 @@ function PreviewContent() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [toolbarSide, setToolbarSide] = useState<'left' | 'right'>('left');
+  const [websiteData, setWebsiteData] = useState<any>(null);
 
   // Color state
   const [colors, setColors] = useState<ColorItem[]>([]);
@@ -176,6 +177,25 @@ function PreviewContent() {
               const mergedColors = mergeWithDefaults(colorsObj);
               setDashboardColors(mergedColors);
               applyColorsToDocument(mergedColors);
+            }
+          }
+
+          // Load website data from onboarding generation
+          if (data.data.websiteData) {
+            setWebsiteData(data.data.websiteData);
+          } else if (configId) {
+            // Fallback: try fetching from Flask onboarding server
+            try {
+              const flaskBase = process.env.NEXT_PUBLIC_FLASK_URL || 'http://localhost:5001';
+              const wdResp = await fetch(`${flaskBase}/website-data/${configId}`);
+              if (wdResp.ok) {
+                const wdJson = await wdResp.json();
+                if (wdJson.success && wdJson.data) {
+                  setWebsiteData(wdJson.data);
+                }
+              }
+            } catch {
+              // Flask not available — ignore
             }
           }
 
@@ -299,6 +319,7 @@ function PreviewContent() {
           businessName={businessName || config?.businessName}
           colors={dashboardColors}
           toolbarSide={toolbarSide}
+          websiteData={websiteData}
         />
 
         <ToolsStrip

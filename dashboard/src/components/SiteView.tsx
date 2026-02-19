@@ -14,6 +14,7 @@ interface SiteViewProps {
   colors: DashboardColors;
   businessName?: string;
   businessType?: string;
+  websiteData?: any;
 }
 
 const BASE_SUB_TABS = [
@@ -25,7 +26,7 @@ const BASE_SUB_TABS = [
   { id: 'settings', label: 'Settings' },
 ];
 
-export default function SiteView({ colors, businessName, businessType }: SiteViewProps) {
+export default function SiteView({ colors, businessName, businessType, websiteData }: SiteViewProps) {
   const [activeSubTab, setActiveSubTab] = useState('pages');
   const [isLoading, setIsLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
@@ -160,7 +161,7 @@ export default function SiteView({ colors, businessName, businessType }: SiteVie
       </div>
 
       {/* Tab content */}
-      {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} businessName={businessName} />}
+      {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} businessName={businessName} websiteData={websiteData} />}
       {activeSubTab === 'gallery' && <GalleryManager configColors={colors} entityType="galleries" />}
       {activeSubTab === 'portal' && <PortalContent colors={colors} businessName={businessName} businessType={businessType} />}
       {activeSubTab === 'analytics' && <SiteAnalytics colors={colors} />}

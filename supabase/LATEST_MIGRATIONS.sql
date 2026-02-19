@@ -1130,5 +1130,11 @@ CREATE INDEX IF NOT EXISTS idx_appointments_service ON public.appointments(servi
 
 
 -- ============================================================
--- DONE! All migrations 012-030 applied.
+-- 031: Website auto-generation data on configs
+-- ============================================================
+ALTER TABLE public.configs ADD COLUMN IF NOT EXISTS website_data jsonb DEFAULT NULL;
+COMMENT ON COLUMN public.configs.website_data IS 'FreeFormSaveData JSON generated during onboarding — pre-built website pages/sections/elements';
+
+-- ============================================================
+-- DONE! All migrations 012-031 applied.
 -- ============================================================

@@ -14,6 +14,7 @@ import copy
 from datetime import datetime
 from templates.registry import detect_template_type, get_template
 from templates.beauty_body import get_template_as_prompt_json
+from templates.website_sections import build_website_data, get_template_key
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 CORS(app, origins=[
@@ -1139,6 +1140,57 @@ Respond with ONLY one word: "DETAILED" or "VAGUE" """
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+def generate_website_copy(business_name, business_type, description):
+    """Generate personalized website copy using Haiku 4.5. Returns dict with text fields."""
+    try:
+        response = claude.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=800,
+            system="You generate website marketing copy for small businesses. Return ONLY valid JSON, no markdown.",
+            messages=[{
+                "role": "user",
+                "content": f"""Business: {business_name} (Type: {business_type})
+Description: {description}
+
+Return JSON:
+{{
+  "hero_headline": "powerful headline, 4-8 words, no quotes",
+  "hero_subheadline": "one compelling sentence about the business",
+  "hero_cta": "call to action button text, 2-4 words",
+  "about_title": "about section heading",
+  "about_text": "2-3 engaging sentences about what makes this business special",
+  "features_title": "section heading for key selling points",
+  "features": ["selling point 1 (1-2 sentences)", "selling point 2 (1-2 sentences)", "selling point 3 (1-2 sentences)"],
+  "cta_headline": "motivating call to action heading",
+  "cta_text": "short persuasive sentence",
+  "cta_button": "action button text, 2-4 words"
+}}"""
+            }]
+        )
+        text = response.content[0].text.strip()
+        # Strip markdown code fences if present
+        if text.startswith('```'):
+            text = text.split('\n', 1)[1] if '\n' in text else text[3:]
+            if text.endswith('```'):
+                text = text[:-3]
+            text = text.strip()
+        return json.loads(text)
+    except Exception as e:
+        print(f"Website copy generation failed, using defaults: {e}")
+        return {
+            'hero_headline': f'Welcome to {business_name}',
+            'hero_subheadline': f'{business_name} — your trusted {business_type.replace("_", " ")} partner.',
+            'hero_cta': 'Get Started',
+            'about_title': f'About {business_name}',
+            'about_text': f'{business_name} is dedicated to providing exceptional {business_type.replace("_", " ")} services. We pride ourselves on quality, reliability, and customer satisfaction.',
+            'features_title': 'Why Choose Us',
+            'features': ['Professional & experienced team', 'Committed to quality service', 'Customer satisfaction guaranteed'],
+            'cta_headline': 'Ready to Get Started?',
+            'cta_text': 'Contact us today to learn more.',
+            'cta_button': 'Contact Us',
+        }
+
+
 @app.route('/configure', methods=['POST'])
 def configure():
     data = request.json
@@ -1170,6 +1222,20 @@ def configure():
         config = transform_pipeline_stages(config)
         print(f"Config: {config}")
 
+        # Generate website data (sections + AI copy)
+        website_data = None
+        try:
+            bname = config.get('business_name', 'My Business')
+            btype = config.get('business_type', 'service')
+            bcolors = config.get('colors', {})
+            print(f"Generating website for {bname} ({btype})...")
+            website_copy = generate_website_copy(bname, btype, description)
+            print(f"Website copy generated: {list(website_copy.keys())}")
+            website_data = build_website_data(bname, btype, website_copy, bcolors)
+            print(f"Website data built: {len(website_data.get('pages', []))} pages, {len(website_data.get('elements', []))} elements")
+        except Exception as e:
+            print(f"Website generation failed (continuing without): {e}")
+
         # Save config to local JSON file (backup)
         local_config_id = save_config(config, conversation_history)
         print(f"Saved local config with ID: {local_config_id}")
@@ -1178,15 +1244,18 @@ def configure():
         dashboard_base = os.environ.get('DASHBOARD_URL', 'http://localhost:3000')
         config_id = local_config_id  # fallback
         try:
+            post_body = {
+                'businessName': config.get('business_name'),
+                'businessType': config.get('business_type'),
+                'tabs': config.get('tabs', []),
+                'colors': config.get('colors', {}),
+            }
+            if website_data:
+                post_body['websiteData'] = website_data
             dashboard_resp = http_requests.post(
                 f'{dashboard_base}/api/config',
-                json={
-                    'businessName': config.get('business_name'),
-                    'businessType': config.get('business_type'),
-                    'tabs': config.get('tabs', []),
-                    'colors': config.get('colors', {}),
-                },
-                timeout=10
+                json=post_body,
+                timeout=15
             )
             dashboard_data = dashboard_resp.json()
             if dashboard_data.get('success') and dashboard_data.get('data', {}).get('id'):
@@ -1197,21 +1266,48 @@ def configure():
         except Exception as e:
             print(f"Failed to save to dashboard API (using local ID): {e}")
 
+        # Save website_data to local file (keyed by Supabase config_id for retrieval)
+        if website_data and config_id:
+            try:
+                ensure_configs_folder()
+                wd_path = os.path.join(CONFIGS_FOLDER, f'{config_id}_website.json')
+                with open(wd_path, 'w') as f:
+                    json.dump(website_data, f)
+                print(f"Website data saved locally: {wd_path}")
+            except Exception as e:
+                print(f"Failed to save website data locally: {e}")
+
         # Build redirect URL with business info in params (fallback if Supabase config not found)
         from urllib.parse import quote
         biz_name = quote(config.get('business_name', ''))
         biz_type = quote(config.get('business_type', ''))
         redirect_url = f'{dashboard_base}/preview?config_id={config_id}&business_name={biz_name}&business_type={biz_type}'
 
-        return jsonify({
+        response_data = {
             'success': True,
             'config': config,
             'config_id': config_id,
             'redirect_url': redirect_url
-        })
+        }
+        if website_data:
+            response_data['website_data'] = {
+                'pages': len(website_data.get('pages', [])),
+                'elements': len(website_data.get('elements', [])),
+                'template_key': get_template_key(config.get('business_type', '')),
+            }
+        return jsonify(response_data)
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/website-data/<config_id>', methods=['GET'])
+def get_website_data(config_id):
+    """Retrieve generated website data by Supabase config ID."""
+    wd_path = os.path.join(CONFIGS_FOLDER, f'{config_id}_website.json')
+    if os.path.exists(wd_path):
+        with open(wd_path, 'r') as f:
+            return jsonify({'success': True, 'data': json.load(f)})
+    return jsonify({'success': False, 'error': 'Not found'}), 404
 
 @app.route('/config/<config_id>', methods=['GET'])
 def get_config(config_id):

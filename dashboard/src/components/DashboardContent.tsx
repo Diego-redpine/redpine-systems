@@ -20,6 +20,7 @@ interface DashboardContentProps {
   colors?: DashboardColors;
   toolbarSide?: 'left' | 'right';
   onComponentVisible?: (componentId: string) => void;
+  websiteData?: any;
 }
 
 // Extract pipeline config from PipelineData
@@ -1870,6 +1871,7 @@ export default function DashboardContent({
   businessName,
   colors = {},
   toolbarSide = 'left',
+  websiteData,
 }: DashboardContentProps) {
   // Internal sub-tab state — resets when activeTab changes
   const [activeSubTab, setActiveSubTab] = useState<string>('');
@@ -1944,7 +1946,7 @@ export default function DashboardContent({
             <p className="text-sm" style={{ color: textColor }}>Dashboard coming soon</p>
           </div>
         )}
-        {(activeTab === 'site' || activeTab === '__site__') && <SiteView colors={colors} businessName={businessName} businessType={businessType} />}
+        {(activeTab === 'site' || activeTab === '__site__') && <SiteView colors={colors} businessName={businessName} businessType={businessType} websiteData={websiteData} />}
         {activeTab === 'analytics' && <AnalyticsContent colors={colors} businessType={businessType} />}
         {isSettingsTab && <SettingsContent colors={colors} defaultTab={activeTab === 'profile' ? 'profile' : 'settings'} />}
         {activeTab === '__marketplace__' && <MarketplaceView colors={colors} />}

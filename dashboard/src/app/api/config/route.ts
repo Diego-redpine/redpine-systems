@@ -41,8 +41,8 @@ async function getAuthenticatedUser(request: NextRequest) {
 }
 
 // Convert Supabase config to DashboardConfig format
-function toAppConfig(dbConfig: any): DashboardConfig {
-  return {
+function toAppConfig(dbConfig: any): DashboardConfig & { websiteData?: any } {
+  const result: DashboardConfig & { websiteData?: any } = {
     id: dbConfig.id,
     businessName: dbConfig.business_name,
     businessType: dbConfig.business_type,
@@ -50,6 +50,10 @@ function toAppConfig(dbConfig: any): DashboardConfig {
     platformTabs: ['site', 'analytics', 'settings'],
     colors: dbConfig.colors || {},
   };
+  if (dbConfig.website_data) {
+    result.websiteData = dbConfig.website_data;
+  }
+  return result;
 }
 
 // Default config for when none is found
@@ -314,7 +318,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { businessName, businessType, tabs, colors } = body;
+    const { businessName, businessType, tabs, colors, websiteData } = body;
 
     // Check for authenticated user — use their ID if available
     // Anonymous configs (from onboarding) are allowed with user_id = null
@@ -322,7 +326,7 @@ export async function POST(request: NextRequest) {
     const ownerId = user?.id || null;
 
     // Create config record — user_id comes from auth, never from request body
-    const configData = {
+    const configData: Record<string, any> = {
       user_id: ownerId,
       business_name: businessName || 'My Business',
       business_type: businessType || 'service',
@@ -332,11 +336,29 @@ export async function POST(request: NextRequest) {
       is_active: true,
     };
 
-    const { data, error } = await supabase
+    // Include website_data if provided (from onboarding website generation)
+    if (websiteData) {
+      configData.website_data = websiteData;
+    }
+
+    let { data, error } = await supabase
       .from('configs')
       .insert(configData)
       .select()
       .single();
+
+    // If insert failed (e.g. website_data column doesn't exist yet), retry without it
+    if (error && configData.website_data) {
+      console.warn('Config insert failed with website_data, retrying without:', error.message);
+      const { website_data, ...configWithoutWebsite } = configData;
+      const retry = await supabase
+        .from('configs')
+        .insert(configWithoutWebsite)
+        .select()
+        .single();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.error('Create config error:', error);

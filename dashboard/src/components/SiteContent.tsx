@@ -60,7 +60,7 @@ const DEMO_PAGES: Page[] = [
   },
 ];
 
-export default function SiteContent({ colors, isDemoMode = false, businessName }: { colors: DashboardColors; isDemoMode?: boolean; businessName?: string }) {
+export default function SiteContent({ colors, isDemoMode = false, businessName, websiteData }: { colors: DashboardColors; isDemoMode?: boolean; businessName?: string; websiteData?: any }) {
   const textMain = colors.headings || '#1A1A1A';
   const textMuted = '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
@@ -83,7 +83,25 @@ export default function SiteContent({ colors, isDemoMode = false, businessName }
 
   const fetchPages = useCallback(async () => {
     if (isDemoMode) {
-      // Restore persisted demo pages from localStorage (survives refresh)
+      // Priority 1: Use onboarding-generated website data if available
+      if (websiteData && websiteData.pages && websiteData.pages.length > 0) {
+        const generatedPages: Page[] = websiteData.pages.map((p: any) => ({
+          id: `gen-${p.slug}`,
+          slug: p.slug,
+          title: p.title,
+          published: false,
+          updated_at: new Date().toISOString(),
+          blocks: [websiteData],  // Full FreeFormSaveData so editor can load it
+        }));
+        setPages(generatedPages);
+        // Persist to localStorage so refresh keeps the generated site
+        try { localStorage.setItem(LS_SITE_PAGES, JSON.stringify(generatedPages)); } catch {}
+        setIsLoading(false);
+        setFetchOk(true);
+        return;
+      }
+
+      // Priority 2: Restore persisted pages from localStorage (survives refresh)
       try {
         const saved = localStorage.getItem(LS_SITE_PAGES);
         if (saved) {
@@ -96,6 +114,8 @@ export default function SiteContent({ colors, isDemoMode = false, businessName }
           }
         }
       } catch {}
+
+      // Priority 3: Fallback to DEMO_PAGES (legacy configs without website_data)
       setPages(DEMO_PAGES);
       setIsLoading(false);
       setFetchOk(true);
@@ -113,7 +133,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName }
     } finally {
       setIsLoading(false);
     }
-  }, [isDemoMode]);
+  }, [isDemoMode, websiteData]);
 
   useEffect(() => {
     fetchPages();
