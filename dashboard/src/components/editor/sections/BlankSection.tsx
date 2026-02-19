@@ -56,6 +56,7 @@ interface BlankSectionProps {
   viewportWidth: number;
   viewportMode?: 'desktop' | 'tablet' | 'mobile';
   theme?: 'dark' | 'light';
+  accentColor?: string;
   isSelected?: boolean;
   selectedElementIds?: Set<string>;
   isPreviewMode?: boolean;
@@ -82,6 +83,7 @@ export default function BlankSection({
   viewportWidth,
   viewportMode = 'desktop',
   theme = 'light',
+  accentColor = '#E11D48',
   isSelected = false,
   selectedElementIds = new Set(),
   isPreviewMode = false,
@@ -121,6 +123,7 @@ export default function BlankSection({
         y: pos.y,
         width: pos.width,
         height: pos.height,
+        fontScale: pos.fontScale,
       };
     });
   }, [rawElements, viewportMode]);
@@ -226,12 +229,11 @@ export default function BlankSection({
         const element = elements.find(el => el.id === dragState.elementId);
         if (!element) return;
 
-        const padding = 10;
-        const maxX = viewportWidth - element.width - padding;
-        const maxY = sectionHeight - element.height - padding;
+        const maxX = viewportWidth - element.width;
+        const maxY = sectionHeight - element.height;
 
-        const newX = Math.max(padding, Math.min(maxX, dragState.elementStartX + dx));
-        const newY = Math.max(padding, Math.min(maxY, dragState.elementStartY + dy));
+        const newX = Math.max(0, Math.min(maxX, dragState.elementStartX + dx));
+        const newY = Math.max(0, Math.min(maxY, dragState.elementStartY + dy));
 
         onUpdateElementPosition?.(section.id, dragState.elementId, newX, newY);
       }
@@ -283,10 +285,18 @@ export default function BlankSection({
           }
         }
 
+        // Final boundary clamp — ensure element stays within section bounds
+        if (newX < 0) { newWidth += newX; newX = 0; }
+        if (newY < 0) { newHeight += newY; newY = 0; }
+        if (newX + newWidth > viewportWidth) { newWidth = viewportWidth - newX; }
+        if (newY + newHeight > sectionHeight) { newHeight = sectionHeight - newY; }
+        newWidth = Math.max(50, newWidth);
+        newHeight = Math.max(30, newHeight);
+
         const isTextElement = ['heading', 'text', 'button'].includes(resizeState.elementType);
         onUpdateElementSize?.(section.id, resizeState.elementId, newWidth, newHeight, isTextElement);
         if (newX !== resizeState.elementStartX || newY !== resizeState.elementStartY) {
-          onUpdateElementPosition?.(section.id, resizeState.elementId, Math.max(10, newX), Math.max(10, newY));
+          onUpdateElementPosition?.(section.id, resizeState.elementId, Math.max(0, newX), Math.max(0, newY));
         }
       }
 
@@ -329,13 +339,14 @@ export default function BlankSection({
   return (
     <div
       ref={sectionRef}
-      className={`relative w-full transition-all ${isDragOver ? 'ring-2 ring-blue-500 ring-inset' : ''}`}
+      className={`relative w-full overflow-hidden transition-all ${isDragOver ? 'ring-2 ring-inset' : ''}`}
       style={{
         height: sectionHeight,
         backgroundColor,
         backgroundImage: section.properties?.backgroundImage ? `url(${section.properties.backgroundImage})` : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        ...(isDragOver ? { '--tw-ring-color': accentColor } as React.CSSProperties : {}),
       }}
       onClick={(e) => {
         if (e.target === sectionRef.current) {
@@ -369,6 +380,7 @@ export default function BlankSection({
           isDragging={dragState?.elementId === element.id}
           isRotating={rotateState?.elementId === element.id}
           theme={theme}
+          accentColor={accentColor}
           isPreviewMode={isPreviewMode}
           animationKey={animationKey}
           onMouseDown={(e) => handleElementMouseDown(e, element)}

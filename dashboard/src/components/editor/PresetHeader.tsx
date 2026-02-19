@@ -51,7 +51,7 @@ const DEFAULT_HEADER_CONFIG: HeaderConfig = {
   linkColor: null,
   linkFont: 'Inter',
   iconColor: null,
-  accentColor: '#3B82F6',
+  accentColor: '#E11D48',
 };
 
 const NAV_LINKS = ['Home', 'Services', 'About', 'Contact'];
@@ -80,7 +80,7 @@ export default function PresetHeader({
   const iconColor = headerConfig.iconColor || colors?.text || (isDark ? '#9CA3AF' : '#6B7280');
   const storeNameColor = headerConfig.storeNameColor || colors?.text || (isDark ? '#ffffff' : '#1A1A1A');
   const storeNameFont = headerConfig.storeNameFont || 'Inter';
-  const accentColor = headerConfig.accentColor || colors?.buttons || '#3B82F6';
+  const accentColor = headerConfig.accentColor || colors?.buttons || '#E11D48';
   const borderColor = isDark ? '#374151' : '#E5E7EB';
 
   const handleClick = (e: React.MouseEvent) => {

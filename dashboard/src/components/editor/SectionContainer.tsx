@@ -50,7 +50,7 @@ export default function SectionContainer({
   isSelected = false,
   isLocked = false,
   theme = 'light',
-  accentColor = '#3B82F6',
+  accentColor = '#E11D48',
   sectionLabels = {},
   onSelect,
   onDelete,
@@ -274,20 +274,20 @@ export default function SectionContainer({
         <div
           className={cn(
             'absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize group',
-            isResizing ? 'bg-blue-500/30' : 'hover:bg-blue-500/20',
           )}
+          style={isResizing ? { backgroundColor: `${accentColor}30` } : undefined}
           onMouseDown={handleResizeStart}
+          onMouseEnter={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = `${accentColor}20`; }}
+          onMouseLeave={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = ''; }}
         >
           <div
             className={cn(
               'absolute left-1/2 -translate-x-1/2 bottom-1 w-16 h-1 rounded-full transition-colors',
-              isResizing
-                ? ''
-                : isDark
-                  ? 'bg-gray-500 group-hover:bg-blue-500'
-                  : 'bg-gray-400 group-hover:bg-blue-500',
+              isResizing ? '' : isDark ? 'bg-gray-500' : 'bg-gray-400',
             )}
-            style={isResizing ? { backgroundColor: accentColor } : {}}
+            style={isResizing ? { backgroundColor: accentColor } : undefined}
+            onMouseEnter={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = accentColor; }}
+            onMouseLeave={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = ''; }}
           />
         </div>
       )}

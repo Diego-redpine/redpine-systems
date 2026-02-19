@@ -20,6 +20,7 @@ interface DragPreviewProps {
   isValid: boolean;
   /** Optional component metadata map — if omitted, the type string is used as the label. */
   componentMeta?: Record<string, ComponentMeta>;
+  accentColor?: string;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
@@ -28,7 +29,7 @@ interface DragPreviewProps {
  * DragPreview Component
  * Renders a small floating badge that follows the cursor during a drag operation.
  */
-export default function DragPreview({ type, isValid, componentMeta }: DragPreviewProps) {
+export default function DragPreview({ type, isValid, componentMeta, accentColor = '#E11D48' }: DragPreviewProps) {
   const meta = componentMeta?.[type];
   const label = meta?.label || type;
 
@@ -39,18 +40,12 @@ export default function DragPreview({ type, isValid, componentMeta }: DragPrevie
 
   return (
     <div
-      className={`
-        flex items-center gap-2 px-3 py-2 rounded-lg shadow-xl
-        font-sans text-sm pointer-events-none
-        transition-colors duration-150
-        ${isValid
-          ? 'bg-blue-600 text-white border-2 border-blue-400'
-          : 'bg-red-600 text-white border-2 border-red-400'
-        }
-      `}
+      className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-xl font-sans text-sm pointer-events-none transition-colors duration-150 text-white border-2"
       style={{
         opacity: 0.9,
         transform: 'rotate(2deg)',
+        backgroundColor: isValid ? accentColor : '#DC2626',
+        borderColor: isValid ? `${accentColor}99` : '#F87171',
       }}
     >
       <IconComponent className="w-4 h-4" />

@@ -53,6 +53,7 @@ interface ToolButtonProps {
   onClick: () => void;
   theme?: string;
   disabled?: boolean;
+  accentColor?: string;
 }
 
 interface ImageEditorModalProps {
@@ -62,6 +63,7 @@ interface ImageEditorModalProps {
   currentProperties?: ImageProperties;
   onApply: (properties: ImageProperties) => void;
   theme?: string;
+  accentColor?: string;
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -83,7 +85,7 @@ const CROP_PRESETS: CropPreset[] = [
 /**
  * Tool Button Component
  */
-function ToolButton({ icon: Icon, label, active, onClick, theme = 'light', disabled = false }: ToolButtonProps) {
+function ToolButton({ icon: Icon, label, active, onClick, theme = 'light', disabled = false, accentColor = '#E11D48' }: ToolButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -93,9 +95,10 @@ function ToolButton({ icon: Icon, label, active, onClick, theme = 'light', disab
         disabled
           ? 'opacity-30 cursor-not-allowed'
           : active
-            ? 'bg-blue-600/20 text-blue-500'
+            ? ''
             : 'text-gray-600 hover:bg-gray-200 hover:text-gray-800'
       }`}
+      style={active && !disabled ? { backgroundColor: `${accentColor}20`, color: accentColor } : undefined}
     >
       <Icon className="w-4 h-4" />
     </button>
@@ -111,6 +114,7 @@ export default function ImageEditorModal({
   currentProperties = {},
   onApply,
   theme = 'light',
+  accentColor = '#E11D48',
 }: ImageEditorModalProps) {
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -203,6 +207,7 @@ export default function ImageEditorModal({
               active={activeTool === 'move'}
               onClick={() => setActiveTool('move')}
               theme={theme}
+              accentColor={accentColor}
             />
             <ToolButton
               icon={Crop}
@@ -213,6 +218,7 @@ export default function ImageEditorModal({
                 setCropMode(true);
               }}
               theme={theme}
+              accentColor={accentColor}
             />
           </div>
 
@@ -226,6 +232,7 @@ export default function ImageEditorModal({
               active={flipH}
               onClick={() => setFlipH(!flipH)}
               theme={theme}
+              accentColor={accentColor}
             />
             <ToolButton
               icon={FlipVertical}
@@ -233,6 +240,7 @@ export default function ImageEditorModal({
               active={flipV}
               onClick={() => setFlipV(!flipV)}
               theme={theme}
+              accentColor={accentColor}
             />
           </div>
 
@@ -245,12 +253,14 @@ export default function ImageEditorModal({
               label="Rotate Left"
               onClick={rotateLeft}
               theme={theme}
+              accentColor={accentColor}
             />
             <ToolButton
               icon={RotateCw}
               label="Rotate Right"
               onClick={rotateRight}
               theme={theme}
+              accentColor={accentColor}
             />
             <span
               className="px-2 text-xs font-['Inter']"
@@ -269,6 +279,7 @@ export default function ImageEditorModal({
               label="Zoom Out"
               onClick={() => setZoom(Math.max(25, zoom - 25))}
               theme={theme}
+              accentColor={accentColor}
               disabled={zoom <= 25}
             />
             <span
@@ -282,6 +293,7 @@ export default function ImageEditorModal({
               label="Zoom In"
               onClick={() => setZoom(Math.min(200, zoom + 25))}
               theme={theme}
+              accentColor={accentColor}
               disabled={zoom >= 200}
             />
           </div>
@@ -387,9 +399,10 @@ export default function ImageEditorModal({
                     onClick={() => setCropPreset(preset.id)}
                     className={`w-full px-3 py-2 rounded-lg text-xs font-['Inter'] text-left transition-colors ${
                       cropPreset === preset.id
-                        ? 'bg-blue-600/20 text-blue-500'
+                        ? ''
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
                     }`}
+                    style={cropPreset === preset.id ? { backgroundColor: `${accentColor}20`, color: accentColor } : undefined}
                   >
                     {preset.label}
                   </button>
@@ -413,7 +426,8 @@ export default function ImageEditorModal({
           </button>
           <button
             onClick={handleApply}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-['Inter'] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-['Inter'] transition-colors hover:opacity-90"
+            style={{ backgroundColor: accentColor }}
           >
             <Check className="w-4 h-4" />
             Apply Changes

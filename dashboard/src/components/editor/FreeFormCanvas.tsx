@@ -94,6 +94,8 @@ interface FreeFormCanvasProps {
   onClearSelection?: () => void;
   onCommitPosition?: (sectionId: string, elementId: string, x: number, y: number) => void;
   onCommitSize?: (sectionId: string, elementId: string, width: number, height: number) => void;
+  accentColor?: string;
+  sectionHeightOverrides?: Record<string, number>;
   className?: string;
 }
 
@@ -138,6 +140,8 @@ export default function FreeFormCanvas({
   onClearSelection,
   onCommitPosition,
   onCommitSize,
+  accentColor = '#E11D48',
+  sectionHeightOverrides = {},
   className = '',
 }: FreeFormCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -174,7 +178,7 @@ export default function FreeFormCanvas({
     <div className={`flex flex-col h-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-300'} ${className}`}>
       {/* Preview Mode Banner */}
       {isPreviewMode && (
-        <div className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 flex items-center justify-center gap-3">
+        <div className="flex-shrink-0 px-4 py-2 flex items-center justify-center gap-3" style={{ backgroundColor: accentColor || '#E11D48' }}>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
             <span className="text-white text-sm font-['Inter'] font-medium">
@@ -237,13 +241,18 @@ export default function FreeFormCanvas({
               className="flex-1 flex flex-col"
               style={{ width: `${viewportWidth}px`, minHeight: 200 }}
             >
-              {sections.map((section, index) => (
+              {sections.map((section, index) => {
+                const effectiveSection = sectionHeightOverrides[section.id]
+                  ? { ...section, height: sectionHeightOverrides[section.id] }
+                  : section;
+                return (
                 <SectionContainer
                   key={section.id}
-                  section={section}
+                  section={effectiveSection}
                   index={index}
                   totalSections={sections.length}
                   sectionLabels={SECTION_LABELS}
+                  accentColor={accentColor}
                   isSelected={selectedSectionId === section.id}
                   isLocked={section.locked}
                   viewportWidth={viewportWidth}
@@ -263,12 +272,13 @@ export default function FreeFormCanvas({
                   onDragOver={handleSectionDragOver}
                   onDrop={handleSectionDrop}
                 >
-                  {section.type === 'blank' ? (
+                  {effectiveSection.type === 'blank' ? (
                     <BlankSection
-                      section={section as never}
+                      section={effectiveSection as never}
                       viewportWidth={viewportWidth}
                       viewportMode={viewportMode}
                       theme={theme}
+                      accentColor={accentColor}
                       isSelected={selectedSectionId === section.id}
                       selectedElementIds={selectedElementIds}
                       isPreviewMode={isPreviewMode}
@@ -292,10 +302,12 @@ export default function FreeFormCanvas({
                       section={section as never}
                       viewportWidth={viewportWidth}
                       theme={theme}
+                      accentColor={accentColor}
                     />
                   )}
                 </SectionContainer>
-              ))}
+                );
+              })}
 
               {/* Empty sections state */}
               {sections.length === 0 && !isPreviewMode && (

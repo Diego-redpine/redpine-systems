@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
 import { toast } from '@/components/ui/Toaster';
+
+// localStorage keys for editor persistence
+const LS_SITE_PAGES = 'redpine-site-pages';
+const LS_EDITOR_SESSION = 'redpine-editor-session';
+const LS_EDITOR_AUTOSAVE = 'redpine-editor-autosave';
 
 const SiteEditor = lazy(() => import('@/components/SiteEditor'));
 
@@ -78,6 +83,19 @@ export default function SiteContent({ colors, isDemoMode = false, businessName }
 
   const fetchPages = useCallback(async () => {
     if (isDemoMode) {
+      // Restore persisted demo pages from localStorage (survives refresh)
+      try {
+        const saved = localStorage.getItem(LS_SITE_PAGES);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setPages(parsed);
+            setIsLoading(false);
+            setFetchOk(true);
+            return;
+          }
+        }
+      } catch {}
       setPages(DEMO_PAGES);
       setIsLoading(false);
       setFetchOk(true);
@@ -101,15 +119,61 @@ export default function SiteContent({ colors, isDemoMode = false, businessName }
     fetchPages();
   }, [fetchPages]);
 
+  // Persist demo pages to localStorage whenever they change
+  useEffect(() => {
+    if (isDemoMode && fetchOk && pages.length > 0) {
+      try { localStorage.setItem(LS_SITE_PAGES, JSON.stringify(pages)); } catch {}
+    }
+  }, [isDemoMode, fetchOk, pages]);
+
+  // Restore editor session after refresh (runs once when pages are ready)
+  const restoredRef = useRef(false);
+  useEffect(() => {
+    if (!fetchOk || !isDemoMode || restoredRef.current) return;
+    restoredRef.current = true;
+    try {
+      const sessionSlug = localStorage.getItem(LS_EDITOR_SESSION);
+      if (!sessionSlug) return;
+      const page = pages.find(p => p.slug === sessionSlug);
+      if (!page) {
+        localStorage.removeItem(LS_EDITOR_SESSION);
+        localStorage.removeItem(LS_EDITOR_AUTOSAVE);
+        return;
+      }
+      // Prefer autosaved editor data (may contain unsaved changes)
+      const autosave = localStorage.getItem(LS_EDITOR_AUTOSAVE);
+      if (autosave) {
+        try {
+          const data = JSON.parse(autosave);
+          if (data && data.format === 'freeform') {
+            setEditingPage({ ...page, blocks: [data] });
+            return;
+          }
+        } catch {}
+      }
+      setEditingPage(page);
+    } catch {}
+  }, [fetchOk, isDemoMode, pages]);
+
   const handleEdit = (slug: string) => {
     if (isDemoMode) {
-      // Open inline editor overlay instead of navigating away
       const page = pages.find(p => p.slug === slug);
-      if (page) setEditingPage(page);
+      if (page) {
+        setEditingPage(page);
+        try { localStorage.setItem(LS_EDITOR_SESSION, slug); } catch {}
+      }
       return;
     }
     router.push(`/editor/${slug}`);
   };
+
+  const handleCloseEditor = useCallback(() => {
+    setEditingPage(null);
+    try {
+      localStorage.removeItem(LS_EDITOR_SESSION);
+      localStorage.removeItem(LS_EDITOR_AUTOSAVE);
+    } catch {}
+  }, []);
 
   // Demo mode: save blocks locally
   const handleDemoSave = useCallback(async (blocks: unknown[]) => {
@@ -400,7 +464,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName }
             businessName={businessName}
             accentColor={colors.buttons}
             onSave={handleDemoSave}
-            onClose={() => setEditingPage(null)}
+            onClose={handleCloseEditor}
           />
         </Suspense>
       )}

@@ -9,9 +9,10 @@ interface SectionRendererProps {
   section: { id: string; type: string; height: number; properties: Record<string, unknown> };
   viewportWidth: number;
   theme?: 'dark' | 'light';
+  accentColor?: string;
 }
 
-export function SectionRenderer({ section, theme = 'dark' }: SectionRendererProps) {
+export function SectionRenderer({ section, theme = 'dark', accentColor = '#E11D48' }: SectionRendererProps) {
   const isDark = theme === 'dark';
   const props = section.properties || {};
 
@@ -24,7 +25,7 @@ export function SectionRenderer({ section, theme = 'dark' }: SectionRendererProp
             inBuilder={true}
             heading={(props.heading as string) || 'Book an Appointment'}
             buttonText={(props.buttonText as string) || 'Book Now'}
-            accentColor={(props.accentColor as string) || '#3B82F6'}
+            accentColor={(props.accentColor as string) || accentColor}
           />
         </div>
       );

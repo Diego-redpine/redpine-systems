@@ -6,7 +6,7 @@
  * Sections: Layout, Style, Typography, Animation, Actions
  */
 
-import { useState, useRef, useCallback, type ReactNode } from 'react';
+import { useState, useRef, useCallback, useMemo, type ReactNode } from 'react';
 import {
   MousePointer, ChevronDown, ChevronRight, Move, RotateCw, Type as TypeIcon,
   Paintbrush, Sun, Copy, Layers, Trash2, ArrowUp, ArrowDown,
@@ -113,7 +113,7 @@ function PropertyInput({ label, value, onChange, type = 'text', min, max, step, 
         onChange={(e) => onChange(e.target.value)}
         className={`
           w-full px-3 py-2 border rounded-lg text-sm font-['Inter']
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+          focus:outline-none focus:ring-2 focus:ring-[--editor-accent] focus:border-transparent
           ${isDark
             ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
             : 'bg-white border-zinc-300 text-zinc-800'
@@ -205,14 +205,14 @@ function SliderInput({ label, value, onChange, min = 0, max = 100, step = 1, the
           [&::-webkit-slider-thumb]:w-4
           [&::-webkit-slider-thumb]:h-4
           [&::-webkit-slider-thumb]:rounded-full
-          [&::-webkit-slider-thumb]:bg-blue-500
+          [&::-webkit-slider-thumb]:bg-[--editor-accent]
           [&::-webkit-slider-thumb]:cursor-pointer
           [&::-webkit-slider-thumb]:shadow-md
-          [&::-webkit-slider-thumb]:hover:bg-blue-400
+          [&::-webkit-slider-thumb]:hover:brightness-110
           [&::-moz-range-thumb]:w-4
           [&::-moz-range-thumb]:h-4
           [&::-moz-range-thumb]:rounded-full
-          [&::-moz-range-thumb]:bg-blue-500
+          [&::-moz-range-thumb]:bg-[--editor-accent]
           [&::-moz-range-thumb]:border-0
           [&::-moz-range-thumb]:cursor-pointer
         `}
@@ -294,10 +294,10 @@ function RotationControl({ value, onChange, theme = 'dark' }: RotationControlPro
           onMouseDown={handleMouseDown}
         >
           <div
-            className="absolute top-1/2 left-1/2 w-5 h-0.5 bg-blue-500 origin-left"
+            className="absolute top-1/2 left-1/2 w-5 h-0.5 editor-accent-bg origin-left"
             style={{ transform: `translateY(-50%) rotate(${rotation - 90}deg)` }}
           />
-          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-blue-500 rounded-full -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute top-1/2 left-1/2 w-2 h-2 editor-accent-bg rounded-full -translate-x-1/2 -translate-y-1/2" />
         </div>
         <input
           type="number"
@@ -319,7 +319,7 @@ function RotationControl({ value, onChange, theme = 'dark' }: RotationControlPro
             onClick={() => onChange(deg)}
             className={`flex-1 py-1 text-[10px] font-['Inter'] rounded transition-colors ${
               rotation === deg
-                ? 'bg-blue-600/20 text-blue-500'
+                ? 'editor-accent-active'
                 : isDark
                   ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
                   : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
@@ -357,7 +357,7 @@ function ToggleSwitch({ label, value, onChange, theme = 'dark' }: ToggleSwitchPr
         onClick={() => onChange(!value)}
         className={`relative w-10 h-5 rounded-full transition-colors ${
           value
-            ? 'bg-blue-500'
+            ? 'editor-accent-bg'
             : isDark ? 'bg-zinc-700' : 'bg-zinc-300'
         }`}
       >
@@ -397,7 +397,7 @@ function PropertyTextarea({ label, value, onChange, theme = 'dark' }: PropertyTe
         rows={3}
         className={`
           w-full px-3 py-2 border rounded-lg text-sm font-['Inter'] resize-none
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+          focus:outline-none focus:ring-2 focus:ring-[--editor-accent] focus:border-transparent
           ${isDark
             ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
             : 'bg-white border-zinc-300 text-zinc-800'
@@ -439,7 +439,7 @@ function FontFamilySelect({ value, onChange, theme = 'dark' }: FontFamilySelectP
         style={{ fontFamily: value || 'Inter' }}
         className={`
           w-full px-3 py-2 border rounded-lg text-sm
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+          focus:outline-none focus:ring-2 focus:ring-[--editor-accent] focus:border-transparent
           ${isDark
             ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
             : 'bg-white border-zinc-300 text-zinc-800'
@@ -591,7 +591,7 @@ function ImageDropZone({ label, value, onChange, theme = 'dark' }: ImageDropZone
             w-full h-24 rounded-lg border-2 border-dashed cursor-pointer
             flex flex-col items-center justify-center gap-2 transition-colors
             ${isDragOver
-              ? 'border-blue-500 bg-blue-500/10'
+              ? 'editor-accent-border editor-accent-active'
               : isDark
                 ? 'border-zinc-700 hover:border-zinc-500 bg-zinc-800/50'
                 : 'border-zinc-300 hover:border-zinc-400 bg-zinc-100'
@@ -623,6 +623,7 @@ function ImageDropZone({ label, value, onChange, theme = 'dark' }: ImageDropZone
 interface ElementPropertiesProps extends ThemeProps {
   properties: Record<string, unknown>;
   onChange: (updates: Record<string, unknown>) => void;
+  accentColor?: string;
 }
 
 function HeadingProperties({ properties, onChange, theme }: ElementPropertiesProps) {
@@ -857,7 +858,7 @@ const BORDER_STYLES = [
   { value: 'dotted', label: 'Dotted' },
 ];
 
-function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps) {
+function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' }: ElementPropertiesProps) {
   const isDark = theme === 'dark';
   const [showImageEditor, setShowImageEditor] = useState(false);
 
@@ -930,7 +931,7 @@ function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps
                 key={mode.value}
                 onClick={() => onChange({ objectFit: mode.value })}
                 className={`py-1.5 rounded text-[10px] font-['Inter'] transition-colors ${
-                  properties.objectFit === mode.value ? 'bg-blue-600/20 text-blue-500' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
+                  properties.objectFit === mode.value ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                 }`}
               >
                 {mode.label}
@@ -949,7 +950,7 @@ function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps
                   key={pos}
                   onClick={() => onChange({ objectPosition: pos })}
                   className={`w-6 h-6 rounded transition-colors ${
-                    properties.objectPosition === pos ? 'bg-blue-500' : isDark ? 'bg-zinc-700 hover:bg-zinc-600' : 'bg-zinc-200 hover:bg-zinc-300'
+                    properties.objectPosition === pos ? 'editor-accent-bg' : isDark ? 'bg-zinc-700 hover:bg-zinc-600' : 'bg-zinc-200 hover:bg-zinc-300'
                   }`}
                   title={pos}
                 />
@@ -963,7 +964,7 @@ function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps
           <button
             onClick={() => onChange({ flipHorizontal: !properties.flipHorizontal })}
             className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
-              properties.flipHorizontal ? 'bg-blue-600/20 text-blue-500 border border-blue-500/30' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 border border-zinc-300'
+              properties.flipHorizontal ? 'editor-accent-active border editor-accent-border' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 border border-zinc-300'
             }`}
           >
             <FlipHorizontal className="w-3.5 h-3.5" />
@@ -972,7 +973,7 @@ function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps
           <button
             onClick={() => onChange({ flipVertical: !properties.flipVertical })}
             className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
-              properties.flipVertical ? 'bg-blue-600/20 text-blue-500 border border-blue-500/30' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 border border-zinc-300'
+              properties.flipVertical ? 'editor-accent-active border editor-accent-border' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 border border-zinc-300'
             }`}
           >
             <FlipVertical className="w-3.5 h-3.5" />
@@ -997,7 +998,7 @@ function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps
                 key={shape.value}
                 onClick={() => onChange({ shape: shape.value })}
                 className={`p-2 rounded-lg border-2 transition-colors flex flex-col items-center gap-1.5 ${
-                  properties.shape === shape.value ? 'border-blue-500 bg-blue-500/10' : isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-zinc-300 hover:border-zinc-400'
+                  properties.shape === shape.value ? 'editor-accent-border editor-accent-active' : isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-zinc-300 hover:border-zinc-400'
                 }`}
               >
                 <div
@@ -1026,7 +1027,7 @@ function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps
                 key={style.value}
                 onClick={() => onChange({ borderStyle: style.value })}
                 className={`py-1.5 rounded text-[10px] font-['Inter'] transition-colors ${
-                  properties.borderStyle === style.value ? 'bg-blue-600/20 text-blue-500' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
+                  properties.borderStyle === style.value ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                 }`}
               >
                 {style.label}
@@ -1116,6 +1117,7 @@ function ImageProperties({ properties, onChange, theme }: ElementPropertiesProps
         currentProperties={properties}
         onApply={(changes) => onChange(changes as unknown as Record<string, unknown>)}
         theme={theme}
+        accentColor={accentColor}
       />
     </>
   );
@@ -1197,7 +1199,7 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
           </label>
           <button
             onClick={() => setShowAddField(!showAddField)}
-            className={`p-1.5 rounded-lg transition-colors ${showAddField ? 'bg-blue-600 text-white' : isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}
+            className={`p-1.5 rounded-lg transition-colors ${showAddField ? 'editor-accent-bg text-white' : isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -1235,7 +1237,7 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
               const FieldIcon = FORM_FIELD_TYPES.find(f => f.value === field.type)?.icon || TypeIcon;
               const isExpanded = expandedField === field.id;
               return (
-                <div key={field.id} className={`rounded-lg border transition-colors ${isExpanded ? isDark ? 'border-blue-500/50 bg-zinc-800' : 'border-blue-500/50 bg-zinc-50' : isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-200 bg-white'}`}>
+                <div key={field.id} className={`rounded-lg border transition-colors ${isExpanded ? isDark ? 'editor-accent-border bg-zinc-800' : 'editor-accent-border bg-zinc-50' : isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-200 bg-white'}`}>
                   <div className="flex items-center gap-2 px-2 py-2 cursor-pointer" onClick={() => setExpandedField(isExpanded ? null : field.id)}>
                     <GripVertical className={`w-3.5 h-3.5 flex-shrink-0 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`} />
                     <FieldIcon className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500" />
@@ -1270,7 +1272,7 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
                         <span className={`text-[10px] font-['Inter'] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Required</span>
                         <button
                           onClick={() => handleUpdateField(field.id, { required: !field.required })}
-                          className={`relative w-8 h-4 rounded-full transition-colors ${field.required ? 'bg-blue-500' : isDark ? 'bg-zinc-700' : 'bg-zinc-300'}`}
+                          className={`relative w-8 h-4 rounded-full transition-colors ${field.required ? 'editor-accent-bg' : isDark ? 'bg-zinc-700' : 'bg-zinc-300'}`}
                         >
                           <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform shadow ${field.required ? 'translate-x-4' : 'translate-x-0.5'}`} />
                         </button>
@@ -1387,9 +1389,9 @@ function SocialIconToggle({ icon: Icon, label, enabled, url, onToggle, onUrlChan
   return (
     <div className={`mb-3 p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
       <div className="flex items-center gap-3 mb-2">
-        <Icon className={`w-4 h-4 ${enabled ? 'text-blue-500' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
+        <Icon className={`w-4 h-4 ${enabled ? 'editor-accent-text' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
         <label className={`flex-1 flex items-center gap-2 text-xs font-medium font-['Inter'] ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-          <input type="checkbox" checked={enabled} onChange={(e) => onToggle(e.target.checked)} className="rounded text-blue-500" />
+          <input type="checkbox" checked={enabled} onChange={(e) => onToggle(e.target.checked)} className="rounded editor-accent-text" />
           {label}
         </label>
       </div>
@@ -1495,7 +1497,7 @@ function CanvasProperties({ config, onChange, theme }: ConfigPropertiesProps) {
               key={transition.id}
               onClick={() => onChange({ pageTransition: transition.id })}
               className={`p-3 rounded-lg border-2 transition-colors text-left ${
-                (config.pageTransition || 'fade') === transition.id ? 'border-blue-500 bg-blue-500/10' : isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-zinc-300 hover:border-zinc-400'
+                (config.pageTransition || 'fade') === transition.id ? 'editor-accent-border editor-accent-active' : isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-zinc-300 hover:border-zinc-400'
               }`}
             >
               <span className={`block text-xs font-medium font-['Inter'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{transition.name}</span>
@@ -1520,9 +1522,10 @@ interface AnimationSectionProps extends ThemeProps {
   onPreview?: (animation: AnimationConfig) => void;
   isOpen: boolean;
   onToggle: () => void;
+  accentColor?: string;
 }
 
-function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggle }: AnimationSectionProps) {
+function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggle, accentColor = '#E11D48' }: AnimationSectionProps) {
   const isDark = theme === 'dark';
   const [showPicker, setShowPicker] = useState(false);
   const animation = (element?.properties?.animation as AnimationConfig) || null;
@@ -1553,12 +1556,12 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
             <div className={`p-3 rounded-lg mb-4 ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-blue-500" />
+                  <Sparkles className="w-4 h-4 editor-accent-text" />
                   <span className={`text-sm font-medium font-['Inter'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
                     {animationPreset?.name || animation.type}
                   </span>
                 </div>
-                <button onClick={() => setShowPicker(true)} className={`text-xs font-['Inter'] ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}>
+                <button onClick={() => setShowPicker(true)} className="text-xs font-['Inter'] editor-accent-text hover:opacity-80">
                   Change
                 </button>
               </div>
@@ -1573,7 +1576,7 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
                     key={speed.value}
                     onClick={() => handleSpeedChange(speed.value)}
                     className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors ${
-                      animation.speed === speed.value ? 'bg-blue-600 text-white' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 hover:bg-zinc-200'
+                      animation.speed === speed.value ? 'editor-accent-bg text-white' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 hover:bg-zinc-200'
                     }`}
                   >
                     {speed.value}x
@@ -1635,6 +1638,7 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
         onSelect={handleSelectAnimation}
         onPreview={onPreview}
         theme={theme}
+        accentColor={accentColor}
       />
     </>
   );
@@ -1689,6 +1693,7 @@ interface FreeFormPropertiesPanelProps {
   onSendToBack: (id: string) => void;
   onPreviewAnimation?: (animation: AnimationConfig) => void;
   theme?: 'dark' | 'light';
+  accentColor?: string;
   className?: string;
 }
 
@@ -1715,9 +1720,20 @@ export default function FreeFormPropertiesPanel({
   onSendToBack,
   onPreviewAnimation,
   theme = 'dark',
+  accentColor = '#E11D48',
   className = '',
 }: FreeFormPropertiesPanelProps) {
   const isDark = theme === 'dark';
+
+  // Generate accent color CSS for the panel scope
+  const accentStyles = useMemo(() => `
+    .editor-accent-active { background-color: ${accentColor}20; color: ${accentColor}; }
+    .editor-accent-bg { background-color: ${accentColor}; }
+    .editor-accent-border { border-color: ${accentColor}; }
+    .editor-accent-text { color: ${accentColor}; }
+  `, [accentColor]);
+  const accentCssVars = { '--editor-accent': accentColor } as React.CSSProperties;
+
   const [openSections, setOpenSections] = useState({
     layout: true,
     style: true,
@@ -1842,7 +1858,7 @@ export default function FreeFormPropertiesPanel({
             <CollapsibleSection title="Booking Settings" icon={Paintbrush} isOpen={openSections.style} onToggle={() => toggleSection('style')} theme={theme}>
               <PropertyInput label="Heading" value={(selectedSectionData.properties?.heading as string) || 'Book an Appointment'} onChange={(v) => onUpdateSectionProperties?.(selectedSectionData.id, { heading: v })} theme={theme} />
               <PropertyInput label="Button Text" value={(selectedSectionData.properties?.buttonText as string) || 'Book Now'} onChange={(v) => onUpdateSectionProperties?.(selectedSectionData.id, { buttonText: v })} theme={theme} />
-              <ColorPicker label="Accent Color" value={(selectedSectionData.properties?.accentColor as string) || '#3B82F6'} onChange={(v) => onUpdateSectionProperties?.(selectedSectionData.id, { accentColor: v })} theme={theme} />
+              <ColorPicker label="Accent Color" value={(selectedSectionData.properties?.accentColor as string) || accentColor} onChange={(v) => onUpdateSectionProperties?.(selectedSectionData.id, { accentColor: v })} theme={theme} />
             </CollapsibleSection>
           )}
 
@@ -1943,7 +1959,8 @@ export default function FreeFormPropertiesPanel({
   const hasTypography = ['heading', 'text', 'subheading', 'caption', 'quote', 'button'].includes(selectedElement.type);
 
   return (
-    <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`}>
+    <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`} style={accentCssVars}>
+      <style dangerouslySetInnerHTML={{ __html: accentStyles }} />
       <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
         <h2 className={`text-sm font-semibold font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Properties</h2>
       </div>
@@ -1993,7 +2010,7 @@ export default function FreeFormPropertiesPanel({
         {/* STYLE */}
         <CollapsibleSection title="Style" icon={Paintbrush} isOpen={openSections.style} onToggle={() => toggleSection('style')} theme={theme}>
           {PropertiesComponent ? (
-            <PropertiesComponent properties={selectedElement.properties} onChange={handleChange} theme={theme} />
+            <PropertiesComponent properties={selectedElement.properties} onChange={handleChange} theme={theme} accentColor={accentColor} />
           ) : (
             <p className={`text-sm font-['Inter'] text-zinc-500`}>No style properties</p>
           )}
@@ -2045,7 +2062,7 @@ export default function FreeFormPropertiesPanel({
                       key={align}
                       onClick={() => handleChange({ textAlign: align })}
                       className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] capitalize transition-colors ${
-                        selectedElement.properties.textAlign === align ? 'bg-blue-600/20 text-blue-500' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
+                        selectedElement.properties.textAlign === align ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                       }`}
                     >
                       {align}
@@ -2069,7 +2086,7 @@ export default function FreeFormPropertiesPanel({
                       key={transform.value}
                       onClick={() => handleChange({ textTransform: transform.value })}
                       className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors ${
-                        selectedElement.properties.textTransform === transform.value ? 'bg-blue-600/20 text-blue-500' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
+                        selectedElement.properties.textTransform === transform.value ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                       }`}
                       title={transform.value}
                     >
@@ -2090,6 +2107,7 @@ export default function FreeFormPropertiesPanel({
           theme={theme}
           isOpen={openSections.animation}
           onToggle={() => toggleSection('animation')}
+          accentColor={accentColor}
         />
 
         {/* ACTIONS */}

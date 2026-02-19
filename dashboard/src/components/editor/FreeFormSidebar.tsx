@@ -563,9 +563,10 @@ interface ElementsPanelProps {
   onAddSection?: (type: string) => void;
   onAddElement: (type: string, options?: Record<string, unknown>) => void;
   onDragStart: (type: string) => void;
+  accentColor?: string;
 }
 
-function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection, onAddElement, onDragStart }: ElementsPanelProps) {
+function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection, onAddElement, onDragStart, accentColor = '#E11D48' }: ElementsPanelProps) {
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
   const isDark = theme === 'dark';
 
@@ -673,7 +674,7 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                   isDark ? 'bg-zinc-700' : 'bg-zinc-100'
                 }`}>
-                  <Square className="w-5 h-5 text-blue-500" />
+                  <Square className="w-5 h-5" style={{ color: accentColor }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className={`text-sm font-['Inter'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
@@ -1009,9 +1010,10 @@ interface BrandPanelProps {
   brandColors: BrandColors | null;
   onUpdateBrandColors?: (colors: BrandColors) => void;
   onApplyToAllWidgets?: () => void;
+  accentColor?: string;
 }
 
-function BrandPanel({ theme, brandColors, onUpdateBrandColors, onApplyToAllWidgets }: BrandPanelProps) {
+function BrandPanel({ theme, brandColors, onUpdateBrandColors, onApplyToAllWidgets, accentColor = '#E11D48' }: BrandPanelProps) {
   const isDark = theme === 'dark';
   const [editingSlot, setEditingSlot] = useState<string | null>(null);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
@@ -1110,7 +1112,7 @@ function BrandPanel({ theme, brandColors, onUpdateBrandColors, onApplyToAllWidge
 
               {/* Active/editing indicator */}
               {isEditing && (
-                <div className="absolute inset-0 ring-2 ring-blue-500 ring-inset pointer-events-none" />
+                <div className="absolute inset-0 ring-2 ring-inset pointer-events-none" style={{ '--tw-ring-color': accentColor } as React.CSSProperties} />
               )}
 
               {/* Hover overlay with delete button for filled slots */}
@@ -1214,10 +1216,11 @@ function BrandPanel({ theme, brandColors, onUpdateBrandColors, onApplyToAllWidge
                     key={c}
                     onClick={() => handleColorChange(editingSlot, c)}
                     className={`aspect-square rounded transition-all hover:scale-110 ${
-                      colors[editingSlot as keyof BrandColors] === c ? 'ring-2 ring-blue-500 ring-offset-1' : ''
+                      colors[editingSlot as keyof BrandColors] === c ? 'ring-2 ring-offset-1' : ''
                     }`}
                     style={{
                       backgroundColor: c,
+                      ...(colors[editingSlot as keyof BrandColors] === c ? { '--tw-ring-color': accentColor } as React.CSSProperties : {}),
                     }}
                   />
                 ))}
@@ -1233,7 +1236,8 @@ function BrandPanel({ theme, brandColors, onUpdateBrandColors, onApplyToAllWidge
         {hasAnyColors && (
           <button
             onClick={onApplyToAllWidgets}
-            className="w-full py-2.5 rounded-lg text-sm font-['Inter'] font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700"
+            className="w-full py-2.5 rounded-lg text-sm font-['Inter'] font-medium transition-colors text-white hover:opacity-90"
+            style={{ backgroundColor: accentColor }}
           >
             Apply to All Sections
           </button>
@@ -1254,9 +1258,10 @@ function BrandPanel({ theme, brandColors, onUpdateBrandColors, onApplyToAllWidge
 interface UploadsPanelProps {
   theme: string;
   onAddImage?: (url: string, name: string) => void;
+  accentColor?: string;
 }
 
-function UploadsPanel({ theme, onAddImage }: UploadsPanelProps) {
+function UploadsPanel({ theme, onAddImage, accentColor = '#E11D48' }: UploadsPanelProps) {
   const isDark = theme === 'dark';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -1367,13 +1372,14 @@ function UploadsPanel({ theme, onAddImage }: UploadsPanelProps) {
         className={`
           w-full py-6 rounded-lg border-2 border-dashed transition-all cursor-pointer
           ${dragOver
-            ? 'border-blue-500 bg-blue-500/10'
+            ? ''
             : isDark
               ? 'border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/50'
               : 'border-zinc-300 hover:border-zinc-400 hover:bg-zinc-100'
           }
           ${isUploading ? 'opacity-50 pointer-events-none' : ''}
         `}
+        style={dragOver ? { borderColor: accentColor, backgroundColor: `${accentColor}15` } : undefined}
       >
         {isUploading ? (
           <div className="text-center">
@@ -1385,8 +1391,8 @@ function UploadsPanel({ theme, onAddImage }: UploadsPanelProps) {
         ) : (
           <div className="text-center">
             <CloudUpload className={`w-8 h-8 mx-auto mb-2 ${
-              dragOver ? 'text-blue-500' : isDark ? 'text-zinc-400' : 'text-zinc-500'
-            }`} />
+              dragOver ? '' : isDark ? 'text-zinc-400' : 'text-zinc-500'
+            }`} style={dragOver ? { color: accentColor } : undefined} />
             <p className={`text-sm font-['Inter'] ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
               Upload images
             </p>
@@ -1446,10 +1452,12 @@ function UploadsPanel({ theme, onAddImage }: UploadsPanelProps) {
                   group relative aspect-square rounded-lg overflow-hidden cursor-pointer
                   border-2 transition-all
                   ${isDark
-                    ? 'border-zinc-700 hover:border-blue-500'
-                    : 'border-zinc-200 hover:border-blue-500'
+                    ? 'border-zinc-700'
+                    : 'border-zinc-200'
                   }
                 `}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = accentColor; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}
               >
                 {/* Thumbnail */}
                 <img
@@ -1523,9 +1531,10 @@ interface SiteSettingsModalProps {
   theme: string;
   siteSettings?: SiteSettingsData;
   onUpdateSiteSettings?: (settings: SiteSettingsData) => void;
+  accentColor?: string;
 }
 
-function SiteSettingsModal({ isOpen, onClose, theme, siteSettings, onUpdateSiteSettings }: SiteSettingsModalProps) {
+function SiteSettingsModal({ isOpen, onClose, theme, siteSettings, onUpdateSiteSettings, accentColor = '#E11D48' }: SiteSettingsModalProps) {
   const isDark = theme === 'dark';
   const [settings, setSettings] = useState<SiteSettingsData>(siteSettings || {
     siteName: '',
@@ -1700,7 +1709,8 @@ function SiteSettingsModal({ isOpen, onClose, theme, siteSettings, onUpdateSiteS
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 rounded-lg text-sm font-['Inter'] bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-['Inter'] text-white hover:opacity-90 transition-colors"
+            style={{ backgroundColor: accentColor }}
           >
             Save Changes
           </button>
@@ -1728,6 +1738,7 @@ interface ProjectsPanelProps {
   onAddPageFromTemplate?: (template: PageTemplate) => void;
   siteSettings?: SiteSettingsData;
   onUpdateSiteSettings?: (settings: SiteSettingsData) => void;
+  accentColor?: string;
 }
 
 function ProjectsPanel({
@@ -1745,6 +1756,7 @@ function ProjectsPanel({
   onAddPageFromTemplate,
   siteSettings,
   onUpdateSiteSettings,
+  accentColor = '#E11D48',
 }: ProjectsPanelProps) {
   const isDark = theme === 'dark';
   const [editingPageId, setEditingPageId] = useState<string | null>(null);
@@ -1883,13 +1895,14 @@ function ProjectsPanel({
                     className={`
                       relative flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-all
                       ${isActive
-                        ? 'bg-blue-600/20 border border-blue-600'
+                        ? 'border'
                         : isDark
                           ? 'bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-800'
                           : 'bg-white hover:bg-zinc-50 border border-zinc-200'
                       }
                       ${isDragging ? 'opacity-50' : ''}
                     `}
+                    style={isActive ? { backgroundColor: `${accentColor}20`, borderColor: accentColor } : undefined}
                   >
                     {/* Drag Handle */}
                     {!page.isDefault && (
@@ -1902,7 +1915,7 @@ function ProjectsPanel({
                     <div className={`w-6 h-6 rounded flex items-center justify-center flex-shrink-0 ${
                       isDark ? 'bg-zinc-900' : 'bg-zinc-100'
                     }`}>
-                      <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-500' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
+                      <Icon className={`w-3.5 h-3.5 ${isActive ? '' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`} style={isActive ? { color: accentColor } : undefined} />
                     </div>
 
                     {/* Page Name */}
@@ -1924,8 +1937,8 @@ function ProjectsPanel({
                       ) : (
                         <div className="flex items-center gap-2">
                           <span className={`text-sm font-['Inter'] truncate ${
-                            isActive ? 'text-blue-500' : isDark ? 'text-zinc-200' : 'text-zinc-800'
-                          }`}>
+                            isActive ? '' : isDark ? 'text-zinc-200' : 'text-zinc-800'
+                          }`} style={isActive ? { color: accentColor } : undefined}>
                             {page.name}
                           </span>
                           {page.isHomepage && (
@@ -2087,6 +2100,7 @@ function ProjectsPanel({
         theme={theme}
         siteSettings={siteSettings}
         onUpdateSiteSettings={onUpdateSiteSettings}
+        accentColor={accentColor}
       />
     </div>
   );
@@ -2131,6 +2145,8 @@ export interface FreeFormSidebarProps {
   brandColors?: BrandColors | null;
   onUpdateBrandColors?: (colors: BrandColors) => void;
   onApplyBrandToAllWidgets?: () => void;
+  accentColor?: string;
+  onActivePanelChange?: (panel: string | null) => void;
   className?: string;
 }
 
@@ -2164,11 +2180,18 @@ export default function FreeFormSidebar({
   brandColors = null,
   onUpdateBrandColors,
   onApplyBrandToAllWidgets,
+  accentColor = '#E11D48',
+  onActivePanelChange,
   className = '',
 }: FreeFormSidebarProps) {
   const [activePanel, setActivePanel] = useState<string | null>('elements');
   const [searchQuery, setSearchQuery] = useState('');
   const isDark = theme === 'dark';
+
+  // Notify parent of active panel changes
+  useEffect(() => {
+    onActivePanelChange?.(activePanel);
+  }, [activePanel, onActivePanelChange]);
 
   // Handle icon click - toggle panel
   const handleNavClick = useCallback((panelId: string) => {
@@ -2251,6 +2274,7 @@ export default function FreeFormSidebar({
             onAddSection={onAddSection}
             onAddElement={handleAddElement}
             onDragStart={() => {}}
+            accentColor={accentColor}
           />
         );
       case 'text':
@@ -2269,10 +2293,11 @@ export default function FreeFormSidebar({
             brandColors={brandColors}
             onUpdateBrandColors={onUpdateBrandColors}
             onApplyToAllWidgets={onApplyBrandToAllWidgets}
+            accentColor={accentColor}
           />
         );
       case 'uploads':
-        return <UploadsPanel theme={theme} onAddImage={onAddImage} />;
+        return <UploadsPanel theme={theme} onAddImage={onAddImage} accentColor={accentColor} />;
       case 'projects':
         return (
           <ProjectsPanel
@@ -2290,6 +2315,7 @@ export default function FreeFormSidebar({
             onAddPageFromTemplate={onAddPageFromTemplate}
             siteSettings={siteSettings}
             onUpdateSiteSettings={onUpdateSiteSettings}
+            accentColor={accentColor}
           />
         );
       default:
@@ -2327,7 +2353,7 @@ export default function FreeFormSidebar({
               >
                 {/* Active indicator - left bar */}
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-8 bg-blue-500 rounded-r-full" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-8 rounded-r-full" style={{ backgroundColor: accentColor }} />
                 )}
                 <Icon className="w-5 h-5" />
                 <span className="text-[10px] font-['Inter'] leading-tight">

@@ -17,12 +17,14 @@ interface AnimationPreviewProps {
   isSelected: boolean;
   onClick: () => void;
   theme: string;
+  accentColor?: string;
 }
 
 interface SpeedSelectorProps {
   value: number;
   onChange: (value: number) => void;
   theme: string;
+  accentColor?: string;
 }
 
 interface DelayInputProps {
@@ -36,6 +38,7 @@ interface AnimationPreviewLiveProps {
   speed: number;
   delay: number;
   theme: string;
+  accentColor?: string;
 }
 
 interface AnimationPickerModalProps {
@@ -45,6 +48,7 @@ interface AnimationPickerModalProps {
   onSelect: (animation: AnimationConfig | null) => void;
   onPreview?: (animation: AnimationConfig) => void;
   theme?: string;
+  accentColor?: string;
 }
 
 // ── Animation Preview Box ──────────────────────────────────────────────────
@@ -52,7 +56,7 @@ interface AnimationPickerModalProps {
 /**
  * Animation Preview Box - Shows looping animation demo
  */
-function AnimationPreview({ animation, isSelected, onClick, theme }: AnimationPreviewProps) {
+function AnimationPreview({ animation, isSelected, onClick, theme, accentColor = '#E11D48' }: AnimationPreviewProps) {
   const [key, setKey] = useState(0);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -82,14 +86,15 @@ function AnimationPreview({ animation, isSelected, onClick, theme }: AnimationPr
       className={`
         relative p-3 rounded-xl border-2 transition-all duration-200 text-left
         ${isSelected
-          ? 'border-blue-500 bg-blue-500/10'
+          ? ''
           : 'border-gray-200 hover:border-gray-300 bg-white'
         }
       `}
+      style={isSelected ? { borderColor: accentColor, backgroundColor: `${accentColor}15` } : undefined}
     >
       {/* Selected checkmark */}
       {isSelected && (
-        <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: accentColor }}>
           <Check className="w-3 h-3 text-white" />
         </div>
       )}
@@ -103,8 +108,8 @@ function AnimationPreview({ animation, isSelected, onClick, theme }: AnimationPr
         <div
           key={key}
           ref={previewRef}
-          className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg"
-          style={animationStyle}
+          className="w-10 h-10 rounded-lg"
+          style={{ ...animationStyle, background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}
         />
       </div>
 
@@ -124,7 +129,7 @@ function AnimationPreview({ animation, isSelected, onClick, theme }: AnimationPr
 /**
  * Speed Selector
  */
-function SpeedSelector({ value, onChange, theme }: SpeedSelectorProps) {
+function SpeedSelector({ value, onChange, theme, accentColor = '#E11D48' }: SpeedSelectorProps) {
   return (
     <div className="mb-4">
       <label
@@ -140,9 +145,10 @@ function SpeedSelector({ value, onChange, theme }: SpeedSelectorProps) {
             onClick={() => onChange(speed.value)}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-['Inter'] transition-colors ${
               value === speed.value
-                ? 'bg-blue-600 text-white'
+                ? 'text-white'
                 : 'bg-gray-100 text-gray-600 hover:text-gray-800 hover:bg-gray-200'
             }`}
+            style={value === speed.value ? { backgroundColor: accentColor } : undefined}
           >
             {speed.value}x
           </button>
@@ -189,7 +195,7 @@ function DelayInput({ value, onChange, theme }: DelayInputProps) {
 /**
  * Live preview with configurable speed and delay
  */
-function AnimationPreviewLive({ animationId, speed, delay, theme }: AnimationPreviewLiveProps) {
+function AnimationPreviewLive({ animationId, speed, delay, theme, accentColor = '#E11D48' }: AnimationPreviewLiveProps) {
   const [key, setKey] = useState(0);
   const animation = getAnimationById(animationId);
 
@@ -228,8 +234,8 @@ function AnimationPreviewLive({ animationId, speed, delay, theme }: AnimationPre
       <style>{keyframeStyle}</style>
       <div
         key={key}
-        className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg"
-        style={animationStyle}
+        className="w-14 h-14 rounded-lg"
+        style={{ ...animationStyle, background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}
       />
       <button
         onClick={handleRestart}
@@ -255,6 +261,7 @@ export default function AnimationPickerModal({
   onSelect,
   onPreview,
   theme = 'light',
+  accentColor = '#E11D48',
 }: AnimationPickerModalProps) {
   const [selectedAnimation, setSelectedAnimation] = useState<string | null>(currentAnimation?.type || null);
   const [speed, setSpeed] = useState(currentAnimation?.speed || 1);
@@ -316,7 +323,7 @@ export default function AnimationPickerModal({
           style={{ borderColor: '#E5E7EB' }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}>
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -351,9 +358,10 @@ export default function AnimationPickerModal({
               onClick={() => setActiveCategory(category)}
               className={`px-4 py-2 rounded-lg text-xs font-['Inter'] font-medium capitalize transition-colors ${
                 activeCategory === category
-                  ? 'bg-blue-600 text-white'
+                  ? 'text-white'
                   : 'bg-gray-100 text-gray-600 hover:text-gray-800'
               }`}
+              style={activeCategory === category ? { backgroundColor: accentColor } : undefined}
             >
               {category === 'all' ? 'All Animations' : category}
             </button>
@@ -370,6 +378,7 @@ export default function AnimationPickerModal({
                 isSelected={selectedAnimation === animation.id}
                 onClick={() => setSelectedAnimation(animation.id)}
                 theme={theme}
+                accentColor={accentColor}
               />
             ))}
           </div>
@@ -385,7 +394,7 @@ export default function AnimationPickerModal({
               {/* Selected animation info */}
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
-                  <Zap className="w-4 h-4 text-blue-500" />
+                  <Zap className="w-4 h-4" style={{ color: accentColor }} />
                   <span
                     className="text-sm font-medium font-['Inter']"
                     style={{ color: '#1A1A1A' }}
@@ -393,7 +402,7 @@ export default function AnimationPickerModal({
                     {getAnimationById(selectedAnimation)?.name}
                   </span>
                 </div>
-                <SpeedSelector value={speed} onChange={setSpeed} theme={theme} />
+                <SpeedSelector value={speed} onChange={setSpeed} theme={theme} accentColor={accentColor} />
                 <DelayInput value={delay} onChange={setDelay} theme={theme} />
               </div>
 
@@ -407,6 +416,7 @@ export default function AnimationPickerModal({
                   speed={speed}
                   delay={delay}
                   theme={theme}
+                  accentColor={accentColor}
                 />
               </div>
             </div>
@@ -446,7 +456,8 @@ export default function AnimationPickerModal({
             <button
               onClick={handleConfirm}
               disabled={!selectedAnimation}
-              className="px-6 py-2 rounded-lg text-sm font-['Inter'] font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2 rounded-lg text-sm font-['Inter'] font-medium text-white transition-colors disabled:opacity-50 flex items-center gap-2 hover:opacity-90"
+              style={{ backgroundColor: accentColor }}
             >
               Apply Animation
               <ArrowRight className="w-4 h-4" />

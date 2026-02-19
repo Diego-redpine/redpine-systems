@@ -15,6 +15,7 @@ export interface ElementBreakpoint {
   y: number;
   width: number;
   height: number;
+  fontScale?: number;
 }
 
 export interface EditorElement {
@@ -923,50 +924,58 @@ function generateBreakpointPosition(
   const padding = 20;
 
   if (targetMode === 'mobile') {
-    // Mobile: Stack vertically, center horizontally, scale down if needed
-    const maxWidth = Math.min(baseSize.width, targetWidth - (padding * 2));
+    // Mobile: Stack vertically, center horizontally, scale down proportionally
+    const maxWidth = Math.min(element.width, targetWidth - (padding * 2));
+    const scaleFactor = maxWidth / element.width;
+    const scaledHeight = Math.round(element.height * scaleFactor);
+    const fontScale = Math.max(0.6, scaleFactor);
     const centerX = (targetWidth - maxWidth) / 2;
 
     // Calculate Y based on stacking previous elements IN SORTED ORDER
     let stackedY = padding;
+    const getStackedHeight = (el: EditorElement) => {
+      if (el.breakpoints?.mobile) return el.breakpoints.mobile.height;
+      // Compute scaled height for unstored breakpoints
+      const elMaxW = Math.min(el.width, targetWidth - (padding * 2));
+      const elScale = elMaxW / el.width;
+      return Math.round(el.height * elScale);
+    };
     if (sortedIndices) {
-      // Use sorted order for stacking calculation
       for (let i = 0; i < sortedIndex; i++) {
         const originalIndex = sortedIndices[i];
         const prevEl = elements[originalIndex];
-        const prevPos = prevEl.breakpoints?.mobile || { height: prevEl.height };
-        stackedY += prevPos.height + padding;
+        stackedY += getStackedHeight(prevEl) + padding;
       }
     } else {
-      // Fallback to original array order
       for (let i = 0; i < sortedIndex; i++) {
         const prevEl = elements[i];
-        const prevPos = prevEl.breakpoints?.mobile || { height: prevEl.height };
-        stackedY += prevPos.height + padding;
+        stackedY += getStackedHeight(prevEl) + padding;
       }
     }
-
-    const height = element.height;
 
     return {
       x: Math.max(padding, centerX),
       y: stackedY,
       width: maxWidth,
-      height,
+      height: scaledHeight,
+      fontScale,
     };
   }
 
   if (targetMode === 'tablet') {
-    // Tablet: Scale down width proportionally, keep relative positions
+    // Tablet: Scale down proportionally, keep relative positions
     const scaleFactor = targetWidth / BREAKPOINTS.desktop;
     const scaledWidth = Math.min(element.width * scaleFactor, targetWidth - (padding * 2));
+    const scaledHeight = Math.round(element.height * scaleFactor);
     const scaledX = Math.min(element.x * scaleFactor, targetWidth - scaledWidth - padding);
+    const fontScale = Math.max(0.75, scaleFactor);
 
     return {
       x: Math.max(padding, scaledX),
-      y: element.y,
+      y: Math.round(element.y * scaleFactor),
       width: scaledWidth,
-      height: element.height,
+      height: scaledHeight,
+      fontScale,
     };
   }
 

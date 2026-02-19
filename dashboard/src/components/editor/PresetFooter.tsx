@@ -112,7 +112,7 @@ export default function PresetFooter({
   const textColor = footerConfig.textColor || colors?.text || (isDark ? '#ffffff' : '#1A1A1A');
   const linkColor = footerConfig.linkColor || colors?.text || (isDark ? '#9CA3AF' : '#6B7280');
   const socialIconColor = footerConfig.socialIconColor || colors?.text || (isDark ? '#9CA3AF' : '#6B7280');
-  const accentColor = colors?.buttons || '#3B82F6';
+  const accentColor = colors?.buttons || '#E11D48';
   const borderColor = isDark ? '#374151' : '#E5E7EB';
 
   const handleClick = (e: React.MouseEvent) => {

@@ -108,6 +108,7 @@ interface FreeFormElementData {
   deletable?: boolean;
   zIndex?: number;
   rotation?: number;
+  fontScale?: number;
   properties: ElementProperties;
 }
 
@@ -119,6 +120,7 @@ interface FreeFormElementProps {
   theme?: 'dark' | 'light';
   isPreviewMode?: boolean;
   animationKey?: number;
+  accentColor?: string;
   onMouseDown?: (e: MouseEvent) => void;
   onResizeMouseDown?: (e: MouseEvent, handle: string) => void;
   onRotateMouseDown?: (e: MouseEvent) => void;
@@ -147,7 +149,7 @@ interface ElementContentProps {
 
 // ─── Resize Handle ──────────────────────────────────────────────────────────────
 
-function ResizeHandle({ position, onMouseDown }: ResizeHandleProps) {
+function ResizeHandle({ position, onMouseDown, accentColor = '#E11D48' }: ResizeHandleProps & { accentColor?: string }) {
   const positionStyles: Record<string, string> = {
     nw: 'top-0 left-0 cursor-nw-resize',
     n: 'top-0 left-1/2 -translate-x-1/2 cursor-n-resize',
@@ -161,34 +163,35 @@ function ResizeHandle({ position, onMouseDown }: ResizeHandleProps) {
 
   return (
     <div
-      className={`
-        absolute w-3 h-3 bg-white border-2 border-blue-500 rounded-sm
-        hover:bg-blue-500 transition-colors z-20
-        ${positionStyles[position]}
-      `}
-      style={{ transform: position.length === 1 ? positionStyles[position].split(' ').pop() : undefined }}
+      className={`absolute w-3 h-3 bg-white border-2 rounded-sm transition-colors z-20 ${positionStyles[position]}`}
+      style={{ borderColor: accentColor, transform: position.length === 1 ? positionStyles[position].split(' ').pop() : undefined }}
       onMouseDown={(e) => onMouseDown?.(e, position)}
+      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = accentColor; }}
+      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'white'; }}
     />
   );
 }
 
 // ─── Rotation Handle ────────────────────────────────────────────────────────────
 
-function RotationHandle({ onMouseDown }: RotationHandleProps) {
+function RotationHandle({ onMouseDown, accentColor = '#E11D48' }: RotationHandleProps & { accentColor?: string }) {
   return (
     <div
       className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center z-20"
       style={{ top: '-32px' }}
     >
       {/* Connector line */}
-      <div className="w-px h-3 bg-blue-500" />
+      <div className="w-px h-3" style={{ backgroundColor: accentColor }} />
       {/* Rotation circle */}
       <div
-        className="w-5 h-5 bg-white border-2 border-blue-500 rounded-full cursor-grab hover:bg-blue-500 hover:text-white transition-colors flex items-center justify-center active:cursor-grabbing"
+        className="w-5 h-5 bg-white border-2 rounded-full cursor-grab transition-colors flex items-center justify-center active:cursor-grabbing"
+        style={{ borderColor: accentColor }}
         onMouseDown={onMouseDown}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = accentColor; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'white'; }}
         title="Drag to rotate"
       >
-        <RotateCw className="w-3 h-3 text-blue-500 hover:text-white" style={{ pointerEvents: 'none' }} />
+        <RotateCw className="w-3 h-3" style={{ color: accentColor, pointerEvents: 'none' }} />
       </div>
     </div>
   );
@@ -788,6 +791,7 @@ export default function FreeFormElement({
   theme = 'light',
   isPreviewMode = false,
   animationKey = 0,
+  accentColor = '#E11D48',
   onMouseDown,
   onResizeMouseDown,
   onRotateMouseDown,
@@ -936,17 +940,22 @@ export default function FreeFormElement({
     >
       {/* Selection outline */}
       <div
-        className={`
-          absolute -inset-1 rounded-lg border-2 transition-opacity pointer-events-none
-          ${isSelected
-            ? isEditing ? 'border-blue-500 opacity-100' : 'border-blue-500 opacity-100'
-            : 'border-transparent opacity-0 group-hover:border-blue-500/50 group-hover:opacity-100'
-          }
-        `}
+        className={`absolute -inset-1 rounded-lg border-2 transition-opacity pointer-events-none ${
+          isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'
+        }`}
+        style={{ borderColor: accentColor }}
       />
 
-      {/* Element content */}
-      <div className="w-full h-full overflow-hidden rounded">
+      {/* Element content — fontScale applies proportional sizing on mobile/tablet */}
+      <div
+        className="w-full h-full overflow-hidden rounded"
+        style={element.fontScale && element.fontScale !== 1 ? {
+          transform: `scale(${element.fontScale})`,
+          transformOrigin: 'top left',
+          width: `${100 / element.fontScale}%`,
+          height: `${100 / element.fontScale}%`,
+        } : undefined}
+      >
         <ElementContent
           element={element}
           theme={theme}
@@ -959,16 +968,16 @@ export default function FreeFormElement({
       {/* Resize handles - only show when selected and not locked */}
       {isSelected && !locked && (
         <>
-          <ResizeHandle position="nw" onMouseDown={onResizeMouseDown} />
-          <ResizeHandle position="n" onMouseDown={onResizeMouseDown} />
-          <ResizeHandle position="ne" onMouseDown={onResizeMouseDown} />
-          <ResizeHandle position="e" onMouseDown={onResizeMouseDown} />
-          <ResizeHandle position="se" onMouseDown={onResizeMouseDown} />
-          <ResizeHandle position="s" onMouseDown={onResizeMouseDown} />
-          <ResizeHandle position="sw" onMouseDown={onResizeMouseDown} />
-          <ResizeHandle position="w" onMouseDown={onResizeMouseDown} />
+          <ResizeHandle position="nw" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
+          <ResizeHandle position="n" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
+          <ResizeHandle position="ne" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
+          <ResizeHandle position="e" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
+          <ResizeHandle position="se" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
+          <ResizeHandle position="s" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
+          <ResizeHandle position="sw" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
+          <ResizeHandle position="w" onMouseDown={onResizeMouseDown} accentColor={accentColor} />
           {/* Rotation handle */}
-          <RotationHandle onMouseDown={onRotateMouseDown} />
+          <RotationHandle onMouseDown={onRotateMouseDown} accentColor={accentColor} />
         </>
       )}
 
@@ -982,10 +991,10 @@ export default function FreeFormElement({
       >
         {/* Type label */}
         <div
-          className={`
-            px-2 py-0.5 rounded text-[10px] font-['Inter'] font-medium flex items-center gap-1
-            ${isSelected ? 'bg-blue-500 text-white' : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-300 text-zinc-700'}
-          `}
+          className={`px-2 py-0.5 rounded text-[10px] font-['Inter'] font-medium flex items-center gap-1 ${
+            isSelected ? 'text-white' : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-300 text-zinc-700'
+          }`}
+          style={isSelected ? { backgroundColor: accentColor } : undefined}
         >
           {hasAnimation && <Sparkles className="w-3 h-3" />}
           {type}

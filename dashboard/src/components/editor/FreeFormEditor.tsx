@@ -11,6 +11,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import {
   useFreeFormEditor,
   createSection,
+  getElementPosition,
   BREAKPOINTS,
   type EditorElement,
   type Section as HookSection,
@@ -124,9 +125,13 @@ export default function FreeFormEditor({
 
   // Viewport & zoom
   const [viewportMode, setViewportMode] = useState<ViewportMode>('desktop');
-  const [zoom, setZoom] = useState(0.75);
+  const VIEWPORT_ZOOM: Record<ViewportMode, number> = { desktop: 0.55, tablet: 0.75, mobile: 0.95 };
+  const [zoom, setZoom] = useState(VIEWPORT_ZOOM.desktop);
   const theme = 'light' as const;
   const isDark = false;
+
+  // Sidebar panel tracking (for conditional PageThumbnailBar visibility)
+  const [sidebarPanel, setSidebarPanel] = useState<string | null>('elements');
 
   // Selection state
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
@@ -144,9 +149,32 @@ export default function FreeFormEditor({
   });
 
   const viewportWidth = BREAKPOINTS[viewportMode];
+
+  // Compute section height overrides for mobile/tablet when stacked elements exceed section height
+  const sectionHeightOverrides = useMemo(() => {
+    if (viewportMode === 'desktop') return {};
+    const overrides: Record<string, number> = {};
+    for (const section of currentPage.sections) {
+      if (section.type !== 'blank') continue;
+      const sectionElements = editor.elements.filter(el => el.sectionId === section.id);
+      if (!sectionElements.length) continue;
+      let maxBottom = 0;
+      for (const el of sectionElements) {
+        const pos = getElementPosition(el, viewportMode);
+        const bottom = pos.y + pos.height;
+        if (bottom > maxBottom) maxBottom = bottom;
+      }
+      const neededHeight = maxBottom + 20; // 20px bottom padding
+      if (neededHeight > section.height) {
+        overrides[section.id] = neededHeight;
+      }
+    }
+    return overrides;
+  }, [currentPage.sections, editor.elements, viewportMode]);
+
   const canvasHeight = useMemo(
-    () => currentPage.sections.reduce((sum, s) => sum + s.height, 0) + 200,
-    [currentPage.sections],
+    () => currentPage.sections.reduce((sum, s) => sum + (sectionHeightOverrides[s.id] ?? s.height), 0) + 200,
+    [currentPage.sections, sectionHeightOverrides],
   );
 
   const markUnsaved = useCallback(() => setSaveStatus('unsaved'), []);
@@ -335,6 +363,16 @@ export default function FreeFormEditor({
     if (updates.properties) {
       editor.updateProperties(elementId, updates.properties as Record<string, unknown>);
     }
+    if (updates.x !== undefined || updates.y !== undefined) {
+      const el = editor.rawElements.find(e => e.id === elementId);
+      if (el) {
+        editor.updatePosition(
+          elementId,
+          (updates.x as number) ?? el.x,
+          (updates.y as number) ?? el.y,
+        );
+      }
+    }
     if (updates.width !== undefined || updates.height !== undefined) {
       const el = editor.rawElements.find(e => e.id === elementId);
       if (el) {
@@ -493,6 +531,34 @@ export default function FreeFormEditor({
     } catch { setSaveStatus('unsaved'); }
   }, [onSave, pages, editor.rawElements, currentPageIndex]);
 
+  // ---------------------------------------------------------------------------
+  // Auto-save to localStorage (debounced) — protects against refresh data loss
+  // ---------------------------------------------------------------------------
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const data = serialize(pages, editor.rawElements, currentPageIndex);
+        localStorage.setItem('redpine-editor-autosave', JSON.stringify(data));
+      } catch {
+        // localStorage might be full — silently fail
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [pages, editor.rawElements, currentPageIndex]);
+
+  // Flush autosave immediately on page unload (debounce may not fire in time)
+  useEffect(() => {
+    const flush = () => {
+      try {
+        const data = serialize(pages, editor.rawElements, currentPageIndex);
+        localStorage.setItem('redpine-editor-autosave', JSON.stringify(data));
+      } catch {}
+    };
+    window.addEventListener('beforeunload', flush);
+    return () => window.removeEventListener('beforeunload', flush);
+  }, [pages, editor.rawElements, currentPageIndex]);
+
   const zoomIn = () => setZoom(z => Math.min(z + 0.1, 2.0));
   const zoomOut = () => setZoom(z => Math.max(z - 0.1, 0.25));
 
@@ -528,6 +594,8 @@ export default function FreeFormEditor({
             colors={editorColors}
             isPreviewMode={true}
             theme={theme}
+            accentColor={accentColor}
+            sectionHeightOverrides={sectionHeightOverrides}
           />
         </div>
       </div>
@@ -560,7 +628,7 @@ export default function FreeFormEditor({
             {VIEWPORT_BUTTONS.map(({ mode, icon: Icon, label }) => (
               <button
                 key={mode}
-                onClick={() => { setViewportMode(mode); editor.generateBreakpointPositions(mode, BREAKPOINTS[mode]); }}
+                onClick={() => { setViewportMode(mode); setZoom(VIEWPORT_ZOOM[mode]); editor.generateBreakpointPositions(mode, BREAKPOINTS[mode]); }}
                 className={`p-2 rounded-lg text-xs font-['Inter'] transition-colors flex items-center gap-1.5 ${
                   viewportMode === mode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
@@ -581,7 +649,8 @@ export default function FreeFormEditor({
             <button
               onClick={handleSave}
               disabled={saveStatus === 'saved'}
-              className={`p-2 rounded-lg transition-colors ${saveStatus === 'unsaved' ? 'text-blue-500 hover:bg-blue-500/10' : saveStatus === 'saving' ? 'text-amber-500' : 'text-gray-400'}`}
+              className={`p-2 rounded-lg transition-colors ${saveStatus === 'unsaved' ? 'hover:opacity-80' : saveStatus === 'saving' ? 'text-amber-500' : 'text-gray-400'}`}
+              style={saveStatus === 'unsaved' ? { color: accentColor } : undefined}
               title={saveStatus === 'saved' ? 'Saved' : saveStatus === 'saving' ? 'Saving...' : 'Save (Cmd+S)'}
             >
               <Save className="w-4 h-4" />
@@ -606,6 +675,8 @@ export default function FreeFormEditor({
             viewportMode={viewportMode}
             canvasHeight={canvasHeight}
             theme={theme}
+            accentColor={accentColor}
+            onActivePanelChange={setSidebarPanel}
             className="flex-shrink-0"
           />
 
@@ -638,6 +709,8 @@ export default function FreeFormEditor({
             canvasConfig={currentPage.canvasConfig}
             colors={editorColors}
             theme={theme}
+            accentColor={accentColor}
+            sectionHeightOverrides={sectionHeightOverrides}
             className="flex-1 min-w-0"
           />
 
@@ -664,6 +737,7 @@ export default function FreeFormEditor({
             onBringToFront={(id: string) => { editor.bringToFront(id); markUnsaved(); }}
             onSendToBack={(id: string) => { editor.sendToBack(id); markUnsaved(); }}
             theme={theme}
+            accentColor={accentColor}
             className="w-[260px] flex-shrink-0"
           />
         </div>
@@ -675,6 +749,7 @@ export default function FreeFormEditor({
           pageElements={pageElements}
           viewportWidth={viewportWidth}
           canvasHeight={canvasHeight}
+          isVisible={sidebarPanel === 'projects'}
           onSelectPage={switchPage}
           onAddPage={addPage}
           onDuplicatePage={duplicatePageById}
@@ -682,6 +757,7 @@ export default function FreeFormEditor({
           onRenamePage={renamePageById}
           onReorderPages={reorderPages}
           theme={theme}
+          accentColor={accentColor}
         />
       </div>
     </DragDropProvider>

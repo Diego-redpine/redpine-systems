@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import TopBar from '@/components/TopBar';
 import DashboardContent from '@/components/DashboardContent';
 import ToolsStrip from '@/components/ToolsStrip';
@@ -123,6 +123,15 @@ const NAIL_SALON_COLORS: DashboardColors = {
 export default function PreviewPage() {
   const [tabs, setTabs] = useState<DashboardTab[]>(DEFAULT_TABS);
   const [activeTab, setActiveTab] = useState('tab_1');
+
+  // If an editor session exists from a previous refresh, auto-switch to Website tab
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('redpine-editor-session')) {
+        setActiveTab('__site__');
+      }
+    } catch {}
+  }, []);
   const [showLimitPopup, setShowLimitPopup] = useState(false);
   const [dashboardColors, setDashboardColors] = useState<DashboardColors>(NAIL_SALON_COLORS);
   const [editorColors, setEditorColors] = useState<ColorItem[]>([]);

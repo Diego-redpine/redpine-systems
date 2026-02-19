@@ -6,7 +6,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Plus, Copy, Trash2, Edit3, GripVertical, Home, Briefcase, Wrench, FileText, Phone } from 'lucide-react';
+import { Plus, Copy, Trash2, Edit3, GripVertical, Home, Briefcase, Wrench, FileText, Phone, ChevronDown, ChevronUp } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -30,6 +30,7 @@ interface CanvasElement {
 interface MiniCanvasPreviewProps {
   elements: CanvasElement[];
   theme: string;
+  accentColor?: string;
   viewportWidth?: number;
   canvasHeight?: number;
 }
@@ -51,6 +52,7 @@ interface RenameDialogProps {
   onClose: () => void;
   onConfirm: (name: string) => void;
   theme: string;
+  accentColor?: string;
 }
 
 interface PageThumbnailProps {
@@ -59,6 +61,7 @@ interface PageThumbnailProps {
   isActive: boolean;
   index: number;
   theme: string;
+  accentColor?: string;
   viewportWidth: number;
   canvasHeight: number;
   onSelect: (pageId: string) => void;
@@ -77,6 +80,8 @@ interface PageThumbnailBarProps {
   viewportWidth: number;
   canvasHeight: number;
   theme?: string;
+  accentColor?: string;
+  isVisible?: boolean;
   onSelectPage: (pageId: string) => void;
   onAddPage: () => void;
   onDuplicatePage: (pageId: string) => void;
@@ -107,12 +112,21 @@ function getPageIcon(page: PageData): LucideIcon {
 /**
  * Mini Canvas Preview - renders a simplified preview of page content
  */
-function MiniCanvasPreview({ elements, theme, viewportWidth = 1200, canvasHeight = 800 }: MiniCanvasPreviewProps) {
+function MiniCanvasPreview({ elements, theme, accentColor = '#E11D48', viewportWidth = 1200, canvasHeight = 800 }: MiniCanvasPreviewProps) {
   const isLight = theme !== 'dark';
 
   // Scale factor to fit the preview
   const scale = 80 / viewportWidth;
   const previewHeight = canvasHeight * scale;
+
+  // Parse accent color for rgba usage
+  const hexToRgb = (hex: string) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r},${g},${b}`;
+  };
+  const accentRgb = hexToRgb(accentColor);
 
   return (
     <div
@@ -135,9 +149,9 @@ function MiniCanvasPreview({ elements, theme, viewportWidth = 1200, canvasHeight
         if (element.type === 'heading' || element.type === 'text') {
           bgColor = 'rgba(0,0,0,0.2)';
         } else if (element.type === 'button') {
-          bgColor = 'rgba(59,130,246,0.5)';
+          bgColor = `rgba(${accentRgb},0.5)`;
         } else if (element.type === 'image') {
-          bgColor = 'rgba(59,130,246,0.2)';
+          bgColor = `rgba(${accentRgb},0.2)`;
         }
 
         return (
@@ -229,7 +243,7 @@ function ContextMenu({ x, y, onDuplicate, onDelete, onRename, onClose, isDefault
 /**
  * Rename Dialog Component
  */
-function RenameDialog({ isOpen, pageName, onClose, onConfirm, theme }: RenameDialogProps) {
+function RenameDialog({ isOpen, pageName, onClose, onConfirm, theme, accentColor = '#E11D48' }: RenameDialogProps) {
   const [name, setName] = useState(pageName);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -292,7 +306,7 @@ function RenameDialog({ isOpen, pageName, onClose, onConfirm, theme }: RenameDia
             <button
               type="submit"
               className="flex-1 py-2 rounded-lg text-xs font-['Inter'] text-white hover:opacity-90"
-              style={{ backgroundColor: '#3B82F6' }}
+              style={{ backgroundColor: accentColor || '#E11D48' }}
             >
               Save
             </button>
@@ -314,6 +328,7 @@ function PageThumbnail({
   isActive,
   index,
   theme,
+  accentColor = '#E11D48',
   viewportWidth,
   canvasHeight,
   onSelect,
@@ -354,9 +369,9 @@ function PageThumbnail({
           style={{
             ...(isActive
               ? {
-                  borderColor: '#3B82F6',
-                  boxShadow: '0 0 0 2px #3B82F6',
-                  backgroundColor: 'rgba(59,130,246,0.1)',
+                  borderColor: accentColor,
+                  boxShadow: `0 0 0 2px ${accentColor}`,
+                  backgroundColor: `${accentColor}15`,
                 }
               : {
                   backgroundColor: '#ffffff',
@@ -375,6 +390,7 @@ function PageThumbnail({
           <MiniCanvasPreview
             elements={elements}
             theme={theme}
+            accentColor={accentColor}
             viewportWidth={viewportWidth}
             canvasHeight={canvasHeight}
           />
@@ -384,7 +400,7 @@ function PageThumbnail({
             className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
             style={{
               ...(isActive
-                ? { backgroundColor: '#3B82F6', color: '#ffffff' }
+                ? { backgroundColor: accentColor, color: '#ffffff' }
                 : { backgroundColor: '#f5f5f5', color: '#6B7280' }),
             }}
           >
@@ -396,7 +412,7 @@ function PageThumbnail({
             <div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 p-1 rounded-full"
               style={{
-                backgroundColor: isActive ? '#3B82F6' : '#E5E7EB',
+                backgroundColor: isActive ? accentColor : '#E5E7EB',
               }}
             >
               <Icon className="w-3 h-3" style={{ color: isActive ? '#ffffff' : '#6B7280' }} />
@@ -448,6 +464,8 @@ export default function PageThumbnailBar({
   viewportWidth,
   canvasHeight,
   theme = 'light',
+  accentColor = '#E11D48',
+  isVisible = true,
   onSelectPage,
   onAddPage,
   onDuplicatePage,
@@ -457,6 +475,7 @@ export default function PageThumbnailBar({
   className = '',
 }: PageThumbnailBarProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [collapsed, setCollapsed] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [renameDialog, setRenameDialog] = useState<{ isOpen: boolean; pageId: string | null; pageName: string }>({
     isOpen: false,
@@ -506,84 +525,107 @@ export default function PageThumbnailBar({
 
   // Scroll to active page on mount/change
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current && !collapsed) {
       const activeIndex = pages.findIndex(p => p.id === currentPageId);
       if (activeIndex !== -1) {
-        const thumbnailWidth = 100; // Approximate width including gap
+        const thumbnailWidth = 100;
         const scrollLeft = activeIndex * thumbnailWidth - scrollRef.current.clientWidth / 2 + thumbnailWidth / 2;
         scrollRef.current.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
       }
     }
-  }, [currentPageId, pages]);
+  }, [currentPageId, pages, collapsed]);
+
+  // Auto-expand when becoming visible
+  useEffect(() => {
+    if (isVisible) setCollapsed(false);
+  }, [isVisible]);
+
+  const showBar = isVisible && !collapsed;
 
   return (
     <>
       <div
-        className={`flex items-center border-t ${className}`}
+        className={`border-t transition-all duration-200 overflow-hidden ${className}`}
         style={{
-          height: '100px',
+          height: showBar ? '100px' : '28px',
           backgroundColor: '#ffffff',
           borderColor: '#E5E7EB',
         }}
       >
-        {/* Pages label */}
+        {/* Collapse toggle strip — always visible */}
         <div
-          className="flex-shrink-0 px-3 border-r h-full flex items-center"
-          style={{ borderColor: '#E5E7EB' }}
+          className="flex items-center h-7 px-2 cursor-pointer select-none"
+          onClick={() => setCollapsed(c => !c)}
+          style={{ borderBottom: showBar ? '1px solid #E5E7EB' : 'none' }}
         >
           <span
-            className="text-[10px] font-['Inter'] font-medium uppercase tracking-wider"
+            className="text-[10px] font-['Inter'] font-medium uppercase tracking-wider mr-1.5"
             style={{ color: '#6B7280' }}
           >
             Pages
           </span>
+          <span className="text-[10px] font-['Inter']" style={{ color: '#9CA3AF' }}>
+            {pages.length}
+          </span>
+          <div className="flex-1" />
+          {showBar ? (
+            <ChevronDown className="w-3.5 h-3.5" style={{ color: '#9CA3AF' }} />
+          ) : (
+            <ChevronUp className="w-3.5 h-3.5" style={{ color: '#9CA3AF' }} />
+          )}
         </div>
 
-        {/* Thumbnails scroll area */}
-        <div
-          ref={scrollRef}
-          className="flex-1 overflow-x-auto overflow-y-hidden px-3 py-2 flex items-center gap-3"
-          style={{ scrollbarWidth: 'thin' }}
-        >
-          {pages.map((page, index) => (
-            <PageThumbnail
-              key={page.id}
-              page={page}
-              elements={pageElements[page.id] || []}
-              isActive={page.id === currentPageId}
-              index={index}
-              theme={theme}
-              viewportWidth={viewportWidth}
-              canvasHeight={canvasHeight}
-              onSelect={onSelectPage}
-              onDuplicate={onDuplicatePage}
-              onDelete={onDeletePage}
-              onRename={handleRename}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-            />
-          ))}
-        </div>
+        {/* Thumbnails area */}
+        {showBar && (
+          <div className="flex items-center" style={{ height: '72px' }}>
+            {/* Thumbnails scroll area */}
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-x-auto overflow-y-hidden px-3 py-1.5 flex items-center gap-3"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {pages.map((page, index) => (
+                <PageThumbnail
+                  key={page.id}
+                  page={page}
+                  elements={pageElements[page.id] || []}
+                  isActive={page.id === currentPageId}
+                  index={index}
+                  theme={theme}
+                  accentColor={accentColor}
+                  viewportWidth={viewportWidth}
+                  canvasHeight={canvasHeight}
+                  onSelect={onSelectPage}
+                  onDuplicate={onDuplicatePage}
+                  onDelete={onDeletePage}
+                  onRename={handleRename}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                />
+              ))}
+            </div>
 
-        {/* Add page button */}
-        <div
-          className="flex-shrink-0 px-3 border-l h-full flex items-center"
-          style={{ borderColor: '#E5E7EB' }}
-        >
-          <button
-            onClick={onAddPage}
-            className="p-2.5 rounded-lg transition-colors flex items-center justify-center border hover:bg-gray-100"
-            style={{
-              backgroundColor: '#ffffff',
-              color: '#6B7280',
-              borderColor: '#E5E7EB',
-            }}
-            title="Add new page"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
-        </div>
+            {/* Add page button */}
+            <div
+              className="flex-shrink-0 px-3 border-l h-full flex items-center"
+              style={{ borderColor: '#E5E7EB' }}
+            >
+              <button
+                onClick={onAddPage}
+                className="p-2 rounded-lg transition-colors flex items-center justify-center border hover:bg-gray-100"
+                style={{
+                  backgroundColor: '#ffffff',
+                  color: '#6B7280',
+                  borderColor: '#E5E7EB',
+                }}
+                title="Add new page"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Rename Dialog */}
@@ -593,6 +635,7 @@ export default function PageThumbnailBar({
         onClose={() => setRenameDialog({ isOpen: false, pageId: null, pageName: '' })}
         onConfirm={handleRenameConfirm}
         theme={theme}
+        accentColor={accentColor}
       />
     </>
   );
