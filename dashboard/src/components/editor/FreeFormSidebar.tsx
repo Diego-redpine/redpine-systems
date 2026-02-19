@@ -70,6 +70,8 @@ import {
   Calendar,
   ShoppingBag,
   Star,
+  Send,
+  ArrowUp,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { BASE_ELEMENT_SIZES } from '@/hooks/useFreeFormEditor';
@@ -195,6 +197,7 @@ interface UserUpload {
 
 // Sidebar navigation items
 const NAV_ITEMS: NavItem[] = [
+  { id: 'ai', label: 'AI', icon: Sparkles },
   { id: 'elements', label: 'Elements', icon: LayoutGrid },
   { id: 'text', label: 'Text', icon: Type },
   { id: 'brand', label: 'Brand', icon: Palette },
@@ -2256,15 +2259,165 @@ export default function FreeFormSidebar({
     onAddElement(type, centerX, centerY, viewportMode, viewportWidth, canvasHeight, Object.keys(options).length > 0 ? options : undefined);
   }, [onAddElement, viewportWidth, viewportMode, canvasHeight, brandColors]);
 
+  // ---- AI Chat state ----
+  const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    if (chatMessages.length > 0) scrollToBottom();
+  }, [chatMessages, scrollToBottom]);
+
+  const sendChatMessage = useCallback(async (text?: string) => {
+    const msg = (text || chatInput).trim();
+    if (!msg || isChatLoading) return;
+
+    setChatMessages(prev => [...prev, { role: 'user', content: msg }]);
+    setChatInput('');
+    setIsChatLoading(true);
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: msg,
+          context: 'website_edit',
+          pageSlug: 'home',
+          pageTitle: 'Home',
+          history: chatMessages,
+        }),
+      });
+      const data = await res.json();
+      const response = data.data?.response || data.response || 'Sorry, something went wrong.';
+      setChatMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    } catch {
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Failed to connect. Please try again.' }]);
+    }
+    setIsChatLoading(false);
+  }, [chatInput, isChatLoading, chatMessages]);
+
+  const handleChatKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  }, [sendChatMessage]);
+
   // Get panel title
   const getPanelTitle = (): string => {
+    if (activePanel === 'ai') return 'AI Assistant';
     const item = NAV_ITEMS.find(n => n.id === activePanel);
     return item?.label || '';
   };
 
+  // AI suggestion chips
+  const AI_SUGGESTIONS = [
+    'Write a hero headline',
+    'Suggest sections for my page',
+    'Help me write About copy',
+  ];
+
   // Render panel content
   const renderPanelContent = (): ReactNode => {
     switch (activePanel) {
+      case 'ai':
+        return (
+          <div className="flex flex-col h-full min-w-[220px]">
+            {/* Messages area */}
+            <div className="flex-1 overflow-y-auto px-3 py-2 space-y-3">
+              {chatMessages.length === 0 && (
+                <div className="text-center py-6">
+                  <Sparkles className={`w-8 h-8 mx-auto mb-3 ${isDark ? 'text-zinc-600' : 'text-zinc-300'}`} />
+                  <p className={`text-xs mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                    Ask AI for help with your website content
+                  </p>
+                  <div className="space-y-2">
+                    {AI_SUGGESTIONS.map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        onClick={() => sendChatMessage(suggestion)}
+                        className={`w-full text-left text-xs px-3 py-2 rounded-lg transition-colors ${
+                          isDark
+                            ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                        }`}
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {chatMessages.map((msg, i) => (
+                <div key={i} className={msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
+                  <div
+                    className={`inline-block px-3 py-2 rounded-xl text-xs max-w-[95%] leading-relaxed ${
+                      msg.role === 'user'
+                        ? 'text-white rounded-br-sm'
+                        : isDark
+                          ? 'bg-zinc-800 text-zinc-200 rounded-bl-sm'
+                          : 'bg-zinc-100 text-zinc-700 rounded-bl-sm'
+                    }`}
+                    style={msg.role === 'user' ? { backgroundColor: accentColor } : undefined}
+                  >
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+              {isChatLoading && (
+                <div className="flex justify-start">
+                  <div className={`inline-flex items-center gap-1 px-3 py-2 rounded-xl rounded-bl-sm text-xs ${
+                    isDark ? 'bg-zinc-800' : 'bg-zinc-100'
+                  }`}>
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accentColor, animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accentColor, animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accentColor, animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input area */}
+            <div className={`px-3 py-2 border-t flex-shrink-0 ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+              <div className="flex items-end gap-1.5">
+                <textarea
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={handleChatKeyDown}
+                  placeholder="Ask AI..."
+                  rows={1}
+                  className={`flex-1 text-xs resize-none rounded-lg px-2.5 py-2 outline-none max-h-[80px] font-['Inter'] ${
+                    isDark
+                      ? 'bg-zinc-800 text-white placeholder-zinc-500 focus:ring-1'
+                      : 'bg-zinc-100 text-zinc-900 placeholder-zinc-400 focus:ring-1'
+                  }`}
+                  style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
+                />
+                <button
+                  onClick={() => sendChatMessage()}
+                  disabled={!chatInput.trim() || isChatLoading}
+                  className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+                    chatInput.trim() && !isChatLoading
+                      ? 'text-white'
+                      : isDark
+                        ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
+                        : 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
+                  }`}
+                  style={chatInput.trim() && !isChatLoading ? { backgroundColor: accentColor } : undefined}
+                >
+                  <ArrowUp className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       case 'elements':
         return (
           <ElementsPanel
@@ -2399,7 +2552,7 @@ export default function FreeFormSidebar({
         </div>
 
         {/* Search Bar - Only for panels that need search */}
-        {activePanel && !['brand'].includes(activePanel) && (
+        {activePanel && !['brand', 'ai'].includes(activePanel) && (
           <div className="px-4 py-3 flex-shrink-0">
             <SearchInput
               placeholder={`Search ${getPanelTitle().toLowerCase()}...`}
@@ -2411,7 +2564,7 @@ export default function FreeFormSidebar({
         )}
 
         {/* Panel Content */}
-        <div className="flex-1 overflow-y-auto min-w-[220px]">
+        <div className={`flex-1 min-w-[220px] ${activePanel === 'ai' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`}>
           {renderPanelContent()}
         </div>
 
