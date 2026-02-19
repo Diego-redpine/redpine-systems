@@ -345,7 +345,7 @@ export default function BookingSetupWizard({
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium block mb-1.5" style={{ color: mutedColor }}>Appointment Duration</label>
+                  <label className="text-xs font-medium block mb-1.5" style={{ color: mutedColor }}>Default Slot Duration</label>
                   <CustomSelect
                     value={String(data.duration_minutes)}
                     onChange={val => setData(prev => ({ ...prev, duration_minutes: parseInt(val) }))}
@@ -353,6 +353,9 @@ export default function BookingSetupWizard({
                     style={{ borderColor, backgroundColor: pageBg, color: headingColor }}
                     buttonColor={buttonBg}
                   />
+                  <p className="text-xs mt-1.5" style={{ color: mutedColor }}>
+                    Fallback when no service is selected. Service durations override this.
+                  </p>
                 </div>
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: mutedColor }}>Buffer Between</label>
@@ -576,7 +579,7 @@ export default function BookingSetupWizard({
                 )}
 
                 <div className="flex justify-between items-center pt-2 border-t" style={{ borderColor }}>
-                  <span className="text-sm" style={{ color: textColor }}>Duration</span>
+                  <span className="text-sm" style={{ color: textColor }}>Default Duration</span>
                   <span className="text-sm font-semibold" style={{ color: headingColor }}>
                     {data.duration_minutes < 60 ? `${data.duration_minutes} min` : `${data.duration_minutes / 60}h${data.duration_minutes % 60 ? ` ${data.duration_minutes % 60}m` : ''}`}
                   </span>

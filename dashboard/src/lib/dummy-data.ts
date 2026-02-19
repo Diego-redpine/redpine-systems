@@ -38,6 +38,7 @@ export interface CardData {
     image?: string;
     status?: string;
     metric?: string | number;
+    [key: string]: unknown;
   }[];
 }
 
@@ -225,9 +226,12 @@ export const componentDummyData: Record<string, ComponentData> = {
   staff: {
     type: 'cards',
     items: [
-      { id: 'staff_1', title: 'Owner', subtitle: 'Manager', meta: '45 clients', avatar: '/avatars/default.png', status: 'active', metric: 45 },
-      { id: 'staff_2', title: 'Team Member 1', subtitle: 'Staff', meta: '32 clients', avatar: '/avatars/default.png', status: 'active', metric: 32 },
-      { id: 'staff_3', title: 'Team Member 2', subtitle: 'Staff', meta: '28 clients', avatar: '/avatars/default.png', status: 'active', metric: 28 },
+      { id: 'staff_1', name: 'Maria Nguyen', title: 'Maria Nguyen', role: 'Lead Nail Tech', subtitle: 'Lead Nail Tech', email: 'maria@bellanails.com', phone: '(555) 201-1001', staff_model: 'full_time', status: 'active', metric: 52 },
+      { id: 'staff_2', name: 'Jessica Tran', title: 'Jessica Tran', role: 'Senior Nail Tech', subtitle: 'Senior Nail Tech', email: 'jessica@bellanails.com', phone: '(555) 201-1002', staff_model: 'full_time', status: 'active', metric: 41 },
+      { id: 'staff_3', name: 'Linda Pham', title: 'Linda Pham', role: 'Nail Tech', subtitle: 'Nail Tech', email: 'linda@bellanails.com', phone: '(555) 201-1003', staff_model: 'full_time', status: 'active', metric: 35 },
+      { id: 'staff_4', name: 'Amy Le', title: 'Amy Le', role: 'Nail Tech', subtitle: 'Nail Tech', email: 'amy@bellanails.com', phone: '(555) 201-1004', staff_model: 'part_time', status: 'active', metric: 28 },
+      { id: 'staff_5', name: 'David Park', title: 'David Park', role: 'Junior Nail Tech', subtitle: 'Junior Nail Tech', email: 'david@bellanails.com', phone: '(555) 201-1005', staff_model: 'part_time', status: 'on_leave', metric: 18 },
+      { id: 'staff_6', name: 'Sofia Cruz', title: 'Sofia Cruz', role: 'Front Desk', subtitle: 'Front Desk', email: 'sofia@bellanails.com', phone: '(555) 201-1006', staff_model: 'full_time', status: 'active', metric: 0 },
     ]
   },
   vendors: {

@@ -54,8 +54,24 @@ export async function GET(request: NextRequest) {
     .limit(1);
 
   const calendarConfig = calSettings?.[0] || null;
-  const slotDuration = calendarConfig?.duration_minutes || 60;
-  const bufferMinutes = calendarConfig?.buffer_minutes || 0;
+  let slotDuration = calendarConfig?.duration_minutes || 60;
+  let bufferMinutes = calendarConfig?.buffer_minutes || 0;
+
+  // If service_id provided, override slot duration and buffer with service-specific values
+  const serviceId = searchParams.get('service_id');
+  if (serviceId) {
+    const { data: service } = await supabase
+      .from('packages')
+      .select('duration_minutes, buffer_minutes')
+      .eq('id', serviceId)
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .single();
+    if (service) {
+      if (service.duration_minutes) slotDuration = service.duration_minutes;
+      if (service.buffer_minutes) bufferMinutes = service.buffer_minutes;
+    }
+  }
 
   // Check if this day is open based on business hours
   const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();

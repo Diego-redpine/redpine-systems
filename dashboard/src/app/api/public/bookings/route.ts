@@ -72,8 +72,26 @@ export async function POST(request: NextRequest) {
     .limit(1);
 
   const calendarConfig = calSettings?.[0] || null;
-  const durationMin = calendarConfig?.duration_minutes || 60;
-  const bufferMin = calendarConfig?.buffer_minutes || 0;
+  let durationMin = calendarConfig?.duration_minutes || 60;
+  let bufferMin = calendarConfig?.buffer_minutes || 0;
+
+  // If service_id provided, use service-specific duration and buffer
+  const serviceId = body.service_id || null;
+  let serviceName = '';
+  if (serviceId) {
+    const { data: service } = await supabase
+      .from('packages')
+      .select('duration_minutes, buffer_minutes, name, price_cents')
+      .eq('id', serviceId)
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .single();
+    if (service) {
+      if (service.duration_minutes) durationMin = service.duration_minutes;
+      if (service.buffer_minutes) bufferMin = service.buffer_minutes;
+      serviceName = service.name || '';
+    }
+  }
 
   // Parse date and time into start/end timestamps
   // date = "YYYY-MM-DD", time = "H:MM AM/PM"
@@ -202,7 +220,8 @@ export async function POST(request: NextRequest) {
       user_id: userId,
       client_id: clientId_db,
       staff_id: assignedStaffId,
-      title: `Booking: ${name}`,
+      service_id: serviceId,
+      title: serviceName ? `${serviceName} — ${name}` : `Booking: ${name}`,
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       status: 'scheduled',

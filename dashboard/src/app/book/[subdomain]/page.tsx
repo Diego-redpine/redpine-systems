@@ -16,6 +16,15 @@ interface SlotInfo {
   available: boolean;
 }
 
+interface ServiceInfo {
+  id: string;
+  name: string;
+  description?: string;
+  price_cents: number;
+  duration_minutes?: number;
+  category?: string;
+}
+
 // Generate time slots dynamically from business hours and slot duration
 function generateTimeSlotsFromHours(
   startTime: string,
@@ -88,10 +97,15 @@ export default function BookingPage() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
-  const [step, setStep] = useState<'date' | 'time' | 'details' | 'confirmed'>('date');
+  const [step, setStep] = useState<'service' | 'date' | 'time' | 'details' | 'confirmed'>('service');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingRef, setBookingRef] = useState('');
   const [bookingError, setBookingError] = useState('');
+
+  // Service selection state
+  const [services, setServices] = useState<ServiceInfo[] | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceInfo | null>(null);
+  const [servicesLoading, setServicesLoading] = useState(true);
 
   const dates = useMemo(() => generateDates(), []);
 
@@ -115,7 +129,8 @@ export default function BookingPage() {
     setDayIsClosed(false);
     setSelectedStaff('');
 
-    fetch(`/api/public/bookings/availability?subdomain=${subdomain}&date=${dateStr}`)
+    const serviceParam = selectedService ? `&service_id=${selectedService.id}` : '';
+    fetch(`/api/public/bookings/availability?subdomain=${subdomain}&date=${dateStr}${serviceParam}`)
       .then(res => res.json())
       .then(data => {
         if (!data.success) {
@@ -158,7 +173,7 @@ export default function BookingPage() {
         setDayIsClosed(false);
       })
       .finally(() => setLoadingSlots(false));
-  }, [selectedDate, dates, subdomain]);
+  }, [selectedDate, dates, subdomain, selectedService]);
 
   useEffect(() => {
     async function fetchConfig() {
@@ -191,6 +206,26 @@ export default function BookingPage() {
     fetchConfig();
   }, [subdomain]);
 
+  // Fetch services for this business
+  useEffect(() => {
+    fetch(`/api/public/services?subdomain=${subdomain}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.services?.length > 0) {
+          setServices(data.services);
+        } else {
+          setServices([]);
+          // No services — skip to date step
+          setStep('date');
+        }
+      })
+      .catch(() => {
+        setServices([]);
+        setStep('date');
+      })
+      .finally(() => setServicesLoading(false));
+  }, [subdomain]);
+
   const accentColor = config?.colors?.buttons || config?.colors?.sidebar_bg || '#1A1A1A';
   const accentTextColor = isColorLight(accentColor) ? '#000000' : '#FFFFFF';
 
@@ -214,6 +249,9 @@ export default function BookingPage() {
       };
       if (selectedStaff) {
         body.staff_id = selectedStaff;
+      }
+      if (selectedService) {
+        body.service_id = selectedService.id;
       }
 
       const res = await fetch('/api/public/bookings', {
@@ -298,36 +336,98 @@ export default function BookingPage() {
       {/* Main content */}
       <main className="max-w-2xl mx-auto px-4 py-8">
         {/* Progress indicator */}
-        {step !== 'confirmed' && (
-          <div className="flex items-center gap-2 mb-8">
-            {['date', 'time', 'details'].map((s, i) => (
-              <div key={s} className="flex items-center gap-2">
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-colors"
-                  style={{
-                    backgroundColor: step === s ? accentColor : i < ['date', 'time', 'details'].indexOf(step) ? accentColor : '#E5E7EB',
-                    color: step === s || i < ['date', 'time', 'details'].indexOf(step) ? accentTextColor : '#9CA3AF',
-                  }}
-                >
-                  {i < ['date', 'time', 'details'].indexOf(step) ? (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    i + 1
-                  )}
+        {step !== 'confirmed' && (() => {
+          const hasServices = services && services.length > 0;
+          const allSteps = hasServices ? ['service', 'date', 'time', 'details'] : ['date', 'time', 'details'];
+          const currentIdx = allSteps.indexOf(step);
+          return (
+            <div className="flex items-center gap-2 mb-8">
+              {allSteps.map((s, i) => (
+                <div key={s} className="flex items-center gap-2">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-colors"
+                    style={{
+                      backgroundColor: step === s ? accentColor : i < currentIdx ? accentColor : '#E5E7EB',
+                      color: step === s || i < currentIdx ? accentTextColor : '#9CA3AF',
+                    }}
+                  >
+                    {i < currentIdx ? (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      i + 1
+                    )}
+                  </div>
+                  {i < allSteps.length - 1 && <div className="w-12 h-0.5 bg-gray-200 rounded" />}
                 </div>
-                {i < 2 && <div className="w-12 h-0.5 bg-gray-200 rounded" />}
+              ))}
+            </div>
+          );
+        })()}
+
+        {/* Step 0: Service selection (if services exist) */}
+        {step === 'service' && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">Choose a service</h2>
+            <p className="text-sm text-gray-500 mb-6">Select the service you would like to book</p>
+            {servicesLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: accentColor, borderTopColor: 'transparent' }} />
               </div>
-            ))}
+            ) : (
+              <div className="space-y-3">
+                {services?.map(svc => (
+                  <button
+                    key={svc.id}
+                    onClick={() => { setSelectedService(svc); setStep('date'); }}
+                    className="w-full text-left p-4 rounded-xl border-2 transition-all hover:shadow-sm"
+                    style={{
+                      borderColor: selectedService?.id === svc.id ? accentColor : '#E5E7EB',
+                      backgroundColor: selectedService?.id === svc.id ? `${accentColor}08` : '#FFFFFF',
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900">{svc.name}</p>
+                        {svc.description && <p className="text-sm text-gray-500 mt-0.5">{svc.description}</p>}
+                        {svc.duration_minutes && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {svc.duration_minutes < 60
+                              ? `${svc.duration_minutes} min`
+                              : `${Math.floor(svc.duration_minutes / 60)}h${svc.duration_minutes % 60 ? ` ${svc.duration_minutes % 60}m` : ''}`}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-lg font-bold" style={{ color: accentColor }}>
+                        ${(svc.price_cents / 100).toFixed(2)}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {/* Step 1: Date selection */}
         {step === 'date' && (
           <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Select a date</h2>
-            <p className="text-sm text-gray-500 mb-6">Choose your preferred appointment date</p>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-lg font-semibold text-gray-900">Select a date</h2>
+              {selectedService && (
+                <button
+                  onClick={() => setStep('service')}
+                  className="text-sm font-medium hover:underline"
+                  style={{ color: accentColor }}
+                >
+                  Change service
+                </button>
+              )}
+            </div>
+            <p className="text-sm text-gray-500 mb-6">
+              {selectedService ? `${selectedService.name} — $${(selectedService.price_cents / 100).toFixed(2)}` : 'Choose your preferred appointment date'}
+            </p>
             <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
               {dates.map((d, i) => (
                 <button
@@ -482,6 +582,7 @@ export default function BookingPage() {
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">Your details</h2>
                 <p className="text-sm text-gray-500">
+                  {selectedService ? `${selectedService.name} · ` : ''}
                   {selectedDate !== null ? dates[selectedDate].label : ''} at {selectedTime}
                   {selectedStaff && staffList ? ` with ${staffList.find(s => s.id === selectedStaff)?.name}` : ''}
                 </p>
@@ -576,6 +677,18 @@ export default function BookingPage() {
                   <span className="text-gray-500">Reference</span>
                   <span className="font-medium text-gray-900 font-mono">{bookingRef}</span>
                 </div>
+              )}
+              {selectedService && (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Service</span>
+                    <span className="font-medium text-gray-900">{selectedService.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Price</span>
+                    <span className="font-medium text-gray-900">${(selectedService.price_cents / 100).toFixed(2)}</span>
+                  </div>
+                </>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Date</span>

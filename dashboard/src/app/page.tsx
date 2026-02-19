@@ -22,27 +22,32 @@ function colorsArrayToObject(colors: ColorItem[]): DashboardColors {
   return result;
 }
 
-// Default demo tabs for the main page
+// Enterprise Nail Salon template — matches beauty_body.py nail_salon
 const DEFAULT_TABS: DashboardTab[] = [
   {
     id: 'tab_1',
+    label: 'Dashboard',
+    icon: 'home',
+    components: [],
+  },
+  {
+    id: 'tab_2',
     label: 'Clients',
     icon: 'people',
     components: [
       {
-        id: 'pipeline',
-        label: 'Pipeline',
+        id: 'clients',
+        label: 'Bookings',
         dataSource: 'clients',
         view: 'pipeline',
-        availableViews: ['pipeline', 'list'],
+        availableViews: ['pipeline', 'table', 'list'],
         pipeline: {
           stages: [
-            { id: 'stage_1', name: 'New Inquiry', color: '#6366F1', order: 0 },
-            { id: 'stage_2', name: 'Consultation', color: '#F59E0B', order: 1 },
-            { id: 'stage_3', name: 'Booked', color: '#10B981', order: 2 },
-            { id: 'stage_4', name: 'In Service', color: '#8B5CF6', order: 3 },
-            { id: 'stage_5', name: 'Follow Up', color: '#F97316', order: 4 },
-            { id: 'stage_6', name: 'Loyal Client', color: '#14B8A6', order: 5 },
+            { id: 'stage_1', name: 'Requested', color: '#6366F1', order: 0 },
+            { id: 'stage_2', name: 'Confirmed', color: '#F59E0B', order: 1 },
+            { id: 'stage_3', name: 'Checked In', color: '#3B82F6', order: 2 },
+            { id: 'stage_4', name: 'In Service', color: '#10B981', order: 3 },
+            { id: 'stage_5', name: 'Completed', color: '#8B5CF6', order: 4 },
           ],
           default_stage_id: 'stage_1',
         },
@@ -56,54 +61,76 @@ const DEFAULT_TABS: DashboardTab[] = [
     ],
   },
   {
-    id: 'tab_2',
-    label: 'Schedule',
+    id: 'tab_3',
+    label: 'Appointments',
     icon: 'calendar',
     components: [
-      { id: 'appointments', label: 'Appointments' },
-      { id: 'calendar', label: 'Calendar' },
-    ],
-  },
-  {
-    id: 'tab_3',
-    label: 'Payments',
-    icon: 'dollar',
-    components: [
-      { id: 'payments', label: 'Payments' },
-      { id: 'invoices', label: 'Invoices' },
+      { id: 'calendar', label: 'Schedule', view: 'calendar' },
     ],
   },
   {
     id: 'tab_4',
-    label: 'Products',
-    icon: 'box',
+    label: 'Services',
+    icon: 'package',
     components: [
-      { id: 'products', label: 'Products' },
-      { id: 'forms', label: 'Forms' },
-      { id: 'reviews', label: 'Reviews' },
+      { id: 'packages', label: 'Service Menu', view: 'cards' },
+      { id: 'nail_sets', label: 'Nail Sets & Add-Ons', view: 'cards' },
+      { id: 'products', label: 'Retail Products', view: 'table' },
     ],
   },
   {
     id: 'tab_5',
-    label: 'Gallery',
+    label: 'Nail Art Gallery',
     icon: 'image',
     components: [
-      { id: 'galleries', label: 'Gallery', view: 'cards' },
+      { id: 'galleries', label: 'Nail Art Gallery', view: 'cards' },
+    ],
+  },
+  {
+    id: 'tab_6',
+    label: 'Nail Technicians',
+    icon: 'people',
+    components: [
+      { id: 'staff', label: 'Nail Techs', view: 'cards', availableViews: ['cards', 'table'] },
+    ],
+  },
+  {
+    id: 'tab_7',
+    label: 'Payments',
+    icon: 'dollar',
+    components: [
+      { id: 'invoices', label: 'Invoices', view: 'table' },
+      { id: 'expenses', label: 'Expenses', view: 'table' },
     ],
   },
 ];
+
+// Nail salon color scheme — red/pink enterprise palette
+const NAIL_SALON_COLORS: DashboardColors = {
+  ...defaultColors,
+  sidebar_bg: '#4C0519',
+  sidebar_text: '#F1F5F9',
+  sidebar_icons: '#A0AEC0',
+  sidebar_buttons: '#E11D48',
+  background: '#FFF1F2',
+  buttons: '#E11D48',
+  cards: '#FFFFFF',
+  text: '#1A1A1A',
+  headings: '#111827',
+  borders: '#E5E7EB',
+};
 
 export default function PreviewPage() {
   const [tabs, setTabs] = useState<DashboardTab[]>(DEFAULT_TABS);
   const [activeTab, setActiveTab] = useState('tab_1');
   const [showLimitPopup, setShowLimitPopup] = useState(false);
-  const [dashboardColors, setDashboardColors] = useState<DashboardColors>(defaultColors);
+  const [dashboardColors, setDashboardColors] = useState<DashboardColors>(NAIL_SALON_COLORS);
   const [editorColors, setEditorColors] = useState<ColorItem[]>([]);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [toolbarSide, setToolbarSide] = useState<'left' | 'right'>('left');
 
-  const businessName = 'Bella Nails Salon';
+  const businessName = 'Bella Nails';
 
   const handleColorsChange = useCallback((newColors: ColorItem[]) => {
     setEditorColors(newColors);

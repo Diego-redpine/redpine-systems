@@ -43,6 +43,7 @@ const DocumentEditor = lazy(() => import('@/components/editors/DocumentEditor'))
 const CSVImport = lazy(() => import('@/components/data/CSVImport'));
 const RouteView = lazy(() => import('./RouteView'));
 const AddEventModal = lazy(() => import('./AddEventModal'));
+const AddCatalogItemWizard = lazy(() => import('./AddCatalogItemWizard'));
 const GalleryManager = lazy(() => import('./GalleryManager'));
 
 // Small SVG icons for view toggle buttons
@@ -209,6 +210,8 @@ export default function ViewRenderer({
   const isSocialMediaEntity = entityType === 'social_media';
   const isChatWidgetEntity = entityType === 'chat_widget';
   const isGalleryEntity = ['galleries', 'images', 'portfolios'].includes(entityType);
+  const isPackagesEntity = entityType === 'packages';
+  const [isCatalogWizardOpen, setIsCatalogWizardOpen] = useState(false);
   const isRouteEntity = entityType === 'routes';
 
   // Custom fields for this entity type (only fetched in real mode)
@@ -285,6 +288,10 @@ export default function ViewRenderer({
     if (isSocialMediaEntity) {
       setEditingSocialPost(null);
       setIsSocialComposerOpen(true);
+      return;
+    }
+    if (isPackagesEntity) {
+      setIsCatalogWizardOpen(true);
       return;
     }
     setSelectedRecord(null);
@@ -398,6 +405,38 @@ export default function ViewRenderer({
       showError(mutationError || 'Failed to add team member');
     } else {
       toast.success('Team member added');
+    }
+  };
+
+  // Handle catalog item wizard save — creates a service or product
+  const handleCatalogItemSave = async (wizardData: Record<string, unknown>) => {
+    const currentData = data;
+    const tempId = generateTempId();
+    // Add display-friendly fields for card rendering (entity-fields uses meta/subtitle/status)
+    const priceCents = (wizardData.price_cents as number) || 0;
+    const durationMin = wizardData.duration_minutes as number | undefined;
+    const bufferMin = (wizardData.buffer_minutes as number) || 0;
+    const priceStr = priceCents > 0 ? `$${(priceCents / 100).toFixed(0)}` : 'Free';
+    const durationStr = durationMin ? (durationMin < 60 ? `${durationMin} min` : `${Math.floor(durationMin / 60)} hr${durationMin % 60 ? ` ${durationMin % 60}m` : ''}`) : '';
+    const bufferStr = bufferMin > 0 ? ` + ${bufferMin}m buffer` : '';
+    const metaStr = durationStr ? `${priceStr} · ${durationStr}${bufferStr}` : priceStr;
+    const newRecord = {
+      ...wizardData,
+      id: tempId,
+      title: wizardData.name,
+      meta: metaStr,
+      subtitle: wizardData.description || '',
+      status: wizardData.is_active ? 'active' : 'inactive',
+    };
+    setOptimisticData(optimisticCreate(currentData, newRecord));
+    setIsCatalogWizardOpen(false);
+
+    const result = await createRecord(wizardData);
+    if (!result) {
+      setOptimisticData(null);
+      showError(mutationError || 'Failed to add item');
+    } else {
+      toast.success(wizardData.item_type === 'service' ? 'Service added' : 'Product added');
     }
   };
 
@@ -954,6 +993,17 @@ export default function ViewRenderer({
           isOpen={isStaffWizardOpen}
           onClose={() => setIsStaffWizardOpen(false)}
           onSave={handleStaffWizardSave}
+          configColors={configColors}
+          isSaving={isCreating}
+        />
+      </Suspense>)}
+
+      {/* Catalog item wizard — services/products */}
+      {isCatalogWizardOpen && (<Suspense fallback={null}>
+        <AddCatalogItemWizard
+          isOpen={isCatalogWizardOpen}
+          onClose={() => setIsCatalogWizardOpen(false)}
+          onSave={handleCatalogItemSave}
           configColors={configColors}
           isSaving={isCreating}
         />

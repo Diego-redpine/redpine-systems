@@ -320,6 +320,27 @@ export interface MembershipMember {
   updated_at: string;
 }
 
+export interface Package {
+  id: string;
+  user_id: string;
+  name: string;
+  description?: string;
+  price_cents: number;
+  duration_minutes?: number;
+  buffer_minutes?: number;
+  category?: string;
+  item_type: 'service' | 'product' | 'package';
+  sku?: string;
+  quantity?: number;
+  image_url?: string;
+  is_active: boolean;
+  stripe_product_id?: string;
+  stripe_price_id?: string;
+  sort_order?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // Paginated response wrapper
 export interface PaginatedResponse<T> {
   data: T[];

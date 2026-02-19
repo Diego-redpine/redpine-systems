@@ -48,15 +48,10 @@ function transformDummyData(data: ComponentData, entityType: string, configStage
 
     case 'cards':
       return data.items.map((item, i) => ({
+        ...item,
         id: item.id || `item_${i}`,
-        name: item.title,
+        name: item.name || item.title,
         title: item.title,
-        subtitle: item.subtitle,
-        meta: item.meta,
-        avatar: item.avatar,
-        image: item.image,
-        status: item.status,
-        metric: item.metric,
       }));
 
     case 'list':
