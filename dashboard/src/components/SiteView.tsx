@@ -160,7 +160,7 @@ export default function SiteView({ colors, businessName, businessType }: SiteVie
       </div>
 
       {/* Tab content */}
-      {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} />}
+      {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} businessName={businessName} />}
       {activeSubTab === 'gallery' && <GalleryManager configColors={colors} entityType="galleries" />}
       {activeSubTab === 'portal' && <PortalContent colors={colors} businessName={businessName} businessType={businessType} />}
       {activeSubTab === 'analytics' && <SiteAnalytics colors={colors} />}

@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
 import { toast } from '@/components/ui/Toaster';
+
+const SiteEditor = lazy(() => import('@/components/SiteEditor'));
 
 interface Page {
   id: string;
@@ -17,7 +19,43 @@ interface Page {
   blocks?: unknown[];
 }
 
-export default function SiteContent({ colors, isDemoMode = false }: { colors: DashboardColors; isDemoMode?: boolean }) {
+// Demo pages pre-populated for unauthenticated users
+const DEMO_PAGES: Page[] = [
+  {
+    id: 'demo-home',
+    slug: 'home',
+    title: 'Home',
+    published: true,
+    updated_at: new Date().toISOString(),
+    blocks: [],
+  },
+  {
+    id: 'demo-services',
+    slug: 'services',
+    title: 'Services',
+    published: true,
+    updated_at: new Date().toISOString(),
+    blocks: [],
+  },
+  {
+    id: 'demo-about',
+    slug: 'about',
+    title: 'About Us',
+    published: false,
+    updated_at: new Date().toISOString(),
+    blocks: [],
+  },
+  {
+    id: 'demo-contact',
+    slug: 'contact',
+    title: 'Contact',
+    published: false,
+    updated_at: new Date().toISOString(),
+    blocks: [],
+  },
+];
+
+export default function SiteContent({ colors, isDemoMode = false, businessName }: { colors: DashboardColors; isDemoMode?: boolean; businessName?: string }) {
   const textMain = colors.headings || '#1A1A1A';
   const textMuted = '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
@@ -35,8 +73,12 @@ export default function SiteContent({ colors, isDemoMode = false }: { colors: Da
   const [newPageTitle, setNewPageTitle] = useState('');
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
 
+  // Demo mode: inline editor overlay
+  const [editingPage, setEditingPage] = useState<Page | null>(null);
+
   const fetchPages = useCallback(async () => {
     if (isDemoMode) {
+      setPages(DEMO_PAGES);
       setIsLoading(false);
       setFetchOk(true);
       return;
@@ -61,11 +103,22 @@ export default function SiteContent({ colors, isDemoMode = false }: { colors: Da
 
   const handleEdit = (slug: string) => {
     if (isDemoMode) {
-      toast.info('Editor is available after signing up');
+      // Open inline editor overlay instead of navigating away
+      const page = pages.find(p => p.slug === slug);
+      if (page) setEditingPage(page);
       return;
     }
     router.push(`/editor/${slug}`);
   };
+
+  // Demo mode: save blocks locally
+  const handleDemoSave = useCallback(async (blocks: unknown[]) => {
+    if (!editingPage) return;
+    setPages(prev => prev.map(p =>
+      p.slug === editingPage.slug ? { ...p, blocks, updated_at: new Date().toISOString() } : p
+    ));
+    setEditingPage(prev => prev ? { ...prev, blocks } : null);
+  }, [editingPage]);
 
   const handleTogglePublish = async (slug: string, currentlyPublished: boolean) => {
     if (isDemoMode) {
@@ -330,6 +383,26 @@ export default function SiteContent({ colors, isDemoMode = false }: { colors: Da
           onSubmit={handleNewPage}
           onClose={() => { setShowNewPageModal(false); setNewPageTitle(''); }}
         />
+      )}
+
+      {/* Demo mode: inline FreeForm editor overlay */}
+      {editingPage && (
+        <Suspense fallback={
+          <div className="fixed inset-0 z-50 bg-white flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
+          </div>
+        }>
+          <SiteEditor
+            pageSlug={editingPage.slug}
+            pageTitle={editingPage.title}
+            initialBlocks={editingPage.blocks || []}
+            allPages={pages}
+            businessName={businessName}
+            accentColor={colors.buttons}
+            onSave={handleDemoSave}
+            onClose={() => setEditingPage(null)}
+          />
+        </Suspense>
       )}
     </>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { DataSelector, DataItem } from './DataSelector';
 
 interface GalleryWidgetProps {
@@ -429,8 +430,8 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
           </>
         )}
 
-        {/* Lightbox */}
-        {lightboxIdx !== null && displayPhotos[lightboxIdx] && (
+        {/* Lightbox — portaled to body to escape canvas transform */}
+        {lightboxIdx !== null && displayPhotos[lightboxIdx] && typeof document !== 'undefined' && createPortal(
           <div
             onClick={() => setLightboxIdx(null)}
             style={{
@@ -552,7 +553,8 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
                 {lightboxIdx + 1} / {displayPhotos.length}
               </p>
             </div>
-          </div>
+          </div>,
+          document.body,
         )}
       </div>
     </div>

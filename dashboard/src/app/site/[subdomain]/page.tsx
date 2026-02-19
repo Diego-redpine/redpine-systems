@@ -2,19 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { RenderChaiBlocks } from '@chaibuilder/sdk/render';
-import { loadWebBlocks } from '@chaibuilder/sdk/web-blocks';
-import { registerCustomBlocks } from '@/lib/chai-blocks-register';
-
-loadWebBlocks();
-registerCustomBlocks();
-
-interface PageData {
-  title: string;
-  blocks: never[];
-  seo_title?: string;
-  seo_description?: string;
-}
 
 interface BusinessConfig {
   businessName: string;
@@ -25,42 +12,24 @@ export default function SiteHomePage() {
   const params = useParams();
   const subdomain = params.subdomain as string;
 
-  const [page, setPage] = useState<PageData | null>(null);
   const [config, setConfig] = useState<BusinessConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        // Fetch business config and home page in parallel
-        const [configRes, pageRes] = await Promise.all([
-          fetch('/api/subdomain', { headers: { 'x-subdomain': subdomain } }),
-          fetch(`/api/public/pages?subdomain=${subdomain}&slug=home`),
-        ]);
-
-        if (configRes.ok) {
-          const configJson = await configRes.json();
-          if (configJson.success) {
+        const res = await fetch('/api/subdomain', { headers: { 'x-subdomain': subdomain } });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success) {
             setConfig({
-              businessName: configJson.data.businessName,
-              colors: configJson.data.colors || {},
+              businessName: json.data.businessName,
+              colors: json.data.colors || {},
             });
           }
         }
-
-        if (pageRes.ok) {
-          const pageJson = await pageRes.json();
-          if (pageJson.data) {
-            setPage(pageJson.data);
-          } else {
-            setError('Page not found');
-          }
-        } else {
-          setError('Page not found');
-        }
       } catch {
-        setError('Failed to load page');
+        // ignore
       }
       setIsLoading(false);
     }
@@ -75,25 +44,28 @@ export default function SiteHomePage() {
     );
   }
 
-  if (error || !page) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-8 shadow-sm max-w-md w-full text-center">
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Page Not Found</h1>
-          <p className="text-gray-500 text-sm">This website is not available.</p>
-        </div>
-      </div>
-    );
-  }
+  const name = config?.businessName || subdomain;
+  const accent = config?.colors?.buttons || '#3B82F6';
 
   return (
-    <div className="min-h-screen">
-      {page.seo_title && <title>{page.seo_title}</title>}
-      <RenderChaiBlocks blocks={page.blocks} draft={false} />
-      {/* Footer */}
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="text-center max-w-lg">
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">{name}</h1>
+          <p className="text-gray-500 text-sm mb-6">
+            This website is being built with the new editor. Check back soon!
+          </p>
+          <div
+            className="inline-block px-5 py-2.5 rounded-full text-sm font-medium text-white"
+            style={{ backgroundColor: accent }}
+          >
+            Coming Soon
+          </div>
+        </div>
+      </div>
       <footer className="text-center py-4 border-t border-gray-200">
         <p className="text-xs text-gray-400">
-          {config?.businessName || subdomain} — Powered by <span className="font-semibold text-gray-500">Red Pine</span>
+          {name} — Powered by <span className="font-semibold text-gray-500">Red Pine</span>
         </p>
       </footer>
     </div>

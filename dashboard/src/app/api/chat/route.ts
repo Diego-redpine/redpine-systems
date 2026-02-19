@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
 
     // Website editing mode — different system prompt
     if (isWebsiteEdit) {
-      const websiteSystemPrompt = `You are a website design assistant for Red Pine. The user is editing a page in their website builder (ChaiBuilder).
+      const websiteSystemPrompt = `You are a website design assistant for Red Pine. The user is editing a page in their drag-and-drop website builder.
 
 Current page: "${pageTitle || 'Untitled'}" (/${pageSlug || ''})
 

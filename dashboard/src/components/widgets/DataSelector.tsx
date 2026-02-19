@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface DataItem {
   id: string;
@@ -81,7 +82,7 @@ export const DataSelector: React.FC<DataSelectorProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  const modal = (
     <div
       style={{
         position: 'fixed',
@@ -228,4 +229,10 @@ export const DataSelector: React.FC<DataSelectorProps> = ({
       </div>
     </div>
   );
+
+  // Portal to document.body to escape any CSS transform context (e.g. canvas scale)
+  if (typeof document !== 'undefined') {
+    return createPortal(modal, document.body);
+  }
+  return modal;
 };
