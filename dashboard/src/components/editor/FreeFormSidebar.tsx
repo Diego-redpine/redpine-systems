@@ -2298,9 +2298,25 @@ export default function FreeFormSidebar({
     const vw = viewportWidth || 1200;
 
     // Element height estimates for Y staggering
-    const ELEMENT_HEIGHTS: Record<string, number> = {
-      heading: 80, subheading: 60, text: 80, caption: 40, quote: 80,
+    const BASE_HEIGHTS: Record<string, number> = {
+      heading: 80, subheading: 60, text: 100, caption: 40, quote: 80,
       button: 60, image: 250, divider: 30, spacer: 50, contactForm: 400,
+    };
+    const textTypes = new Set(['heading', 'subheading', 'text', 'caption', 'quote']);
+
+    // Estimate height for text based on content length
+    const estimateHeight = (type: string, props: Record<string, unknown>) => {
+      const base = BASE_HEIGHTS[type] || 80;
+      if (!textTypes.has(type) || !props?.content) return base;
+      const content = props.content as string;
+      const fontSize = (props.fontSize as number) || (type === 'heading' ? 48 : 16);
+      const lineHeight = (props.lineHeight as number) || (type === 'heading' ? 1.2 : 1.5);
+      const elWidth = type === 'heading' ? 400 : 300;
+      const avgCharWidth = fontSize * 0.55;
+      const charsPerLine = Math.max(1, Math.floor(elWidth / avgCharWidth));
+      const lineCount = Math.ceil(content.length / charsPerLine);
+      const estimated = lineCount * fontSize * lineHeight + 16;
+      return Math.max(base, Math.ceil(estimated));
     };
 
     for (const action of actions) {
@@ -2312,7 +2328,8 @@ export default function FreeFormSidebar({
           const targetSectionId = (action.sectionId as string) || lastCreatedSectionId || sections?.[0]?.id;
           const x = Math.max(20, vw / 2 - 200);
           const y = nextY;
-          nextY += (ELEMENT_HEIGHTS[elType] || 80) + 20; // stagger vertically
+          const elHeight = estimateHeight(elType, (action.properties as Record<string, unknown>) || {});
+          nextY += elHeight + 20; // stagger vertically
           onAddElement?.(
             elType, x, y,
             viewportMode || 'desktop',

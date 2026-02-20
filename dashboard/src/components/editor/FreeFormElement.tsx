@@ -955,7 +955,10 @@ export default function FreeFormElement({
 
       {/* Element content — fontScale applies proportional sizing on mobile/tablet */}
       <div
-        className="w-full h-full overflow-hidden rounded"
+        className={`w-full h-full rounded ${
+          ['heading', 'subheading', 'text', 'caption', 'quote'].includes(element.type)
+            ? '' : 'overflow-hidden'
+        }`}
         style={element.fontScale && element.fontScale !== 1 ? {
           transform: `scale(${element.fontScale})`,
           transformOrigin: 'top left',

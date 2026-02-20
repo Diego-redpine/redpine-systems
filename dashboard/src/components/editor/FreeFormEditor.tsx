@@ -166,9 +166,8 @@ export default function FreeFormEditor({
 
   const viewportWidth = BREAKPOINTS[viewportMode];
 
-  // Compute section height overrides for mobile/tablet when stacked elements exceed section height
+  // Compute section height overrides when elements exceed section height (all viewports)
   const sectionHeightOverrides = useMemo(() => {
-    if (viewportMode === 'desktop') return {};
     const overrides: Record<string, number> = {};
     for (const section of currentPage.sections) {
       if (section.type !== 'blank') continue;
@@ -180,7 +179,7 @@ export default function FreeFormEditor({
         const bottom = pos.y + pos.height;
         if (bottom > maxBottom) maxBottom = bottom;
       }
-      const neededHeight = maxBottom + 20; // 20px bottom padding
+      const neededHeight = maxBottom + 30; // 30px bottom padding
       if (neededHeight > section.height) {
         overrides[section.id] = neededHeight;
       }

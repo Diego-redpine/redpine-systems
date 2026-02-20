@@ -925,36 +925,63 @@ function generateBreakpointPosition(
 
   if (targetMode === 'mobile') {
     // Mobile: Stack vertically, center horizontally, scale down proportionally
-    const maxWidth = Math.min(element.width, targetWidth - (padding * 2));
+    const mobilePadding = 12; // Tighter padding on mobile
+    const fullMobileWidth = targetWidth - (mobilePadding * 2);
+    // Text elements expand to fill mobile width; others clamp down
+    const textExpandTypes = ['heading', 'subheading', 'text', 'caption', 'quote'];
+    const maxWidth = textExpandTypes.includes(element.type)
+      ? fullMobileWidth
+      : Math.min(element.width, fullMobileWidth);
     const scaleFactor = maxWidth / element.width;
-    const scaledHeight = Math.round(element.height * scaleFactor);
-    const fontScale = Math.max(0.6, scaleFactor);
+    const fontScale = Math.min(1, Math.max(0.6, scaleFactor)); // Never upscale fonts
     const centerX = (targetWidth - maxWidth) / 2;
 
+    // For text elements, estimate height based on content at mobile width
+    let scaledHeight: number;
+    if (textExpandTypes.includes(element.type) && element.properties?.content) {
+      const content = element.properties.content as string;
+      const fontSize = ((element.properties.fontSize as number) || 16) * fontScale;
+      const lineHeight = (element.properties.lineHeight as number) || (element.type === 'heading' ? 1.2 : 1.5);
+      const estimated = estimateTextHeight(content, fontSize, lineHeight, maxWidth);
+      // Use content-based estimate; don't scale up height when element is wider than desktop
+      scaledHeight = Math.ceil(estimated);
+    } else {
+      scaledHeight = Math.round(element.height * Math.min(1, scaleFactor));
+    }
+
     // Calculate Y based on stacking previous elements IN SORTED ORDER
-    let stackedY = padding;
+    let stackedY = mobilePadding;
     const getStackedHeight = (el: EditorElement) => {
       if (el.breakpoints?.mobile) return el.breakpoints.mobile.height;
       // Compute scaled height for unstored breakpoints
-      const elMaxW = Math.min(el.width, targetWidth - (padding * 2));
+      const isTextEl = textExpandTypes.includes(el.type);
+      const elMaxW = isTextEl ? fullMobileWidth : Math.min(el.width, fullMobileWidth);
       const elScale = elMaxW / el.width;
-      return Math.round(el.height * elScale);
+      const elFontScale = Math.min(1, Math.max(0.6, elScale));
+      // For text elements, estimate content-based height
+      if (isTextEl && el.properties?.content) {
+        const elContent = el.properties.content as string;
+        const elFontSize = ((el.properties.fontSize as number) || 16) * elFontScale;
+        const elLineHeight = (el.properties.lineHeight as number) || (el.type === 'heading' ? 1.2 : 1.5);
+        return Math.ceil(estimateTextHeight(elContent, elFontSize, elLineHeight, elMaxW));
+      }
+      return Math.round(el.height * Math.min(1, elScale));
     };
     if (sortedIndices) {
       for (let i = 0; i < sortedIndex; i++) {
         const originalIndex = sortedIndices[i];
         const prevEl = elements[originalIndex];
-        stackedY += getStackedHeight(prevEl) + padding;
+        stackedY += getStackedHeight(prevEl) + mobilePadding;
       }
     } else {
       for (let i = 0; i < sortedIndex; i++) {
         const prevEl = elements[i];
-        stackedY += getStackedHeight(prevEl) + padding;
+        stackedY += getStackedHeight(prevEl) + mobilePadding;
       }
     }
 
     return {
-      x: Math.max(padding, centerX),
+      x: Math.max(mobilePadding, centerX),
       y: stackedY,
       width: maxWidth,
       height: scaledHeight,
@@ -963,16 +990,57 @@ function generateBreakpointPosition(
   }
 
   if (targetMode === 'tablet') {
-    // Tablet: Scale down proportionally, keep relative positions
+    // Tablet: Scale proportionally for width/X, stack vertically for Y (like mobile)
+    const tabletPadding = 16;
     const scaleFactor = targetWidth / BREAKPOINTS.desktop;
-    const scaledWidth = Math.min(element.width * scaleFactor, targetWidth - (padding * 2));
-    const scaledHeight = Math.round(element.height * scaleFactor);
-    const scaledX = Math.min(element.x * scaleFactor, targetWidth - scaledWidth - padding);
     const fontScale = Math.max(0.75, scaleFactor);
+    const textTypes = ['heading', 'subheading', 'text', 'caption', 'quote'];
+
+    // Width: proportional with min sizes
+    let scaledWidth = Math.min(element.width * scaleFactor, targetWidth - (tabletPadding * 2));
+    if (element.type === 'button') scaledWidth = Math.max(scaledWidth, 140);
+
+    // X: proportional, clamped within bounds
+    const scaledX = Math.min(element.x * scaleFactor, targetWidth - scaledWidth - tabletPadding);
+
+    // Height: content-based for text, proportional for others (with min sizes)
+    let scaledHeight: number;
+    if (textTypes.includes(element.type) && element.properties?.content) {
+      const content = element.properties.content as string;
+      const fontSize = ((element.properties.fontSize as number) || 16) * fontScale;
+      const lineHeight = (element.properties.lineHeight as number) || (element.type === 'heading' ? 1.2 : 1.5);
+      const estimated = estimateTextHeight(content, fontSize, lineHeight, scaledWidth);
+      scaledHeight = Math.max(Math.round(element.height * scaleFactor), Math.ceil(estimated));
+    } else {
+      scaledHeight = Math.round(element.height * scaleFactor);
+      if (element.type === 'button') scaledHeight = Math.max(scaledHeight, 44);
+    }
+
+    // Y: stacked vertically (accumulate heights of previous elements in sorted order)
+    // This avoids overlap when text elements expand beyond their proportional height
+    let stackedY = tabletPadding;
+
+    const getTabletHeight = (el: EditorElement): number => {
+      if (el.breakpoints?.tablet) return el.breakpoints.tablet.height;
+      const elW = Math.min(el.width * scaleFactor, targetWidth - (tabletPadding * 2));
+      if (textTypes.includes(el.type) && el.properties?.content) {
+        const c = el.properties.content as string;
+        const fs = ((el.properties.fontSize as number) || 16) * fontScale;
+        const lh = (el.properties.lineHeight as number) || (el.type === 'heading' ? 1.2 : 1.5);
+        return Math.max(Math.round(el.height * scaleFactor), Math.ceil(estimateTextHeight(c, fs, lh, elW)));
+      }
+      return Math.round(el.height * scaleFactor);
+    };
+
+    const indices = sortedIndices || Array.from({ length: elements.length }, (_, i) => i);
+    for (let i = 0; i < sortedIndex; i++) {
+      const prevEl = elements[indices[i]];
+      stackedY += getTabletHeight(prevEl) + tabletPadding;
+    }
 
     return {
-      x: Math.max(padding, scaledX),
-      y: Math.round(element.y * scaleFactor),
+      x: Math.max(tabletPadding, scaledX),
+      y: stackedY,
       width: scaledWidth,
       height: scaledHeight,
       fontScale,
@@ -986,6 +1054,33 @@ function generateBreakpointPosition(
     width: element.width,
     height: element.height,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Text Height Estimation
+// ---------------------------------------------------------------------------
+
+/**
+ * Estimate the required height for a text element based on its content,
+ * font size, line height, and available width.
+ */
+function estimateTextHeight(
+  content: string,
+  fontSize: number,
+  lineHeight: number,
+  width: number,
+  padding: number = 16,
+): number {
+  // Average character width is roughly 0.55x font size for Inter
+  const avgCharWidth = fontSize * 0.55;
+  const usableWidth = width - padding;
+  if (usableWidth <= 0) return fontSize * lineHeight;
+
+  const charsPerLine = Math.max(1, Math.floor(usableWidth / avgCharWidth));
+  const lineCount = Math.ceil(content.length / charsPerLine);
+  const lineHeightPx = fontSize * lineHeight;
+  // Add some vertical padding
+  return Math.max(lineCount * lineHeightPx + 16, fontSize * lineHeight + 16);
 }
 
 // ---------------------------------------------------------------------------
@@ -1012,9 +1107,20 @@ export function createElement(
   let scaledHeight = baseSize.height;
   const maxHeight = canvasHeight - (padding * 2);
 
-  if (baseSize.height > maxHeight) {
-    const scaleFactor = maxHeight / baseSize.height;
-    scaledHeight = Math.floor(baseSize.height * scaleFactor);
+  // Auto-size text height based on content length
+  const textTypes = ['heading', 'subheading', 'text', 'caption', 'quote'];
+  const customContent = options.content as string | undefined;
+  if (textTypes.includes(type) && customContent && customContent.length > 0) {
+    const defaults = DEFAULT_ELEMENT_PROPS[type] || {};
+    const fontSize = (options.fontSize as number) || (defaults.fontSize as number) || 16;
+    const lineHeight = (options.lineHeight as number) || (defaults.lineHeight as number) || 1.5;
+    const estimated = estimateTextHeight(customContent, fontSize, lineHeight, scaledWidth);
+    scaledHeight = Math.max(scaledHeight, Math.ceil(estimated));
+  }
+
+  if (scaledHeight > maxHeight) {
+    const scaleFactor = maxHeight / scaledHeight;
+    scaledHeight = Math.floor(scaledHeight * scaleFactor);
     scaledWidth = Math.floor(baseSize.width * scaleFactor);
   }
 
@@ -1260,11 +1366,35 @@ export function useFreeFormEditor(
   // Update element properties
   const updateProperties = useCallback((id: string, updates: Record<string, unknown>) => {
     setElements(prev => {
-      const newElements = prev.map(el =>
-        el.id === id
-          ? { ...el, properties: { ...el.properties, ...updates } }
-          : el
-      );
+      const newElements = prev.map(el => {
+        if (el.id !== id) return el;
+        const merged = { ...el, properties: { ...el.properties, ...updates } };
+
+        // Auto-resize text elements when content changes (only grow, don't shrink)
+        const textTypes = ['heading', 'subheading', 'text', 'caption', 'quote'];
+        if (textTypes.includes(el.type) && typeof updates.content === 'string') {
+          const fontSize = (merged.properties.fontSize as number) || 16;
+          const lineHeight = (merged.properties.lineHeight as number) || 1.5;
+          const estimated = estimateTextHeight(updates.content, fontSize, lineHeight, el.width);
+          if (estimated > el.height) {
+            merged.height = Math.ceil(estimated);
+            // Also update the current viewport breakpoint
+            if (merged.breakpoints) {
+              const modes: ViewportMode[] = ['desktop', 'tablet', 'mobile'];
+              for (const mode of modes) {
+                if (merged.breakpoints[mode]) {
+                  merged.breakpoints = {
+                    ...merged.breakpoints,
+                    [mode]: { ...merged.breakpoints[mode], height: Math.ceil(estimated) },
+                  };
+                }
+              }
+            }
+          }
+        }
+
+        return merged;
+      });
       pushHistory(newElements);
       return newElements;
     });
@@ -1378,12 +1508,12 @@ export function useFreeFormEditor(
     if (targetMode === 'desktop') return;
 
     setElements(prev => {
-      // For mobile, sort elements by desktop position (Y first, then X)
-      // This creates natural reading order: top-to-bottom, left-to-right
+      // Sort elements by desktop position (Y first, then X) for mobile stacking
+      // and tablet overlap resolution
       let sortedIndices: number[] | null = null;
       let sortedPositionMap: Map<number, number> | null = null;
 
-      if (targetMode === 'mobile') {
+      if (targetMode === 'mobile' || targetMode === 'tablet') {
         const ROW_THRESHOLD = 50; // Elements within 50px are considered same row
 
         // Create array of {index, x, y} and sort by position
@@ -1413,8 +1543,8 @@ export function useFreeFormEditor(
           return el;
         }
 
-        // Get sorted position for mobile stacking
-        const sortedIndex = targetMode === 'mobile' && sortedPositionMap
+        // Get sorted position for mobile/tablet layout
+        const sortedIndex = sortedPositionMap
           ? sortedPositionMap.get(index) ?? index
           : index;
 
