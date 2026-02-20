@@ -135,7 +135,7 @@ export default function SectionContainer({
     <div
       ref={containerRef}
       className={cn(
-        'relative w-full transition-all',
+        'relative w-full transition-[opacity,box-shadow] duration-150',
         isDragging && 'opacity-50',
         isDragOverState && 'ring-2 ring-offset-2',
       )}
@@ -151,7 +151,7 @@ export default function SectionContainer({
       {/* Selection outline */}
       <div
         className={cn(
-          'absolute inset-0 pointer-events-none transition-all',
+          'absolute inset-0 pointer-events-none transition-[box-shadow] duration-150',
           isSelected
             ? 'ring-2 ring-inset'
             : 'ring-0 hover:ring-1 hover:ring-gray-400 hover:ring-inset',

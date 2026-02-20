@@ -2316,6 +2316,61 @@ export default function FreeFormSidebar({
     return item?.label || '';
   };
 
+  // Simple markdown renderer for AI chat
+  const renderMarkdown = useCallback((text: string): ReactNode => {
+    const lines = text.split('\n');
+    const elements: ReactNode[] = [];
+    let key = 0;
+
+    for (const line of lines) {
+      if (line.trim() === '') {
+        elements.push(<br key={key++} />);
+        continue;
+      }
+
+      // List items
+      if (line.match(/^[-*]\s/)) {
+        const content = line.replace(/^[-*]\s/, '');
+        elements.push(
+          <div key={key++} className="flex gap-1.5 items-start">
+            <span className="mt-1.5 w-1 h-1 rounded-full bg-current flex-shrink-0 opacity-50" />
+            <span>{parseBold(content)}</span>
+          </div>
+        );
+        continue;
+      }
+
+      // Numbered list
+      if (line.match(/^\d+\.\s/)) {
+        const num = line.match(/^(\d+)\.\s/)![1];
+        const content = line.replace(/^\d+\.\s/, '');
+        elements.push(
+          <div key={key++} className="flex gap-1.5 items-start">
+            <span className="opacity-50 flex-shrink-0">{num}.</span>
+            <span>{parseBold(content)}</span>
+          </div>
+        );
+        continue;
+      }
+
+      // Regular paragraph
+      elements.push(<p key={key++} className="mb-1">{parseBold(line)}</p>);
+    }
+
+    return <>{elements}</>;
+  }, []);
+
+  // Parse **bold** text within a line
+  function parseBold(text: string): ReactNode {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  }
+
   // AI suggestion chips
   const AI_SUGGESTIONS = [
     'Write a hero headline',
@@ -2366,7 +2421,7 @@ export default function FreeFormSidebar({
                     }`}
                     style={msg.role === 'user' ? { backgroundColor: accentColor } : undefined}
                   >
-                    {msg.content}
+                    {msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content}
                   </div>
                 </div>
               ))}

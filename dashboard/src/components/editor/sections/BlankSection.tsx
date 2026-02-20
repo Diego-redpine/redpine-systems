@@ -339,7 +339,7 @@ export default function BlankSection({
   return (
     <div
       ref={sectionRef}
-      className={`relative w-full overflow-hidden transition-all ${isDragOver ? 'ring-2 ring-inset' : ''}`}
+      className={`relative w-full overflow-hidden transition-[box-shadow] duration-150 ${isDragOver ? 'ring-2 ring-inset' : ''}`}
       style={{
         height: sectionHeight,
         backgroundColor,

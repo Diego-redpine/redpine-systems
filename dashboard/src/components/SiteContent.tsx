@@ -483,6 +483,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
             allPages={pages}
             businessName={businessName}
             accentColor={colors.buttons}
+            dashboardColors={colors}
             onSave={handleDemoSave}
             onClose={handleCloseEditor}
           />

@@ -211,7 +211,7 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
           contentEditable={isEditing}
           suppressContentEditableWarning
           onBlur={isEditing ? (onBlur ?? undefined) : undefined}
-          className={`w-full h-full flex items-center overflow-hidden ${isEditing ? 'outline-none cursor-text' : ''}`}
+          className={`w-full h-full flex items-center ${isEditing ? 'outline-none cursor-text' : ''}`}
           style={{
             fontFamily: properties.fontFamily || 'Inter',
             fontSize: properties.fontSize,
@@ -219,6 +219,8 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
             color: properties.color,
             lineHeight: properties.lineHeight || 1.2,
             letterSpacing: properties.letterSpacing ? `${properties.letterSpacing}px` : 'normal',
+            wordBreak: 'break-word' as const,
+            overflowWrap: 'break-word' as const,
           }}
         >
           <div className="w-full" style={{ textAlign: properties.textAlign as CSSProperties['textAlign'] }}>
@@ -240,6 +242,8 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
         letterSpacing: properties.letterSpacing ? `${properties.letterSpacing}px` : 'normal',
         textTransform: (properties.textTransform || 'none') as CSSProperties['textTransform'],
         backgroundColor: properties.highlightColor || 'transparent',
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word',
       };
 
       // Text outline (text-stroke)
@@ -287,7 +291,7 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
           contentEditable={isEditing}
           suppressContentEditableWarning
           onBlur={isEditing ? (onBlur ?? undefined) : undefined}
-          className={`w-full h-full overflow-hidden ${isEditing ? 'outline-none cursor-text' : ''}`}
+          className={`w-full h-full ${isEditing ? 'outline-none cursor-text' : ''}`}
           style={textStyle}
         >
           {properties.content}
@@ -356,6 +360,9 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
             backgroundColor: properties.backgroundColor,
             color: properties.color,
             borderRadius: properties.borderRadius,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
           {properties.content}

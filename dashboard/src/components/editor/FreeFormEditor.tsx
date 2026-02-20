@@ -45,6 +45,7 @@ export interface FreeFormEditorProps {
   initialData?: FreeFormSaveData | null;
   businessName?: string;
   accentColor?: string;
+  dashboardColors?: Record<string, string | undefined>;
   onSave?: (data: FreeFormSaveData) => Promise<void>;
   className?: string;
 }
@@ -111,11 +112,26 @@ export default function FreeFormEditor({
   initialData,
   businessName = 'My Business',
   accentColor,
+  dashboardColors,
   onSave,
   className = '',
 }: FreeFormEditorProps) {
   // Build colors object from accentColor for PresetHeader/PresetFooter
   const editorColors = accentColor ? { buttons: accentColor } : undefined;
+
+  // Map dashboard colors → brand colors for the Brand panel
+  const initialBrandColors = useMemo(() => {
+    if (!dashboardColors) return null;
+    return {
+      primary: dashboardColors.buttons || dashboardColors.sidebar_bg || null,
+      secondary: dashboardColors.headings || dashboardColors.text || null,
+      accent1: dashboardColors.sidebar_buttons || null,
+      accent2: dashboardColors.borders || null,
+      background: dashboardColors.background || dashboardColors.cards || null,
+    };
+  }, [dashboardColors]);
+
+  const [brandColors, setBrandColors] = useState(initialBrandColors);
   const initial = useRef(deserialize(initialData));
 
   // Page state
@@ -675,6 +691,8 @@ export default function FreeFormEditor({
             viewportMode={viewportMode}
             canvasHeight={canvasHeight}
             theme={theme}
+            brandColors={brandColors}
+            onUpdateBrandColors={setBrandColors}
             accentColor={accentColor}
             onActivePanelChange={setSidebarPanel}
             className="flex-shrink-0"

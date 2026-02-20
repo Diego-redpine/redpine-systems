@@ -19,6 +19,7 @@ interface SiteEditorProps {
   allPages?: SiteEditorPage[];
   businessName?: string;
   accentColor?: string;
+  dashboardColors?: Record<string, string | undefined>;
   onSave: (blocks: unknown[]) => Promise<void>;
   onClose: () => void;
   lockedMode?: boolean;
@@ -35,6 +36,7 @@ export default function SiteEditor({
   allPages,
   businessName,
   accentColor,
+  dashboardColors,
   onSave,
   onClose,
   lockedMode = false,
@@ -70,6 +72,7 @@ export default function SiteEditor({
         initialData={initialData}
         businessName={businessName || pageTitle}
         accentColor={accentColor}
+        dashboardColors={dashboardColors}
         onSave={handleSave}
         className="flex-1"
       />
