@@ -933,7 +933,17 @@ function generateBreakpointPosition(
       ? fullMobileWidth
       : Math.min(element.width, fullMobileWidth);
     const scaleFactor = maxWidth / element.width;
-    const fontScale = Math.min(1, Math.max(0.6, scaleFactor)); // Never upscale fonts
+    // Font scaling: width-based + cap large fonts at mobile-appropriate sizes
+    let fontScale: number;
+    if (textExpandTypes.includes(element.type)) {
+      const fs = (element.properties?.fontSize as number) || 16;
+      const maxMobileFont = 32; // Max visual font size on mobile
+      const widthScale = Math.min(1, Math.max(0.5, scaleFactor));
+      const fontCapScale = fs > maxMobileFont ? maxMobileFont / fs : 1;
+      fontScale = Math.max(0.5, Math.min(widthScale, fontCapScale));
+    } else {
+      fontScale = Math.min(1, Math.max(0.6, scaleFactor));
+    }
     const centerX = (targetWidth - maxWidth) / 2;
 
     // For text elements, estimate height based on content at mobile width
@@ -949,16 +959,23 @@ function generateBreakpointPosition(
       scaledHeight = Math.round(element.height * Math.min(1, scaleFactor));
     }
 
-    // Calculate Y based on stacking previous elements IN SORTED ORDER
+    // Calculate Y based on stacking previous elements IN SORTED ORDER (same section only)
     let stackedY = mobilePadding;
     const getStackedHeight = (el: EditorElement) => {
       if (el.breakpoints?.mobile) return el.breakpoints.mobile.height;
-      // Compute scaled height for unstored breakpoints
       const isTextEl = textExpandTypes.includes(el.type);
       const elMaxW = isTextEl ? fullMobileWidth : Math.min(el.width, fullMobileWidth);
       const elScale = elMaxW / el.width;
-      const elFontScale = Math.min(1, Math.max(0.6, elScale));
-      // For text elements, estimate content-based height
+      // Use same font-cap logic for height estimation
+      let elFontScale: number;
+      if (isTextEl) {
+        const fs = (el.properties?.fontSize as number) || 16;
+        const widthSc = Math.min(1, Math.max(0.5, elScale));
+        const capSc = fs > 32 ? 32 / fs : 1;
+        elFontScale = Math.max(0.5, Math.min(widthSc, capSc));
+      } else {
+        elFontScale = Math.min(1, Math.max(0.6, elScale));
+      }
       if (isTextEl && el.properties?.content) {
         const elContent = el.properties.content as string;
         const elFontSize = ((el.properties.fontSize as number) || 16) * elFontScale;
@@ -967,17 +984,12 @@ function generateBreakpointPosition(
       }
       return Math.round(el.height * Math.min(1, elScale));
     };
-    if (sortedIndices) {
-      for (let i = 0; i < sortedIndex; i++) {
-        const originalIndex = sortedIndices[i];
-        const prevEl = elements[originalIndex];
-        stackedY += getStackedHeight(prevEl) + mobilePadding;
-      }
-    } else {
-      for (let i = 0; i < sortedIndex; i++) {
-        const prevEl = elements[i];
-        stackedY += getStackedHeight(prevEl) + mobilePadding;
-      }
+    const indices = sortedIndices || Array.from({ length: elements.length }, (_, i) => i);
+    for (let i = 0; i < sortedIndex; i++) {
+      const prevEl = elements[indices[i]];
+      // Only stack elements within the same section
+      if (prevEl.sectionId !== element.sectionId) continue;
+      stackedY += getStackedHeight(prevEl) + mobilePadding;
     }
 
     return {
@@ -993,8 +1005,19 @@ function generateBreakpointPosition(
     // Tablet: Scale proportionally for width/X, stack vertically for Y (like mobile)
     const tabletPadding = 16;
     const scaleFactor = targetWidth / BREAKPOINTS.desktop;
-    const fontScale = Math.max(0.75, scaleFactor);
     const textTypes = ['heading', 'subheading', 'text', 'caption', 'quote'];
+
+    // Font scaling: width-based + cap large fonts at tablet-appropriate sizes
+    let fontScale: number;
+    if (textTypes.includes(element.type)) {
+      const fs = (element.properties?.fontSize as number) || 16;
+      const maxTabletFont = 40;
+      const widthScale = Math.max(0.6, scaleFactor);
+      const fontCapScale = fs > maxTabletFont ? maxTabletFont / fs : 1;
+      fontScale = Math.max(0.6, Math.min(widthScale, fontCapScale));
+    } else {
+      fontScale = Math.max(0.75, scaleFactor);
+    }
 
     // Width: proportional with min sizes
     let scaledWidth = Math.min(element.width * scaleFactor, targetWidth - (tabletPadding * 2));
@@ -1025,7 +1048,12 @@ function generateBreakpointPosition(
       const elW = Math.min(el.width * scaleFactor, targetWidth - (tabletPadding * 2));
       if (textTypes.includes(el.type) && el.properties?.content) {
         const c = el.properties.content as string;
-        const fs = ((el.properties.fontSize as number) || 16) * fontScale;
+        // Use same font-cap logic for height estimation
+        const elFs = (el.properties.fontSize as number) || 16;
+        const elWidthSc = Math.max(0.6, scaleFactor);
+        const elCapSc = elFs > 40 ? 40 / elFs : 1;
+        const elFontScale = Math.max(0.6, Math.min(elWidthSc, elCapSc));
+        const fs = elFs * elFontScale;
         const lh = (el.properties.lineHeight as number) || (el.type === 'heading' ? 1.2 : 1.5);
         return Math.max(Math.round(el.height * scaleFactor), Math.ceil(estimateTextHeight(c, fs, lh, elW)));
       }
@@ -1035,6 +1063,8 @@ function generateBreakpointPosition(
     const indices = sortedIndices || Array.from({ length: elements.length }, (_, i) => i);
     for (let i = 0; i < sortedIndex; i++) {
       const prevEl = elements[indices[i]];
+      // Only stack elements within the same section
+      if (prevEl.sectionId !== element.sectionId) continue;
       stackedY += getTabletHeight(prevEl) + tabletPadding;
     }
 
@@ -1538,10 +1568,8 @@ export function useFreeFormEditor(
       }
 
       const newElements = prev.map((el, index) => {
-        // Skip if breakpoint already exists
-        if (el.breakpoints?.[targetMode]) {
-          return el;
-        }
+        // Always regenerate breakpoints to reflect latest desktop layout
+        // and updated scaling logic (font caps, section-aware stacking)
 
         // Get sorted position for mobile/tablet layout
         const sortedIndex = sortedPositionMap
@@ -1601,6 +1629,7 @@ export function useFreeFormEditor(
         y: pos.y,
         width: pos.width,
         height: pos.height,
+        fontScale: pos.fontScale,
       };
     });
   }, [elements, viewportMode]);

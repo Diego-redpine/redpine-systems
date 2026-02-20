@@ -25,7 +25,7 @@ export function SectionRenderer({ section, theme = 'dark', accentColor = '#E11D4
             inBuilder={true}
             heading={(props.heading as string) || 'Book an Appointment'}
             buttonText={(props.buttonText as string) || 'Book Now'}
-            accentColor={(props.accentColor as string) || accentColor}
+            accentColor={(props.accentColor as string) || '#1A1A1A'}
           />
         </div>
       );

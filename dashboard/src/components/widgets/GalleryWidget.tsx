@@ -117,25 +117,33 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
     return (
       <div {...blockProps} className={styles || 'w-full'}>
         <div style={{
-          border: '2px dashed #D1D5DB',
-          borderRadius: 16,
-          padding: 40,
-          textAlign: 'center',
-          backgroundColor: '#F9FAFB',
+          width: '100%', height: '100%', padding: 48,
+          backgroundColor: '#F9FAFB', textAlign: 'center',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         }}>
-          <svg style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
-          </svg>
-          <p style={{ fontSize: 14, fontWeight: 500, color: '#6B7280', marginBottom: 12 }}>No gallery connected</p>
+          <div style={{
+            width: 56, height: 56, borderRadius: 12,
+            backgroundColor: '#F0F0F0',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 16px',
+          }}>
+            <svg style={{ width: 28, height: 28 }} fill="none" stroke="#1A1A1A" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+            </svg>
+          </div>
+          <p style={{ fontSize: 15, fontWeight: 600, color: '#374151', marginBottom: 4 }}>No gallery connected</p>
+          <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 20 }}>
+            Connect a gallery from your dashboard to display here
+          </p>
           <button
             onClick={() => setSelectorOpen(true)}
             style={{
-              padding: '8px 20px',
-              borderRadius: 8,
+              padding: '10px 24px',
+              borderRadius: 10,
               backgroundColor: accentColor,
               color: '#FFFFFF',
               fontSize: 13,
-              fontWeight: 500,
+              fontWeight: 600,
               border: 'none',
               cursor: 'pointer',
             }}

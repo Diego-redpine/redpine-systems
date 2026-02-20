@@ -219,7 +219,6 @@ const SECTION_ITEMS: SectionItem[] = [BLANK_SECTION_ITEM, ...PREBUILT_SECTION_IT
 
 // Portable widgets that can be added to blank sections
 const PORTABLE_WIDGET_ITEMS: PortableWidgetItem[] = [
-  { type: 'contactForm', label: 'Contact Form', icon: ClipboardList, description: 'Pre-built contact form' },
   { type: 'customForm', label: 'Custom Form', icon: FormInput, description: 'Build your own form' },
   { type: 'button', label: 'Button', icon: MousePointerClick, description: 'Call-to-action button' },
 ];
@@ -295,7 +294,6 @@ const TEXT_ITEMS: TextItemData[] = [
 
 // Form elements
 const FORM_ITEMS: FormItem[] = [
-  { type: 'contactForm', label: 'Contact Form', icon: ClipboardList, description: 'Pre-built contact form' },
   { type: 'customForm', label: 'Custom Form', icon: FormInput, description: 'Start blank, add fields' },
 ];
 
@@ -341,7 +339,7 @@ const PAGE_TEMPLATES: PageTemplate[] = [
     description: 'With contact form',
     elements: [
       { type: 'heading', properties: { content: 'Get In Touch' } },
-      { type: 'contactForm', properties: {} },
+      { type: 'customForm', properties: {} },
     ],
   },
   {
@@ -570,14 +568,31 @@ interface ElementsPanelProps {
 }
 
 function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection, onAddElement, onDragStart, accentColor = '#E11D48' }: ElementsPanelProps) {
-  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
+  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({
+    sections: false, // Canvas Sections — open by default
+    prebuilt: true,
+    widgets: true,
+    media: true,
+    grids: true,
+    forms: true,
+  });
   const isDark = theme === 'dark';
 
   const toggleCategory = (categoryId: string) => {
-    setCollapsedCategories(prev => ({
-      ...prev,
-      [categoryId]: !prev[categoryId],
-    }));
+    setCollapsedCategories(prev => {
+      const isCurrentlyOpen = !prev[categoryId];
+      if (isCurrentlyOpen) {
+        // Closing this one — just toggle it
+        return { ...prev, [categoryId]: true };
+      }
+      // Opening this one — collapse all others
+      const allCollapsed: Record<string, boolean> = {};
+      for (const key of Object.keys(prev)) {
+        allCollapsed[key] = true;
+      }
+      allCollapsed[categoryId] = false;
+      return allCollapsed;
+    });
   };
 
   // Filter sections by search query
@@ -800,8 +815,8 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
         </div>
       )}
 
-      {/* Frames */}
-      {filteredFrameCategories.length > 0 && (
+      {/* Frames (nested under Media & Layout visibility) */}
+      {!collapsedCategories.media && filteredFrameCategories.length > 0 && (
         <div className="space-y-4">
           {filteredFrameCategories.map((category) => (
             <div key={`frame-${category.id}`}>

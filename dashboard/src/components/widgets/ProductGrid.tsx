@@ -70,17 +70,17 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
     return (
       <div {...blockProps} className={styles || 'w-full'}>
         <div style={{
-          maxWidth: 960, margin: '0 auto', padding: 48,
-          borderRadius: 16, border: '2px dashed #D1D5DB',
-          backgroundColor: '#FAFAFA', textAlign: 'center',
+          width: '100%', height: '100%', padding: 48,
+          backgroundColor: '#F9FAFB', textAlign: 'center',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         }}>
           <div style={{
             width: 56, height: 56, borderRadius: 12,
-            backgroundColor: `${accentColor}10`,
+            backgroundColor: '#F0F0F0',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 16px',
           }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="1.5">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d={PRODUCT_ICON} />
             </svg>
           </div>
