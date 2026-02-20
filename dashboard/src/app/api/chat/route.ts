@@ -111,6 +111,10 @@ interface ChatRequest {
   context?: 'platform' | 'website_edit';
   pageSlug?: string;
   pageTitle?: string;
+  pageContext?: {
+    sections?: Array<{ id: string; type: string; index: number; properties: Record<string, unknown> }>;
+    elements?: Array<{ id: string; type: string; sectionId?: string; properties: Record<string, unknown> }>;
+  };
 }
 
 interface ChatResponse {
@@ -230,21 +234,168 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Website editing mode — different system prompt
+    // Website editing mode — tool_use enabled for direct page manipulation
     if (isWebsiteEdit) {
-      const websiteSystemPrompt = `You are a website copy assistant. The user is editing their website in a drag-and-drop builder.
+      // Build page context from request body
+      const pageContext = body.pageContext as {
+        sections?: Array<{ id: string; type: string; index: number; properties: Record<string, unknown> }>;
+        elements?: Array<{ id: string; type: string; sectionId?: string; properties: Record<string, unknown> }>;
+      } | undefined;
+
+      let pageContentStr = 'No page content available.';
+      if (pageContext?.sections) {
+        const lines: string[] = [];
+        for (const section of pageContext.sections) {
+          lines.push(`Section ${section.index} [id=${section.id}] (${section.type})${section.properties?.backgroundColor ? ` bg:${section.properties.backgroundColor}` : ''}:`);
+          const sectionElements = (pageContext.elements || []).filter(el => el.sectionId === section.id);
+          if (sectionElements.length === 0) {
+            lines.push('  (empty)');
+          }
+          for (const el of sectionElements) {
+            const p = el.properties || {};
+            const content = typeof p.content === 'string' ? p.content.slice(0, 100) : '';
+            const details: string[] = [];
+            if (p.color) details.push(`color:${p.color}`);
+            if (p.fontSize) details.push(`fontSize:${p.fontSize}`);
+            if (p.backgroundColor) details.push(`bg:${p.backgroundColor}`);
+            if (p.fontFamily) details.push(`font:${p.fontFamily}`);
+            if (p.textAlign) details.push(`align:${p.textAlign}`);
+            if (p.src) details.push(`src:${(p.src as string).slice(0, 60)}`);
+            lines.push(`  [id=${el.id}] ${el.type}: "${content}"${details.length ? ` (${details.join(', ')})` : ''}`);
+          }
+        }
+        pageContentStr = lines.join('\n');
+      }
+
+      const websiteSystemPrompt = `You are an AI website editor. You can directly edit the user's website using tools.
 
 Current page: "${pageTitle || 'Untitled'}" (/${pageSlug || ''})
 
+CURRENT PAGE CONTENT:
+${pageContentStr}
+
 RULES:
-- When asked to write copy, JUST WRITE IT. Do not label it ("Headline:", "Main Text:", etc.). Do not explain what you wrote or why. Just give the text they can copy-paste.
-- Keep responses short. 2-4 sentences for about sections. 5-8 words for headlines. Brief for everything.
-- If they ask for multiple options, use numbered list. No commentary after.
-- If they ask how to do something in the editor, give brief step-by-step instructions.
+- When the user asks to add, change, or remove something — USE TOOLS. Do not describe steps. Do not give instructions. Just do it.
+- You can call multiple tools in one response (e.g., add heading + text + button for a hero section).
+- Keep your text response to 1-2 sentences confirming what you did.
+- If the request is ambiguous (e.g., "make it bigger" with multiple elements), ask which element they mean.
+- If the user asks a question or wants advice (not an edit), respond with text only — no tools.
 - Never use emojis.
-- Do not repeat back what they asked for. Do not say "Here's your..." or "Here's content for...". Just give the content directly.
-- When suggesting colors, give hex codes.
-- Be direct and concise. Every word should be useful.`;
+- When adding elements, use real content that fits the business — never use placeholder text like "New Heading" or "Click Me".
+- For headings, keep them 3-8 words. For text/paragraphs, 1-3 sentences.
+- When adding buttons, set a relevant backgroundColor and white text color.
+- When the user says "add a section", create a new blank section AND add appropriate elements inside it.`;
+
+      // Tool definitions for website editing
+      const websiteEditorTools = [
+        {
+          name: 'add_element',
+          description: 'Add a new element to the website page. Elements are placed inside sections.',
+          input_schema: {
+            type: 'object' as const,
+            properties: {
+              element_type: {
+                type: 'string',
+                enum: ['heading', 'subheading', 'text', 'caption', 'quote', 'button', 'image', 'divider', 'spacer', 'contactForm'],
+                description: 'The type of element to add',
+              },
+              properties: {
+                type: 'object',
+                description: 'Element properties. For text elements: content (string), color (hex), fontSize (number), fontWeight (number 100-900), fontFamily (string), textAlign (left/center/right). For buttons: content (string), backgroundColor (hex), color (hex), borderRadius (number). For images: src (url string), alt (string).',
+              },
+              section_id: {
+                type: 'string',
+                description: 'ID of the section to add the element to. If omitted, adds to the first blank section.',
+              },
+            },
+            required: ['element_type'],
+          },
+        },
+        {
+          name: 'add_section',
+          description: 'Add a new section to the page. Use "blank" for general content sections. Use specific types for widgets like booking, gallery, products, or reviews.',
+          input_schema: {
+            type: 'object' as const,
+            properties: {
+              section_type: {
+                type: 'string',
+                enum: ['blank', 'bookingWidget', 'galleryWidget', 'productGrid', 'reviewCarousel'],
+                description: 'The type of section. "blank" is a free-form canvas for any elements. Others are pre-built widgets.',
+              },
+            },
+            required: ['section_type'],
+          },
+        },
+        {
+          name: 'update_element',
+          description: 'Update properties of an existing element. Use the element ID from the page content.',
+          input_schema: {
+            type: 'object' as const,
+            properties: {
+              element_id: {
+                type: 'string',
+                description: 'The ID of the element to update (from page content)',
+              },
+              properties: {
+                type: 'object',
+                description: 'Properties to update (merged with existing). Common: content, color, fontSize, fontWeight, fontFamily, textAlign, backgroundColor, borderRadius.',
+              },
+            },
+            required: ['element_id', 'properties'],
+          },
+        },
+        {
+          name: 'delete_element',
+          description: 'Delete an element from the page.',
+          input_schema: {
+            type: 'object' as const,
+            properties: {
+              element_id: {
+                type: 'string',
+                description: 'The ID of the element to delete',
+              },
+            },
+            required: ['element_id'],
+          },
+        },
+        {
+          name: 'update_section',
+          description: 'Update section properties like background color.',
+          input_schema: {
+            type: 'object' as const,
+            properties: {
+              section_id: {
+                type: 'string',
+                description: 'The ID of the section to update',
+              },
+              properties: {
+                type: 'object',
+                description: 'Section properties to update. Common: backgroundColor (hex string).',
+              },
+            },
+            required: ['section_id', 'properties'],
+          },
+        },
+        {
+          name: 'move_section',
+          description: 'Move a section up or down on the page.',
+          input_schema: {
+            type: 'object' as const,
+            properties: {
+              section_id: {
+                type: 'string',
+                description: 'The ID of the section to move',
+              },
+              direction: {
+                type: 'string',
+                enum: ['up', 'down'],
+                description: 'Direction to move',
+              },
+            },
+            required: ['section_id', 'direction'],
+          },
+        },
+      ];
 
       const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -255,8 +406,9 @@ RULES:
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 1024,
+          max_tokens: 4096,
           system: websiteSystemPrompt,
+          tools: websiteEditorTools,
           messages: [
             ...chatHistory.map(h => ({ role: h.role, content: h.content })),
             { role: 'user', content: userMessage }
@@ -272,16 +424,48 @@ RULES:
           : 'Sorry, I had trouble processing that. Please try again.';
         return NextResponse.json({
           success: true,
-          data: { response: errorMsg }
+          data: { response: errorMsg, actions: [] }
         });
       }
 
       const response = await anthropicResponse.json();
-      const textResponse = response.content?.[0]?.type === 'text' ? response.content[0].text : 'I couldn\'t generate a response. Please try again.';
+      const contentBlocks = response.content || [];
+
+      // Extract text blocks as the human-readable response
+      const textParts = contentBlocks
+        .filter((b: { type: string }) => b.type === 'text')
+        .map((b: { text: string }) => b.text)
+        .join('\n');
+
+      // Extract tool_use blocks as structured actions
+      const actions = contentBlocks
+        .filter((b: { type: string }) => b.type === 'tool_use')
+        .map((block: { name: string; input: Record<string, unknown> }) => {
+          switch (block.name) {
+            case 'add_element':
+              return { type: 'add_element', elementType: block.input.element_type, properties: block.input.properties || {}, sectionId: block.input.section_id };
+            case 'add_section':
+              return { type: 'add_section', sectionType: block.input.section_type };
+            case 'update_element':
+              return { type: 'update_element', elementId: block.input.element_id, properties: block.input.properties || {} };
+            case 'delete_element':
+              return { type: 'delete_element', elementId: block.input.element_id };
+            case 'update_section':
+              return { type: 'update_section', sectionId: block.input.section_id, properties: block.input.properties || {} };
+            case 'move_section':
+              return { type: 'move_section', sectionId: block.input.section_id, direction: block.input.direction };
+            default:
+              return null;
+          }
+        })
+        .filter(Boolean);
+
+      // If Claude only returned tool_use (no text), provide a default confirmation
+      const responseText = textParts || (actions.length > 0 ? 'Done.' : 'I couldn\'t generate a response. Please try again.');
 
       return NextResponse.json({
         success: true,
-        data: { response: textResponse }
+        data: { response: responseText, actions }
       });
     }
 

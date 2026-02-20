@@ -563,7 +563,7 @@ interface ElementsPanelProps {
   theme: string;
   searchQuery: string;
   isPageLocked?: boolean;
-  onAddSection?: (type: string) => void;
+  onAddSection?: (type: string) => string | void;
   onAddElement: (type: string, options?: Record<string, unknown>) => void;
   onDragStart: (type: string) => void;
   accentColor?: string;
@@ -2126,7 +2126,7 @@ export interface FreeFormSidebarProps {
     canvasHeight: number,
     options?: Record<string, unknown>
   ) => void;
-  onAddSection?: (type: string) => void;
+  onAddSection?: (type: string) => string | void;
   onSelectPage?: (pageId: string) => void;
   onAddPage?: () => void;
   onAddImage?: (url: string, name: string) => void;
@@ -2151,6 +2151,13 @@ export interface FreeFormSidebarProps {
   accentColor?: string;
   onActivePanelChange?: (panel: string | null) => void;
   className?: string;
+  // AI editor: page context + mutation callbacks
+  sections?: Array<{ id: string; type: string; properties: Record<string, unknown> }>;
+  elements?: Array<{ id: string; type: string; sectionId?: string; properties: Record<string, unknown> }>;
+  onUpdateElement?: (elementId: string, properties: Record<string, unknown>) => void;
+  onDeleteElement?: (elementId: string) => void;
+  onMoveSection?: (sectionId: string, direction: 'up' | 'down') => void;
+  onUpdateSectionProperties?: (sectionId: string, properties: Record<string, unknown>) => void;
 }
 
 /**
@@ -2186,6 +2193,13 @@ export default function FreeFormSidebar({
   accentColor = '#E11D48',
   onActivePanelChange,
   className = '',
+  // AI editor
+  sections,
+  elements,
+  onUpdateElement,
+  onDeleteElement,
+  onMoveSection,
+  onUpdateSectionProperties,
 }: FreeFormSidebarProps) {
   const [activePanel, setActivePanel] = useState<string | null>('elements');
   const [searchQuery, setSearchQuery] = useState('');
@@ -2273,6 +2287,78 @@ export default function FreeFormSidebar({
     if (chatMessages.length > 0) scrollToBottom();
   }, [chatMessages, scrollToBottom]);
 
+  // AI action executor — runs structured actions from the AI response
+  const executeAIActions = useCallback((actions: Array<Record<string, unknown>>) => {
+    const VALID_ELEMENT_TYPES = new Set(['heading', 'subheading', 'text', 'caption', 'quote', 'button', 'image', 'divider', 'spacer', 'contactForm', 'customForm']);
+    const VALID_SECTION_TYPES = new Set(['blank', 'bookingWidget', 'galleryWidget', 'productGrid', 'reviewCarousel']);
+
+    // Track Y offset for stacking elements and new section IDs
+    let nextY = 40;
+    let lastCreatedSectionId: string | null = null;
+    const vw = viewportWidth || 1200;
+
+    // Element height estimates for Y staggering
+    const ELEMENT_HEIGHTS: Record<string, number> = {
+      heading: 80, subheading: 60, text: 80, caption: 40, quote: 80,
+      button: 60, image: 250, divider: 30, spacer: 50, contactForm: 400,
+    };
+
+    for (const action of actions) {
+      switch (action.type) {
+        case 'add_element': {
+          const elType = action.elementType as string;
+          if (!VALID_ELEMENT_TYPES.has(elType)) break;
+          // Prefer: explicit sectionId > last created section > first blank section
+          const targetSectionId = (action.sectionId as string) || lastCreatedSectionId || sections?.[0]?.id;
+          const x = Math.max(20, vw / 2 - 200);
+          const y = nextY;
+          nextY += (ELEMENT_HEIGHTS[elType] || 80) + 20; // stagger vertically
+          onAddElement?.(
+            elType, x, y,
+            viewportMode || 'desktop',
+            vw,
+            canvasHeight || 800,
+            {
+              ...((action.properties as Record<string, unknown>) || {}),
+              ...(targetSectionId ? { sectionId: targetSectionId } : {}),
+            },
+          );
+          break;
+        }
+        case 'add_section': {
+          const secType = action.sectionType as string;
+          if (!VALID_SECTION_TYPES.has(secType)) break;
+          const newId = onAddSection?.(secType);
+          if (typeof newId === 'string') {
+            lastCreatedSectionId = newId;
+            nextY = 40; // reset Y for the new section
+          }
+          break;
+        }
+        case 'update_element':
+          if (action.elementId && action.properties) {
+            onUpdateElement?.(action.elementId as string, action.properties as Record<string, unknown>);
+          }
+          break;
+        case 'delete_element':
+          if (action.elementId) {
+            onDeleteElement?.(action.elementId as string);
+          }
+          break;
+        case 'move_section':
+          if (action.sectionId && action.direction) {
+            onMoveSection?.(action.sectionId as string, action.direction as 'up' | 'down');
+          }
+          break;
+        case 'update_section':
+          if (action.sectionId && action.properties) {
+            onUpdateSectionProperties?.(action.sectionId as string, action.properties as Record<string, unknown>);
+          }
+          break;
+      }
+    }
+  }, [sections, viewportWidth, viewportMode, canvasHeight, onAddElement, onAddSection, onUpdateElement, onDeleteElement, onMoveSection, onUpdateSectionProperties]);
+
   const sendChatMessage = useCallback(async (text?: string) => {
     const msg = (text || chatInput).trim();
     if (!msg || isChatLoading) return;
@@ -2282,25 +2368,60 @@ export default function FreeFormSidebar({
     setIsChatLoading(true);
 
     try {
+      // Build page context for the AI
+      const pageContext = {
+        sections: (sections || []).map((s, i) => ({
+          id: s.id,
+          type: s.type,
+          index: i,
+          properties: s.properties || {},
+        })),
+        elements: (elements || []).slice(0, 40).map(el => ({
+          id: el.id,
+          type: el.type,
+          sectionId: el.sectionId,
+          properties: {
+            content: typeof el.properties?.content === 'string' ? el.properties.content.slice(0, 100) : undefined,
+            color: el.properties?.color,
+            fontSize: el.properties?.fontSize,
+            backgroundColor: el.properties?.backgroundColor,
+            fontFamily: el.properties?.fontFamily,
+            textAlign: el.properties?.textAlign,
+            src: el.properties?.src,
+            alt: el.properties?.alt,
+          },
+        })),
+      };
+
+      const pageName = pages?.find(p => p.id === currentPageId)?.name || 'Home';
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: msg,
           context: 'website_edit',
-          pageSlug: 'home',
-          pageTitle: 'Home',
+          pageSlug: currentPageId || 'home',
+          pageTitle: pageName,
           history: chatMessages,
+          pageContext,
         }),
       });
       const data = await res.json();
-      const response = data.data?.response || data.response || 'Sorry, something went wrong.';
+      const response = data.data?.response || data.response || 'Done.';
+      const actions = data.data?.actions || [];
+
       setChatMessages(prev => [...prev, { role: 'assistant', content: response }]);
+
+      // Execute AI actions after displaying the message
+      if (actions.length > 0) {
+        setTimeout(() => executeAIActions(actions), 150);
+      }
     } catch {
       setChatMessages(prev => [...prev, { role: 'assistant', content: 'Failed to connect. Please try again.' }]);
     }
     setIsChatLoading(false);
-  }, [chatInput, isChatLoading, chatMessages]);
+  }, [chatInput, isChatLoading, chatMessages, sections, elements, pages, currentPageId, executeAIActions]);
 
   const handleChatKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -2373,9 +2494,9 @@ export default function FreeFormSidebar({
 
   // AI suggestion chips
   const AI_SUGGESTIONS = [
-    'Write a hero headline',
-    'Suggest sections for my page',
-    'Help me write About copy',
+    'Add a hero section with a headline and button',
+    'Add a contact form section',
+    'Change the color scheme to something modern',
   ];
 
   // Render panel content

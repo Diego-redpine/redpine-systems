@@ -696,6 +696,18 @@ export default function FreeFormEditor({
             accentColor={accentColor}
             onActivePanelChange={setSidebarPanel}
             className="flex-shrink-0"
+            sections={currentPage.sections.map(s => ({ id: s.id, type: s.type, properties: s.properties }))}
+            elements={editor.elements.map(el => ({ id: el.id, type: el.type, sectionId: el.sectionId, properties: el.properties }))}
+            onUpdateElement={(id, props) => { editor.updateProperties(id, props); markUnsaved(); }}
+            onDeleteElement={(id) => { editor.deleteElements(id); markUnsaved(); }}
+            onMoveSection={(sectionId, dir) => {
+              const idx = currentPage.sections.findIndex(s => s.id === sectionId);
+              if (idx >= 0) {
+                const toIdx = dir === 'up' ? idx - 1 : idx + 1;
+                if (toIdx >= 0 && toIdx < currentPage.sections.length) moveSection(idx, toIdx);
+              }
+            }}
+            onUpdateSectionProperties={updateSectionProperties}
           />
 
           {/* CENTER CANVAS */}
