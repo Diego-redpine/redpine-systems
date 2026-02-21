@@ -121,11 +121,12 @@ export async function linkConfigToUser(
     return { success: false, error: 'Failed to link config. It may already be claimed.' };
   }
 
-  // 4. Upsert profile
+  // 4. Upsert profile (email required — NOT NULL constraint fires before ON CONFLICT)
   const { error: updateProfileError } = await supabase
     .from('profiles')
     .upsert({
       id: userId,
+      email: userEmail,
       business_name: config.business_name,
       subdomain: subdomain,
       updated_at: new Date().toISOString()
