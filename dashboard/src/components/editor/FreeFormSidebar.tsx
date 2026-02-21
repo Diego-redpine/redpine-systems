@@ -69,6 +69,8 @@ import {
   // Widget icons
   Calendar,
   ShoppingBag,
+  UtensilsCrossed,
+  Ticket,
   Star,
   Send,
   ArrowUp,
@@ -209,9 +211,12 @@ const NAV_ITEMS: NavItem[] = [
 const BLANK_SECTION_ITEM: SectionItem = { type: 'blank', label: 'Blank Section', icon: Square, description: 'Free-form canvas for custom layouts' };
 
 const PREBUILT_SECTION_ITEMS: SectionItem[] = [
-  { type: 'bookingWidget', label: 'Booking Calendar', icon: Calendar, description: 'Let visitors book appointments' },
+  { type: 'serviceWidget', label: 'Service Booking', icon: Calendar, description: 'Full service catalog with booking calendar' },
   { type: 'galleryWidget', label: 'Photo Gallery', icon: ImageIcon, description: 'Display your photo gallery' },
-  { type: 'productGrid', label: 'Services / Products', icon: ShoppingBag, description: 'Show services with pricing' },
+  { type: 'productWidget', label: 'Product Catalog', icon: ShoppingBag, description: 'Full product catalog with cart' },
+  { type: 'menuWidget', label: 'Restaurant Menu', icon: UtensilsCrossed, description: 'Food menu with ordering & cart' },
+  { type: 'eventsWidget', label: 'Events', icon: Ticket, description: 'Event listings with registration' },
+  { type: 'classesWidget', label: 'Class Schedule', icon: ClipboardList, description: 'Weekly class schedule with enrollment' },
   { type: 'reviewCarousel', label: 'Reviews', icon: Star, description: 'Client testimonials carousel' },
 ];
 
@@ -2168,7 +2173,7 @@ export interface FreeFormSidebarProps {
   className?: string;
   // AI editor: page context + mutation callbacks
   sections?: Array<{ id: string; type: string; properties: Record<string, unknown> }>;
-  elements?: Array<{ id: string; type: string; sectionId?: string; properties: Record<string, unknown> }>;
+  elements?: Array<{ id: string; type: string; sectionId?: string; x?: number; y?: number; width?: number; height?: number; properties: Record<string, unknown> }>;
   onUpdateElement?: (elementId: string, properties: Record<string, unknown>) => void;
   onDeleteElement?: (elementId: string) => void;
   onMoveSection?: (sectionId: string, direction: 'up' | 'down') => void;
@@ -2265,12 +2270,30 @@ export default function FreeFormSidebar({
     }
 
     const centerX = Math.floor((viewportWidth - scaledWidth) / 2);
-    const centerY = Math.floor((canvasHeight - scaledHeight) / 2);
+
+    // Find target section and stack below existing elements instead of centering
+    const targetSection = sections?.find(s => s.type === 'blank');
+    const targetSectionId = targetSection?.id;
+    let yPos = 40; // default start position
+    if (elements && targetSectionId) {
+      let maxBottom = 0;
+      for (const el of elements) {
+        if (el.sectionId === targetSectionId) {
+          const elY = el.y || 0;
+          const elH = el.height || 100;
+          maxBottom = Math.max(maxBottom, elY + elH);
+        }
+      }
+      if (maxBottom > 0) yPos = maxBottom + 20;
+    }
 
     // Build options with brand colors
     const options: Record<string, unknown> = {};
     if (typeof optionsOrShapeType === 'object' && optionsOrShapeType !== null) {
       Object.assign(options, optionsOrShapeType);
+    }
+    if (targetSectionId) {
+      options.sectionId = targetSectionId;
     }
 
     if (brandColors) {
@@ -2285,8 +2308,8 @@ export default function FreeFormSidebar({
       }
     }
 
-    onAddElement(type, centerX, centerY, viewportMode, viewportWidth, canvasHeight, Object.keys(options).length > 0 ? options : undefined);
-  }, [onAddElement, viewportWidth, viewportMode, canvasHeight, brandColors]);
+    onAddElement(type, centerX, yPos, viewportMode, viewportWidth, canvasHeight, Object.keys(options).length > 0 ? options : undefined);
+  }, [onAddElement, viewportWidth, viewportMode, canvasHeight, brandColors, sections, elements]);
 
   // ---- AI Chat state ----
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
@@ -2305,10 +2328,8 @@ export default function FreeFormSidebar({
   // AI action executor — runs structured actions from the AI response
   const executeAIActions = useCallback((actions: Array<Record<string, unknown>>) => {
     const VALID_ELEMENT_TYPES = new Set(['heading', 'subheading', 'text', 'caption', 'quote', 'button', 'image', 'divider', 'spacer', 'contactForm', 'customForm']);
-    const VALID_SECTION_TYPES = new Set(['blank', 'bookingWidget', 'galleryWidget', 'productGrid', 'reviewCarousel']);
+    const VALID_SECTION_TYPES = new Set(['blank', 'bookingWidget', 'serviceWidget', 'galleryWidget', 'productGrid', 'productWidget', 'menuWidget', 'eventsWidget', 'classesWidget', 'reviewCarousel']);
 
-    // Track Y offset for stacking elements and new section IDs
-    let nextY = 40;
     let lastCreatedSectionId: string | null = null;
     const vw = viewportWidth || 1200;
 
@@ -2334,17 +2355,32 @@ export default function FreeFormSidebar({
       return Math.max(base, Math.ceil(estimated));
     };
 
+    // Compute bottom edge of existing elements per section to avoid overlaps
+    const sectionBottoms: Record<string, number> = {};
+    if (elements) {
+      for (const el of elements) {
+        const sid = el.sectionId || '';
+        const elY = el.y || 0;
+        const elH = el.height || 100;
+        const bottom = elY + elH;
+        sectionBottoms[sid] = Math.max(sectionBottoms[sid] || 0, bottom);
+      }
+    }
+
     for (const action of actions) {
       switch (action.type) {
         case 'add_element': {
           const elType = action.elementType as string;
           if (!VALID_ELEMENT_TYPES.has(elType)) break;
           // Prefer: explicit sectionId > last created section > first blank section
-          const targetSectionId = (action.sectionId as string) || lastCreatedSectionId || sections?.[0]?.id;
+          const targetSectionId = (action.sectionId as string) || lastCreatedSectionId || sections?.[0]?.id || '';
           const x = Math.max(20, vw / 2 - 200);
-          const y = nextY;
+          // Start below existing elements in this section, or at 40 if empty
+          const sectionBottom = sectionBottoms[targetSectionId] || 0;
+          const y = sectionBottom > 0 ? sectionBottom + 20 : 40;
           const elHeight = estimateHeight(elType, (action.properties as Record<string, unknown>) || {});
-          nextY += elHeight + 20; // stagger vertically
+          // Track for subsequent elements in same section
+          sectionBottoms[targetSectionId] = y + elHeight;
           onAddElement?.(
             elType, x, y,
             viewportMode || 'desktop',
@@ -2363,7 +2399,7 @@ export default function FreeFormSidebar({
           const newId = onAddSection?.(secType);
           if (typeof newId === 'string') {
             lastCreatedSectionId = newId;
-            nextY = 40; // reset Y for the new section
+            sectionBottoms[newId] = 0; // new section is empty
           }
           break;
         }
@@ -2389,7 +2425,7 @@ export default function FreeFormSidebar({
           break;
       }
     }
-  }, [sections, viewportWidth, viewportMode, canvasHeight, onAddElement, onAddSection, onUpdateElement, onDeleteElement, onMoveSection, onUpdateSectionProperties]);
+  }, [sections, elements, viewportWidth, viewportMode, canvasHeight, onAddElement, onAddSection, onUpdateElement, onDeleteElement, onMoveSection, onUpdateSectionProperties]);
 
   const sendChatMessage = useCallback(async (text?: string) => {
     const msg = (text || chatInput).trim();
@@ -2412,6 +2448,10 @@ export default function FreeFormSidebar({
           id: el.id,
           type: el.type,
           sectionId: el.sectionId,
+          x: Math.round(el.x || 0),
+          y: Math.round(el.y || 0),
+          width: Math.round(el.width || 0),
+          height: Math.round(el.height || 0),
           properties: {
             content: typeof el.properties?.content === 'string' ? el.properties.content.slice(0, 100) : undefined,
             color: el.properties?.color,

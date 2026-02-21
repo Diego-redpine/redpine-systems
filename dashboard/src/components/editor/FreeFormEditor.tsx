@@ -342,7 +342,7 @@ export default function FreeFormEditor({
   // ---------------------------------------------------------------------------
 
   // Widget section types that cannot contain elements
-  const WIDGET_SECTION_TYPES = new Set(['bookingWidget', 'galleryWidget', 'productGrid', 'reviewCarousel']);
+  const WIDGET_SECTION_TYPES = new Set(['bookingWidget', 'serviceWidget', 'galleryWidget', 'productGrid', 'productWidget', 'menuWidget', 'eventsWidget', 'classesWidget', 'reviewCarousel']);
 
   const handleAddElementToSection = useCallback((sectionId: string, elementType: string) => {
     const section = currentPage.sections.find(s => s.id === sectionId);
@@ -350,14 +350,26 @@ export default function FreeFormEditor({
     let yOffset = 0;
     for (const s of currentPage.sections) {
       if (s.id === sectionId) break;
-      yOffset += s.height;
+      yOffset += sectionHeightOverrides[s.id] ?? s.height;
     }
-    const sectionHeight = section.height || 400;
+    // Find bottom of existing elements in this section to stack below them
+    let maxBottom = 0;
+    for (const el of editor.elements) {
+      if (el.sectionId === sectionId) {
+        const relativeY = el.y - yOffset;
+        const bottom = relativeY + (el.height || 100);
+        maxBottom = Math.max(maxBottom, bottom);
+      }
+    }
+    const sectionHeight = sectionHeightOverrides[sectionId] ?? section.height ?? 400;
     const x = viewportWidth / 2 - 100;
-    const y = yOffset + sectionHeight / 2 - 50;
+    // Stack below existing elements, or center if section is empty
+    const y = maxBottom > 0
+      ? yOffset + maxBottom + 20
+      : yOffset + sectionHeight / 2 - 50;
     editor.addElement(elementType, x, y, viewportMode, viewportWidth, sectionHeight, { sectionId });
     markUnsaved();
-  }, [currentPage.sections, viewportWidth, viewportMode, editor, markUnsaved]);
+  }, [currentPage.sections, sectionHeightOverrides, viewportWidth, viewportMode, editor, markUnsaved]);
 
   // Sidebar onAddElement: (type, x, y, vpMode, vpWidth, canvasH, options?) => void
   const handleSidebarAddElement = useCallback((
@@ -696,7 +708,7 @@ export default function FreeFormEditor({
             onActivePanelChange={setSidebarPanel}
             className="flex-shrink-0"
             sections={currentPage.sections.map(s => ({ id: s.id, type: s.type, properties: s.properties }))}
-            elements={editor.elements.map(el => ({ id: el.id, type: el.type, sectionId: el.sectionId, properties: el.properties }))}
+            elements={editor.elements.map(el => ({ id: el.id, type: el.type, sectionId: el.sectionId, x: el.x, y: el.y, width: el.width, height: el.height, properties: el.properties }))}
             onUpdateElement={(id, props) => { editor.updateProperties(id, props); markUnsaved(); }}
             onDeleteElement={(id) => { editor.deleteElements(id); markUnsaved(); }}
             onMoveSection={(sectionId, dir) => {

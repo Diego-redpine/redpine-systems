@@ -506,8 +506,13 @@ function generateSectionId(): string {
 export const SECTION_TYPES = {
   BLANK: 'blank',
   BOOKING_WIDGET: 'bookingWidget',
+  SERVICE_WIDGET: 'serviceWidget',
   GALLERY_WIDGET: 'galleryWidget',
   PRODUCT_GRID: 'productGrid',
+  PRODUCT_WIDGET: 'productWidget',
+  MENU_WIDGET: 'menuWidget',
+  EVENTS_WIDGET: 'eventsWidget',
+  CLASSES_WIDGET: 'classesWidget',
   REVIEW_CAROUSEL: 'reviewCarousel',
 } as const;
 
@@ -517,8 +522,13 @@ export const SECTION_TYPES = {
 export const SECTION_LABELS: Record<string, string> = {
   blank: 'Blank Section',
   bookingWidget: 'Booking Calendar',
+  serviceWidget: 'Service Booking',
   galleryWidget: 'Photo Gallery',
   productGrid: 'Services / Products',
+  productWidget: 'Product Catalog',
+  menuWidget: 'Restaurant Menu',
+  eventsWidget: 'Events',
+  classesWidget: 'Classes',
   reviewCarousel: 'Reviews',
 };
 
@@ -528,10 +538,15 @@ export const SECTION_LABELS: Record<string, string> = {
  */
 export const SECTION_DEFAULT_HEIGHTS: Record<string, number> = {
   blank: 400,
-  bookingWidget: 500,
-  galleryWidget: 500,
-  productGrid: 450,
-  reviewCarousel: 400,
+  bookingWidget: 360,
+  serviceWidget: 500,
+  galleryWidget: 400,
+  productGrid: 380,
+  productWidget: 500,
+  menuWidget: 500,
+  eventsWidget: 500,
+  classesWidget: 500,
+  reviewCarousel: 340,
 };
 
 /**
@@ -548,6 +563,13 @@ export const DEFAULT_SECTION_PROPS: Record<string, Record<string, unknown>> = {
     buttonText: 'Book Now',
     accentColor: '#3B82F6',
   },
+  serviceWidget: {
+    backgroundColor: 'transparent',
+    heading: 'Book a Service',
+    showCategories: true,
+    showPrices: true,
+    showDurations: true,
+  },
   galleryWidget: {
     backgroundColor: 'transparent',
     heading: 'Our Gallery',
@@ -563,6 +585,34 @@ export const DEFAULT_SECTION_PROPS: Record<string, Record<string, unknown>> = {
     backgroundColor: 'transparent',
     heading: 'Our Services',
     columns: 3,
+    showPrice: true,
+    accentColor: '#1A1A1A',
+  },
+  productWidget: {
+    backgroundColor: 'transparent',
+    heading: 'Our Products',
+    columns: 3,
+    showPrice: true,
+    showDescription: true,
+    accentColor: '#1A1A1A',
+  },
+  menuWidget: {
+    backgroundColor: 'transparent',
+    heading: 'Our Menu',
+    showAllergens: true,
+    showImages: true,
+    accentColor: '#1A1A1A',
+  },
+  eventsWidget: {
+    backgroundColor: 'transparent',
+    heading: 'Upcoming Events',
+    showCapacity: true,
+    accentColor: '#1A1A1A',
+  },
+  classesWidget: {
+    backgroundColor: 'transparent',
+    heading: 'Class Schedule',
+    showInstructor: true,
     showPrice: true,
     accentColor: '#1A1A1A',
   },
@@ -1128,6 +1178,7 @@ export function createElement(
   viewportWidth: number = 1200,
   canvasHeight: number = 800,
   options: Record<string, unknown> = {},
+  existingElements: EditorElement[] = [],
 ): EditorElement {
   const baseSize = BASE_ELEMENT_SIZES[type] || { width: 200, height: 100 };
   const padding = 20;
@@ -1186,7 +1237,7 @@ export function createElement(
     deletable: true,
     sectionId,
     properties: { ...(DEFAULT_ELEMENT_PROPS[type] || {}), ...restOptions },
-    // Store breakpoint-specific positions - ALWAYS include current viewport
+    // Store breakpoint-specific positions - generate ALL viewports at creation time
     breakpoints: {
       [viewportMode]: {
         x: finalX,
@@ -1196,6 +1247,31 @@ export function createElement(
       },
     },
   };
+
+  // Generate breakpoints for the other two viewports so all sizes are ready immediately
+  const viewportConfigs: Array<{ mode: ViewportMode; width: number }> = [
+    { mode: 'desktop', width: BREAKPOINTS.desktop },
+    { mode: 'tablet', width: BREAKPOINTS.tablet },
+    { mode: 'mobile', width: BREAKPOINTS.mobile },
+  ];
+  const allElements = [...existingElements, element];
+  // Sort all elements by Y then X for stacking order
+  const ROW_THRESHOLD = 50;
+  const sortedIndices = allElements
+    .map((el, index) => ({ index, x: el.x, y: el.y }))
+    .sort((a, b) => {
+      if (Math.abs(a.y - b.y) <= ROW_THRESHOLD) return a.x - b.x;
+      return a.y - b.y;
+    })
+    .map(item => item.index);
+  const newElIndex = allElements.length - 1;
+  const sortedPosition = sortedIndices.indexOf(newElIndex);
+
+  for (const vc of viewportConfigs) {
+    if (vc.mode === viewportMode) continue; // Already set above
+    const bp = generateBreakpointPosition(element, vc.mode, vc.width, allElements, sortedPosition, sortedIndices);
+    element.breakpoints[vc.mode] = bp;
+  }
 
   return element;
 }
@@ -1272,14 +1348,17 @@ export function useFreeFormEditor(
     const currentMode = vpMode || viewportModeRef.current;
     const currentWidth = vpWidth || viewportWidthRef.current;
     const currentCanvasHeight = canvasHt || 800;
-    const newElement = createElement(type, x, y, currentMode, currentWidth, currentCanvasHeight, elementOptions);
+    let newId = '';
     setElements(prev => {
+      // Pass existing elements so createElement can generate all 3 breakpoints
+      const newElement = createElement(type, x, y, currentMode, currentWidth, currentCanvasHeight, elementOptions, prev);
+      newId = newElement.id;
       const newElements = [...prev, newElement];
       pushHistory(newElements);
       return newElements;
     });
-    setSelectedIds(new Set([newElement.id]));
-    return newElement.id;
+    if (newId) setSelectedIds(new Set([newId]));
+    return newId;
   }, [pushHistory]);
 
   // Set elements directly (for page switching)

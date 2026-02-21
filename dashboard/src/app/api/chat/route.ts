@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
       // Build page context from request body
       const pageContext = body.pageContext as {
         sections?: Array<{ id: string; type: string; index: number; properties: Record<string, unknown> }>;
-        elements?: Array<{ id: string; type: string; sectionId?: string; properties: Record<string, unknown> }>;
+        elements?: Array<{ id: string; type: string; sectionId?: string; x?: number; y?: number; width?: number; height?: number; properties: Record<string, unknown> }>;
       } | undefined;
 
       let pageContentStr = 'No page content available.';
@@ -261,7 +261,8 @@ export async function POST(request: NextRequest) {
             if (p.fontFamily) details.push(`font:${p.fontFamily}`);
             if (p.textAlign) details.push(`align:${p.textAlign}`);
             if (p.src) details.push(`src:${(p.src as string).slice(0, 60)}`);
-            lines.push(`  [id=${el.id}] ${el.type}: "${content}"${details.length ? ` (${details.join(', ')})` : ''}`);
+            const posStr = el.x != null ? ` @(${el.x},${el.y} ${el.width}x${el.height})` : '';
+            lines.push(`  [id=${el.id}] ${el.type}: "${content}"${posStr}${details.length ? ` (${details.join(', ')})` : ''}`);
           }
         }
         pageContentStr = lines.join('\n');
