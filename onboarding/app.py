@@ -1421,11 +1421,11 @@ def signup():
         )
 
         if signin_resp.status_code != 200:
-            # User was created but sign-in failed — still return success without tokens
+            # User was created but sign-in failed — return error so frontend shows message
             return jsonify({
-                'success': True,
-                'auth': {'user_id': user_id, 'access_token': None, 'refresh_token': None},
-            })
+                'success': False,
+                'error': 'Account created but login failed. Please try logging in at the dashboard.',
+            }), 500
 
         tokens = signin_resp.json()
 

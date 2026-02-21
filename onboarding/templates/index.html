@@ -1542,39 +1542,23 @@
             document.getElementById('loading-building').classList.add('hidden');
             document.getElementById('loading-launching').classList.remove('hidden');
 
-            const dashboardUrl = window.baseRedirectUrl
-                ? new URL(window.baseRedirectUrl).origin + '/dashboard'
-                : '{{ dashboard_url }}/dashboard';
+            const dashboardOrigin = window.baseRedirectUrl
+                ? new URL(window.baseRedirectUrl).origin
+                : '{{ dashboard_url }}';
 
-            try {
-                // Link config to user via the dashboard API
-                if (window.configId && signupAuthData) {
-                    await fetch(dashboardUrl.replace('/dashboard', '/api/config/link'), {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${signupAuthData.access_token}`,
-                        },
-                        body: JSON.stringify({ configId: window.configId }),
-                        credentials: 'include',
-                    }).catch(err => console.error('Config link error:', err));
-                }
-            } catch (err) {
-                console.error('Failed to link config:', err);
-            }
-
-            // Build redirect URL with auth tokens
-            let redirectUrl = dashboardUrl;
+            // Single redirect to /auth/session — it establishes cookies + links config server-side
+            const sessionUrl = new URL(dashboardOrigin + '/auth/session');
             if (signupAuthData) {
-                const url = new URL(redirectUrl);
-                url.searchParams.set('access_token', signupAuthData.access_token);
-                url.searchParams.set('refresh_token', signupAuthData.refresh_token);
-                redirectUrl = url.toString();
+                sessionUrl.searchParams.set('access_token', signupAuthData.access_token);
+                sessionUrl.searchParams.set('refresh_token', signupAuthData.refresh_token);
+            }
+            if (window.configId) {
+                sessionUrl.searchParams.set('config_id', window.configId);
             }
 
             // Brief delay so user sees "Launching..." then redirect
             setTimeout(() => {
-                window.location.href = redirectUrl;
+                window.location.href = sessionUrl.toString();
             }, 1500);
         }
 
