@@ -801,7 +801,7 @@ export default function ViewRenderer({
       <div className="flex items-center gap-2 mb-4">
         {/* View toggle */}
         {availableViews.length > 1 && (
-          <div className="flex items-center gap-1 mr-auto bg-gray-100 rounded-lg p-1">
+          <div data-tour-id="view-toggle" className="flex items-center gap-1 mr-auto bg-gray-100 rounded-lg p-1">
             {availableViews.map((vt) => {
               const isActive = currentView === vt;
               const btnColor = configColors.buttons || '#1A1A1A';
@@ -825,6 +825,7 @@ export default function ViewRenderer({
         <div className="flex items-center gap-2 ml-auto">
         {currentView === 'pipeline' && (
           <button
+            data-tour-id="edit-stages-btn"
             onClick={() => setIsStageManagerOpen(true)}
             className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70"
             style={{
@@ -893,33 +894,39 @@ export default function ViewRenderer({
         )}
         {/* Hide header add button for routes — RouteView has its own "+ New Route" inside the map layout */}
         {!isRouteEntity && (
-          <AddRecordButton
-            entityType={entityType}
-            componentId={componentId}
-            configColors={configColors}
-            onClick={handleAddClick}
-            isLoading={isCreating}
-          />
+          <div data-tour-id="add-record-btn">
+            <AddRecordButton
+              entityType={entityType}
+              componentId={componentId}
+              configColors={configColors}
+              onClick={handleAddClick}
+              isLoading={isCreating}
+            />
+          </div>
         )}
         </div>
       </div>
 
       {/* Data toolbar (search + filters) - not for calendar */}
       {showToolbar && (
-        <DataToolbar
-          entityType={componentId}
-          configColors={configColors}
-          onSearchChange={handleSearchChange}
-          onFilterChange={handleFilterChange}
-          searchValue={search}
-          activeFilters={filters}
-        />
+        <div data-tour-id="search-bar">
+          <DataToolbar
+            entityType={componentId}
+            configColors={configColors}
+            onSearchChange={handleSearchChange}
+            onFilterChange={handleFilterChange}
+            searchValue={search}
+            activeFilters={filters}
+          />
+        </div>
       )}
 
       {/* Stat cards row — above view content */}
       {currentView !== 'calendar' && (
         <Suspense fallback={null}>
-          <StatCards entityType={componentId} data={data} configColors={configColors} />
+          <div data-tour-id="stat-cards">
+            <StatCards entityType={componentId} data={data} configColors={configColors} />
+          </div>
         </Suspense>
       )}
 

@@ -2017,10 +2017,10 @@ export default function DashboardContent({
   };
 
   return (
-    <div className={`flex-1 min-w-0 ${toolbarPadding} px-4 lg:px-10 py-6 lg:py-8 pb-20 lg:pb-8 overflow-auto`} style={containerStyle}>
+    <div data-tour-id="content-area" className={`flex-1 min-w-0 ${toolbarPadding} px-4 lg:px-10 py-6 lg:py-8 pb-20 lg:pb-8 overflow-auto`} style={containerStyle}>
       {/* Sub-tab pills */}
       {subTabs.length > 1 && (
-        <div className="flex items-center gap-1.5 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
+        <div data-tour-id="sub-tabs" className="flex items-center gap-1.5 mb-6 overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
           {subTabs.map(sub => {
             const isActive = activeSubTab === sub.id;
             return (

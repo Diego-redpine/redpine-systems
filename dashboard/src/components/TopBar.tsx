@@ -74,7 +74,7 @@ export default function TopBar({
   const mobileTabs = hasOverflow ? tabs.slice(0, 4) : tabs.slice(0, 5);
 
   // Desktop overflow: show max 7 inline tabs, rest go in "More" dropdown
-  const MAX_DESKTOP_TABS = 7;
+  const MAX_DESKTOP_TABS = 8;
   const hasDesktopOverflow = tabs.length > MAX_DESKTOP_TABS;
   const desktopInlineTabs = hasDesktopOverflow ? tabs.slice(0, MAX_DESKTOP_TABS) : tabs;
   const desktopOverflowTabs = hasDesktopOverflow ? tabs.slice(MAX_DESKTOP_TABS) : [];
@@ -152,12 +152,13 @@ export default function TopBar({
         </div>
 
         {/* Tab navigation — centered */}
-        <nav className="flex-1 flex items-center justify-center gap-1 overflow-x-auto scrollbar-hide">
+        <nav data-tour-id="topbar" className="flex-1 flex items-center justify-center gap-1 overflow-x-auto scrollbar-hide">
           {desktopInlineTabs.map(tab => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                data-tour-id={`topbar-tab-${tab.id}`}
                 onClick={() => onTabChange(tab.id)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
                 style={{

@@ -17,9 +17,10 @@ interface ToolsStripProps {
   isMarketplaceActive?: boolean;
   onNavigateToMarketing?: () => void;
   isMarketingActive?: boolean;
+  disableDrag?: boolean;
 }
 
-export default function ToolsStrip({ onOpenEditor, isEditorOpen, onOpenChat, isChatOpen, side: controlledSide, onSideChange, buttonColor, onNavigateToSite, isSiteActive, onNavigateToMarketplace, isMarketplaceActive, onNavigateToMarketing, isMarketingActive }: ToolsStripProps) {
+export default function ToolsStrip({ onOpenEditor, isEditorOpen, onOpenChat, isChatOpen, side: controlledSide, onSideChange, buttonColor, onNavigateToSite, isSiteActive, onNavigateToMarketplace, isMarketplaceActive, onNavigateToMarketing, isMarketingActive, disableDrag }: ToolsStripProps) {
   const [internalSide, setInternalSide] = useState<'left' | 'right'>('left');
   const side = controlledSide ?? internalSide;
   const setSide = (s: 'left' | 'right') => {
@@ -186,20 +187,22 @@ export default function ToolsStrip({ onOpenEditor, isEditorOpen, onOpenChat, isC
       }}
     >
       <div
+        data-tour-id="tools-strip"
         className="relative flex flex-col items-center rounded-2xl py-5 px-1.5 gap-5 shadow-lg select-none"
         style={{
           backgroundColor: bg,
-          cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'none',
+          cursor: disableDrag ? 'default' : isDragging ? 'grabbing' : 'grab',
+          touchAction: disableDrag ? 'auto' : 'none',
         }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
+        onPointerDown={disableDrag ? undefined : handlePointerDown}
+        onPointerMove={disableDrag ? undefined : handlePointerMove}
+        onPointerUp={disableDrag ? undefined : handlePointerUp}
       >
         {buttons.map(btn => (
           <div key={btn.id} className="relative">
             <button
-              onClick={guardClick(btn.onClick)}
+              data-tour-id={`tool-${btn.id}`}
+              onClick={disableDrag ? btn.onClick : guardClick(btn.onClick)}
               onMouseEnter={() => !isDragging && setTooltip(btn.id)}
               onMouseLeave={() => setTooltip(null)}
               className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"

@@ -10,7 +10,7 @@ import { ColorItem } from '@/components/editors/ColorsEditor';
 const EditorOverlay = lazy(() => import('@/components/EditorOverlay'));
 const ChatOverlay = lazy(() => import('@/components/ChatOverlay'));
 const WebsitePreviewPopup = lazy(() => import('@/components/views/WebsitePreviewPopup'));
-const OnboardingTour = lazy(() => import('@/components/views/OnboardingTour'));
+const SpotlightTour = lazy(() => import('@/components/views/SpotlightTour'));
 import { DashboardConfig, DashboardColors, DashboardTab } from '@/types/config';
 import { mergeWithDefaults, applyColorsToDocument } from '@/lib/default-colors';
 import { DataModeProvider } from '@/providers/DataModeProvider';
@@ -222,7 +222,7 @@ function DashboardPageContent() {
 
   // Memoize tabs for tour
   const tourTabs = useMemo(() => {
-    return (config?.tabs || []).map(t => ({ label: t.label }));
+    return (config?.tabs || []).map(t => ({ id: t.id, label: t.label }));
   }, [config?.tabs]);
 
   if (isLoading) {
@@ -304,6 +304,7 @@ function DashboardPageContent() {
           isMarketplaceActive={activeTab === '__marketplace__'}
           onNavigateToMarketing={() => setActiveTab('__marketing__')}
           isMarketingActive={activeTab === '__marketing__'}
+          disableDrag={showTour}
         />
 
         {isEditorOpen && (<Suspense fallback={null}>
@@ -350,7 +351,7 @@ function DashboardPageContent() {
         </Suspense>)}
 
         {showTour && (<Suspense fallback={null}>
-          <OnboardingTour
+          <SpotlightTour
             isOpen={showTour}
             onClose={() => setShowTour(false)}
             businessName={config?.businessName || 'Your Business'}
@@ -358,6 +359,7 @@ function DashboardPageContent() {
             subdomain={subdomain || config?.businessName?.toLowerCase().replace(/\s+/g, '-') || 'my-business'}
             tabs={tourTabs}
             colors={colors}
+            onTabChange={setActiveTab}
           />
         </Suspense>)}
       </div>
