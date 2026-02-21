@@ -81,8 +81,8 @@ export function parseQueryParams(request: NextRequest) {
   return {
     page: parseInt(searchParams.get('page') || '1'),
     pageSize: parseInt(searchParams.get('pageSize') || '20'),
-    sortBy: searchParams.get('sort_by') || 'created_at',
-    sortOrder: (searchParams.get('sort_order') || 'desc') as 'asc' | 'desc',
+    sortBy: searchParams.get('sort') || searchParams.get('sort_by') || 'created_at',
+    sortOrder: (searchParams.get('sortDir') || searchParams.get('sort_order') || 'desc') as 'asc' | 'desc',
     search: searchParams.get('search') || '',
     // Return all params for custom filtering
     allParams: Object.fromEntries(searchParams.entries()),
@@ -159,7 +159,7 @@ export function createCrudHandlers<T = Record<string, unknown>>(
       }
 
       // Apply custom filters from query params
-      const reservedParams = ['page', 'pageSize', 'sort_by', 'sort_order', 'search'];
+      const reservedParams = ['page', 'pageSize', 'sort', 'sortDir', 'sort_by', 'sort_order', 'search', 'start_date', 'end_date'];
       for (const [key, value] of Object.entries(allParams)) {
         if (!reservedParams.includes(key) && value) {
           query = query.eq(key, value);

@@ -49,8 +49,9 @@ async function fetchDataMode(): Promise<DataMode> {
         return 'dummy';
       }
 
-      const data = await response.json();
-      cachedMode = data.mode === 'real' ? 'real' : 'dummy';
+      const json = await response.json();
+      const mode = json.data?.mode || json.mode;
+      cachedMode = mode === 'real' ? 'real' : 'dummy';
       return cachedMode;
     } catch {
       // Default to dummy mode on network error
