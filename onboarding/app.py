@@ -1281,7 +1281,7 @@ def configure():
         from urllib.parse import quote
         biz_name = quote(config.get('business_name', ''))
         biz_type = quote(config.get('business_type', ''))
-        redirect_url = f'{dashboard_base}/preview?config_id={config_id}&business_name={biz_name}&business_type={biz_type}'
+        redirect_url = f'{dashboard_base}/dashboard'
 
         response_data = {
             'success': True,
@@ -1356,14 +1356,17 @@ def update_config(config_id):
 @app.route('/signup', methods=['POST'])
 def signup():
     """Create a Supabase auth user for the onboarding flow.
-    Returns auth tokens so the frontend can redirect with a live session."""
+    Returns auth tokens so the frontend can redirect with a live session.
+    Accepts optional config_id to link config after signup."""
     data = request.json or {}
     name = data.get('name', '').strip()
     email = data.get('email', '').strip()
     password = data.get('password', '')
+    config_id = data.get('config_id', '').strip()  # Optional: link config after signup
 
-    if not name or not email or not password:
-        return jsonify({'success': False, 'error': 'Name, email, and password are required.'}), 400
+    # Name is optional in the new simplified flow (business name is used)
+    if not email or not password:
+        return jsonify({'success': False, 'error': 'Email and password are required.'}), 400
 
     if len(password) < 6:
         return jsonify({'success': False, 'error': 'Password must be at least 6 characters.'}), 400
@@ -1387,7 +1390,7 @@ def signup():
                 'email': email,
                 'password': password,
                 'email_confirm': True,  # Auto-confirm since they're signing up right now
-                'user_metadata': {'full_name': name},
+                'user_metadata': {'full_name': name or 'Business Owner'},
             },
             timeout=10,
         )

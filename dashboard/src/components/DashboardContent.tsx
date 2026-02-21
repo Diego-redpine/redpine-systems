@@ -10,6 +10,7 @@ import SettingsContent from './SettingsContent';
 import SiteView from './SiteView';
 import MarketplaceView from './MarketplaceView';
 import ComingSoonCard from './ComingSoonCard';
+import LiveBoard from './LiveBoard';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -1921,9 +1922,16 @@ export default function DashboardContent({
   };
   if (colors.text) containerStyle.color = colors.text;
 
-  // Build sub-tabs: dedupedComponents + analytics
+  // Only show Live Board sub-tab on tabs that have calendar/appointment components
+  const hasCalendarComponent = components.some(c => CALENDAR_IDS.has(c.id) || c.view === 'calendar');
+
+  // Build sub-tabs: dedupedComponents + (live board if calendar tab) + analytics
   const subTabs = dedupedComponents.length > 0
-    ? [...dedupedComponents.map(c => ({ id: c.id, label: c.label })), { id: 'analytics', label: 'Analytics' }]
+    ? [
+        ...dedupedComponents.map(c => ({ id: c.id, label: c.label })),
+        ...(hasCalendarComponent ? [{ id: '__board__', label: 'Live Board' }] : []),
+        { id: 'analytics', label: 'Analytics' },
+      ]
     : [];
 
   // Check if this is a platform tab (Dashboard detected by label, not ID — tab_1 can be anything in demo mode)
@@ -1957,6 +1965,10 @@ export default function DashboardContent({
 
   // Determine what to render based on activeSubTab
   const renderContent = () => {
+    if (activeSubTab === '__board__') {
+      return <LiveBoard colors={colors} businessName={businessName} businessType={businessType} />;
+    }
+
     if (activeSubTab === 'analytics') {
       return <AnalyticsContent colors={colors} businessType={businessType} components={dedupedComponents} />;
     }

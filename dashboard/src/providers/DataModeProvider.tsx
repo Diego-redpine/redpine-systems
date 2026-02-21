@@ -7,6 +7,15 @@ import { DataMode, DataModeState } from '@/hooks/useDataMode';
 let cachedMode: DataMode | null = null;
 let fetchPromise: Promise<DataMode> | null = null;
 
+/**
+ * Clears the module-level cache so the next mount re-fetches data mode.
+ * Call this when auth state changes (login/logout).
+ */
+export function resetDataModeCache() {
+  cachedMode = null;
+  fetchPromise = null;
+}
+
 export const DataModeContext = createContext<DataModeState | null>(null);
 
 interface DataModeProviderProps {

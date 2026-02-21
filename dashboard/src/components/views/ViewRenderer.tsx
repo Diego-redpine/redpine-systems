@@ -631,12 +631,13 @@ export default function ViewRenderer({
     }
   };
 
-  // Get field config for the current view
-  const cardFields = getCardFields(entityType);
-  const calendarFields = getCalendarFields(entityType);
-  const pipelineFields = getPipelineFields(entityType);
-  const listFields = getListFields(entityType);
-  const tableFields = getTableFields(entityType);
+  // Get field config — prefer component-specific fields (e.g. 'expenses'), fall back to shared entity type (e.g. 'invoices')
+  const fieldKey = getCardFields(componentId) ? componentId : entityType;
+  const cardFields = getCardFields(fieldKey);
+  const calendarFields = getCalendarFields(fieldKey);
+  const pipelineFields = getPipelineFields(fieldKey);
+  const listFields = getListFields(fieldKey);
+  const tableFields = getTableFields(fieldKey);
 
   // Get table columns for detail panel
   const tableColumns = tableFields?.columns || [];
@@ -681,7 +682,7 @@ export default function ViewRenderer({
     if (!data || data.length === 0) {
       return (
         <EmptyState
-          entityType={entityType}
+          entityType={componentId}
           configColors={configColors}
           onAdd={handleAddClick}
         />
@@ -743,7 +744,7 @@ export default function ViewRenderer({
             data={data}
             entityType={entityType}
             configColors={configColors}
-            fields={getRouteFields(entityType)}
+            fields={getRouteFields(fieldKey)}
             onRecordClick={handleRecordClick}
           />
         );
@@ -906,7 +907,7 @@ export default function ViewRenderer({
       {/* Data toolbar (search + filters) - not for calendar */}
       {showToolbar && (
         <DataToolbar
-          entityType={entityType}
+          entityType={componentId}
           configColors={configColors}
           onSearchChange={handleSearchChange}
           onFilterChange={handleFilterChange}
@@ -918,7 +919,7 @@ export default function ViewRenderer({
       {/* Stat cards row — above view content */}
       {currentView !== 'calendar' && (
         <Suspense fallback={null}>
-          <StatCards entityType={entityType} data={data} configColors={configColors} />
+          <StatCards entityType={componentId} data={data} configColors={configColors} />
         </Suspense>
       )}
 

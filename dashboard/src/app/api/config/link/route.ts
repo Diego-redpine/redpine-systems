@@ -146,32 +146,34 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Update the config to link it to the user
-    const { error: updateConfigError } = await supabase
+    const { data: updatedConfig, error: updateConfigError } = await supabase
       .from('configs')
       .update({
         user_id: user.id,
         updated_at: new Date().toISOString()
       })
       .eq('id', configId)
-      .eq('user_id', null); // Safety: only update if still anonymous
+      .is('user_id', null) // PostgREST requires .is() for null comparison
+      .select('id')
+      .single();
 
-    if (updateConfigError) {
+    if (updateConfigError || !updatedConfig) {
       console.error('Failed to link config:', updateConfigError);
       return NextResponse.json(
-        { success: false, error: 'Failed to link config' },
+        { success: false, error: 'Failed to link config. It may already be claimed.' },
         { status: 500 }
       );
     }
 
-    // 6. Update the user's profile with business_name and subdomain
+    // 6. Upsert the user's profile with business_name and subdomain
     const { error: updateProfileError } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: user.id,
         business_name: config.business_name,
         subdomain: subdomain,
         updated_at: new Date().toISOString()
-      })
-      .eq('id', user.id);
+      }, { onConflict: 'id' });
 
     if (updateProfileError) {
       console.error('Failed to update profile:', updateProfileError);

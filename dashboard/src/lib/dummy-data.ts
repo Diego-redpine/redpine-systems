@@ -346,12 +346,12 @@ export const componentDummyData: Record<string, ComponentData> = {
   },
   expenses: {
     type: 'table',
-    headers: ['Date', 'Description', 'Category', 'Amount'],
+    headers: ['Description', 'Amount', 'Category', 'Date', 'Status'],
     rows: [
-      ['Jan 28', 'Office Supplies', 'Operations', '$85.00'],
-      ['Jan 25', 'Equipment Repair', 'Maintenance', '$250.00'],
-      ['Jan 22', 'Marketing', 'Advertising', '$150.00'],
-      ['Jan 20', 'Utilities', 'Operations', '$320.00'],
+      ['Office Supplies', '$85.00', 'Operations', 'Jan 28', 'Paid'],
+      ['Equipment Repair', '$250.00', 'Maintenance', 'Jan 25', 'Paid'],
+      ['Marketing Campaign', '$150.00', 'Advertising', 'Jan 22', 'Pending'],
+      ['Utilities - Electric', '$320.00', 'Operations', 'Jan 20', 'Paid'],
     ]
   },
   payroll: {
@@ -887,6 +887,15 @@ export const componentDummyData: Record<string, ComponentData> = {
       { id: 'gal_1', title: 'Smith Wedding', subtitle: 'John & Sarah', meta: '248 photos', status: 'shared', metric: 248 },
       { id: 'gal_2', title: 'Fall Mini Sessions', subtitle: 'Various Clients', meta: '120 photos', status: 'proofing', metric: 120 },
       { id: 'gal_3', title: 'Corporate Event', subtitle: 'Acme Corp', meta: '86 photos', status: 'editing', metric: 86 },
+    ]
+  },
+  nail_sets: {
+    type: 'cards',
+    items: [
+      { id: 'ns_1', title: 'French Tips', subtitle: 'Classic', meta: '$35', status: 'popular', metric: 45 },
+      { id: 'ns_2', title: 'Gel Extensions', subtitle: 'Full Set', meta: '$65', status: 'available', metric: 32 },
+      { id: 'ns_3', title: 'Chrome Nails', subtitle: 'Specialty', meta: '$55', status: 'trending', metric: 28 },
+      { id: 'ns_4', title: 'Nail Art Add-On', subtitle: 'Per Nail', meta: '$8', status: 'add-on', metric: 60 },
     ]
   },
 

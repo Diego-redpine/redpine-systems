@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       status: 'scheduled',
-      notes: notes ? `Ref: ${refNumber}\n${notes}` : `Ref: ${refNumber}`,
+      description: notes ? `Ref: ${refNumber}\n${notes}` : `Ref: ${refNumber}`,
     });
 
   if (appointmentError) {

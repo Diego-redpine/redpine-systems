@@ -181,7 +181,7 @@ export default function CardView({
         className={`inline-flex px-3 py-1 text-xs font-medium rounded-full capitalize ${extraClass || ''}`}
         style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
       >
-        {badge}
+        {badge.replace(/_/g, ' ')}
       </span>
     );
   };

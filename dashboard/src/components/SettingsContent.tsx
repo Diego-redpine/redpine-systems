@@ -57,6 +57,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
 
   // Integrations state
   const [connections, setConnections] = useState<{ provider: string; accountId: string; isActive: boolean; connectedAt: string }[]>([]);
+  const [dataConnections, setDataConnections] = useState<{ provider: string; isActive: boolean; connectedAt: string; metadata: Record<string, unknown> }[]>([]);
 
   // QuickBooks state
   const [qbStatus, setQbStatus] = useState<{
@@ -88,7 +89,9 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       }
       if (integrationsRes.ok) {
         const json = await integrationsRes.json();
-        setConnections(json.data || []);
+        const data = json.data || {};
+        setConnections(data.paymentConnections || []);
+        setDataConnections(data.dataConnections || []);
       }
       if (qbRes.ok) {
         const json = await qbRes.json();
@@ -584,6 +587,52 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
         </div>
       </div>
 
+      {/* 5b. Data Integrations */}
+      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <h3 className="text-base font-semibold mb-2" style={{ color: textMain }}>Data Integrations</h3>
+        <p className="text-sm mb-4" style={{ color: textMuted }}>
+          Import data from external services or sync your calendar.
+        </p>
+        <div className="space-y-3">
+          {([
+            { key: 'google', label: 'Google Sheets', connectUrl: '/api/integrations/google/connect', description: 'Import clients, products, and more from spreadsheets' },
+            { key: 'notion', label: 'Notion', connectUrl: '/api/integrations/notion/connect', description: 'Import data from Notion databases' },
+            { key: 'outlook', label: 'Outlook Calendar', connectUrl: '/api/integrations/outlook/connect', description: 'Sync events from your Outlook calendar' },
+          ] as const).map(provider => {
+            const conn = dataConnections.find(c => c.provider === provider.key && c.isActive);
+            return (
+              <div
+                key={provider.key}
+                className="flex items-center justify-between p-4 rounded-xl border"
+                style={{ borderColor }}
+              >
+                <div>
+                  <p className="text-sm font-medium" style={{ color: textMain }}>{provider.label}</p>
+                  <p className="text-xs" style={{ color: textMuted }}>
+                    {conn
+                      ? `Connected${conn.metadata?.email ? ` — ${conn.metadata.email}` : conn.metadata?.workspace_name ? ` — ${conn.metadata.workspace_name}` : ''}`
+                      : provider.description}
+                  </p>
+                </div>
+                {conn ? (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700">
+                    Connected
+                  </span>
+                ) : (
+                  <a
+                    href={provider.connectUrl}
+                    className="px-4 py-2 text-xs font-medium rounded-lg text-white transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: buttonColor }}
+                  >
+                    Connect
+                  </a>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* 6. QuickBooks Integration */}
       <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-2" style={{ color: textMain }}>QuickBooks Online</h3>
@@ -818,6 +867,25 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
             {cfAdding ? 'Adding...' : 'Add Field'}
           </button>
         </div>
+      </div>
+
+      {/* 9. Restart Onboarding Tour */}
+      <div className="rounded-2xl p-6 shadow-sm border" style={{ backgroundColor: cardBg, borderColor }}>
+        <h3 className="text-base font-semibold mb-1" style={{ color: textMain }}>Onboarding Tour</h3>
+        <p className="text-sm mb-4" style={{ color: textMuted }}>
+          Replay the onboarding tour to review your dashboard setup and integration options.
+        </p>
+        <button
+          onClick={() => {
+            localStorage.removeItem('redpine_tour_completed');
+            localStorage.removeItem('redpine_first_visit_shown');
+            window.location.reload();
+          }}
+          className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors hover:opacity-80"
+          style={{ borderColor, color: textMain }}
+        >
+          Restart Onboarding Tour
+        </button>
       </div>
 
       </>}

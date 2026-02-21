@@ -93,6 +93,12 @@ export function singularize(entityType: string): string {
     purchase_orders: 'purchase order',
     calendar: 'event',
     payroll: 'payroll entry',
+    nail_sets: 'nail set',
+    add_ons: 'add-on',
+    services: 'service',
+    programs: 'program',
+    specials: 'special',
+    promotions: 'promotion',
   };
 
   return singularMap[entityType.toLowerCase()] || entityType.replace(/s$/, '');

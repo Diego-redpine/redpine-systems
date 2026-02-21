@@ -31,26 +31,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check if user has any real data
-    const tables = ['clients', 'appointments', 'invoices', 'products', 'tasks', 'staff', 'leads', 'messages', 'documents'];
-    const counts: Record<string, number> = {};
-
-    for (const table of tables) {
-      const { count } = await supabase
-        .from(table)
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id);
-      counts[table] = count || 0;
-    }
-
-    const hasRealData = Object.values(counts).some(c => c > 0);
-
+    // Authenticated users ALWAYS get real mode (empty states, not dummy data)
     return NextResponse.json({
       success: true,
       data: {
-        mode: hasRealData ? 'real' : 'demo',
-        hasRealData,
-        counts,
+        mode: 'real',
+        hasRealData: true,
+        counts: {},
       },
     });
   } catch (error) {

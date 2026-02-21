@@ -1,5 +1,5 @@
 -- ============================================================
--- RED PINE OS — CONSOLIDATED MIGRATIONS (012-027 + Portal)
+-- RED PINE OS — CONSOLIDATED MIGRATIONS (012-034)
 -- ============================================================
 -- SAFE TO RE-RUN: All statements use IF NOT EXISTS / IF EXISTS
 -- LAST APPLIED BY DIEGO: COMBINED_008_011.sql (migrations 1-11)
@@ -1136,5 +1136,222 @@ ALTER TABLE public.configs ADD COLUMN IF NOT EXISTS website_data jsonb DEFAULT N
 COMMENT ON COLUMN public.configs.website_data IS 'FreeFormSaveData JSON generated during onboarding — pre-built website pages/sections/elements';
 
 -- ============================================================
--- DONE! All migrations 012-031 applied.
+-- 032: EVENTS & EVENT REGISTRATIONS
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.events (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  event_date DATE NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME,
+  venue TEXT,
+  image_url TEXT,
+  category TEXT,
+  capacity INTEGER,
+  tickets_sold INTEGER DEFAULT 0,
+  ticket_price_cents INTEGER DEFAULT 0,
+  is_free BOOLEAN DEFAULT FALSE,
+  is_public BOOLEAN DEFAULT TRUE,
+  status TEXT DEFAULT 'upcoming',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'events' AND policyname = 'Users see own events') THEN
+    CREATE POLICY "Users see own events" ON public.events FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'events' AND policyname = 'Users insert own events') THEN
+    CREATE POLICY "Users insert own events" ON public.events FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'events' AND policyname = 'Users update own events') THEN
+    CREATE POLICY "Users update own events" ON public.events FOR UPDATE USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'events' AND policyname = 'Users delete own events') THEN
+    CREATE POLICY "Users delete own events" ON public.events FOR DELETE USING (auth.uid() = user_id);
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_events_user_id ON public.events(user_id);
+CREATE INDEX IF NOT EXISTS idx_events_date ON public.events(event_date);
+
+CREATE TABLE IF NOT EXISTS public.event_registrations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  event_id UUID NOT NULL REFERENCES public.events(id) ON DELETE CASCADE,
+  attendee_name TEXT NOT NULL,
+  attendee_email TEXT NOT NULL,
+  attendee_phone TEXT,
+  tickets INTEGER DEFAULT 1,
+  status TEXT DEFAULT 'registered',
+  stripe_session_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.event_registrations ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'event_registrations' AND policyname = 'Anyone can register for events') THEN
+    CREATE POLICY "Anyone can register for events" ON public.event_registrations FOR INSERT WITH CHECK (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'event_registrations' AND policyname = 'Event owners see registrations') THEN
+    CREATE POLICY "Event owners see registrations" ON public.event_registrations FOR SELECT USING (
+      EXISTS (SELECT 1 FROM public.events WHERE events.id = event_registrations.event_id AND events.user_id = auth.uid())
+    );
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_event_registrations_event_id ON public.event_registrations(event_id);
+
+
+-- ============================================================
+-- 033: CLASSES, SCHEDULE & ENROLLMENTS
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.classes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  instructor_name TEXT,
+  category TEXT,
+  capacity INTEGER,
+  drop_in_price_cents INTEGER DEFAULT 0,
+  member_only BOOLEAN DEFAULT FALSE,
+  image_url TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.classes ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'classes' AND policyname = 'Users see own classes') THEN
+    CREATE POLICY "Users see own classes" ON public.classes FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'classes' AND policyname = 'Users insert own classes') THEN
+    CREATE POLICY "Users insert own classes" ON public.classes FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'classes' AND policyname = 'Users update own classes') THEN
+    CREATE POLICY "Users update own classes" ON public.classes FOR UPDATE USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'classes' AND policyname = 'Users delete own classes') THEN
+    CREATE POLICY "Users delete own classes" ON public.classes FOR DELETE USING (auth.uid() = user_id);
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_classes_user_id ON public.classes(user_id);
+
+CREATE TABLE IF NOT EXISTS public.class_schedule (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  class_id UUID NOT NULL REFERENCES public.classes(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL,
+  day_of_week TEXT NOT NULL,
+  start_time TIME NOT NULL,
+  duration_minutes INTEGER DEFAULT 60,
+  room TEXT,
+  is_active BOOLEAN DEFAULT TRUE
+);
+
+ALTER TABLE public.class_schedule ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'class_schedule' AND policyname = 'Users see own class schedule') THEN
+    CREATE POLICY "Users see own class schedule" ON public.class_schedule FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'class_schedule' AND policyname = 'Users insert own class schedule') THEN
+    CREATE POLICY "Users insert own class schedule" ON public.class_schedule FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'class_schedule' AND policyname = 'Users update own class schedule') THEN
+    CREATE POLICY "Users update own class schedule" ON public.class_schedule FOR UPDATE USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'class_schedule' AND policyname = 'Users delete own class schedule') THEN
+    CREATE POLICY "Users delete own class schedule" ON public.class_schedule FOR DELETE USING (auth.uid() = user_id);
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_class_schedule_class_id ON public.class_schedule(class_id);
+
+CREATE TABLE IF NOT EXISTS public.class_enrollments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  class_schedule_id UUID NOT NULL REFERENCES public.class_schedule(id) ON DELETE CASCADE,
+  client_name TEXT NOT NULL,
+  client_email TEXT NOT NULL,
+  enrollment_date DATE NOT NULL,
+  status TEXT DEFAULT 'enrolled',
+  is_drop_in BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.class_enrollments ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'class_enrollments' AND policyname = 'Anyone can enroll in classes') THEN
+    CREATE POLICY "Anyone can enroll in classes" ON public.class_enrollments FOR INSERT WITH CHECK (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'class_enrollments' AND policyname = 'Class owners see enrollments') THEN
+    CREATE POLICY "Class owners see enrollments" ON public.class_enrollments FOR SELECT USING (
+      EXISTS (
+        SELECT 1 FROM public.class_schedule cs
+        JOIN public.classes c ON c.id = cs.class_id
+        WHERE cs.id = class_enrollments.class_schedule_id AND c.user_id = auth.uid()
+      )
+    );
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_class_enrollments_schedule_id ON public.class_enrollments(class_schedule_id);
+
+
+-- ============================================================
+-- 034: QUEUE TRACKING (Live Board "Now Serving")
+-- ============================================================
+
+ALTER TABLE public.waitlist ADD COLUMN IF NOT EXISTS queue_number INTEGER;
+ALTER TABLE public.waitlist ADD COLUMN IF NOT EXISTS queue_date DATE DEFAULT CURRENT_DATE;
+CREATE INDEX IF NOT EXISTS idx_waitlist_queue ON public.waitlist(user_id, queue_date, queue_number);
+
+
+-- ============================================================
+-- 035: INTEGRATION CONNECTIONS + APPOINTMENT SYNC FIELDS
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS integration_connections (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,  -- 'google', 'notion', 'outlook'
+  access_token TEXT NOT NULL,  -- AES-256-GCM encrypted
+  refresh_token TEXT,  -- encrypted, nullable
+  token_expires_at TIMESTAMPTZ,
+  metadata JSONB DEFAULT '{}',  -- workspace_name, email, etc.
+  is_active BOOLEAN DEFAULT true,
+  connected_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, provider)
+);
+
+ALTER TABLE integration_connections ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "Users manage own integrations"
+    ON integration_connections FOR ALL
+    USING (user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- Appointments: add external sync fields for calendar sync dedup
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS external_id TEXT;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'manual';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_appointments_external
+  ON appointments (user_id, external_id)
+  WHERE external_id IS NOT NULL;
+
+
+-- ============================================================
+-- DONE! All migrations 012-035 applied.
 -- ============================================================

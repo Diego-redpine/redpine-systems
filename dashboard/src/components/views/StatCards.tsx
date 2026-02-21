@@ -456,6 +456,12 @@ const DEMO_STATS: Record<string, StatCard[]> = {
     { label: 'Avg Price', value: '$38' },
     { label: 'Bookings This Month', value: 86, change: '+15%', changeType: 'positive' },
   ],
+  nail_sets: [
+    { label: 'Nail Sets', value: 18 },
+    { label: 'Most Popular', value: 'French Tips', featured: true },
+    { label: 'Add-Ons', value: 8 },
+    { label: 'Avg Price', value: '$25' },
+  ],
   subscriptions: [
     { label: 'Total Subscriptions', value: 186, change: '+25%', changeType: 'positive' },
     { label: 'Active', value: 164, featured: true },

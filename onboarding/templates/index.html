@@ -642,11 +642,54 @@
         </div>
     </div>
 
-    <!-- Full Screen Loading Overlay -->
-    <div id="loading-section" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
-        <img src="/static/images/logo.png" alt="Red Pine OS" class="h-40 mb-8 heartbeat">
-        <p class="text-xl font-semibold" id="loading-text">Building your system<span class="loading-dots"></span></p>
-        <p class="text-gray-500 mt-2">This takes just a moment</p>
+    <!-- Full Screen Loading Overlay (multi-phase: building → signup → launching) -->
+    <div id="loading-section" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center px-6">
+        <!-- Phase 1: Building -->
+        <div id="loading-building" class="flex flex-col items-center">
+            <img src="/static/images/logo.png" alt="Red Pine OS" class="h-40 mb-8 heartbeat">
+            <p class="text-xl font-semibold" id="loading-text">Building your system<span class="loading-dots"></span></p>
+            <p class="text-gray-500 mt-2">This takes just a moment</p>
+        </div>
+
+        <!-- Phase 2: Signup form (slides in after config is ready) -->
+        <div id="loading-signup" class="hidden w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="/static/images/logo.png" alt="Red Pine OS" class="h-24 mx-auto mb-4">
+                <h2 class="text-2xl font-bold mb-1">Your system is ready!</h2>
+                <p id="loading-signup-business" class="text-gray-500 text-sm"></p>
+            </div>
+
+            <div id="loading-signup-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm"></div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="loading-signup-email" placeholder="you@business.com" class="w-full border-2 border-gray-200 px-3 py-2.5 focus:outline-none focus:border-gray-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="loading-signup-password" placeholder="At least 6 characters" class="w-full border-2 border-gray-200 px-3 py-2.5 focus:outline-none focus:border-gray-400">
+                </div>
+            </div>
+
+            <button onclick="handleLoadingSignup()" id="loading-signup-btn" class="btn-primary font-semibold px-6 py-3 w-full mt-6">
+                Create Your Account
+            </button>
+            <p class="text-center text-gray-400 text-xs mt-3">14-day free trial. $29/mo after. Cancel anytime.</p>
+
+            <div class="text-center mt-4">
+                <button onclick="skipSignupAndLaunch()" class="text-gray-400 hover:text-gray-600 text-sm underline">
+                    Skip — I already have an account
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase 3: Launching -->
+        <div id="loading-launching" class="hidden flex flex-col items-center">
+            <img src="/static/images/logo.png" alt="Red Pine OS" class="h-40 mb-8 heartbeat">
+            <p class="text-xl font-semibold">Launching your dashboard<span class="loading-dots"></span></p>
+            <p class="text-gray-500 mt-2">Setting everything up</p>
+        </div>
     </div>
 
     <!-- Form Modal -->
@@ -1389,15 +1432,18 @@
         }
 
         async function buildPlatform(description) {
-            // Show full screen loading overlay
+            // Show full screen loading overlay (building phase)
             document.getElementById('loading-section').classList.remove('hidden');
+            document.getElementById('loading-building').classList.remove('hidden');
+            document.getElementById('loading-signup').classList.add('hidden');
+            document.getElementById('loading-launching').classList.add('hidden');
 
             try {
                 const configPayload = {
                     description,
                     conversation_history: conversationHistory,
                 };
-                // If user signed up, pass user_id so config gets associated
+                // If user already signed up, pass user_id so config gets associated
                 if (signupAuthData && signupAuthData.user_id) {
                     configPayload.user_id = signupAuthData.user_id;
                 }
@@ -1410,27 +1456,22 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    document.getElementById('loading-section').classList.add('hidden');
-                    document.getElementById('success-section').classList.remove('hidden');
-                    // Show business details
-                    document.getElementById('config-details').innerHTML = `
-                        <p>Business: <strong class="text-black">${result.config.business_name}</strong></p>
-                        <p>Type: <strong class="text-black">${result.config.business_type}</strong></p>
-                    `;
-                    // Store config data for URL building
+                    // Store config data
                     window.configData = result.config;
+                    window.configId = result.config.id || result.config_id;
                     window.baseRedirectUrl = result.redirect_url;
-                    // Set the button href directly first
-                    document.getElementById('launch-dashboard-btn').href = result.redirect_url;
-                    // Apply AI-generated colors to the color swatches
-                    if (result.config.colors) {
-                        const aiColors = result.config.colors;
-                        if (aiColors.buttons) updateColorSwatch(1, aiColors.buttons);
-                        if (aiColors.text) updateColorSwatch(2, aiColors.text);
-                        if (aiColors.background) updateColorSwatch(3, aiColors.background);
+
+                    if (signupAuthData) {
+                        // User already signed up — link config and redirect
+                        await linkConfigAndRedirect();
+                    } else {
+                        // Show signup form inside the loading overlay
+                        document.getElementById('loading-building').classList.add('hidden');
+                        document.getElementById('loading-signup').classList.remove('hidden');
+                        document.getElementById('loading-signup-business').textContent =
+                            `${result.config.business_name} — ${result.config.business_type}`;
+                        document.getElementById('loading-signup-email').focus();
                     }
-                    // Then update launch URL with current swatch colors
-                    updateLaunchUrl();
                 } else {
                     document.getElementById('loading-section').classList.add('hidden');
                     alert('Error: ' + result.error);
@@ -1441,6 +1482,108 @@
                 alert('Error: ' + error.message);
                 location.reload();
             }
+        }
+
+        // Handle signup from the loading overlay
+        async function handleLoadingSignup() {
+            const email = document.getElementById('loading-signup-email').value.trim();
+            const password = document.getElementById('loading-signup-password').value;
+            const errorEl = document.getElementById('loading-signup-error');
+            const btn = document.getElementById('loading-signup-btn');
+
+            if (!email || !password) {
+                errorEl.textContent = 'Please fill in all fields.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (password.length < 6) {
+                errorEl.textContent = 'Password must be at least 6 characters.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            btn.textContent = 'Creating account...';
+            btn.disabled = true;
+
+            try {
+                const resp = await fetch('/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: window.configData?.business_name || '',
+                        email,
+                        password,
+                        config_id: window.configId,
+                    }),
+                });
+                const result = await resp.json();
+
+                if (result.success) {
+                    signupAuthData = result.auth;
+                    await linkConfigAndRedirect();
+                } else {
+                    errorEl.textContent = result.error || 'Signup failed. Please try again.';
+                    errorEl.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorEl.textContent = 'Network error. Please try again.';
+                errorEl.classList.remove('hidden');
+            } finally {
+                btn.textContent = 'Create Your Account';
+                btn.disabled = false;
+            }
+        }
+
+        // Link config to user and redirect to dashboard
+        async function linkConfigAndRedirect() {
+            // Show launching phase
+            document.getElementById('loading-signup').classList.add('hidden');
+            document.getElementById('loading-building').classList.add('hidden');
+            document.getElementById('loading-launching').classList.remove('hidden');
+
+            const dashboardUrl = window.baseRedirectUrl
+                ? new URL(window.baseRedirectUrl).origin + '/dashboard'
+                : '{{ dashboard_url }}/dashboard';
+
+            try {
+                // Link config to user via the dashboard API
+                if (window.configId && signupAuthData) {
+                    await fetch(dashboardUrl.replace('/dashboard', '/api/config/link'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${signupAuthData.access_token}`,
+                        },
+                        body: JSON.stringify({ configId: window.configId }),
+                        credentials: 'include',
+                    }).catch(err => console.error('Config link error:', err));
+                }
+            } catch (err) {
+                console.error('Failed to link config:', err);
+            }
+
+            // Build redirect URL with auth tokens
+            let redirectUrl = dashboardUrl;
+            if (signupAuthData) {
+                const url = new URL(redirectUrl);
+                url.searchParams.set('access_token', signupAuthData.access_token);
+                url.searchParams.set('refresh_token', signupAuthData.refresh_token);
+                redirectUrl = url.toString();
+            }
+
+            // Brief delay so user sees "Launching..." then redirect
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 1500);
+        }
+
+        // Skip signup — redirect to login page
+        function skipSignupAndLaunch() {
+            const dashboardUrl = window.baseRedirectUrl
+                ? new URL(window.baseRedirectUrl).origin
+                : '{{ dashboard_url }}';
+            window.location.href = dashboardUrl + '/login';
         }
 
         // Logo upload handling

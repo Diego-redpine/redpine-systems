@@ -51,6 +51,7 @@ const PUBLIC_ROUTES = [
   '/checkout/cancel',
   '/book',
   '/order',
+  '/board',
   '/terms',
   '/privacy',
   '/api/public',
@@ -65,6 +66,9 @@ const PUBLIC_ROUTES = [
   '/api/integrations/stripe/callback',
   '/api/integrations/square/callback',
   '/api/integrations/quickbooks/callback',
+  '/api/integrations/google/callback',
+  '/api/integrations/notion/callback',
+  '/api/integrations/outlook/callback',
   '/api/marketplace',
   '/api/agents',
 ];

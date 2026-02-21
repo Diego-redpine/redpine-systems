@@ -1,7 +1,7 @@
 'use client';
 
 import { DashboardColors } from '@/types/config';
-import { singularize } from '@/lib/entity-utils';
+import { singularize, entityToLabel } from '@/lib/entity-utils';
 import { getContrastText } from '@/lib/view-colors';
 
 interface EmptyStateProps {
@@ -52,7 +52,7 @@ export default function EmptyState({ entityType, configColors, onAdd }: EmptySta
         className="text-lg font-medium mb-2"
         style={{ color: configColors.text || '#111827' }}
       >
-        No {entityType} yet
+        No {entityToLabel(entityType)} yet
       </p>
       <p
         className="text-sm mb-6"

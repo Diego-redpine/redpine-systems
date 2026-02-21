@@ -37,17 +37,17 @@ const DEFAULT_TABS: DashboardTab[] = [
     components: [
       {
         id: 'clients',
-        label: 'Bookings',
+        label: 'Client Pipeline',
         dataSource: 'clients',
         view: 'pipeline',
         availableViews: ['pipeline', 'table', 'list'],
         pipeline: {
           stages: [
-            { id: 'stage_1', name: 'Requested', color: '#6366F1', order: 0 },
-            { id: 'stage_2', name: 'Confirmed', color: '#F59E0B', order: 1 },
-            { id: 'stage_3', name: 'Checked In', color: '#3B82F6', order: 2 },
-            { id: 'stage_4', name: 'In Service', color: '#10B981', order: 3 },
-            { id: 'stage_5', name: 'Completed', color: '#8B5CF6', order: 4 },
+            { id: 'stage_1', name: 'New Lead', color: '#6366F1', order: 0 },
+            { id: 'stage_2', name: 'Consultation', color: '#F59E0B', order: 1 },
+            { id: 'stage_3', name: 'Active Client', color: '#3B82F6', order: 2 },
+            { id: 'stage_4', name: 'Regular', color: '#10B981', order: 3 },
+            { id: 'stage_5', name: 'VIP', color: '#8B5CF6', order: 4 },
           ],
           default_stage_id: 'stage_1',
         },

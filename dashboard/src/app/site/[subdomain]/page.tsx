@@ -1,62 +1,84 @@
-'use client';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { getConfigBySubdomain } from '@/lib/subdomain';
+import PublicWebsiteRenderer from '@/components/PublicWebsiteRenderer';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+export const dynamic = 'force-dynamic';
 
-interface BusinessConfig {
-  businessName: string;
-  colors: Record<string, string>;
+interface PageProps {
+  params: Promise<{ subdomain: string }>;
 }
 
-export default function SiteHomePage() {
-  const params = useParams();
-  const subdomain = params.subdomain as string;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { subdomain } = await params;
+  const result = await getConfigBySubdomain(subdomain);
 
-  const [config, setConfig] = useState<BusinessConfig | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  if (!result) {
+    return { title: 'Site Not Found' };
+  }
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch('/api/subdomain', { headers: { 'x-subdomain': subdomain } });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success) {
-            setConfig({
-              businessName: json.data.businessName,
-              colors: json.data.colors || {},
-            });
-          }
-        }
-      } catch {
-        // ignore
-      }
-      setIsLoading(false);
-    }
-    load();
-  }, [subdomain]);
+  const businessName = result.config.business_name || result.profile.business_name || subdomain;
+  const businessType = result.config.business_type || '';
 
-  if (isLoading) {
+  return {
+    title: businessName,
+    description: businessType
+      ? `${businessName} — ${businessType}`
+      : businessName,
+    openGraph: {
+      title: businessName,
+      description: businessType
+        ? `${businessName} — ${businessType}`
+        : `Welcome to ${businessName}`,
+      type: 'website',
+    },
+  };
+}
+
+export default async function SiteHomePage({ params }: PageProps) {
+  const { subdomain } = await params;
+  const result = await getConfigBySubdomain(subdomain);
+
+  if (!result) {
+    notFound();
+  }
+
+  const { profile, config } = result;
+  const businessName = config.business_name || profile.business_name || subdomain;
+  const colors = config.colors || {};
+  const websiteData = config.website_data;
+
+  // If website_data exists, render the full public website
+  if (websiteData) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
-      </div>
+      <PublicWebsiteRenderer
+        websiteData={websiteData}
+        businessName={businessName}
+        subdomain={subdomain}
+        colors={colors}
+      />
     );
   }
 
-  const name = config?.businessName || subdomain;
-  const accent = config?.colors?.buttons || '#3B82F6';
+  // Otherwise show a "Coming Soon" page
+  const accent = colors.buttons || '#3B82F6';
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center max-w-lg">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">{name}</h1>
-          <p className="text-gray-500 text-sm mb-6">
-            This website is being built with the new editor. Check back soon!
+          <div
+            className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center text-white text-2xl font-bold"
+            style={{ backgroundColor: accent }}
+          >
+            {businessName.charAt(0).toUpperCase()}
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">{businessName}</h1>
+          <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+            Our website is currently being built. Check back soon to see what we have in store for you.
           </p>
           <div
-            className="inline-block px-5 py-2.5 rounded-full text-sm font-medium text-white"
+            className="inline-block px-6 py-2.5 rounded-full text-sm font-medium text-white"
             style={{ backgroundColor: accent }}
           >
             Coming Soon
@@ -65,7 +87,15 @@ export default function SiteHomePage() {
       </div>
       <footer className="text-center py-4 border-t border-gray-200">
         <p className="text-xs text-gray-400">
-          {name} — Powered by <span className="font-semibold text-gray-500">Red Pine</span>
+          {businessName} &mdash; Powered by{' '}
+          <a
+            href="https://redpine.systems"
+            className="font-semibold text-gray-500 hover:text-gray-700 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Red Pine
+          </a>
         </p>
       </footer>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, useCallback, useRef, lazy } from 'react';
+import { useState, useEffect, Suspense, useCallback, useRef, useMemo, lazy } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TopBar from '@/components/TopBar';
 import DashboardContent from '@/components/DashboardContent';
@@ -9,6 +9,8 @@ import { ColorItem } from '@/components/editors/ColorsEditor';
 
 const EditorOverlay = lazy(() => import('@/components/EditorOverlay'));
 const ChatOverlay = lazy(() => import('@/components/ChatOverlay'));
+const WebsitePreviewPopup = lazy(() => import('@/components/views/WebsitePreviewPopup'));
+const OnboardingTour = lazy(() => import('@/components/views/OnboardingTour'));
 import { DashboardConfig, DashboardColors, DashboardTab } from '@/types/config';
 import { mergeWithDefaults, applyColorsToDocument } from '@/lib/default-colors';
 import { DataModeProvider } from '@/providers/DataModeProvider';
@@ -90,6 +92,11 @@ function DashboardPageContent() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [toolbarSide, setToolbarSide] = useState<'left' | 'right'>('left');
+
+  // Onboarding tour state
+  const [showWebsitePreview, setShowWebsitePreview] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+  const [subdomain, setSubdomain] = useState('');
 
   const colorSaveTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -179,6 +186,44 @@ function DashboardPageContent() {
     }
     fetchData();
   }, [configId, roleLoading, businessOwnerId]);
+
+  // Fetch subdomain from profile and trigger first-visit website preview
+  useEffect(() => {
+    if (isLoading || !config) return;
+    let cancelled = false;
+
+    async function checkFirstVisit() {
+      try {
+        const res = await fetch('/api/settings/profile');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data?.subdomain && !cancelled) {
+            setSubdomain(json.data.subdomain);
+          }
+        }
+      } catch {
+        // non-critical
+      }
+
+      if (cancelled) return;
+
+      const alreadyShown = localStorage.getItem('redpine_first_visit_shown');
+      if (!alreadyShown) {
+        localStorage.setItem('redpine_first_visit_shown', 'true');
+        setTimeout(() => {
+          if (!cancelled) setShowWebsitePreview(true);
+        }, 800);
+      }
+    }
+
+    checkFirstVisit();
+    return () => { cancelled = true; };
+  }, [isLoading, config]);
+
+  // Memoize tabs for tour
+  const tourTabs = useMemo(() => {
+    return (config?.tabs || []).map(t => ({ label: t.label }));
+  }, [config?.tabs]);
 
   if (isLoading) {
     return (
@@ -287,6 +332,32 @@ function DashboardPageContent() {
             onTabsChange={handleTabsChange}
             onColorsChange={handleColorsChange}
             side={toolbarSide}
+          />
+        </Suspense>)}
+
+        {showWebsitePreview && (<Suspense fallback={null}>
+          <WebsitePreviewPopup
+            isOpen={showWebsitePreview}
+            onClose={() => setShowWebsitePreview(false)}
+            onStartTour={() => {
+              setShowWebsitePreview(false);
+              setShowTour(true);
+            }}
+            subdomain={subdomain || config?.businessName?.toLowerCase().replace(/\s+/g, '-') || 'my-business'}
+            businessName={config?.businessName || 'Your Business'}
+            colors={colors}
+          />
+        </Suspense>)}
+
+        {showTour && (<Suspense fallback={null}>
+          <OnboardingTour
+            isOpen={showTour}
+            onClose={() => setShowTour(false)}
+            businessName={config?.businessName || 'Your Business'}
+            businessType={config?.businessType || ''}
+            subdomain={subdomain || config?.businessName?.toLowerCase().replace(/\s+/g, '-') || 'my-business'}
+            tabs={tourTabs}
+            colors={colors}
           />
         </Suspense>)}
       </div>

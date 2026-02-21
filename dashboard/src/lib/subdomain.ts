@@ -154,6 +154,7 @@ export async function getConfigBySubdomain(subdomain: string): Promise<{
     tabs: unknown[];
     colors: Record<string, string> | null;
     nav_style: string;
+    website_data: unknown | null;
   };
 } | null> {
   const supabase = getSupabaseAdmin();
@@ -172,7 +173,7 @@ export async function getConfigBySubdomain(subdomain: string): Promise<{
   // Find active config for this user
   const { data: config, error: configError } = await supabase
     .from('configs')
-    .select('id, business_name, business_type, tabs, colors, nav_style')
+    .select('id, business_name, business_type, tabs, colors, nav_style, website_data')
     .eq('user_id', profile.id)
     .eq('is_active', true)
     .single();

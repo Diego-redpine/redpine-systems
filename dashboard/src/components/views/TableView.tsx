@@ -18,11 +18,13 @@ interface TableViewProps {
 
 // Format column name to readable label
 function formatColumnLabel(column: string): string {
+  // Common abbreviations that should be all-caps
+  const upperCaseWords: Record<string, string> = { sku: 'SKU', url: 'URL', api: 'API', pdf: 'PDF', csv: 'CSV', sms: 'SMS' };
   return column
     .replace(/_/g, ' ')
     .replace(/\bid\b/gi, 'ID')
     .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => upperCaseWords[word.toLowerCase()] || word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
 
