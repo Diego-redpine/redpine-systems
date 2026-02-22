@@ -113,6 +113,12 @@ function getDefaultPipelineConfig(componentId: string): PipelineConfig | undefin
 // Convert inline component.stages (from AI templates) to PipelineConfig
 // Templates store stages as [{id, name}] at the component root — this bridges to PipelineConfig format
 const INLINE_STAGE_COLORS = ['#3B82F6', '#8B5CF6', '#F59E0B', '#10B981', '#F97316', '#EF4444', '#EC4899', '#14B8A6'];
+const LOYALTY_TIER_COLORS: Record<string, string> = {
+  bronze: '#CD7F32',
+  silver: '#A8A9AD',
+  gold: '#FFD700',
+  platinum: '#8C9EAF',
+};
 function buildPipelineFromInlineStages(
   stages: { id?: string; name: string; color?: string }[]
 ): PipelineConfig {
@@ -120,7 +126,7 @@ function buildPipelineFromInlineStages(
     stages: stages.map((s, i) => ({
       id: s.id || `stage_${i + 1}`,
       name: s.name,
-      color: s.color || INLINE_STAGE_COLORS[i % INLINE_STAGE_COLORS.length],
+      color: s.color || LOYALTY_TIER_COLORS[s.name.toLowerCase()] || INLINE_STAGE_COLORS[i % INLINE_STAGE_COLORS.length],
       order: i,
     })),
     default_stage_id: stages[0]?.id || 'stage_1',

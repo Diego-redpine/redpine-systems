@@ -899,8 +899,9 @@ export default function ViewRenderer({
             </button>
           </>
         )}
-        {/* Hide header add button for routes — RouteView has its own "+ New Route" inside the map layout */}
-        {!isRouteEntity && (
+        {/* Hide header add button for routes and auto-progress pipelines */}
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {!isRouteEntity && !(componentConfig as any)._auto_progress && (
           <div data-tour-id="add-record-btn">
             <AddRecordButton
               entityType={entityType}
@@ -928,8 +929,9 @@ export default function ViewRenderer({
         </div>
       )}
 
-      {/* Stat cards row — above view content */}
-      {currentView !== 'calendar' && (
+      {/* Stat cards row — above view content (hidden for auto-progress pipelines) */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      {currentView !== 'calendar' && !(componentConfig as any)._auto_progress && (
         <Suspense fallback={null}>
           <div data-tour-id="stat-cards">
             <StatCards entityType={componentId} data={data} configColors={configColors} dataMode={dataMode} />
