@@ -1353,5 +1353,82 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_appointments_external
 
 
 -- ============================================================
--- DONE! All migrations 012-035 applied.
+-- 028b: GALLERIES (flat entity table for dashboard CRUD)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.galleries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  client TEXT,
+  photos INTEGER DEFAULT 0,
+  shared BOOLEAN DEFAULT false,
+  cover_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_galleries_user ON public.galleries(user_id);
+
+ALTER TABLE public.galleries ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'galleries' AND policyname = 'Users manage own galleries') THEN
+    CREATE POLICY "Users manage own galleries" ON public.galleries
+      FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
+
+
+-- ============================================================
+-- 036: CONTACTS (separate from clients)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.contacts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  type TEXT DEFAULT 'contact',
+  address TEXT,
+  notes TEXT,
+  tags TEXT[] DEFAULT '{}',
+  custom_fields JSONB DEFAULT '{}'::jsonb,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'archived')),
+  stage_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_contacts_user ON public.contacts(user_id);
+CREATE INDEX IF NOT EXISTS idx_contacts_type ON public.contacts(user_id, type);
+
+ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'contacts' AND policyname = 'Users manage own contacts') THEN
+    CREATE POLICY "Users manage own contacts" ON public.contacts
+      FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
+
+
+-- ============================================================
+-- 037: APPOINTMENTS MISSING COLUMNS (AddEventModal support)
+-- ============================================================
+
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS event_type TEXT DEFAULT 'appointment';
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS client TEXT;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS staff_member TEXT;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS employee TEXT;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS role TEXT;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS instructor TEXT;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS max_capacity INTEGER;
+
+
+-- ============================================================
+-- DONE! All migrations 012-037 + 028b applied.
 -- ============================================================

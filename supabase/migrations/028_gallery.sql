@@ -59,3 +59,35 @@ DO $$ BEGIN
       FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
   END IF;
 END $$;
+
+
+-- ============================================================
+-- GALLERIES (flat entity table for dashboard CRUD)
+-- ============================================================
+-- The dashboard CRUD handler queries "galleries" as the entity table.
+-- This is the simple flat table; gallery_albums/gallery_images above
+-- are for the more granular gallery feature.
+
+CREATE TABLE IF NOT EXISTS public.galleries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  client TEXT,
+  photos INTEGER DEFAULT 0,
+  shared BOOLEAN DEFAULT false,
+  cover_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_galleries_user ON public.galleries(user_id);
+
+ALTER TABLE public.galleries ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'galleries' AND policyname = 'Users manage own galleries') THEN
+    CREATE POLICY "Users manage own galleries" ON public.galleries
+      FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
