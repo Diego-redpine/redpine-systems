@@ -283,8 +283,13 @@ export function useEntityData(
           });
 
           if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || `Failed to fetch ${entityType}`);
+            throw new Error(`Failed to fetch ${entityType} (${response.status})`);
+          }
+
+          // Defensive: reject non-JSON responses (e.g. 404 HTML pages)
+          const contentType = response.headers.get('content-type') || '';
+          if (!contentType.includes('application/json')) {
+            throw new Error(`Unexpected response type for ${entityType}: ${contentType}`);
           }
 
           const result = await response.json();

@@ -925,7 +925,7 @@ export default function ViewRenderer({
       {currentView !== 'calendar' && (
         <Suspense fallback={null}>
           <div data-tour-id="stat-cards">
-            <StatCards entityType={componentId} data={data} configColors={configColors} />
+            <StatCards entityType={componentId} data={data} configColors={configColors} dataMode={dataMode} />
           </div>
         </Suspense>
       )}

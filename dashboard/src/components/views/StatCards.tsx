@@ -15,6 +15,7 @@ interface StatCardsProps {
   entityType: string;
   data: Record<string, unknown>[];
   configColors: DashboardColors;
+  dataMode?: 'real' | 'dummy';
 }
 
 // Demo stat values per entity type - shown in preview/demo mode
@@ -534,6 +535,18 @@ function getDemoStats(entityType: string): StatCard[] {
   return count ? stats.slice(0, count) : stats;
 }
 
+// Empty stats for real mode with no data — shows zeros, not fake numbers
+function getEmptyStats(entityType: string): StatCard[] {
+  const name = entityType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const stats: StatCard[] = [
+    { label: `Total ${name}`, value: 0 },
+    { label: 'Active', value: 0, featured: true },
+    { label: 'This Month', value: 0 },
+  ];
+  const count = STAT_COUNT_OVERRIDES[entityType];
+  return count ? stats.slice(0, count) : stats;
+}
+
 // Compute real stats from actual data records
 function computeStatsFromData(entityType: string, data: Record<string, unknown>[]): StatCard[] {
   const total = data.length;
@@ -642,10 +655,13 @@ function computeStatsFromData(entityType: string, data: Record<string, unknown>[
   return stats.slice(0, maxCards);
 }
 
-export default function StatCards({ entityType, data, configColors }: StatCardsProps) {
+export default function StatCards({ entityType, data, configColors, dataMode }: StatCardsProps) {
+  // In real mode with no data, show zeros instead of fake demo numbers
   const stats = data && data.length > 0
     ? computeStatsFromData(entityType, data)
-    : getDemoStats(entityType);
+    : dataMode === 'real'
+      ? getEmptyStats(entityType)
+      : getDemoStats(entityType);
   const buttonColor = configColors.buttons || '#1A1A1A';
 
   return (

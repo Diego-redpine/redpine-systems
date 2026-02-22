@@ -116,6 +116,7 @@ function getEntityType(componentId: string): string {
     clients: 'clients',
     contacts: 'contacts',
     leads: 'leads',
+    regulars: 'clients',
     staff: 'staff',
     vendors: 'clients',
     products: 'products',
@@ -126,6 +127,8 @@ function getEntityType(componentId: string): string {
     appointments: 'appointments',
     schedules: 'appointments',
     shifts: 'appointments',
+    classes: 'appointments',
+    reservations: 'appointments',
     invoices: 'invoices',
     payments: 'invoices',
     expenses: 'invoices',
@@ -143,6 +146,20 @@ function getEntityType(componentId: string): string {
     contracts: 'documents',
     images: 'documents',
     uploads: 'documents',
+    // AI-generated component IDs → canonical entity types
+    nail_sets: 'packages',
+    bridal_packages: 'packages',
+    gel_nails: 'packages',
+    add_ons: 'packages',
+    service_menu: 'packages',
+    retail_products: 'products',
+    loyalty_programs: 'membership_plans',
+    vip_clients: 'memberships',
+    studio_expenses: 'invoices',
+    regular_clients: 'clients',
+    new_clients: 'clients',
+    appointments_calendar: 'appointments',
+    appointment_calendar: 'appointments',
   };
   return entityMap[componentId] || componentId;
 }
