@@ -37,7 +37,7 @@ _TEMPLATES = {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
                     {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
-                     'stages': ['New Lead', 'Booked', 'First Visit', 'Active', 'Regular', 'VIP']},
+                     'stages': ['New', 'Booked', 'Active', 'Inactive']},
                     {'id': 'contacts', 'label': 'Contacts', 'view': 'table'},
                     {'id': 'loyalty', 'label': 'Loyalty', 'view': 'pipeline',
                      'stages': ['Bronze', 'Silver', 'Gold', 'Platinum'],
