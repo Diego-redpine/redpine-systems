@@ -24,6 +24,7 @@ interface PipelineViewProps {
   onRecordClick?: (record: Record<string, unknown>) => void;
   onStageMove?: (recordId: string, newStageId: string) => void;
   onAddToStage?: (stageId: string) => void;
+  readOnly?: boolean;
 }
 
 export default function PipelineView({
@@ -34,6 +35,7 @@ export default function PipelineView({
   onRecordClick,
   onStageMove,
   onAddToStage,
+  readOnly,
 }: PipelineViewProps) {
   const textColor = getTextColor(configColors);
   const [activeRecord, setActiveRecord] = useState<Record<string, unknown> | null>(null);
@@ -105,6 +107,36 @@ export default function PipelineView({
       onStageMove?.(recordId, newStageId);
     }
   };
+
+  // Read-only mode: render columns without drag-drop (for auto-progress pipelines)
+  if (readOnly) {
+    return (
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2 mb-3 px-1">
+          <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+          <span className="text-xs text-gray-500">Clients progress automatically based on activity</span>
+        </div>
+        <div className="overflow-x-auto">
+          <div className="flex gap-4 pb-4" style={{ minWidth: 'max-content' }}>
+            {stages.map((stage) => (
+              <PipelineColumn
+                key={stage.id}
+                stage={stage}
+                items={itemsByStage[stage.id] || []}
+                configColors={configColors}
+                fields={fields}
+                stageValue={fields?.valueField ? stageValues[stage.id] : undefined}
+                onItemClick={onRecordClick}
+                readOnly
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">

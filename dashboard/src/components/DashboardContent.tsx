@@ -110,6 +110,23 @@ function getDefaultPipelineConfig(componentId: string): PipelineConfig | undefin
   };
 }
 
+// Convert inline component.stages (from AI templates) to PipelineConfig
+// Templates store stages as [{id, name}] at the component root — this bridges to PipelineConfig format
+const INLINE_STAGE_COLORS = ['#3B82F6', '#8B5CF6', '#F59E0B', '#10B981', '#F97316', '#EF4444', '#EC4899', '#14B8A6'];
+function buildPipelineFromInlineStages(
+  stages: { id?: string; name: string; color?: string }[]
+): PipelineConfig {
+  return {
+    stages: stages.map((s, i) => ({
+      id: s.id || `stage_${i + 1}`,
+      name: s.name,
+      color: s.color || INLINE_STAGE_COLORS[i % INLINE_STAGE_COLORS.length],
+      order: i,
+    })),
+    default_stage_id: stages[0]?.id || 'stage_1',
+  };
+}
+
 // Determine entity type from component ID
 function getEntityType(componentId: string): string {
   const entityMap: Record<string, string> = {
@@ -2017,7 +2034,12 @@ export default function DashboardContent({
     const dataKey = component.dataSource || component.id;
     const entityType = getEntityType(dataKey);
     const data = componentDummyData[dataKey];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const inlineStages = (component as any).stages;
     const pipelineConfig = component.pipeline
+      || (Array.isArray(inlineStages) && inlineStages.length > 0
+          ? buildPipelineFromInlineStages(inlineStages)
+          : undefined)
       || (data ? extractPipelineConfig(data) : undefined)
       || getDefaultPipelineConfig(dataKey);
     const componentConfig: TabComponent = {

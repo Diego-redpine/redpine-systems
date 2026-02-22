@@ -15,6 +15,7 @@ interface PipelineColumnProps {
   stageValue?: number;
   onItemClick?: (record: Record<string, unknown>) => void;
   onAddClick?: () => void;
+  readOnly?: boolean;
 }
 
 // Individual draggable pipeline card
@@ -104,6 +105,7 @@ export default memo(function PipelineColumn({
   stageValue,
   onItemClick,
   onAddClick,
+  readOnly,
 }: PipelineColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: stage.id });
   const hasDualColor = !!stage.color_secondary;
@@ -114,13 +116,39 @@ export default memo(function PipelineColumn({
   const leftText = getContrastText(stage.color);
   const rightText = hasDualColor ? getContrastText(stage.color_secondary!) : leftText;
 
+  // Static card for read-only mode (no drag handles)
+  const renderStaticCard = (record: Record<string, unknown>) => {
+    const title = fields?.title
+      ? String(record[fields.title] || record.name || record.title || '')
+      : String(record.name || record.title || '');
+    const subtitle = fields?.subtitle ? String(record[fields.subtitle] || record.subtitle || '') : '';
+
+    return (
+      <div
+        key={String(record.id)}
+        onClick={() => onItemClick?.(record)}
+        className="relative flex cursor-pointer rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+        style={{ backgroundColor: configColors.cards || '#FFFFFF' }}
+      >
+        <div className="flex-1 p-4 min-w-0">
+          <p className="font-medium text-sm truncate" style={{ color: configColors.headings || '#1A1A1A' }}>
+            {title}
+          </p>
+          {subtitle && (
+            <p className="text-xs truncate mt-1" style={{ color: '#6B7280' }}>{subtitle}</p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div
-      ref={setNodeRef}
+      ref={readOnly ? undefined : setNodeRef}
       className="flex flex-col w-[300px] min-w-[300px] min-h-[600px] rounded-2xl overflow-hidden transition-shadow"
       style={{
-        backgroundColor: isOver ? `${stage.color}10` : '#F9FAFB',
-        boxShadow: isOver ? `inset 0 0 0 2px ${stage.color}` : undefined,
+        backgroundColor: !readOnly && isOver ? `${stage.color}10` : '#F9FAFB',
+        boxShadow: !readOnly && isOver ? `inset 0 0 0 2px ${stage.color}` : undefined,
       }}
     >
       {/* Stage header — solid or dual-color */}
@@ -159,19 +187,22 @@ export default memo(function PipelineColumn({
 
       {/* Items container */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
-        {items.map((record) => (
-          <DraggableCard
-            key={String(record.id)}
-            record={record}
-            stageId={stage.id}
-            configColors={configColors}
-            fields={fields}
-            stageColor={stage.color}
-            onItemClick={onItemClick}
-          />
-        ))}
+        {readOnly
+          ? items.map(renderStaticCard)
+          : items.map((record) => (
+              <DraggableCard
+                key={String(record.id)}
+                record={record}
+                stageId={stage.id}
+                configColors={configColors}
+                fields={fields}
+                stageColor={stage.color}
+                onItemClick={onItemClick}
+              />
+            ))
+        }
 
-        {items.length === 0 && (
+        {items.length === 0 && !readOnly && (
           <div
             className="flex items-center justify-center h-24 rounded-xl border-2 border-dashed"
             style={{ borderColor: '#E5E7EB', color: '#9CA3AF' }}
@@ -181,8 +212,8 @@ export default memo(function PipelineColumn({
         )}
       </div>
 
-      {/* Add button at bottom of column — uses brand color */}
-      {onAddClick && (
+      {/* Add button at bottom of column — uses brand color (hidden in readOnly) */}
+      {onAddClick && !readOnly && (
         <button
           onClick={onAddClick}
           className="mx-3 mb-3 py-2 rounded-xl border-2 border-dashed text-sm font-medium hover:opacity-70 transition-opacity"

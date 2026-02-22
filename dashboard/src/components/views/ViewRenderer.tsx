@@ -107,12 +107,14 @@ export default function ViewRenderer({
   onViewChange,
 }: ViewRendererProps) {
   // Manage current view as internal state - initialized from config or default
-  // Safeguard: if the config's view isn't in the available views (e.g. AI set 'table' on a calendar-only component), fall back to registry default
-  const availableViews = componentConfig.availableViews || getAvailableViews(componentId);
+  // Config view ALWAYS takes priority — if template says view:'pipeline', that wins
+  const registryViews = componentConfig.availableViews || getAvailableViews(componentId);
   const configuredView = componentConfig.view || getDefaultView(componentId);
-  const [currentView, setCurrentView] = useState(
-    availableViews.includes(configuredView as ViewType) ? configuredView : getDefaultView(componentId)
-  );
+  // Ensure config view is in the available views list (prevents registry from overriding template)
+  const availableViews = componentConfig.view && !registryViews.includes(componentConfig.view as ViewType)
+    ? [componentConfig.view as ViewType, ...registryViews]
+    : registryViews;
+  const [currentView, setCurrentView] = useState(configuredView as ViewType);
 
   // Search, filter, sort, pagination state
   const [search, setSearch] = useState('');
@@ -703,7 +705,9 @@ export default function ViewRenderer({
           />
         );
 
-      case 'pipeline':
+      case 'pipeline': {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const isAutoProgress = !!(componentConfig as any)._auto_progress;
         return (
           <PipelineView
             data={data}
@@ -712,10 +716,12 @@ export default function ViewRenderer({
             entityType={entityType}
             fields={pipelineFields}
             onRecordClick={handleRecordClick}
-            onStageMove={handleStageMove}
-            onAddToStage={() => handleAddClick()}
+            onStageMove={isAutoProgress ? undefined : handleStageMove}
+            onAddToStage={isAutoProgress ? undefined : () => handleAddClick()}
+            readOnly={isAutoProgress}
           />
         );
+      }
 
       case 'calendar':
         return (
@@ -823,7 +829,8 @@ export default function ViewRenderer({
           </div>
         )}
         <div className="flex items-center gap-2 ml-auto">
-        {currentView === 'pipeline' && (
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {currentView === 'pipeline' && !(componentConfig as any)._auto_progress && (
           <button
             data-tour-id="edit-stages-btn"
             onClick={() => setIsStageManagerOpen(true)}
