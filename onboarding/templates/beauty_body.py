@@ -25,6 +25,8 @@ BEAUTY_BODY_TYPES = {
 _TEMPLATES = {
 
     # ── NAIL SALON ─────────────────────────────────────────────────────
+    # v2: Client journey pipeline (not daily queue — Live Board handles that).
+    #     Loyalty replaces Memberships (earned, not sold). Solo-first (no Staff tab).
     'nail_salon': {
         'tabs': [
             {
@@ -34,48 +36,35 @@ _TEMPLATES = {
             {
                 'id': 'tab_2', 'label': 'Clients', 'icon': 'people',
                 'components': [
-                    {'id': 'clients', 'label': 'Bookings', 'view': 'pipeline', '_locked': True,
-                     'stages': ['Requested', 'Confirmed', 'Checked In', 'In Service', 'Completed']},
-                    {'id': 'contacts', 'label': 'Contacts', 'view': 'list'},
+                    {'id': 'clients', 'label': 'Clients', 'view': 'pipeline', '_locked': True,
+                     'stages': ['New Lead', 'Booked', 'First Visit', 'Active', 'Regular', 'VIP']},
+                    {'id': 'contacts', 'label': 'Contacts', 'view': 'table'},
+                    {'id': 'loyalty', 'label': 'Loyalty', 'view': 'pipeline',
+                     'stages': ['Bronze', 'Silver', 'Gold', 'Platinum'],
+                     '_auto_progress': True},
                 ],
             },
             {
-                'id': 'tab_3', 'label': 'Memberships', 'icon': 'users',
+                'id': 'tab_3', 'label': 'Schedule', 'icon': 'calendar',
                 'components': [
-                    {'id': 'membership_plans', 'label': 'Plans', 'view': 'cards'},
-                    {'id': 'memberships', 'label': 'Members', 'view': 'pipeline',
-                     'stages': ['Basic', 'Premium', 'VIP', 'Cancelled']},
+                    {'id': 'calendar', 'label': 'Calendar', 'view': 'calendar', '_locked': True},
                 ],
             },
             {
-                'id': 'tab_4', 'label': 'Schedule', 'icon': 'calendar',
-                'components': [
-                    {'id': 'calendar', 'label': 'Schedule', 'view': 'calendar', '_locked': True},
-                ],
-            },
-            {
-                'id': 'tab_5', 'label': 'Services', 'icon': 'box',
+                'id': 'tab_4', 'label': 'Services', 'icon': 'box',
                 'components': [
                     {'id': 'packages', 'label': 'Service Menu', 'view': 'cards'},
-                    {'id': 'nail_sets', 'label': 'Nail Sets & Add-Ons', 'view': 'cards'},
                     {'id': 'products', 'label': 'Retail Products', 'view': 'table'},
                 ],
             },
             {
-                'id': 'tab_6', 'label': 'Gallery', 'icon': 'image',
+                'id': 'tab_5', 'label': 'Gallery', 'icon': 'image',
                 'components': [
-                    {'id': 'galleries', 'label': 'Nail Art Gallery', 'view': 'cards', '_locked': True},
+                    {'id': 'galleries', 'label': 'Gallery', 'view': 'cards', '_locked': True},
                 ],
             },
             {
-                'id': 'tab_7', 'label': 'Staff', 'icon': 'users',
-                '_removable': True,
-                'components': [
-                    {'id': 'staff', 'label': 'Nail Techs', 'view': 'cards'},
-                ],
-            },
-            {
-                'id': 'tab_8', 'label': 'Payments', 'icon': 'dollar',
+                'id': 'tab_6', 'label': 'Payments', 'icon': 'dollar',
                 'components': [
                     {'id': 'invoices', 'label': 'Invoices', 'view': 'table', '_locked': True},
                     {'id': 'expenses', 'label': 'Expenses', 'view': 'table'},

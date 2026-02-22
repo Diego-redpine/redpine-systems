@@ -153,6 +153,7 @@ function getEntityType(componentId: string): string {
     add_ons: 'packages',
     service_menu: 'packages',
     retail_products: 'products',
+    loyalty: 'clients',
     loyalty_programs: 'membership_plans',
     vip_clients: 'memberships',
     studio_expenses: 'invoices',
@@ -160,6 +161,21 @@ function getEntityType(componentId: string): string {
     new_clients: 'clients',
     appointments_calendar: 'appointments',
     appointment_calendar: 'appointments',
+    // Beauty & body template IDs
+    custom_tattoos: 'packages',
+    flash_designs: 'packages',
+    cover_ups: 'packages',
+    piercings: 'packages',
+    treatments: 'packages',
+    injectables: 'packages',
+    lash_services: 'packages',
+    brow_services: 'packages',
+    color_services: 'packages',
+    pet_profiles: 'clients',
+    flash_gallery: 'galleries',
+    portfolios: 'galleries',
+    waivers: 'documents',
+    deposits: 'invoices',
   };
   return entityMap[componentId] || componentId;
 }
