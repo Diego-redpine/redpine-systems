@@ -113,7 +113,8 @@ export default memo(function PipelineColumn({
     ? getDualColorStyle(stage.color, stage.color_secondary) || { backgroundColor: stage.color }
     : { backgroundColor: stage.color };
   // For dual-color headers, use contrast text for primary color on left, secondary on right
-  const leftText = getContrastText(stage.color);
+  // stage.textColor overrides auto-contrast (e.g. loyalty tier metallics need white text)
+  const leftText = stage.textColor || getContrastText(stage.color);
   const rightText = hasDualColor ? getContrastText(stage.color_secondary!) : leftText;
 
   // Static card for read-only mode (no drag handles)

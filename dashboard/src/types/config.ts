@@ -9,6 +9,7 @@ export interface PipelineStage {
   name: string;         // display name, e.g. 'New', 'In Progress'
   color: string;        // hex color, e.g. '#3B82F6'
   color_secondary?: string; // optional second hex color for dual-color stage headers
+  textColor?: string;   // optional override for header text color (e.g. '#FFFFFF' for loyalty tiers)
   order: number;        // display sequence (0, 1, 2, ...)
   card_style?: 'default' | 'rounded' | 'arrow' | 'minimal';
 }

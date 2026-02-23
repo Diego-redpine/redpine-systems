@@ -123,12 +123,18 @@ function buildPipelineFromInlineStages(
   stages: { id?: string; name: string; color?: string }[]
 ): PipelineConfig {
   return {
-    stages: stages.map((s, i) => ({
-      id: s.id || `stage_${i + 1}`,
-      name: s.name,
-      color: s.color || LOYALTY_TIER_COLORS[s.name.toLowerCase()] || INLINE_STAGE_COLORS[i % INLINE_STAGE_COLORS.length],
-      order: i,
-    })),
+    stages: stages.map((s, i) => {
+      const nameLower = s.name.toLowerCase();
+      const loyaltyColor = LOYALTY_TIER_COLORS[nameLower];
+      return {
+        id: s.id || `stage_${i + 1}`,
+        name: s.name,
+        color: s.color || loyaltyColor || INLINE_STAGE_COLORS[i % INLINE_STAGE_COLORS.length],
+        // Force white text on loyalty tier headers (auto-contrast picks black on these mid-tone metallics)
+        ...(loyaltyColor ? { textColor: '#FFFFFF' } : {}),
+        order: i,
+      };
+    }),
     default_stage_id: stages[0]?.id || 'stage_1',
   };
 }
