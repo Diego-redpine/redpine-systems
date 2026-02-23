@@ -499,6 +499,12 @@ function BlankSection({
           const pos = getPosition(el, viewport);
           const fontScale = pos.fontScale || 1;
 
+          // Text-based elements should use auto height so wrapped text
+          // is never clipped or overlapped by elements below.
+          const isTextElement = [
+            'heading', 'subheading', 'text', 'caption', 'quote',
+          ].includes(el.type);
+
           return (
             <div
               key={el.id}
@@ -507,7 +513,9 @@ function BlankSection({
                 left: `${(pos.x / EDITOR_CANVAS_WIDTH) * 100}%`,
                 top: `${pos.y}px`,
                 width: `${(pos.width / EDITOR_CANVAS_WIDTH) * 100}%`,
-                height: `${pos.height}px`,
+                height: isTextElement ? 'auto' : `${pos.height}px`,
+                minHeight: isTextElement ? `${pos.height}px` : undefined,
+                overflow: isTextElement ? 'visible' : undefined,
                 transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
                 fontSize: fontScale !== 1 ? `${fontScale}em` : undefined,
               }}
