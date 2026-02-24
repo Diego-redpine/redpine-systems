@@ -561,7 +561,8 @@ export async function POST(request: NextRequest) {
       const { error } = await supabase
         .from('clients')
         .update(updateData)
-        .eq('id', student_id);
+        .eq('id', student_id)
+        .eq('user_id', session.user_id);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
       return NextResponse.json({ success: true });
@@ -578,6 +579,7 @@ export async function POST(request: NextRequest) {
         .from('clients')
         .select('custom_fields')
         .eq('id', student_id)
+        .eq('user_id', session.user_id)
         .single();
 
       const customFields = { ...(existing?.custom_fields || {}), ...preferences };
@@ -585,7 +587,8 @@ export async function POST(request: NextRequest) {
       const { error } = await supabase
         .from('clients')
         .update({ custom_fields: customFields })
-        .eq('id', student_id);
+        .eq('id', student_id)
+        .eq('user_id', session.user_id);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
       return NextResponse.json({ success: true });

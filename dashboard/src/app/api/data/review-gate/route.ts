@@ -5,7 +5,7 @@ import { createCrudHandlers } from '@/lib/crud';
 
 export const dynamic = 'force-dynamic';
 
-const { handleGet, handlePost } = createCrudHandlers('review_gate_config', {
+const { handleGet, handlePost, handlePut, handleDelete } = createCrudHandlers('review_gate_config', {
   searchFields: [],
   requiredFields: [],
 });
@@ -16,4 +16,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   return handlePost(request);
+}
+
+export async function PUT(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id') || '';
+  return handlePut(request, id);
+}
+
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id') || '';
+  return handleDelete(request, id);
 }
