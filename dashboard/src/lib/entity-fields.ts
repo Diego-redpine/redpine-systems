@@ -228,6 +228,22 @@ export const ENTITY_FIELDS: Record<string, EntityFieldConfig> = {
     pipeline: null,
   },
 
+  review_requests: {
+    card: { title: 'client_id', subtitle: 'trigger_type', badge: 'channel', meta: ['sent_at'] },
+    list: { primary: 'client_id', secondary: 'trigger_type', trailing: 'sent_at' },
+    table: { columns: ['client_id', 'trigger_type', 'channel', 'sent_at', 'clicked_at', 'completed_at', 'drip_step'] },
+    calendar: null,
+    pipeline: null,
+  },
+
+  review_widgets: {
+    card: { title: 'name', subtitle: 'layout_type', badge: 'min_rating', meta: ['max_reviews'] },
+    list: { primary: 'name', secondary: 'layout_type', trailing: 'min_rating' },
+    table: { columns: ['name', 'layout_type', 'min_rating', 'max_reviews', 'show_ai_summary'] },
+    calendar: null,
+    pipeline: null,
+  },
+
   contracts: {
     card: { title: 'title', subtitle: 'client', badge: 'status', meta: ['value', 'end_date'] },
     list: { primary: 'title', secondary: 'client', trailing: 'status' },
