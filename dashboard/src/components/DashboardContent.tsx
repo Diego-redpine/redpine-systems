@@ -11,6 +11,7 @@ import SiteView from './SiteView';
 import MarketplaceView from './MarketplaceView';
 import ComingSoonCard from './ComingSoonCard';
 import LiveBoard from './LiveBoard';
+import ReviewsTab from './reviews/ReviewsTab';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -1999,7 +2000,7 @@ export default function DashboardContent({
   // Check if this is a platform tab (Dashboard detected by label, not ID — tab_1 can be anything in demo mode)
   const isDashboardTab = tabLabel.toLowerCase() === 'dashboard' || activeTab.toLowerCase() === 'dashboard';
   const isSettingsTab = activeTab === 'settings' || activeTab === 'profile';
-  const isPlatformTab = isDashboardTab || isSettingsTab || ['site', '__site__', 'analytics', '__marketplace__', '__marketing__'].includes(activeTab);
+  const isPlatformTab = isDashboardTab || isSettingsTab || ['site', '__site__', 'analytics', '__marketplace__', '__marketing__', 'reviews'].includes(activeTab);
   const toolbarPadding = toolbarSide === 'right' ? 'lg:pr-16' : 'lg:pl-16';
 
   if (isPlatformTab) {
@@ -2008,7 +2009,7 @@ export default function DashboardContent({
         {/* Settings/Profile has no heading — sub-tabs handle it */}
         {!isSettingsTab && (
           <h2 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: headingColor }}>
-            {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : ''}
+            {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : activeTab === 'reviews' ? 'Reviews' : ''}
           </h2>
         )}
         {isDashboardTab && (
@@ -2021,6 +2022,7 @@ export default function DashboardContent({
         {isSettingsTab && <SettingsContent colors={colors} defaultTab={activeTab === 'profile' ? 'profile' : 'settings'} />}
         {activeTab === '__marketplace__' && <MarketplaceView colors={colors} />}
         {activeTab === '__marketing__' && <MarketingContent colors={colors} />}
+        {activeTab === 'reviews' && <ReviewsTab colors={colors} />}
       </div>
     );
   }

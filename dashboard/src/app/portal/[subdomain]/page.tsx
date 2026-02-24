@@ -1,105 +1,46 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import { PortalProvider, PortalStudent } from '@/components/widgets/PortalContext';
-import { PortalHeader } from '@/components/widgets/PortalHeader';
-import { PortalSchedule } from '@/components/widgets/PortalSchedule';
-import { PortalBilling } from '@/components/widgets/PortalBilling';
-import { PortalProgress } from '@/components/widgets/PortalProgress';
-import { PortalDocuments } from '@/components/widgets/PortalDocuments';
-import { PortalAccount } from '@/components/widgets/PortalAccount';
-import { PortalAnnouncements } from '@/components/widgets/PortalAnnouncements';
-import { PortalShop } from '@/components/widgets/PortalShop';
+import {
+  PortalShell,
+  type PortalBusinessConfig,
+  type PortalClientData,
+  PortalAccountSection,
+  PortalHistorySection,
+  PortalLoyaltySection,
+  PortalMessagesSection,
+  PortalReviewsSection,
+  PortalCardsSection,
+  PortalNotificationsSection,
+  PortalBookingSection,
+  ChatWidget,
+} from '@/components/portal';
+import type { PortalSectionId } from '@/components/portal';
+import { getPortalConfig } from '@/lib/portal-templates';
 
-interface BusinessConfig {
-  businessName: string;
-  businessType: string;
-  colors: Record<string, string>;
+// ─── Helpers ──────────────────────────────────────────────────
+
+function isColorLight(hex: string): boolean {
+  const color = hex.replace('#', '');
+  if (color.length < 6) return true;
+  const r = parseInt(color.substring(0, 2), 16);
+  const g = parseInt(color.substring(2, 4), 16);
+  const b = parseInt(color.substring(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5;
 }
+
+// ─── Types ────────────────────────────────────────────────────
 
 interface ClientInfo {
   id: string;
   name: string;
   email: string;
   phone?: string;
+  avatar?: string | null;
 }
 
-interface Appointment {
-  id: string;
-  title: string;
-  start_time: string;
-  end_time: string;
-  status: string;
-  location?: string;
-  description?: string;
-}
-
-interface Invoice {
-  id: string;
-  invoice_number?: string;
-  amount_cents: number;
-  status: string;
-  due_date?: string;
-  paid_at?: string;
-  line_items?: { description: string; quantity: number; unit_price_cents: number }[];
-  created_at: string;
-}
-
-interface PortalMessage {
-  id: string;
-  subject?: string;
-  content: string;
-  type: string;
-  is_read: boolean;
-  created_at: string;
-}
-
-function isColorLight(hex: string): boolean {
-  const color = hex.replace('#', '');
-  if (color.length < 6) return true;
-  const r = parseInt(color.substr(0, 2), 16);
-  const g = parseInt(color.substr(2, 2), 16);
-  const b = parseInt(color.substr(4, 2), 16);
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5;
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
-  });
-}
-
-function formatTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString('en-US', {
-    hour: 'numeric', minute: '2-digit',
-  });
-}
-
-function formatCurrency(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
-
-// Map ChaiBuilder block types to portal widget components
-const BLOCK_COMPONENTS: Record<string, React.FC<Record<string, unknown>>> = {
-  PortalHeader: PortalHeader as React.FC<Record<string, unknown>>,
-  PortalSchedule: PortalSchedule as React.FC<Record<string, unknown>>,
-  PortalBilling: PortalBilling as React.FC<Record<string, unknown>>,
-  PortalProgress: PortalProgress as React.FC<Record<string, unknown>>,
-  PortalDocuments: PortalDocuments as React.FC<Record<string, unknown>>,
-  PortalAccount: PortalAccount as React.FC<Record<string, unknown>>,
-  PortalAnnouncements: PortalAnnouncements as React.FC<Record<string, unknown>>,
-  PortalShop: PortalShop as React.FC<Record<string, unknown>>,
-};
-
-interface PortalPage {
-  id: string;
-  title: string;
-  slug: string;
-  blocks: Array<{ _id: string; _type: string; [key: string]: unknown }>;
-}
-
-type PortalTab = 'appointments' | 'invoices' | 'messages';
+// ─── Page Component ───────────────────────────────────────────
 
 export default function CustomerPortalPage() {
   const params = useParams();
@@ -107,7 +48,7 @@ export default function CustomerPortalPage() {
   const subdomain = params.subdomain as string;
   const tokenFromUrl = searchParams.get('token');
 
-  const [config, setConfig] = useState<BusinessConfig | null>(null);
+  const [config, setConfig] = useState<PortalBusinessConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -119,25 +60,20 @@ export default function CustomerPortalPage() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  // Portal data
-  const [activeTab, setActiveTab] = useState<PortalTab>('appointments');
-  const [appointments, setAppointments] = useState<{ upcoming: Appointment[]; past: Appointment[] }>({ upcoming: [], past: [] });
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [messages, setMessages] = useState<PortalMessage[]>([]);
-  const [dataLoading, setDataLoading] = useState(false);
+  // Data loading flag (for verify phase)
+  const [verifying, setVerifying] = useState(false);
 
-  // ChaiBuilder portal pages
-  const [portalPages, setPortalPages] = useState<PortalPage[]>([]);
-  const [activePageSlug, setActivePageSlug] = useState('home');
-  const [students, setStudents] = useState<PortalStudent[]>([]);
-  const [configId, setConfigId] = useState('');
-  const [userId, setUserId] = useState('');
-
-  // Colors
+  // Colors (for login screen, before PortalShell takes over)
   const primaryColor = config?.colors?.buttons || config?.colors?.sidebar_bg || '#1a1a1a';
   const primaryText = isColorLight(primaryColor) ? '#1a1a1a' : '#ffffff';
 
-  // Load business config
+  // Industry-aware portal config
+  const portalConfig = useMemo(
+    () => getPortalConfig(config?.businessType),
+    [config?.businessType]
+  );
+
+  // ── Load business config ──────────────────────────────────
   useEffect(() => {
     async function loadConfig() {
       try {
@@ -147,6 +83,7 @@ export default function CustomerPortalPage() {
           setConfig({
             businessName: data.businessName || 'Business',
             businessType: data.businessType || '',
+            businessLogo: data.businessLogo || null,
             colors: data.colors || {},
           });
         }
@@ -158,88 +95,52 @@ export default function CustomerPortalPage() {
     loadConfig();
   }, [subdomain]);
 
-  // Check for stored token or URL token
+  // ── Check for stored token or URL token ───────────────────
   useEffect(() => {
     const stored = localStorage.getItem(`portal_token_${subdomain}`);
     if (tokenFromUrl) {
       setPortalToken(tokenFromUrl);
       localStorage.setItem(`portal_token_${subdomain}`, tokenFromUrl);
-      // Clean URL
       window.history.replaceState({}, '', `/portal/${subdomain}`);
     } else if (stored) {
       setPortalToken(stored);
     }
   }, [subdomain, tokenFromUrl]);
 
-  // Verify token and load data
+  // ── Verify token ──────────────────────────────────────────
   useEffect(() => {
     if (!portalToken) return;
 
-    async function verifyAndLoad() {
-      setDataLoading(true);
+    async function verify() {
+      setVerifying(true);
       try {
-        // Verify token
-        const verifyRes = await fetch('/api/portal/verify', {
+        const res = await fetch('/api/portal/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: portalToken }),
         });
 
-        if (!verifyRes.ok) {
-          // Token invalid/expired
+        if (!res.ok) {
           localStorage.removeItem(`portal_token_${subdomain}`);
           setPortalToken(null);
           setError('Your session has expired. Please sign in again.');
-          setDataLoading(false);
+          setVerifying(false);
           return;
         }
 
-        const verifyData = await verifyRes.json();
-        setClient(verifyData.client);
+        const data = await res.json();
+        setClient(data.client);
         setError(null);
-
-        // Try to fetch ChaiBuilder portal pages first
-        const portalPagesRes = await fetch(`/api/public/portal?subdomain=${subdomain}`);
-        if (portalPagesRes.ok) {
-          const portalData = await portalPagesRes.json();
-          if (portalData.pages && portalData.pages.length > 0) {
-            setPortalPages(portalData.pages);
-            setConfigId(portalData.config_id || '');
-            setUserId(portalData.user_id || '');
-          }
-        }
-
-        // Fetch students list
-        const studentsRes = await fetch(`/api/portal/data?type=students`, {
-          headers: { 'x-portal-token': portalToken! },
-        });
-        if (studentsRes.ok) {
-          const studentsData = await studentsRes.json();
-          if (studentsData.students) setStudents(studentsData.students);
-        }
-
-        // Load legacy portal data (fallback)
-        const dataRes = await fetch('/api/portal/data', {
-          headers: { 'x-portal-token': portalToken! },
-        });
-
-        if (dataRes.ok) {
-          const data = await dataRes.json();
-          setAppointments(data.appointments);
-          setInvoices(data.invoices);
-          setMessages(data.messages);
-          if (data.students) setStudents(data.students);
-        }
       } catch {
-        setError('Failed to load portal data');
+        setError('Failed to verify session');
       }
-      setDataLoading(false);
+      setVerifying(false);
     }
 
-    verifyAndLoad();
+    verify();
   }, [portalToken, subdomain]);
 
-  // Handle login
+  // ── Handle login ──────────────────────────────────────────
   const handleLogin = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail) return;
@@ -265,7 +166,7 @@ export default function CustomerPortalPage() {
     setLoginLoading(false);
   }, [loginEmail, subdomain]);
 
-  // Handle logout
+  // ── Handle logout ─────────────────────────────────────────
   const handleLogout = useCallback(() => {
     localStorage.removeItem(`portal_token_${subdomain}`);
     setPortalToken(null);
@@ -274,6 +175,7 @@ export default function CustomerPortalPage() {
     setLoginEmail('');
   }, [subdomain]);
 
+  // ── Loading state ─────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -284,7 +186,9 @@ export default function CustomerPortalPage() {
 
   const businessName = config?.businessName || 'Business';
 
+  // ══════════════════════════════════════════════════════════
   // LOGIN SCREEN
+  // ══════════════════════════════════════════════════════════
   if (!portalToken || !client) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -381,365 +285,147 @@ export default function CustomerPortalPage() {
     );
   }
 
-  // If ChaiBuilder portal pages exist, render the widget-based portal
-  if (portalPages.length > 0) {
-    const activePage = portalPages.find(p => p.slug === activePageSlug) || portalPages[0];
-
+  // ══════════════════════════════════════════════════════════
+  // VERIFYING TOKEN
+  // ══════════════════════════════════════════════════════════
+  if (verifying) {
     return (
-      <PortalProvider
-        token={portalToken!}
-        clientId={client.id}
-        clientName={client.name}
-        userId={userId}
-        configId={configId}
-        subdomain={subdomain}
-        students={students}
-      >
-        <div className="min-h-screen bg-gray-50">
-          {/* Header */}
-          <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3">
-            <div className="max-w-3xl mx-auto flex items-center justify-between">
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">{businessName}</h1>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="text-sm text-gray-500 hover:text-gray-700 font-medium"
-              >
-                Sign Out
-              </button>
-            </div>
-          </header>
-
-          {/* Page navigation */}
-          {portalPages.length > 1 && (
-            <div className="bg-white border-b border-gray-200 px-4 sm:px-6">
-              <div className="max-w-3xl mx-auto flex gap-1 overflow-x-auto scrollbar-hide">
-                {portalPages.map(page => (
-                  <button
-                    key={page.id}
-                    onClick={() => setActivePageSlug(page.slug)}
-                    className="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors"
-                    style={{
-                      borderColor: activePageSlug === page.slug ? primaryColor : 'transparent',
-                      color: activePageSlug === page.slug ? primaryColor : '#6b7280',
-                    }}
-                  >
-                    {page.title}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Portal blocks */}
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-            {dataLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="animate-pulse text-gray-400">Loading your portal...</div>
-              </div>
-            ) : (
-              activePage?.blocks?.map((block) => {
-                const Component = BLOCK_COMPONENTS[block._type];
-                if (!Component) return null;
-
-                // Extract props from block, removing ChaiBuilder internal fields
-                const { _id, _type, _name, ...blockProps } = block;
-                return (
-                  <Component
-                    key={_id}
-                    blockProps={{}}
-                    inBuilder={false}
-                    {...blockProps}
-                  />
-                );
-              })
-            )}
-          </div>
-
-          {/* Footer */}
-          <footer className="border-t border-gray-200 bg-white mt-auto px-6 py-4">
-            <p className="text-xs text-gray-400 text-center">
-              Powered by <span className="font-semibold text-red-600">Red Pine</span>
-            </p>
-          </footer>
-        </div>
-      </PortalProvider>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Loading your portal...</div>
+      </div>
     );
   }
 
-  // LEGACY PORTAL DASHBOARD (fallback when no ChaiBuilder pages)
-  const tabs: { id: PortalTab; label: string; count: number }[] = [
-    { id: 'appointments', label: 'Appointments', count: appointments.upcoming.length },
-    { id: 'invoices', label: 'Invoices', count: invoices.length },
-    { id: 'messages', label: 'Messages', count: messages.filter(m => !m.is_read).length },
-  ];
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">{businessName}</h1>
-            <p className="text-sm text-gray-500">Welcome, {client.name}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
-          >
-            Sign Out
-          </button>
-        </div>
-      </header>
-
-      {/* Tab navigation */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto flex gap-1 overflow-x-auto scrollbar-hide">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors"
-              style={{
-                borderColor: activeTab === tab.id ? primaryColor : 'transparent',
-                color: activeTab === tab.id ? primaryColor : '#6b7280',
-              }}
-            >
-              {tab.label}
-              {tab.count > 0 && (
-                <span
-                  className="ml-1.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold"
-                  style={{
-                    backgroundColor: activeTab === tab.id ? `${primaryColor}15` : '#f3f4f6',
-                    color: activeTab === tab.id ? primaryColor : '#6b7280',
-                  }}
-                >
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
-        {dataLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-pulse text-gray-400">Loading your data...</div>
-          </div>
-        ) : (
-          <>
-            {activeTab === 'appointments' && (
-              <AppointmentsTab
-                upcoming={appointments.upcoming}
-                past={appointments.past}
-                primaryColor={primaryColor}
-              />
-            )}
-            {activeTab === 'invoices' && (
-              <InvoicesTab invoices={invoices} primaryColor={primaryColor} />
-            )}
-            {activeTab === 'messages' && (
-              <MessagesTab messages={messages} />
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white mt-auto px-6 py-4">
-        <p className="text-xs text-gray-400 text-center">
-          Powered by <span className="font-semibold text-red-600">Red Pine</span>
-        </p>
-      </footer>
-    </div>
-  );
-}
-
-// --- Appointments Tab ---
-function AppointmentsTab({
-  upcoming,
-  past,
-  primaryColor,
-}: {
-  upcoming: Appointment[];
-  past: Appointment[];
-  primaryColor: string;
-}) {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-3">Upcoming Appointments</h2>
-        {upcoming.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-            <p className="text-gray-500">No upcoming appointments</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {upcoming.map(apt => (
-              <div key={apt.id} className="bg-white rounded-2xl border border-gray-200 p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{apt.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {formatDate(apt.start_time)} at {formatTime(apt.start_time)}
-                    </p>
-                    {apt.location && (
-                      <p className="text-sm text-gray-400 mt-0.5">{apt.location}</p>
-                    )}
-                  </div>
-                  <span
-                    className="px-3 py-1 rounded-full text-xs font-medium capitalize"
-                    style={{
-                      backgroundColor: apt.status === 'scheduled' ? `${primaryColor}15` : '#f3f4f6',
-                      color: apt.status === 'scheduled' ? primaryColor : '#6b7280',
-                    }}
-                  >
-                    {apt.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {past.length > 0 && (
-        <div>
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Past Appointments</h2>
-          <div className="space-y-2">
-            {past.map(apt => (
-              <div key={apt.id} className="bg-white rounded-xl border border-gray-200 p-4 opacity-70">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-gray-700 text-sm">{apt.title}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(apt.start_time)}</p>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-500 capitalize">
-                    {apt.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// --- Invoices Tab ---
-function InvoicesTab({
-  invoices,
-  primaryColor,
-}: {
-  invoices: Invoice[];
-  primaryColor: string;
-}) {
-  const statusColor = (status: string) => {
-    switch (status) {
-      case 'paid': return { bg: '#dcfce7', text: '#166534' };
-      case 'overdue': return { bg: '#fee2e2', text: '#991b1b' };
-      case 'sent': case 'pending': return { bg: '#dbeafe', text: '#1e40af' };
-      default: return { bg: '#f3f4f6', text: '#6b7280' };
-    }
+  // ══════════════════════════════════════════════════════════
+  // AUTHENTICATED PORTAL — Universal Skeleton
+  // ══════════════════════════════════════════════════════════
+  const shellConfig: PortalBusinessConfig = config || {
+    businessName: 'Business',
+    businessType: '',
+    colors: {},
   };
 
-  const totalOwed = invoices
-    .filter(inv => inv.status !== 'paid' && inv.status !== 'void')
-    .reduce((sum, inv) => sum + inv.amount_cents, 0);
+  const clientData: PortalClientData = {
+    id: client.id,
+    name: client.name,
+    email: client.email,
+    phone: client.phone,
+    avatar: client.avatar,
+  };
 
   return (
-    <div className="space-y-4">
-      {/* Balance card */}
-      {totalOwed > 0 && (
-        <div
-          className="rounded-2xl p-6 text-white"
-          style={{ backgroundColor: primaryColor }}
-        >
-          <p className="text-sm opacity-80">Outstanding Balance</p>
-          <p className="text-3xl font-bold mt-1">{formatCurrency(totalOwed)}</p>
-        </div>
-      )}
+    <>
+      <PortalShell
+        config={shellConfig}
+        portalConfig={portalConfig}
+        clientData={clientData}
+        onLogout={handleLogout}
+        defaultSection="account"
+      >
+        {(activeSection: PortalSectionId, accentColor: string, accentTextColor: string) => {
+          switch (activeSection) {
+            case 'account':
+              return (
+                <PortalAccountSection
+                  clientData={{
+                    id: client.id,
+                    name: client.name,
+                    email: client.email,
+                    phone: client.phone,
+                  }}
+                  portalConfig={portalConfig}
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                  subdomain={subdomain}
+                />
+              );
+            case 'history':
+              return (
+                <PortalHistorySection
+                  portalConfig={portalConfig}
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                />
+              );
+            case 'loyalty':
+              return (
+                <PortalLoyaltySection
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                />
+              );
+            case 'messages':
+              return (
+                <PortalMessagesSection
+                  clientId={client.id}
+                  portalConfig={portalConfig}
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                />
+              );
+            case 'reviews':
+              return (
+                <PortalReviewsSection
+                  clientId={client.id}
+                  portalConfig={portalConfig}
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                />
+              );
+            case 'cards':
+              return (
+                <PortalCardsSection
+                  clientId={client.id}
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                />
+              );
+            case 'notifications':
+              return (
+                <PortalNotificationsSection
+                  clientId={client.id}
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                />
+              );
+            case 'book':
+              return (
+                <PortalBookingSection
+                  clientId={client.id}
+                  portalConfig={portalConfig}
+                  accentColor={accentColor}
+                  accentTextColor={accentTextColor}
+                  portalToken={portalToken!}
+                />
+              );
+            default:
+              return null;
+          }
+        }}
+      </PortalShell>
 
-      {invoices.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-          <p className="text-gray-500">No invoices yet</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {invoices.map(inv => {
-            const sc = statusColor(inv.status);
-            return (
-              <div key={inv.id} className="bg-white rounded-2xl border border-gray-200 p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {inv.invoice_number || `Invoice`}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {inv.due_date ? `Due ${formatDate(inv.due_date)}` : formatDate(inv.created_at)}
-                    </p>
-                    {inv.line_items && inv.line_items.length > 0 && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        {inv.line_items.map(li => li.description).join(', ')}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-900">{formatCurrency(inv.amount_cents)}</p>
-                    <span
-                      className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium capitalize"
-                      style={{ backgroundColor: sc.bg, color: sc.text }}
-                    >
-                      {inv.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// --- Messages Tab ---
-function MessagesTab({ messages }: { messages: PortalMessage[] }) {
-  return (
-    <div className="space-y-3">
-      {messages.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-          <p className="text-gray-500">No messages</p>
-        </div>
-      ) : (
-        messages.map(msg => (
-          <div
-            key={msg.id}
-            className={`bg-white rounded-2xl border p-5 ${
-              msg.is_read ? 'border-gray-200' : 'border-blue-200 bg-blue-50/30'
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                {msg.subject && (
-                  <h3 className={`font-semibold text-gray-900 truncate ${!msg.is_read ? 'font-bold' : ''}`}>
-                    {msg.subject}
-                  </h3>
-                )}
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">{msg.content}</p>
-                <p className="text-xs text-gray-400 mt-2">{formatDate(msg.created_at)}</p>
-              </div>
-              {!msg.is_read && (
-                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 ml-3 flex-shrink-0" />
-              )}
-            </div>
-          </div>
-        ))
-      )}
-    </div>
+      {/* Adaptive Chat Widget — floating on portal pages */}
+      <ChatWidget
+        businessConfig={{
+          businessName: shellConfig.businessName,
+          userId: '', // Resolved server-side from portal token
+          subdomain,
+          accentColor: primaryColor,
+          accentTextColor: primaryText,
+        }}
+        portalSession={{
+          token: portalToken!,
+          clientId: client.id,
+          clientName: client.name,
+        }}
+      />
+    </>
   );
 }
