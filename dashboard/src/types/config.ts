@@ -89,6 +89,8 @@ export interface DashboardConfig {
   tabs: DashboardTab[];
   platformTabs: string[];  // always ["site", "analytics", "settings"]
   colors?: DashboardColors;
+  headingFont?: string;
+  bodyFont?: string;
 }
 
 // Legacy config format (for migration)

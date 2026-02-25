@@ -50,6 +50,8 @@ function toAppConfig(dbConfig: any): DashboardConfig & { websiteData?: any } {
     platformTabs: ['site', 'analytics', 'settings'],
     colors: dbConfig.colors || {},
   };
+  if (dbConfig.heading_font) result.headingFont = dbConfig.heading_font;
+  if (dbConfig.body_font) result.bodyFont = dbConfig.body_font;
   if (dbConfig.website_data) {
     result.websiteData = dbConfig.website_data;
   }
@@ -184,7 +186,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    let { id, tabs, colors, businessName, businessType } = body;
+    let { id, tabs, colors, businessName, businessType, headingFont, bodyFont } = body;
 
     // If no ID or invalid UUID, find the user's active config
     if (!id || !isValidUUID(id)) {
@@ -269,6 +271,8 @@ export async function PUT(request: NextRequest) {
     }
     if (businessName !== undefined) updates.business_name = businessName;
     if (businessType !== undefined) updates.business_type = businessType;
+    if (headingFont !== undefined) updates.heading_font = headingFont;
+    if (bodyFont !== undefined) updates.body_font = bodyFont;
 
     const { data, error } = await supabase
       .from('configs')
