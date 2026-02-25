@@ -1546,19 +1546,19 @@
                 ? new URL(window.baseRedirectUrl).origin
                 : '{{ dashboard_url }}';
 
-            // Single redirect to /auth/session — it establishes cookies + links config server-side
-            const sessionUrl = new URL(dashboardOrigin + '/auth/session');
+            // Redirect to /brand-board — it establishes cookies + links config, then user completes Brand Board
+            const brandBoardUrl = new URL(dashboardOrigin + '/brand-board');
             if (signupAuthData) {
-                sessionUrl.searchParams.set('access_token', signupAuthData.access_token);
-                sessionUrl.searchParams.set('refresh_token', signupAuthData.refresh_token);
+                brandBoardUrl.searchParams.set('access_token', signupAuthData.access_token);
+                brandBoardUrl.searchParams.set('refresh_token', signupAuthData.refresh_token);
             }
             if (window.configId) {
-                sessionUrl.searchParams.set('config_id', window.configId);
+                brandBoardUrl.searchParams.set('config_id', window.configId);
             }
 
             // Brief delay so user sees "Launching..." then redirect
             setTimeout(() => {
-                window.location.href = sessionUrl.toString();
+                window.location.href = brandBoardUrl.toString();
             }, 1500);
         }
 
