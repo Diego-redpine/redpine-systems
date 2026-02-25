@@ -6,6 +6,8 @@ import { getContrastText } from '@/lib/view-colors';
 interface ToolsStripProps {
   onOpenChat: () => void;
   isChatOpen: boolean;
+  onNavigateToComms?: () => void;
+  isCommsActive?: boolean;
   side?: 'left' | 'right';
   onSideChange?: (side: 'left' | 'right') => void;
   buttonColor?: string;
@@ -18,13 +20,9 @@ interface ToolsStripProps {
   onNavigateToMarketing?: () => void;
   isMarketingActive?: boolean;
   disableDrag?: boolean;
-  /** @deprecated Use onNavigateToBrand instead */
-  onOpenEditor?: () => void;
-  /** @deprecated Use isBrandActive instead */
-  isEditorOpen?: boolean;
 }
 
-export default function ToolsStrip({ onOpenChat, isChatOpen, side: controlledSide, onSideChange, buttonColor, onNavigateToBrand, isBrandActive, onNavigateToSite, isSiteActive, onNavigateToMarketplace, isMarketplaceActive, onNavigateToMarketing, isMarketingActive, disableDrag, onOpenEditor, isEditorOpen }: ToolsStripProps) {
+export default function ToolsStrip({ onOpenChat, isChatOpen, onNavigateToComms, isCommsActive, side: controlledSide, onSideChange, buttonColor, onNavigateToBrand, isBrandActive, onNavigateToSite, isSiteActive, onNavigateToMarketplace, isMarketplaceActive, onNavigateToMarketing, isMarketingActive, disableDrag }: ToolsStripProps) {
   const [internalSide, setInternalSide] = useState<'left' | 'right'>('left');
   const side = controlledSide ?? internalSide;
   const setSide = (s: 'left' | 'right') => {
@@ -153,7 +151,7 @@ export default function ToolsStrip({ onOpenChat, isChatOpen, side: controlledSid
   const mutedOpacity = isLight ? 0.4 : 0.45;
 
   const buttons = [
-    { id: 'chat', label: 'Chat', onClick: onOpenChat, active: isChatOpen, disabled: false, icon: (
+    { id: 'comms', label: 'Messages', onClick: () => onNavigateToComms?.(), active: !!isCommsActive, disabled: false, icon: (
       <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
       </svg>

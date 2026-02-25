@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import CenterModal from '@/components/ui/CenterModal';
 import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
+
+interface StaffPricing {
+  [staffId: string]: string; // staffId → price string
+}
 
 interface CatalogItemData {
   item_type: 'service' | 'product' | null;
@@ -15,6 +19,9 @@ interface CatalogItemData {
   buffer_minutes: number;
   sku: string;
   quantity: string; // display string, converted to int on save
+  showAdvanced: boolean;
+  pricingPerStaff: boolean;
+  staffPricing: StaffPricing;
 }
 
 interface AddCatalogItemWizardProps {
@@ -52,6 +59,9 @@ const INITIAL_DATA: CatalogItemData = {
   buffer_minutes: 0,
   sku: '',
   quantity: '',
+  showAdvanced: false,
+  pricingPerStaff: false,
+  staffPricing: {},
 };
 
 export default function AddCatalogItemWizard({
@@ -63,6 +73,23 @@ export default function AddCatalogItemWizard({
 }: AddCatalogItemWizardProps) {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<CatalogItemData>({ ...INITIAL_DATA });
+  const [staffList, setStaffList] = useState<{ id: string; name: string }[]>([]);
+
+  // Fetch staff for pricing-per-staff feature
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('/api/data/staff?pageSize=100')
+      .then(res => res.json())
+      .then(result => {
+        if (result.data && Array.isArray(result.data)) {
+          setStaffList(result.data.map((s: Record<string, unknown>) => ({
+            id: s.id as string,
+            name: (s.name || s.title || 'Staff') as string,
+          })));
+        }
+      })
+      .catch(() => setStaffList([]));
+  }, [isOpen]);
 
   const buttonBg = configColors.buttons || '#4F46E5';
   const buttonText = getContrastText(buttonBg);
@@ -96,6 +123,13 @@ export default function AddCatalogItemWizard({
     if (data.item_type === 'service') {
       record.duration_minutes = data.duration_minutes;
       record.buffer_minutes = data.buffer_minutes;
+      if (data.pricingPerStaff && Object.keys(data.staffPricing).length > 0) {
+        const staffPricingCents: Record<string, number> = {};
+        for (const [staffId, priceStr] of Object.entries(data.staffPricing)) {
+          staffPricingCents[staffId] = Math.round(parseFloat(priceStr || '0') * 100);
+        }
+        record.staff_pricing = staffPricingCents;
+      }
     } else {
       if (data.sku) record.sku = data.sku;
       if (data.quantity) record.quantity = parseInt(data.quantity) || undefined;
@@ -223,9 +257,10 @@ export default function AddCatalogItemWizard({
             </div>
           )}
 
-          {/* STEP 2: Details */}
+          {/* STEP 2: Details (progressive disclosure — 4 essential fields, expandable advanced) */}
           {step === 2 && (
             <div className="space-y-4">
+              {/* Essential fields */}
               <div>
                 <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
                   Name *
@@ -260,36 +295,19 @@ export default function AddCatalogItemWizard({
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
-                    Category
-                  </label>
-                  <input
-                    type="text"
-                    value={data.category}
-                    onChange={e => setData(d => ({ ...d, category: e.target.value }))}
-                    placeholder={data.item_type === 'service' ? 'e.g. Nails, Massage' : 'e.g. Hair Care, Accessories'}
-                    className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
-                    style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
-                  />
-                </div>
-              </div>
-
-              {/* Duration + Buffer — service only */}
-              {data.item_type === 'service' && (
-                <>
+                {data.item_type === 'service' ? (
                   <div>
                     <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
                       Duration
                     </label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {DURATION_OPTIONS.map(opt => {
                         const selected = data.duration_minutes === opt.value;
                         return (
                           <button
                             key={opt.value}
                             onClick={() => setData(d => ({ ...d, duration_minutes: opt.value }))}
-                            className="px-3.5 py-2 rounded-lg border-2 text-xs font-medium transition-all"
+                            className="px-2.5 py-1.5 rounded-lg border-2 text-xs font-medium transition-all"
                             style={{
                               borderColor: selected ? buttonBg : borderColor,
                               backgroundColor: selected ? `${buttonBg}10` : 'transparent',
@@ -302,39 +320,7 @@ export default function AddCatalogItemWizard({
                       })}
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
-                      Buffer Time
-                    </label>
-                    <p className="text-xs mb-2" style={{ color: mutedColor }}>
-                      Gap between this service and the next appointment
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {BUFFER_OPTIONS.map(opt => {
-                        const selected = data.buffer_minutes === opt.value;
-                        return (
-                          <button
-                            key={opt.value}
-                            onClick={() => setData(d => ({ ...d, buffer_minutes: opt.value }))}
-                            className="px-3.5 py-2 rounded-lg border-2 text-xs font-medium transition-all"
-                            style={{
-                              borderColor: selected ? buttonBg : borderColor,
-                              backgroundColor: selected ? `${buttonBg}10` : 'transparent',
-                              color: selected ? buttonBg : textColor,
-                            }}
-                          >
-                            {opt.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* SKU + Stock — product only */}
-              {data.item_type === 'product' && (
-                <div className="grid grid-cols-2 gap-3">
+                ) : (
                   <div>
                     <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
                       SKU
@@ -348,36 +334,157 @@ export default function AddCatalogItemWizard({
                       style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                     />
                   </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
+                  Category
+                </label>
+                <input
+                  type="text"
+                  value={data.category}
+                  onChange={e => setData(d => ({ ...d, category: e.target.value }))}
+                  placeholder={data.item_type === 'service' ? 'e.g. Nails, Massage' : 'e.g. Hair Care, Accessories'}
+                  className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                  style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
+                />
+              </div>
+
+              {/* Advanced options — expandable */}
+              <button
+                onClick={() => setData(d => ({ ...d, showAdvanced: !d.showAdvanced }))}
+                className="flex items-center gap-2 text-xs font-medium pt-1"
+                style={{ color: buttonBg }}
+              >
+                <svg
+                  className="w-3.5 h-3.5 transition-transform"
+                  style={{ transform: data.showAdvanced ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+                Advanced options
+              </button>
+
+              {data.showAdvanced && (
+                <div className="space-y-4 pl-2 border-l-2" style={{ borderColor: `${buttonBg}30` }}>
+                  {/* Service-specific advanced */}
+                  {data.item_type === 'service' && (
+                    <>
+                      <div>
+                        <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
+                          Buffer Time
+                        </label>
+                        <p className="text-xs mb-2" style={{ color: mutedColor }}>
+                          Gap between this service and the next appointment
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {BUFFER_OPTIONS.map(opt => {
+                            const selected = data.buffer_minutes === opt.value;
+                            return (
+                              <button
+                                key={opt.value}
+                                onClick={() => setData(d => ({ ...d, buffer_minutes: opt.value }))}
+                                className="px-3.5 py-2 rounded-lg border-2 text-xs font-medium transition-all"
+                                style={{
+                                  borderColor: selected ? buttonBg : borderColor,
+                                  backgroundColor: selected ? `${buttonBg}10` : 'transparent',
+                                  color: selected ? buttonBg : textColor,
+                                }}
+                              >
+                                {opt.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Pricing per staff toggle */}
+                      {staffList.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-xs font-medium" style={{ color: textColor }}>Different price per staff?</p>
+                              <p className="text-xs" style={{ color: mutedColor }}>Set individual pricing for each team member</p>
+                            </div>
+                            <button
+                              onClick={() => setData(d => ({ ...d, pricingPerStaff: !d.pricingPerStaff }))}
+                              className="w-9 h-5 rounded-full relative transition-colors flex-shrink-0"
+                              style={{ backgroundColor: data.pricingPerStaff ? buttonBg : borderColor }}
+                            >
+                              <div
+                                className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                                style={{ transform: data.pricingPerStaff ? 'translateX(18px)' : 'translateX(2px)' }}
+                              />
+                            </button>
+                          </div>
+                          {data.pricingPerStaff && (
+                            <div className="space-y-2">
+                              {staffList.map(s => (
+                                <div key={s.id} className="flex items-center gap-3">
+                                  <span className="text-xs font-medium w-28 truncate" style={{ color: textColor }}>{s.name}</span>
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-xs" style={{ color: mutedColor }}>$</span>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      step={0.01}
+                                      value={data.staffPricing[s.id] || ''}
+                                      onChange={e => setData(d => ({
+                                        ...d,
+                                        staffPricing: { ...d.staffPricing, [s.id]: e.target.value },
+                                      }))}
+                                      placeholder={data.price || '0.00'}
+                                      className="w-24 px-2 py-1.5 rounded-lg border text-xs outline-none"
+                                      style={inputStyle}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Product-specific advanced */}
+                  {data.item_type === 'product' && (
+                    <div>
+                      <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
+                        Stock Quantity
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={data.quantity}
+                        onChange={e => setData(d => ({ ...d, quantity: e.target.value }))}
+                        placeholder="e.g. 50"
+                        className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                        style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
+                      />
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
-                      Stock Quantity
+                      Description
                     </label>
-                    <input
-                      type="number"
-                      min={0}
-                      value={data.quantity}
-                      onChange={e => setData(d => ({ ...d, quantity: e.target.value }))}
-                      placeholder="e.g. 50"
-                      className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                    <textarea
+                      value={data.description}
+                      onChange={e => setData(d => ({ ...d, description: e.target.value }))}
+                      placeholder={data.item_type === 'service' ? 'What does this service include?' : 'Product details'}
+                      rows={3}
+                      className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2 resize-none"
                       style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                     />
                   </div>
                 </div>
               )}
-
-              <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: mutedColor }}>
-                  Description
-                </label>
-                <textarea
-                  value={data.description}
-                  onChange={e => setData(d => ({ ...d, description: e.target.value }))}
-                  placeholder={data.item_type === 'service' ? 'What does this service include?' : 'Product details'}
-                  rows={3}
-                  className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2 resize-none"
-                  style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
-                />
-              </div>
             </div>
           )}
 

@@ -236,6 +236,24 @@ export function PortalBookingSection({
                   </select>
                 </div>
 
+                {/* Saved Preferences Shortcut */}
+                {portalConfig.preferenceFields && portalConfig.preferenceFields.length > 0 && (
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs font-medium text-gray-500 mb-2">Your Preferences</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {portalConfig.preferenceFields.slice(0, 3).map(field => (
+                        <span
+                          key={field.key}
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium"
+                          style={{ backgroundColor: `${accentColor}10`, color: accentColor }}
+                        >
+                          {field.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {portalConfig.bookingMode === 'service' && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -304,28 +322,40 @@ export function PortalBookingSection({
     <div className="space-y-6">
       <h2 className="text-lg font-bold text-gray-900">{modeLabels.title}</h2>
 
-      {/* "Your Usual" Shortcut */}
+      {/* "Book Again" One-Tap Shortcut — Starbucks-style quick reorder */}
       {usualMatch && (
         <div
-          className="rounded-2xl p-5 shadow-sm border-2"
+          className="rounded-2xl p-5 shadow-sm border-2 relative overflow-hidden"
           style={{ borderColor: accentColor, backgroundColor: `${accentColor}08` }}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide" style={{ color: accentColor }}>
-                Your Usual
-              </p>
+          {/* Decorative accent */}
+          <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full opacity-10" style={{ backgroundColor: accentColor }} />
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 flex-shrink-0" style={{ color: accentColor }} fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                <p className="text-xs font-medium uppercase tracking-wide" style={{ color: accentColor }}>
+                  Your Usual
+                </p>
+              </div>
               <p className="font-bold text-gray-900 mt-1">{usualMatch.name}</p>
               <p className="text-sm text-gray-500">
                 {formatCurrency(usualMatch.price_cents)} · {formatDuration(usualMatch.duration_minutes)}
               </p>
+              {usualService && (
+                <p className="text-xs text-gray-400 mt-1">
+                  Booked {usualService[1]} times
+                </p>
+              )}
             </div>
             <button
               onClick={() => handleSelectService(usualMatch)}
-              className="px-4 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0"
+              className="px-5 py-3 rounded-xl text-sm font-bold flex-shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
               style={{ backgroundColor: accentColor, color: accentTextColor }}
             >
-              Book Your Usual
+              {portalConfig.primaryActionLabel}
             </button>
           </div>
         </div>

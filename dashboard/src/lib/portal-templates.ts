@@ -176,6 +176,7 @@ const INDUSTRY_CONFIGS: Record<string, Partial<PortalConfig>> = {
     reviewPrompt: 'Rate your appointment',
     preferenceFields: [
       { key: 'insurance', label: 'Insurance Provider', type: 'text' },
+      { key: 'dental_anxiety', label: 'Dental Anxiety Level', type: 'select', options: ['None', 'Mild', 'Moderate', 'High'] },
     ],
   },
   medical: {
@@ -183,19 +184,103 @@ const INDUSTRY_CONFIGS: Record<string, Partial<PortalConfig>> = {
     reviewPrompt: 'Rate your visit',
     preferenceFields: [
       { key: 'insurance', label: 'Insurance Provider', type: 'text' },
+      { key: 'allergies', label: 'Drug Allergies', type: 'textarea' },
+      { key: 'pharmacy', label: 'Preferred Pharmacy', type: 'text' },
     ],
   },
   legal: {
     chatProminence: 'secondary',
     reviewPrompt: 'Rate the service',
+    preferenceFields: [
+      { key: 'case_type', label: 'Case Type', type: 'select', options: ['Family', 'Criminal', 'Business', 'Real Estate', 'Immigration', 'Other'] },
+    ],
   },
   accounting: {
     chatProminence: 'secondary',
     reviewPrompt: 'Rate the service',
+    preferenceFields: [
+      { key: 'filing_type', label: 'Filing Type', type: 'select', options: ['Personal', 'Business (LLC)', 'Business (Corp)', 'Non-Profit'] },
+    ],
   },
   consulting: {
     chatProminence: 'secondary',
     reviewPrompt: 'Rate the consultation',
+  },
+
+  // ── Retail ───────────────────────────────────────────────
+  retail: {
+    primaryAction: 'reorder',
+    primaryActionLabel: 'Order Again',
+    bookingMode: 'menu',
+    chatProminence: 'secondary',
+    reviewPrompt: 'Rate your purchase',
+    preferenceFields: [
+      { key: 'size', label: 'Default Size', type: 'select', options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'] },
+      { key: 'style_preference', label: 'Style Preference', type: 'text' },
+    ],
+  },
+  boutique: {
+    primaryAction: 'reorder',
+    primaryActionLabel: 'Shop Again',
+    bookingMode: 'menu',
+    chatProminence: 'primary',
+    reviewPrompt: 'Rate your experience',
+    preferenceFields: [
+      { key: 'size', label: 'Clothing Size', type: 'select', options: ['XS', 'S', 'M', 'L', 'XL'] },
+      { key: 'colors', label: 'Favorite Colors', type: 'text' },
+      { key: 'avoid', label: 'Styles to Avoid', type: 'text' },
+    ],
+  },
+
+  // ── Contractors / Trades ─────────────────────────────────
+  hvac: {
+    primaryAction: 'schedule_again',
+    primaryActionLabel: 'Schedule Service',
+    bookingMode: 'scheduler',
+    chatProminence: 'secondary',
+    reviewPrompt: 'Rate the service',
+    preferenceFields: [
+      { key: 'system_type', label: 'HVAC System Type', type: 'select', options: ['Central Air', 'Heat Pump', 'Furnace', 'Mini-Split', 'Other'] },
+      { key: 'filter_size', label: 'Filter Size', type: 'text' },
+      { key: 'access_notes', label: 'Access Notes', type: 'textarea' },
+    ],
+  },
+  general_contractor: {
+    primaryAction: 'schedule_again',
+    primaryActionLabel: 'Request Service',
+    bookingMode: 'scheduler',
+    chatProminence: 'secondary',
+    reviewPrompt: 'Rate the work',
+    preferenceFields: [
+      { key: 'property_type', label: 'Property Type', type: 'select', options: ['Single Family', 'Multi-Family', 'Commercial', 'Condo'] },
+      { key: 'gate_code', label: 'Gate/Access Code', type: 'text' },
+      { key: 'property_notes', label: 'Property Notes', type: 'textarea' },
+    ],
+  },
+  auto_repair: {
+    primaryAction: 'schedule_again',
+    primaryActionLabel: 'Schedule Service',
+    bookingMode: 'scheduler',
+    chatProminence: 'secondary',
+    reviewPrompt: 'Rate the service',
+    preferenceFields: [
+      { key: 'vehicle', label: 'Vehicle (Year Make Model)', type: 'text' },
+      { key: 'mileage', label: 'Current Mileage', type: 'text' },
+      { key: 'vin', label: 'VIN', type: 'text' },
+    ],
+  },
+  pet_grooming: {
+    primaryAction: 'book_again',
+    primaryActionLabel: 'Book Again',
+    bookingMode: 'service',
+    chatProminence: 'primary',
+    reviewPrompt: 'Rate the grooming',
+    preferenceFields: [
+      { key: 'pet_name', label: 'Pet Name', type: 'text' },
+      { key: 'breed', label: 'Breed', type: 'text' },
+      { key: 'cut_style', label: 'Preferred Cut Style', type: 'text' },
+      { key: 'pet_allergies', label: 'Allergies/Sensitivities', type: 'textarea' },
+    ],
   },
 };
 

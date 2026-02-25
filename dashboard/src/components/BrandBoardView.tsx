@@ -203,37 +203,37 @@ export default function BrandBoardView({
 
       {/* Content */}
       {activeSubTab === 'brand_kit' && (
-        <div className="max-w-3xl">
-          <BrandBoardEditor
-            configId={null}
-            colors={editorColors}
-            onColorsChange={onColorsChange}
-            headingFont={headingFontFamily}
-            bodyFont={bodyFontFamily}
-            onFontChange={(h, b) => {
-              const hObj = FONT_OPTIONS.find(f => f.family === h) || FONT_OPTIONS[0];
-              const bObj = FONT_OPTIONS.find(f => f.family === b) || FONT_OPTIONS[0];
-              applyFonts(hObj.family, hObj.name, bObj.family, bObj.name);
-            }}
-            businessType={businessType}
-            businessName={businessName}
-            buttonColor={buttonColor}
-            mode="editor"
-          />
-        </div>
+        <BrandBoardEditor
+          configId={null}
+          colors={editorColors}
+          onColorsChange={onColorsChange}
+          headingFont={headingFontFamily}
+          bodyFont={bodyFontFamily}
+          onFontChange={(h, b) => {
+            const hObj = FONT_OPTIONS.find(f => f.family === h) || FONT_OPTIONS[0];
+            const bObj = FONT_OPTIONS.find(f => f.family === b) || FONT_OPTIONS[0];
+            applyFonts(hObj.family, hObj.name, bObj.family, bObj.name);
+          }}
+          businessType={businessType}
+          businessName={businessName}
+          buttonColor={buttonColor}
+          mode="editor"
+        />
       )}
 
       {activeSubTab === 'colors' && (
-        <div className="max-w-3xl">
-          <ColorsEditor
-            colors={editorColors}
-            onColorsChange={onColorsChange}
-          />
+        <div className="max-w-4xl mx-auto">
+          <div className="rounded-2xl border border-gray-200 overflow-hidden" style={{ height: 'calc(100vh - 220px)' }}>
+            <ColorsEditor
+              colors={editorColors}
+              onColorsChange={onColorsChange}
+            />
+          </div>
         </div>
       )}
 
       {activeSubTab === 'sections' && (
-        <div className="max-w-3xl">
+        <div className="max-w-4xl mx-auto">
           <SectionsEditor
             tabs={tabs}
             components={components}

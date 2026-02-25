@@ -12,6 +12,11 @@ interface LoyaltyData {
   points_per_dollar: number;
   reward_available: boolean;
   points_to_next_reward: number;
+  lifetime_points: number;
+  rewards_redeemed: number;
+  tier_multiplier: number;
+  next_tier?: { name: string; threshold: number };
+  recent_activity?: { description: string; points: number; date: string }[];
 }
 
 interface PortalLoyaltySectionProps {
@@ -20,11 +25,11 @@ interface PortalLoyaltySectionProps {
   portalToken: string;
 }
 
-const TIER_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  bronze: { bg: '#CD7F32', text: '#FFFFFF', label: 'Bronze' },
-  silver: { bg: '#C0C0C0', text: '#1a1a1a', label: 'Silver' },
-  gold: { bg: '#FFD700', text: '#1a1a1a', label: 'Gold' },
-  platinum: { bg: '#E5E4E2', text: '#1a1a1a', label: 'Platinum' },
+const TIER_STYLES: Record<string, { bg: string; text: string; label: string; gradient: string }> = {
+  bronze: { bg: '#CD7F32', text: '#FFFFFF', label: 'Bronze', gradient: 'linear-gradient(135deg, #CD7F32 0%, #E8A85C 50%, #CD7F32 100%)' },
+  silver: { bg: '#C0C0C0', text: '#1a1a1a', label: 'Silver', gradient: 'linear-gradient(135deg, #A8A8A8 0%, #D8D8D8 50%, #A8A8A8 100%)' },
+  gold: { bg: '#FFD700', text: '#1a1a1a', label: 'Gold', gradient: 'linear-gradient(135deg, #DAA520 0%, #FFD700 50%, #DAA520 100%)' },
+  platinum: { bg: '#E5E4E2', text: '#1a1a1a', label: 'Platinum', gradient: 'linear-gradient(135deg, #8C8C8C 0%, #E5E4E2 50%, #8C8C8C 100%)' },
 };
 
 function formatCurrency(cents: number): string {
@@ -39,6 +44,8 @@ export function PortalLoyaltySection({
   const [loyalty, setLoyalty] = useState<LoyaltyData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notActive, setNotActive] = useState(false);
+  const [redeeming, setRedeeming] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -61,6 +68,32 @@ export function PortalLoyaltySection({
     }
     load();
   }, [portalToken]);
+
+  const handleRedeem = async () => {
+    if (!loyalty?.reward_available) return;
+    setRedeeming(true);
+    try {
+      await fetch('/api/portal/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-portal-token': portalToken,
+        },
+        body: JSON.stringify({ action: 'redeem_reward' }),
+      });
+      // Refresh loyalty data
+      const res = await fetch('/api/portal/data?type=loyalty', {
+        headers: { 'x-portal-token': portalToken },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.loyalty) setLoyalty(data.loyalty);
+      }
+    } catch {
+      // Silently fail
+    }
+    setRedeeming(false);
+  };
 
   if (loading) {
     return (
@@ -92,75 +125,101 @@ export function PortalLoyaltySection({
     ? Math.floor(loyalty.points / loyalty.reward_threshold)
     : 0;
 
+  // Tier progress (if next tier exists)
+  const tierProgressPercent = loyalty.next_tier
+    ? Math.min(100, (loyalty.lifetime_points / loyalty.next_tier.threshold) * 100)
+    : 100;
+
+  const activity = loyalty.recent_activity || [];
+
   return (
     <div className="space-y-6">
-      {/* Tier Badge Card */}
+      {/* Starbucks-Style Tier Card */}
       <div
-        className="rounded-2xl p-6 text-center shadow-sm"
-        style={{ backgroundColor: tierStyle.bg, color: tierStyle.text }}
+        className="rounded-2xl p-6 text-center shadow-lg relative overflow-hidden"
+        style={{ background: tierStyle.gradient, color: tierStyle.text }}
       >
-        <div className="text-sm font-medium opacity-80 mb-1">Your Tier</div>
-        <div className="text-3xl font-bold">{tierStyle.label}</div>
-        <div className="text-sm opacity-80 mt-2">
-          {loyalty.points.toLocaleString()} points
+        {/* Decorative circles */}
+        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-10" style={{ backgroundColor: tierStyle.text }} />
+        <div className="absolute -left-4 -bottom-4 w-20 h-20 rounded-full opacity-10" style={{ backgroundColor: tierStyle.text }} />
+
+        <div className="relative z-10">
+          {/* Star icon */}
+          <div className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ backgroundColor: `${tierStyle.text}20` }}>
+            <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </div>
+
+          <div className="text-sm font-medium opacity-80 mb-0.5">Your Tier</div>
+          <div className="text-3xl font-bold tracking-tight">{tierStyle.label}</div>
+          <div className="text-4xl font-black mt-2">
+            {loyalty.points.toLocaleString()}
+          </div>
+          <div className="text-sm opacity-80 mt-0.5">
+            points · {loyalty.tier_multiplier || 1}x earning rate
+          </div>
         </div>
       </div>
 
-      {/* Progress Bar Card */}
+      {/* Progress to Next Reward — Starbucks-style segmented */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-900">Progress to Next Reward</h3>
-          <span className="text-sm text-gray-500">
-            {loyalty.points % loyalty.reward_threshold} / {loyalty.reward_threshold}
+          <h3 className="text-sm font-semibold text-gray-900">Next Reward</h3>
+          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+            {loyalty.points % loyalty.reward_threshold} / {loyalty.reward_threshold} pts
           </span>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${progressPercent}%`,
-              backgroundColor: accentColor,
-            }}
-          />
+        {/* Segmented Progress Bar (Starbucks-style) */}
+        <div className="flex gap-1">
+          {Array.from({ length: 10 }).map((_, i) => {
+            const segmentFilled = progressPercent > i * 10;
+            return (
+              <div
+                key={i}
+                className="flex-1 h-3 rounded-full transition-all duration-300"
+                style={{
+                  backgroundColor: segmentFilled ? accentColor : '#E5E7EB',
+                }}
+              />
+            );
+          })}
         </div>
 
         {loyalty.reward_available ? (
-          <p className="text-sm font-medium mt-3" style={{ color: accentColor }}>
-            You have a reward available!
-          </p>
+          <div className="mt-4">
+            <button
+              onClick={handleRedeem}
+              disabled={redeeming}
+              className="w-full py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+              style={{ backgroundColor: accentColor, color: accentTextColor }}
+            >
+              {redeeming ? 'Redeeming...' : `Redeem ${formatCurrency(loyalty.reward_value_cents)} Reward`}
+            </button>
+          </div>
         ) : (
           <p className="text-sm text-gray-500 mt-3">
-            {loyalty.points_to_next_reward} more points until your next reward
+            {loyalty.points_to_next_reward} more points until your next {formatCurrency(loyalty.reward_value_cents)} reward
           </p>
         )}
       </div>
 
-      {/* Reward Available Card */}
-      {loyalty.reward_available && (
-        <div
-          className="rounded-2xl p-6 shadow-sm border-2"
-          style={{ borderColor: accentColor, backgroundColor: `${accentColor}08` }}
-        >
-          <div className="flex items-center gap-3">
+      {/* Tier Progress (if next tier exists) */}
+      {loyalty.next_tier && (
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">
+            Path to {loyalty.next_tier.name}
+          </h3>
+          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
             <div
-              className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: accentColor }}
-            >
-              <svg className="w-6 h-6" fill="none" stroke={accentTextColor} viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-bold text-gray-900">
-                {formatCurrency(loyalty.reward_value_cents)} off your next visit!
-              </p>
-              <p className="text-sm text-gray-500">
-                You&apos;ve earned {rewardsEarned} reward{rewardsEarned !== 1 ? 's' : ''}
-              </p>
-            </div>
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${tierProgressPercent}%`, backgroundColor: accentColor }}
+            />
           </div>
+          <p className="text-xs text-gray-500">
+            {loyalty.lifetime_points.toLocaleString()} / {loyalty.next_tier.threshold.toLocaleString()} lifetime points
+          </p>
         </div>
       )}
 
@@ -168,20 +227,68 @@ export function PortalLoyaltySection({
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 text-center">
           <p className="text-2xl font-bold text-gray-900">
-            {loyalty.points.toLocaleString()}
+            {(loyalty.lifetime_points || loyalty.points).toLocaleString()}
           </p>
-          <p className="text-xs text-gray-500 mt-1">Total Points</p>
+          <p className="text-xs text-gray-500 mt-1">Lifetime Points</p>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 text-center">
           <p className="text-2xl font-bold text-gray-900">{loyalty.total_orders}</p>
-          <p className="text-xs text-gray-500 mt-1">Total Orders</p>
+          <p className="text-xs text-gray-500 mt-1">Total Visits</p>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 text-center">
-          <p className="text-2xl font-bold text-gray-900">
-            {formatCurrency(loyalty.total_spent_cents)}
-          </p>
-          <p className="text-xs text-gray-500 mt-1">Total Spent</p>
+          <p className="text-2xl font-bold text-gray-900">{loyalty.rewards_redeemed ?? rewardsEarned}</p>
+          <p className="text-xs text-gray-500 mt-1">Rewards Used</p>
         </div>
+      </div>
+
+      {/* Points Activity */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className="w-full p-5 flex items-center justify-between text-left"
+        >
+          <h3 className="text-sm font-semibold text-gray-900">Points Activity</h3>
+          <svg
+            className={`w-4 h-4 text-gray-400 transition-transform ${showHistory ? 'rotate-180' : ''}`}
+            fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
+        </button>
+
+        {showHistory && (
+          <div className="border-t border-gray-100 px-5 pb-5">
+            {activity.length === 0 ? (
+              <p className="text-sm text-gray-400 py-4 text-center">No activity yet</p>
+            ) : (
+              <div className="space-y-3 pt-3">
+                {activity.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: item.points > 0 ? '#dcfce7' : '#fee2e2' }}
+                      >
+                        <span className="text-xs font-bold" style={{ color: item.points > 0 ? '#166534' : '#991b1b' }}>
+                          {item.points > 0 ? '+' : '-'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{item.description}</p>
+                        <p className="text-xs text-gray-400">
+                          {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`font-bold ${item.points > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {item.points > 0 ? '+' : ''}{item.points}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* How It Works */}

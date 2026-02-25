@@ -1564,6 +1564,206 @@ CREATE POLICY "Users manage own credits"
 
 CREATE INDEX IF NOT EXISTS idx_user_credits_user_id ON public.user_credits(user_id);
 
+-- ════════════════════════════════════════════════════════════════
+-- Migration 041: Deposits, tips, service stacking, commissions, coupons
+-- ════════════════════════════════════════════════════════════════
+
+-- Deposit and no-show settings on calendar
+ALTER TABLE calendar_settings ADD COLUMN IF NOT EXISTS deposit_percent INTEGER DEFAULT 0;
+ALTER TABLE calendar_settings ADD COLUMN IF NOT EXISTS no_show_policy TEXT DEFAULT 'none' CHECK (no_show_policy IN ('none', 'charge_deposit', 'charge_full', 'charge_custom'));
+ALTER TABLE calendar_settings ADD COLUMN IF NOT EXISTS no_show_fee_cents INTEGER DEFAULT 0;
+
+-- Deposit and tip tracking on appointments
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS deposit_amount_cents INTEGER DEFAULT 0;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS deposit_payment_intent_id TEXT;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS tip_amount_cents INTEGER DEFAULT 0;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS service_ids TEXT[] DEFAULT '{}';
+
+-- Commission tracking
+CREATE TABLE IF NOT EXISTS public.commissions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  staff_id UUID NOT NULL,
+  amount_cents INTEGER NOT NULL DEFAULT 0,
+  source_type TEXT NOT NULL CHECK (source_type IN ('service', 'product', 'invoice', 'tip')),
+  source_id UUID,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'paid')),
+  period_start DATE,
+  period_end DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.commissions ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'commissions' AND policyname = 'commissions_user') THEN
+    CREATE POLICY commissions_user ON public.commissions FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_commissions_user ON public.commissions(user_id);
+CREATE INDEX IF NOT EXISTS idx_commissions_staff ON public.commissions(staff_id);
+
+-- Tiered commission config on staff
+ALTER TABLE team_members ADD COLUMN IF NOT EXISTS commission_config JSONB DEFAULT '{}';
+
+-- Coupons
+CREATE TABLE IF NOT EXISTS public.coupons (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  code TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('percent', 'fixed', 'free_item')),
+  value INTEGER NOT NULL DEFAULT 0,
+  min_order_amount INTEGER DEFAULT 0,
+  max_uses INTEGER,
+  current_uses INTEGER DEFAULT 0,
+  expires_at TIMESTAMPTZ,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'coupons' AND policyname = 'coupons_user') THEN
+    CREATE POLICY coupons_user ON public.coupons FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_coupons_user ON public.coupons(user_id);
+
+-- Estimates: add line_items JSONB, valid_until, convert support
+ALTER TABLE estimates ADD COLUMN IF NOT EXISTS line_items JSONB DEFAULT '[]';
+ALTER TABLE estimates ADD COLUMN IF NOT EXISTS subtotal_cents INTEGER DEFAULT 0;
+ALTER TABLE estimates ADD COLUMN IF NOT EXISTS tax_cents INTEGER DEFAULT 0;
+ALTER TABLE estimates ADD COLUMN IF NOT EXISTS total_cents INTEGER DEFAULT 0;
+ALTER TABLE estimates ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE estimates ADD COLUMN IF NOT EXISTS valid_until DATE;
+ALTER TABLE estimates ADD COLUMN IF NOT EXISTS converted_invoice_id UUID;
+
+-- Pricing per staff on services
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS staff_pricing JSONB DEFAULT '{}';
+
 -- ============================================================
--- DONE! All migrations 012-040 + 028b applied.
+-- MIGRATION 042: Loyalty Config, Client Loyalty, Portal Family Members
+-- ============================================================
+
+-- Loyalty program configuration (owner-facing)
+CREATE TABLE IF NOT EXISTS public.loyalty_config (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  program_name TEXT NOT NULL DEFAULT 'Rewards',
+  points_per_dollar INTEGER NOT NULL DEFAULT 1,
+  reward_threshold INTEGER NOT NULL DEFAULT 100,
+  reward_type TEXT NOT NULL DEFAULT 'discount' CHECK (reward_type IN ('discount', 'free_item', 'percentage')),
+  reward_value_cents INTEGER NOT NULL DEFAULT 500,
+  reward_description TEXT,
+  tiers JSONB DEFAULT '[]',
+  bonus_rules JSONB DEFAULT '[]',
+  is_active BOOLEAN DEFAULT false,
+  welcome_bonus INTEGER DEFAULT 0,
+  birthday_bonus INTEGER DEFAULT 0,
+  referral_bonus INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT one_config_per_user UNIQUE (user_id)
+);
+
+ALTER TABLE public.loyalty_config ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'loyalty_config' AND policyname = 'loyalty_config_user') THEN
+    CREATE POLICY loyalty_config_user ON public.loyalty_config FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_loyalty_config_user ON public.loyalty_config(user_id);
+
+-- Client loyalty tracking (per-client points/tier)
+CREATE TABLE IF NOT EXISTS public.client_loyalty (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL,
+  points INTEGER NOT NULL DEFAULT 0,
+  lifetime_points INTEGER NOT NULL DEFAULT 0,
+  tier TEXT NOT NULL DEFAULT 'bronze',
+  total_orders INTEGER NOT NULL DEFAULT 0,
+  total_spent_cents INTEGER NOT NULL DEFAULT 0,
+  rewards_redeemed INTEGER NOT NULL DEFAULT 0,
+  last_earned_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT unique_client_loyalty UNIQUE (user_id, client_id)
+);
+
+ALTER TABLE public.client_loyalty ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'client_loyalty' AND policyname = 'client_loyalty_user') THEN
+    CREATE POLICY client_loyalty_user ON public.client_loyalty FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_client_loyalty_user ON public.client_loyalty(user_id);
+CREATE INDEX IF NOT EXISTS idx_client_loyalty_client ON public.client_loyalty(client_id);
+
+-- Portal family members (clients can add family who book under their account)
+CREATE TABLE IF NOT EXISTS public.portal_family_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  primary_client_id UUID NOT NULL,
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  relationship TEXT DEFAULT 'family',
+  preferences JSONB DEFAULT '{}',
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.portal_family_members ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'portal_family_members' AND policyname = 'portal_family_members_user') THEN
+    CREATE POLICY portal_family_members_user ON public.portal_family_members FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_portal_family_user ON public.portal_family_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_portal_family_primary ON public.portal_family_members(primary_client_id);
+
+-- ============================================================
+-- MIGRATION 043: Blog Posts
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.blog_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL DEFAULT '',
+  slug TEXT NOT NULL DEFAULT '',
+  content TEXT NOT NULL DEFAULT '',
+  excerpt TEXT DEFAULT '',
+  cover_image TEXT,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+  tags TEXT[] DEFAULT '{}',
+  author_name TEXT DEFAULT '',
+  published_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'blog_posts' AND policyname = 'blog_posts_user') THEN
+    CREATE POLICY blog_posts_user ON public.blog_posts FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_blog_posts_user ON public.blog_posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON public.blog_posts(user_id, slug);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON public.blog_posts(user_id, status);
+
+-- ============================================================
+-- DONE! All migrations 012-043 + 028b applied.
 -- ============================================================

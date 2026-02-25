@@ -71,7 +71,7 @@ export default function CommunicationsTab({ colors, activeSubTab }: Communicatio
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6 h-full">
       {/* Sub-tab bar */}
       <div className="flex items-center gap-2">
         {SUB_TABS.map(tab => {
@@ -132,7 +132,9 @@ export default function CommunicationsTab({ colors, activeSubTab }: Communicatio
       )}
 
       {currentTab === 'Messages' && (
-        <UnifiedInbox colors={colors} onStatsChange={fetchStats} />
+        <div className="flex-1 min-h-0">
+          <UnifiedInbox colors={colors} onStatsChange={fetchStats} />
+        </div>
       )}
     </div>
   );

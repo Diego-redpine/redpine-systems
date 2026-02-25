@@ -6,6 +6,12 @@ import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
 import type { StaffModel, PayType, StaffAvailability } from '@/types/data';
 
+interface CommissionTier {
+  min_cents: number;
+  max_cents: number;
+  percentage: number;
+}
+
 interface StaffWizardData {
   staff_model: StaffModel | null;
   name: string;
@@ -16,6 +22,10 @@ interface StaffWizardData {
   pay_type: PayType | null;
   pay_rate_cents: number;
   commission_percent: number;
+  useTieredRates: boolean;
+  commissionTiers: CommissionTier[];
+  separateProductRate: boolean;
+  productCommissionPercent: number;
 }
 
 interface StaffSetupWizardProps {
@@ -133,6 +143,14 @@ export default function StaffSetupWizard({
     pay_type: null,
     pay_rate_cents: 0,
     commission_percent: 0,
+    useTieredRates: false,
+    commissionTiers: [
+      { min_cents: 0, max_cents: 500000, percentage: 30 },
+      { min_cents: 500000, max_cents: 1000000, percentage: 35 },
+      { min_cents: 1000000, max_cents: 999999900, percentage: 40 },
+    ],
+    separateProductRate: false,
+    productCommissionPercent: 0,
   });
 
   const buttonBg = configColors.buttons || '#4F46E5';
@@ -179,6 +197,20 @@ export default function StaffSetupWizard({
     if (data.pay_type === 'hourly') {
       record.hourly_rate_cents = data.pay_rate_cents;
     }
+    // Build commission_config JSONB for tiered/product rates
+    if (data.pay_type === 'commission') {
+      const commissionConfig: Record<string, unknown> = {
+        type: data.useTieredRates ? 'tiered' : 'percentage',
+        percentage: data.commission_percent,
+      };
+      if (data.useTieredRates) {
+        commissionConfig.tiers = data.commissionTiers;
+      }
+      if (data.separateProductRate) {
+        commissionConfig.product_percentage = data.productCommissionPercent;
+      }
+      record.commission_config = commissionConfig;
+    }
     onSave(record);
   }, [data, onSave]);
 
@@ -188,6 +220,13 @@ export default function StaffSetupWizard({
       staff_model: null, name: '', email: '', phone: '', role: '',
       availability: { ...DEFAULT_AVAILABILITY },
       pay_type: null, pay_rate_cents: 0, commission_percent: 0,
+      useTieredRates: false,
+      commissionTiers: [
+        { min_cents: 0, max_cents: 500000, percentage: 30 },
+        { min_cents: 500000, max_cents: 1000000, percentage: 35 },
+        { min_cents: 1000000, max_cents: 999999900, percentage: 40 },
+      ],
+      separateProductRate: false, productCommissionPercent: 0,
     });
     onClose();
   }, [onClose]);

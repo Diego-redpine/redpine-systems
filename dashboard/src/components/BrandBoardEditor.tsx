@@ -465,36 +465,79 @@ export default function BrandBoardEditor({
   onLaunch,
   launching,
 }: BrandBoardEditorProps) {
-  const containerClass = mode === 'onboarding'
-    ? 'max-w-2xl mx-auto px-6 pb-12'
-    : '';
+  // Onboarding mode — narrow centered form with dividers
+  if (mode === 'onboarding') {
+    return (
+      <div className="max-w-2xl mx-auto px-6 pb-12">
+        <div className="mb-8">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Logo</h3>
+          <LogoSection />
+        </div>
+        <div className="border-t border-gray-100 my-6" />
+        <div className="mb-8">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Colors</h3>
+          <ColorPresetsSection
+            colors={colors}
+            onColorsChange={onColorsChange}
+            businessType={businessType}
+            buttonColor={buttonColor}
+          />
+        </div>
+        <div className="border-t border-gray-100 my-6" />
+        <div className="mb-8">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Typography</h3>
+          <FontSection
+            headingFont={headingFont}
+            bodyFont={bodyFont}
+            onFontChange={onFontChange}
+            buttonColor={buttonColor}
+            businessName={businessName}
+          />
+        </div>
+        {onLaunch && (
+          <button
+            onClick={onLaunch}
+            disabled={launching}
+            className="w-full py-4 rounded-xl font-semibold text-lg transition-all disabled:opacity-70"
+            style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}
+          >
+            {launching ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Launching...
+              </span>
+            ) : (
+              'Launch Your Dashboard'
+            )}
+          </button>
+        )}
+      </div>
+    );
+  }
 
+  // Editor mode — continuous board layout, no dividers
   return (
-    <div className={containerClass}>
-      {/* Section: Logos */}
-      <div className="mb-8">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Logo</h3>
-        <LogoSection />
+    <div className="max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Logo</p>
+          <LogoSection />
+        </div>
+        <div>
+          <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Color Palette</p>
+          <ColorPresetsSection
+            colors={colors}
+            onColorsChange={onColorsChange}
+            businessType={businessType}
+            buttonColor={buttonColor}
+          />
+        </div>
       </div>
-
-      <div className="border-t border-gray-100 my-6" />
-
-      {/* Section: Colors */}
-      <div className="mb-8">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Colors</h3>
-        <ColorPresetsSection
-          colors={colors}
-          onColorsChange={onColorsChange}
-          businessType={businessType}
-          buttonColor={buttonColor}
-        />
-      </div>
-
-      <div className="border-t border-gray-100 my-6" />
-
-      {/* Section: Fonts */}
-      <div className="mb-8">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Typography</h3>
+      <div className="mt-8">
+        <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Typography</p>
         <FontSection
           headingFont={headingFont}
           bodyFont={bodyFont}
@@ -503,28 +546,6 @@ export default function BrandBoardEditor({
           businessName={businessName}
         />
       </div>
-
-      {/* Launch button -- onboarding only */}
-      {mode === 'onboarding' && onLaunch && (
-        <button
-          onClick={onLaunch}
-          disabled={launching}
-          className="w-full py-4 rounded-xl font-semibold text-lg transition-all disabled:opacity-70"
-          style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}
-        >
-          {launching ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Launching...
-            </span>
-          ) : (
-            'Launch Your Dashboard'
-          )}
-        </button>
-      )}
     </div>
   );
 }

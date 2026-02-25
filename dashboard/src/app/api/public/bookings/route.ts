@@ -1,22 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, getClientId } from '@/lib/rate-limit';
 import { getConfigBySubdomain } from '@/lib/subdomain';
-import { createServerClient } from '@supabase/ssr';
+import { getSupabaseAdmin } from '@/lib/crud';
+import { stripe } from '@/lib/stripe';
 
 export const dynamic = 'force-dynamic';
-
-function getSupabaseAdmin() {
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll: () => [],
-        setAll: () => {},
-      },
-    }
-  );
-}
 
 // POST /api/public/bookings - Create a booking (public, no auth)
 export async function POST(request: NextRequest) {
@@ -37,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  const { subdomain, name, email, phone, date, time, notes } = body;
+  const { subdomain, name, email, phone, date, time, notes, service_ids: rawServiceIds } = body;
 
   // Validate required fields
   if (!subdomain || !name || !email || !date || !time) {
@@ -46,6 +34,11 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
+
+  // Normalize service IDs — support both single service_id and array service_ids
+  const serviceIds: string[] = rawServiceIds && Array.isArray(rawServiceIds) && rawServiceIds.length > 0
+    ? rawServiceIds
+    : body.service_id ? [body.service_id] : [];
 
   // Basic email validation
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -72,26 +65,45 @@ export async function POST(request: NextRequest) {
     .limit(1);
 
   const calendarConfig = calSettings?.[0] || null;
-  let durationMin = calendarConfig?.duration_minutes || 60;
-  let bufferMin = calendarConfig?.buffer_minutes || 0;
+  const defaultDuration = calendarConfig?.duration_minutes || 60;
+  const defaultBuffer = calendarConfig?.buffer_minutes || 0;
+  const depositPercent = calendarConfig?.deposit_percent || 0;
 
-  // If service_id provided, use service-specific duration and buffer
-  const serviceId = body.service_id || null;
-  let serviceName = '';
-  if (serviceId) {
-    const { data: service } = await supabase
+  // Load services — support multi-service stacking
+  let totalDurationMin = 0;
+  let totalPriceCents = 0;
+  let totalBufferMin = 0;
+  const serviceNames: string[] = [];
+  const resolvedServiceIds: string[] = [];
+
+  if (serviceIds.length > 0) {
+    const { data: services } = await supabase
       .from('packages')
-      .select('duration_minutes, buffer_minutes, name, price_cents')
-      .eq('id', serviceId)
+      .select('id, duration_minutes, buffer_minutes, name, price_cents')
+      .in('id', serviceIds)
       .eq('user_id', userId)
-      .eq('is_active', true)
-      .single();
-    if (service) {
-      if (service.duration_minutes) durationMin = service.duration_minutes;
-      if (service.buffer_minutes) bufferMin = service.buffer_minutes;
-      serviceName = service.name || '';
+      .eq('is_active', true);
+
+    if (services && services.length > 0) {
+      for (const svc of services) {
+        totalDurationMin += svc.duration_minutes || defaultDuration;
+        totalPriceCents += svc.price_cents || 0;
+        totalBufferMin += svc.buffer_minutes || 0;
+        if (svc.name) serviceNames.push(svc.name);
+        resolvedServiceIds.push(svc.id);
+      }
+      // Add buffers between services (not after last one)
+      if (services.length > 1) {
+        totalDurationMin += totalBufferMin;
+      }
     }
   }
+
+  // Fallback to defaults if no services resolved
+  if (totalDurationMin === 0) totalDurationMin = defaultDuration;
+  const durationMin = totalDurationMin;
+  const bufferMin = defaultBuffer;
+  const serviceName = serviceNames.join(' + ');
 
   // Parse date and time into start/end timestamps
   // date = "YYYY-MM-DD", time = "H:MM AM/PM"
@@ -213,19 +225,49 @@ export async function POST(request: NextRequest) {
   // Generate booking reference
   const refNumber = `BK-${Date.now().toString(36).toUpperCase()}`;
 
-  // Insert appointment with staff assignment
+  // Calculate deposit if configured
+  let depositAmountCents = 0;
+  let depositPaymentIntentId: string | null = null;
+  let clientSecret: string | null = null;
+
+  if (depositPercent > 0 && totalPriceCents > 0) {
+    depositAmountCents = Math.round(totalPriceCents * (depositPercent / 100));
+
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: depositAmountCents,
+        currency: 'usd',
+        metadata: {
+          booking_ref: refNumber,
+          business_user_id: userId,
+          customer_email: email,
+          deposit_percent: String(depositPercent),
+        },
+      });
+      depositPaymentIntentId = paymentIntent.id;
+      clientSecret = paymentIntent.client_secret;
+    } catch (err) {
+      console.error('Failed to create deposit PaymentIntent:', err);
+      return NextResponse.json({ error: 'Failed to process deposit payment' }, { status: 500 });
+    }
+  }
+
+  // Insert appointment with staff assignment + deposit + service stacking
   const { error: appointmentError } = await supabase
     .from('appointments')
     .insert({
       user_id: userId,
       client_id: clientId_db,
       staff_id: assignedStaffId,
-      service_id: serviceId,
+      service_id: resolvedServiceIds[0] || null,
+      service_ids: resolvedServiceIds,
       title: serviceName ? `${serviceName} — ${name}` : `Booking: ${name}`,
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
-      status: 'scheduled',
+      status: depositAmountCents > 0 ? 'pending_deposit' : 'scheduled',
       description: notes ? `Ref: ${refNumber}\n${notes}` : `Ref: ${refNumber}`,
+      deposit_amount_cents: depositAmountCents,
+      deposit_payment_intent_id: depositPaymentIntentId,
     });
 
   if (appointmentError) {
@@ -243,6 +285,7 @@ export async function POST(request: NextRequest) {
     refNumber,
     startTime: startTime.toISOString(),
     businessName,
+    ...(clientSecret ? { clientSecret, depositAmountCents } : {}),
   });
 }
 

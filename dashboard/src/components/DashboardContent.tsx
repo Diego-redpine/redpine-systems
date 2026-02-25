@@ -14,6 +14,8 @@ import LiveBoard from './LiveBoard';
 import ReviewsTab from './reviews/ReviewsTab';
 import CommunicationsTab from './communications/CommunicationsTab';
 import BrandBoardView from './BrandBoardView';
+import ActivityFeedView from './ActivityFeedView';
+import StatCards from './views/StatCards';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -2011,7 +2013,7 @@ export default function DashboardContent({
   // Check if this is a platform tab (Dashboard detected by label, not ID — tab_1 can be anything in demo mode)
   const isDashboardTab = tabLabel.toLowerCase() === 'dashboard' || activeTab.toLowerCase() === 'dashboard';
   const isSettingsTab = activeTab === 'settings' || activeTab === 'profile';
-  const isPlatformTab = isDashboardTab || isSettingsTab || ['site', '__site__', 'analytics', '__marketplace__', '__marketing__', '__brand__', 'reviews'].includes(activeTab);
+  const isPlatformTab = isDashboardTab || isSettingsTab || ['site', '__site__', 'analytics', '__marketplace__', '__marketing__', '__brand__', 'reviews', 'comms'].includes(activeTab);
   const toolbarPadding = toolbarSide === 'right' ? 'lg:pr-16' : 'lg:pl-16';
 
   if (isPlatformTab) {
@@ -2020,12 +2022,13 @@ export default function DashboardContent({
         {/* Settings/Profile has no heading — sub-tabs handle it */}
         {!isSettingsTab && (
           <h2 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: headingColor }}>
-            {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : activeTab === '__brand__' ? 'Brand & Design' : activeTab === 'reviews' ? 'Reviews' : ''}
+            {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : activeTab === '__brand__' ? 'Brand & Design' : activeTab === 'reviews' ? 'Reviews' : activeTab === 'comms' ? 'Communications' : ''}
           </h2>
         )}
         {isDashboardTab && (
-          <div className="flex items-center justify-center min-h-[300px]">
-            <p className="text-sm" style={{ color: textColor }}>Dashboard coming soon</p>
+          <div className="space-y-6">
+            <StatCards entityType="dashboard" data={[]} configColors={colors} />
+            <ActivityFeedView colors={colors} />
           </div>
         )}
         {(activeTab === 'site' || activeTab === '__site__') && <SiteView colors={colors} businessName={businessName} businessType={businessType} websiteData={websiteData} />}

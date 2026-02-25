@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { DashboardColors } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
 import CenterModal from '@/components/ui/CenterModal';
@@ -8,7 +8,19 @@ import SiteContent from './SiteContent';
 import SiteAnalytics from './SiteAnalytics';
 import PortalContent from './PortalContent';
 import GalleryManager from './views/GalleryManager';
+import TemplateMarketplace from './TemplateMarketplace';
+
 import { shouldHavePortal, getPortalSections } from '@/lib/portal-templates';
+
+const BlogList = lazy(() => import('./blog/BlogList'));
+
+function BlogListLazy({ colors }: { colors: DashboardColors }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: colors.buttons || '#1A1A1A', borderTopColor: 'transparent' }} /></div>}>
+      <BlogList colors={colors} />
+    </Suspense>
+  );
+}
 
 interface SiteViewProps {
   colors: DashboardColors;
@@ -19,6 +31,8 @@ interface SiteViewProps {
 
 const BASE_SUB_TABS = [
   { id: 'pages', label: 'Pages' },
+  { id: 'blog', label: 'Blog' },
+  { id: 'templates', label: 'Templates' },
   { id: 'gallery', label: 'Gallery' },
   { id: 'portal', label: 'Portal' },
   { id: 'analytics', label: 'Analytics' },
@@ -51,8 +65,12 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
     ? BASE_SUB_TABS
     : BASE_SUB_TABS.filter(t => t.id !== 'portal');
 
+  const ensureRan = useRef(false);
+
   // Auto-create default project if none exists
   const ensureProject = useCallback(async () => {
+    if (ensureRan.current) return;
+    ensureRan.current = true;
     try {
       const res = await fetch('/api/projects');
       if (res.ok) {
@@ -75,49 +93,63 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
         }
 
         // Auto-create portal project + pages if business type warrants it
-        if (!hasPortal && shouldHavePortal(businessType)) {
-          const portalRes = await fetch('/api/projects', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: businessName ? `${businessName} Portal` : 'Client Portal',
-              project_type: 'portal',
-              metadata: { businessName, businessType },
-            }),
-          });
+        if (shouldHavePortal(businessType)) {
+          let portalProjectId: string | null = null;
 
-          // Auto-create portal pages (like Shopify adds /account, /cart, /checkout)
-          if (portalRes.ok) {
-            const portalProject = await portalRes.json();
-            const projectId = portalProject.data?.id;
-            const portalSections = getPortalSections();
+          if (!hasPortal) {
+            const portalRes = await fetch('/api/projects', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: businessName ? `${businessName} Portal` : 'Client Portal',
+                project_type: 'portal',
+                metadata: { businessName, businessType },
+              }),
+            });
+            if (portalRes.ok) {
+              const portalProject = await portalRes.json();
+              portalProjectId = portalProject.data?.id;
+            }
+          } else {
+            // Portal project exists — get its ID
+            const portalProject = data.find((p: { project_type: string; id: string }) => p.project_type === 'portal');
+            portalProjectId = portalProject?.id || null;
+          }
 
-            // Login page + all 8 section pages
-            const portalPages = [
-              { title: 'Portal Login', slug: 'portal-login', system: true },
-              ...portalSections.map(s => ({
-                title: `Portal — ${s.title}`,
-                slug: `portal-${s.slug}`,
-                system: true,
-              })),
-            ];
+          // Check if portal pages exist; create them if missing
+          if (portalProjectId) {
+            const pagesRes = await fetch('/api/pages');
+            const pagesOk = pagesRes.ok ? await pagesRes.json() : { data: [] };
+            const existingPages = pagesOk.data || [];
+            const hasPortalPages = existingPages.some((p: { slug: string }) => p.slug.startsWith('portal-'));
 
-            await Promise.all(
-              portalPages.map(page =>
-                fetch('/api/pages', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    title: page.title,
-                    slug: page.slug,
-                    project_id: projectId,
-                    blocks: [],
-                    published: true,
-                    metadata: { system: true, portal: true },
-                  }),
-                })
-              )
-            );
+            if (!hasPortalPages) {
+              const portalSections = getPortalSections();
+              const portalPages = [
+                { title: 'Portal Login', slug: 'portal-login' },
+                ...portalSections.map(s => ({
+                  title: `Portal — ${s.title}`,
+                  slug: `portal-${s.slug}`,
+                })),
+              ];
+
+              await Promise.all(
+                portalPages.map(page =>
+                  fetch('/api/pages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      title: page.title,
+                      slug: page.slug,
+                      project_id: portalProjectId,
+                      blocks: [],
+                      published: true,
+                      metadata: { system: true, portal: true },
+                    }),
+                  })
+                )
+              );
+            }
           }
         }
       } else if (res.status === 401) {
@@ -196,6 +228,8 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
 
       {/* Tab content */}
       {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} businessName={businessName} websiteData={websiteData} />}
+      {activeSubTab === 'blog' && <BlogListLazy colors={colors} />}
+      {activeSubTab === 'templates' && <TemplateMarketplace colors={colors} />}
       {activeSubTab === 'gallery' && <GalleryManager configColors={colors} entityType="galleries" />}
       {activeSubTab === 'portal' && <PortalContent colors={colors} businessName={businessName} businessType={businessType} />}
       {activeSubTab === 'analytics' && <SiteAnalytics colors={colors} />}

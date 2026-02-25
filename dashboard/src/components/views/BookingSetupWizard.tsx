@@ -17,6 +17,9 @@ interface BookingSettingsData {
   availability: Record<string, { enabled: boolean; start: string; end: string }>;
   staff_ids: string[];
   metadata: { max_advance_days: number };
+  deposit_percent: number;
+  no_show_policy: 'none' | 'charge_deposit' | 'charge_full' | 'charge_custom';
+  no_show_fee_cents: number;
 }
 
 interface StaffMember {
@@ -28,6 +31,7 @@ interface StaffMember {
 interface ExistingSettings extends BookingSettingsData {
   id: string;
   is_active?: boolean;
+  [key: string]: unknown;
 }
 
 interface BookingSetupWizardProps {
@@ -99,6 +103,9 @@ export default function BookingSetupWizard({
         availability: existingSettings.availability || DEFAULT_AVAILABILITY,
         staff_ids: existingSettings.staff_ids || [],
         metadata: existingSettings.metadata || { max_advance_days: 14 },
+        deposit_percent: existingSettings.deposit_percent || 0,
+        no_show_policy: existingSettings.no_show_policy || 'none',
+        no_show_fee_cents: existingSettings.no_show_fee_cents || 0,
       };
     }
     return {
@@ -111,6 +118,9 @@ export default function BookingSetupWizard({
       availability: { ...DEFAULT_AVAILABILITY },
       staff_ids: [],
       metadata: { max_advance_days: 14 },
+      deposit_percent: 0,
+      no_show_policy: 'none',
+      no_show_fee_cents: 0,
     };
   });
 
@@ -158,6 +168,9 @@ export default function BookingSetupWizard({
           availability: existingSettings.availability || DEFAULT_AVAILABILITY,
           staff_ids: existingSettings.staff_ids || [],
           metadata: existingSettings.metadata || { max_advance_days: 14 },
+          deposit_percent: existingSettings.deposit_percent || 0,
+          no_show_policy: existingSettings.no_show_policy || 'none',
+          no_show_fee_cents: existingSettings.no_show_fee_cents || 0,
         });
       }
     }
@@ -195,6 +208,9 @@ export default function BookingSetupWizard({
         availability: data.availability,
         staff_ids: data.assignment_mode === 'manual' ? [] : data.staff_ids,
         metadata: data.metadata,
+        deposit_percent: data.deposit_percent,
+        no_show_policy: data.no_show_policy,
+        no_show_fee_cents: data.no_show_fee_cents,
       };
 
       const res = await fetch('/api/calendar-settings', {
@@ -348,7 +364,7 @@ export default function BookingSetupWizard({
                   <label className="text-xs font-medium block mb-1.5" style={{ color: mutedColor }}>Default Slot Duration</label>
                   <CustomSelect
                     value={String(data.duration_minutes)}
-                    onChange={val => setData(prev => ({ ...prev, duration_minutes: parseInt(val) }))}
+                    onChange={val => setData(prev => ({ ...prev, duration_minutes: parseInt(val, 10) }))}
                     options={DURATION_OPTIONS}
                     style={{ borderColor, backgroundColor: pageBg, color: headingColor }}
                     buttonColor={buttonBg}
@@ -361,7 +377,7 @@ export default function BookingSetupWizard({
                   <label className="text-xs font-medium block mb-1.5" style={{ color: mutedColor }}>Buffer Between</label>
                   <CustomSelect
                     value={String(data.buffer_minutes)}
-                    onChange={val => setData(prev => ({ ...prev, buffer_minutes: parseInt(val) }))}
+                    onChange={val => setData(prev => ({ ...prev, buffer_minutes: parseInt(val, 10) }))}
                     options={BUFFER_OPTIONS}
                     style={{ borderColor, backgroundColor: pageBg, color: headingColor }}
                     buttonColor={buttonBg}
@@ -369,12 +385,127 @@ export default function BookingSetupWizard({
                 </div>
               </div>
 
+              {/* Deposit slider */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: headingColor }}>Require deposit</p>
+                    <p className="text-xs" style={{ color: mutedColor }}>Clients pay upfront when booking</p>
+                  </div>
+                  <button
+                    onClick={() => setData(prev => ({ ...prev, deposit_percent: prev.deposit_percent > 0 ? 0 : 50 }))}
+                    className="w-10 h-5 rounded-full relative transition-colors flex-shrink-0"
+                    style={{ backgroundColor: data.deposit_percent > 0 ? buttonBg : borderColor }}
+                  >
+                    <div
+                      className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                      style={{ transform: data.deposit_percent > 0 ? 'translateX(22px)' : 'translateX(2px)' }}
+                    />
+                  </button>
+                </div>
+
+                {data.deposit_percent > 0 && (
+                  <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium" style={{ color: mutedColor }}>Deposit percentage</span>
+                      <span className="text-sm font-bold" style={{ color: headingColor }}>{data.deposit_percent}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={10}
+                      max={100}
+                      step={5}
+                      value={data.deposit_percent}
+                      onChange={e => setData(prev => ({ ...prev, deposit_percent: parseInt(e.target.value, 10) }))}
+                      className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                      style={{ accentColor: buttonBg }}
+                    />
+                    <div className="flex justify-between text-xs" style={{ color: mutedColor }}>
+                      <span>10%</span>
+                      <span>100%</span>
+                    </div>
+                    <p className="text-xs" style={{ color: mutedColor }}>
+                      For a $100 service, client pays <strong style={{ color: headingColor }}>${data.deposit_percent.toFixed(0)}</strong> upfront ({data.deposit_percent}%)
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* No-show protection */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: headingColor }}>No-show protection</p>
+                    <p className="text-xs" style={{ color: mutedColor }}>Charge clients who miss appointments</p>
+                  </div>
+                  <button
+                    onClick={() => setData(prev => ({
+                      ...prev,
+                      no_show_policy: prev.no_show_policy === 'none' ? (prev.deposit_percent > 0 ? 'charge_deposit' : 'charge_full') : 'none',
+                      no_show_fee_cents: 0,
+                    }))}
+                    className="w-10 h-5 rounded-full relative transition-colors flex-shrink-0"
+                    style={{ backgroundColor: data.no_show_policy !== 'none' ? buttonBg : borderColor }}
+                  >
+                    <div
+                      className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                      style={{ transform: data.no_show_policy !== 'none' ? 'translateX(22px)' : 'translateX(2px)' }}
+                    />
+                  </button>
+                </div>
+
+                {data.no_show_policy !== 'none' && (
+                  <div className="rounded-xl p-4 space-y-2" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
+                    {([
+                      { value: 'charge_deposit' as const, label: 'Charge deposit amount', disabled: data.deposit_percent === 0 },
+                      { value: 'charge_full' as const, label: 'Charge full service price', disabled: false },
+                      { value: 'charge_custom' as const, label: 'Custom fee', disabled: false },
+                    ]).map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => !opt.disabled && setData(prev => ({ ...prev, no_show_policy: opt.value }))}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-left ${opt.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                        style={{
+                          backgroundColor: data.no_show_policy === opt.value ? `${buttonBg}15` : 'transparent',
+                          border: `1px solid ${data.no_show_policy === opt.value ? buttonBg : 'transparent'}`,
+                        }}
+                      >
+                        <div
+                          className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                          style={{ borderColor: data.no_show_policy === opt.value ? buttonBg : borderColor }}
+                        >
+                          {data.no_show_policy === opt.value && (
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: buttonBg }} />
+                          )}
+                        </div>
+                        <span style={{ color: headingColor }}>{opt.label}</span>
+                      </button>
+                    ))}
+                    {data.no_show_policy === 'charge_custom' && (
+                      <div className="flex items-center gap-2 pl-7 pt-1">
+                        <span className="text-sm" style={{ color: mutedColor }}>$</span>
+                        <input
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={data.no_show_fee_cents ? (data.no_show_fee_cents / 100).toFixed(2) : ''}
+                          onChange={e => setData(prev => ({ ...prev, no_show_fee_cents: Math.round(parseFloat(e.target.value || '0') * 100) }))}
+                          placeholder="25"
+                          className="w-24 px-3 py-1.5 rounded-lg text-sm"
+                          style={inputStyle}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-medium block mb-1.5" style={{ color: mutedColor }}>Booking Window</label>
                   <CustomSelect
                     value={String(data.metadata.max_advance_days)}
-                    onChange={val => setData(prev => ({ ...prev, metadata: { ...prev.metadata, max_advance_days: parseInt(val) } }))}
+                    onChange={val => setData(prev => ({ ...prev, metadata: { ...prev.metadata, max_advance_days: parseInt(val, 10) } }))}
                     options={ADVANCE_OPTIONS}
                     style={{ borderColor, backgroundColor: pageBg, color: headingColor }}
                     buttonColor={buttonBg}
@@ -385,7 +516,7 @@ export default function BookingSetupWizard({
                   <input
                     type="number"
                     value={data.max_per_day ?? ''}
-                    onChange={e => setData(prev => ({ ...prev, max_per_day: e.target.value ? parseInt(e.target.value) : null }))}
+                    onChange={e => setData(prev => ({ ...prev, max_per_day: e.target.value ? parseInt(e.target.value, 10) : null }))}
                     placeholder="No limit"
                     min={1}
                     className="w-full px-3 py-2 rounded-lg text-sm"
@@ -603,6 +734,24 @@ export default function BookingSetupWizard({
                   <div className="flex justify-between items-center">
                     <span className="text-sm" style={{ color: textColor }}>Max Per Day</span>
                     <span className="text-sm font-semibold" style={{ color: headingColor }}>{data.max_per_day}</span>
+                  </div>
+                )}
+
+                {data.deposit_percent > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm" style={{ color: textColor }}>Deposit</span>
+                    <span className="text-sm font-semibold" style={{ color: headingColor }}>{data.deposit_percent}%</span>
+                  </div>
+                )}
+
+                {data.no_show_policy !== 'none' && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm" style={{ color: textColor }}>No-Show Fee</span>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: `${buttonBg}15`, color: buttonBg }}>
+                      {data.no_show_policy === 'charge_deposit' ? 'Deposit amount'
+                        : data.no_show_policy === 'charge_full' ? 'Full price'
+                        : `$${(data.no_show_fee_cents / 100).toFixed(2)}`}
+                    </span>
                   </div>
                 )}
 

@@ -239,15 +239,18 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
     missed: { backgroundColor: '#EF444420', color: '#EF4444' },
   };
 
-  // Channel icon component
-  const ChannelDot = ({ channel, size = 10 }: { channel: MessageChannel; size?: number }) => {
+  // Channel icon components
+  const ChannelIcon = ({ channel, size = 14 }: { channel: MessageChannel; size?: number }) => {
     const config = CHANNEL_COLORS[channel];
     return (
-      <span
-        className="inline-block rounded-full flex-shrink-0"
-        style={{ width: size, height: size, backgroundColor: config.color }}
-        title={config.label}
-      />
+      <svg
+        className="flex-shrink-0"
+        style={{ width: size, height: size, color: config.color }}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d={getChannelIconPath(channel)} />
+      </svg>
     );
   };
 
@@ -280,7 +283,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
   };
 
   return (
-    <div className="flex rounded-2xl overflow-hidden" style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, height: 'calc(100vh - 340px)', minHeight: '500px' }}>
+    <div className="flex rounded-2xl overflow-hidden h-full" style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, minHeight: '500px' }}>
       {/* ── Left Panel: Conversation List ─────────────────────────── */}
       <div
         className={`w-80 flex flex-col border-r flex-shrink-0 ${isMobileThreadView ? 'hidden md:flex' : 'flex'}`}
@@ -321,15 +324,16 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 <button
                   key={ch}
                   onClick={() => setChannelFilter(ch)}
-                  className="px-2 py-1 rounded-full text-xs flex items-center gap-1"
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
                   style={{
                     backgroundColor: isActive ? `${config.color}20` : 'transparent',
-                    color: isActive ? config.color : textColor,
                     border: `1px solid ${isActive ? config.color : borderColor}`,
                   }}
+                  title={config.label}
                 >
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: config.color }} />
-                  {config.shortLabel}
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill={isActive ? config.color : textColor}>
+                    <path d={getChannelIconPath(ch)} />
+                  </svg>
                 </button>
               );
             })}
@@ -358,7 +362,10 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                       style={{ backgroundColor: `${CHANNEL_COLORS[conv.channel].color}15`, color: CHANNEL_COLORS[conv.channel].color }}>
                       {conv.visitor_name.charAt(0).toUpperCase()}
                     </div>
-                    <ChannelDot channel={conv.channel} size={12} />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: cardBg, border: `1.5px solid ${borderColor}` }}>
+                      <ChannelIcon channel={conv.channel} size={10} />
+                    </div>
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
@@ -374,14 +381,12 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                     {formatTime(conv.updated_at)}
                   </span>
                   {conv.unread_count > 0 ? (
-                    <span className="px-1.5 py-0.5 rounded-full text-xs font-bold"
+                    <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center"
                       style={{ backgroundColor: CHANNEL_COLORS[conv.channel].color, color: '#FFFFFF' }}>
                       {conv.unread_count}
                     </span>
                   ) : (
-                    <span className="px-1.5 py-0.5 rounded-full text-xs" style={statusColors[conv.status]}>
-                      {conv.status}
-                    </span>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColors[conv.status].color }} title={conv.status} />
                   )}
                 </div>
               </div>
@@ -431,14 +436,12 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-1 rounded-full text-xs font-medium" style={statusColors[selectedConv.status]}>
-                  {selectedConv.status}
-                </span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColors[selectedConv.status].color }} title={selectedConv.status} />
                 <button
                   onClick={() => setShowContactDrawer(!showContactDrawer)}
                   className="p-1.5 rounded-lg transition-opacity hover:opacity-70 hidden md:block"
-                  style={{ border: `1px solid ${borderColor}`, color: textColor }}
+                  style={{ backgroundColor: showContactDrawer ? hoverBg : 'transparent', color: textColor }}
                   title="Contact info"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -448,10 +451,13 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 {selectedConv.status === 'active' && (
                   <button
                     onClick={() => handleEndConversation(selectedConv.id)}
-                    className="px-3 py-1 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
-                    style={{ border: `1px solid ${borderColor}`, color: textColor }}
+                    className="p-1.5 rounded-lg transition-opacity hover:opacity-70"
+                    style={{ color: '#EF4444' }}
+                    title="End conversation"
                   >
-                    End Chat
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                    </svg>
                   </button>
                 )}
               </div>
@@ -505,12 +511,17 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                       <button
                         key={cr.id}
                         onClick={() => useCannedResponse(cr)}
-                        className="w-full text-left px-3 py-2 text-xs transition-colors hover:opacity-80"
+                        className="w-full text-left px-3 py-2 text-xs flex items-start gap-2 transition-colors hover:opacity-80"
                         style={{ borderBottom: `1px solid ${borderColor}` }}
                       >
-                        <span className="font-semibold" style={{ color: headingColor }}>{cr.title}</span>
-                        {cr.shortcut && <span className="ml-2 opacity-50" style={{ color: textColor }}>{cr.shortcut}</span>}
-                        <p className="truncate mt-0.5" style={{ color: textColor }}>{cr.content}</p>
+                        <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: buttonBg }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <div className="min-w-0">
+                          <span className="font-semibold" style={{ color: headingColor }}>{cr.title}</span>
+                          {cr.shortcut && <span className="ml-1.5 opacity-40 font-mono" style={{ color: textColor }}>{cr.shortcut}</span>}
+                          <p className="truncate mt-0.5" style={{ color: textColor }}>{cr.content}</p>
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -547,19 +558,23 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                   <button
                     onClick={handleSendReply}
                     disabled={!replyText.trim() || isSending}
-                    className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 transition-opacity"
+                    className="p-2 rounded-lg disabled:opacity-40 transition-opacity"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
+                    title="Send"
                   >
-                    {isSending ? '...' : 'Send'}
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                    </svg>
                   </button>
                 </div>
               </div>
             )}
 
             {selectedConv.status !== 'active' && (
-              <div className="px-4 py-3 text-center" style={{ borderTop: `1px solid ${borderColor}` }}>
+              <div className="px-4 py-3 flex items-center justify-center gap-2" style={{ borderTop: `1px solid ${borderColor}` }}>
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColors[selectedConv.status].color }} />
                 <p className="text-xs" style={{ color: textColor }}>
-                  This conversation has {selectedConv.status === 'ended' ? 'ended' : 'been missed'}
+                  {selectedConv.status === 'ended' ? 'Conversation ended' : 'Missed'}
                 </p>
               </div>
             )}
@@ -595,58 +610,76 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
             </div>
 
             {/* Contact details */}
-            <div className="space-y-2 rounded-xl p-3" style={{ backgroundColor: bgColor }}>
+            <div className="space-y-3 rounded-xl p-3" style={{ backgroundColor: bgColor }}>
               {selectedConv.visitor_email && (
-                <div>
-                  <p className="text-xs font-medium mb-0.5" style={{ color: textColor }}>Email</p>
-                  <p className="text-sm" style={{ color: headingColor }}>{selectedConv.visitor_email}</p>
+                <div className="flex items-center gap-2.5">
+                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
+                  <p className="text-sm truncate" style={{ color: headingColor }}>{selectedConv.visitor_email}</p>
                 </div>
               )}
               {selectedConv.visitor_phone && (
-                <div>
-                  <p className="text-xs font-medium mb-0.5" style={{ color: textColor }}>Phone</p>
+                <div className="flex items-center gap-2.5">
+                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
                   <p className="text-sm" style={{ color: headingColor }}>{selectedConv.visitor_phone}</p>
                 </div>
               )}
               {selectedConv.visitor_page && (
-                <div>
-                  <p className="text-xs font-medium mb-0.5" style={{ color: textColor }}>Page</p>
+                <div className="flex items-center gap-2.5">
+                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                  </svg>
                   <p className="text-sm" style={{ color: headingColor }}>{selectedConv.visitor_page}</p>
                 </div>
               )}
-              <div>
-                <p className="text-xs font-medium mb-0.5" style={{ color: textColor }}>Channel</p>
+              <div className="flex items-center gap-2.5">
+                <ChannelIcon channel={selectedConv.channel} size={16} />
                 <p className="text-sm" style={{ color: headingColor }}>{CHANNEL_COLORS[selectedConv.channel].label}</p>
               </div>
-              <div>
-                <p className="text-xs font-medium mb-0.5" style={{ color: textColor }}>First contact</p>
+              <div className="flex items-center gap-2.5">
+                <svg className="w-4 h-4 flex-shrink-0" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
                 <p className="text-sm" style={{ color: headingColor }}>{new Date(selectedConv.started_at).toLocaleDateString()}</p>
               </div>
-              <div>
-                <p className="text-xs font-medium mb-0.5" style={{ color: textColor }}>Messages</p>
-                <p className="text-sm" style={{ color: headingColor }}>{selectedConv.message_count}</p>
+              <div className="flex items-center gap-2.5">
+                <svg className="w-4 h-4 flex-shrink-0" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <p className="text-sm" style={{ color: headingColor }}>{selectedConv.message_count} messages</p>
               </div>
             </div>
 
             {/* Quick actions */}
-            <div className="space-y-2">
-              <p className="text-xs font-semibold" style={{ color: headingColor }}>Quick Actions</p>
+            <div className="space-y-1.5">
               <button
-                className="w-full text-left px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
-                style={{ border: `1px solid ${borderColor}`, color: headingColor }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
+                style={{ color: headingColor }}
               >
-                View full profile
+                <svg className="w-4 h-4" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                View profile
               </button>
               <button
-                className="w-full text-left px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
-                style={{ border: `1px solid ${borderColor}`, color: headingColor }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
+                style={{ color: headingColor }}
               >
-                Create appointment
+                <svg className="w-4 h-4" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                </svg>
+                Book appointment
               </button>
               <button
-                className="w-full text-left px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
-                style={{ border: `1px solid ${borderColor}`, color: headingColor }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
+                style={{ color: headingColor }}
               >
+                <svg className="w-4 h-4" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                </svg>
                 Add note
               </button>
             </div>

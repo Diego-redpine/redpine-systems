@@ -295,6 +295,8 @@ function DashboardPageContent() {
         <ToolsStrip
           onOpenChat={() => { setIsChatOpen(!isChatOpen); }}
           isChatOpen={isChatOpen}
+          onNavigateToComms={() => setActiveTab('comms')}
+          isCommsActive={activeTab === 'comms'}
           side={toolbarSide}
           onSideChange={setToolbarSide}
           buttonColor={colors.buttons}
