@@ -155,8 +155,8 @@ export default function PublicFormPage() {
           </button>
         </div>
 
-        <p className="text-center text-xs text-gray-400 mt-4">
-          Powered by Red Pine
+        <p className="text-center text-xs text-gray-400 mt-4" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
+          Powered by <span className="font-semibold text-red-600">Red Pine</span>
         </p>
       </form>
     </div>

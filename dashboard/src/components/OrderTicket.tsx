@@ -87,8 +87,8 @@ export default function OrderTicket({
           </div>
         )}
 
-        <div style={{ textAlign: 'center', fontSize: '10px', marginTop: '4mm' }}>
-          Powered by Red Pine
+        <div style={{ textAlign: 'center', fontSize: '10px', marginTop: '4mm', fontFamily: "'Fira Code', monospace" }}>
+          Powered by <span style={{ fontWeight: 600, color: '#CE0707' }}>Red Pine</span>
         </div>
       </div>
     </>

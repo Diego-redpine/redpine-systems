@@ -100,8 +100,8 @@ export default function OrderConfirmationPage() {
         >
           Order Again
         </a>
-        <div className="text-xs text-gray-400 pt-6 mt-6 border-t border-gray-100">
-          Powered by <span className="font-medium">Red Pine</span>
+        <div className="text-xs text-gray-400 pt-6 mt-6 border-t border-gray-100" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
+          Powered by <span className="font-semibold text-red-600">Red Pine</span>
         </div>
       </div>
     </div>

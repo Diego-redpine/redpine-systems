@@ -521,7 +521,7 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
 
           {/* Footer */}
           <div className="border-t border-gray-100 px-4 py-2 flex-shrink-0">
-            <p className="text-[10px] text-gray-400 text-center">
+            <p className="text-[10px] text-gray-400 text-center" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
               Powered by <span className="font-semibold text-red-600">Red Pine</span>
             </p>
           </div>

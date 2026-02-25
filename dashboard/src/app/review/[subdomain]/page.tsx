@@ -206,7 +206,7 @@ export default function PublicReviewPage() {
           </div>
         )}
 
-        <p className="text-center text-xs text-gray-400 mt-6">Powered by Red Pine</p>
+        <p className="text-center text-xs text-gray-400 mt-6" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>Powered by <span className="font-semibold text-red-600">Red Pine</span></p>
       </div>
     </div>
   );

@@ -276,7 +276,7 @@ export default function CustomerPortalPage() {
               )}
             </div>
 
-            <p className="text-xs text-gray-400 text-center mt-6">
+            <p className="text-xs text-gray-400 text-center mt-6" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
               Powered by <span className="font-semibold text-red-600">Red Pine</span>
             </p>
           </div>

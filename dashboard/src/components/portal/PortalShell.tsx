@@ -100,7 +100,7 @@ export function PortalShell({
 
       {/* Footer */}
       <footer className="hidden md:block border-t border-gray-200 bg-white px-6 py-3">
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-gray-400 text-center" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
           Powered by <span className="font-semibold text-red-600">Red Pine</span>
         </p>
       </footer>

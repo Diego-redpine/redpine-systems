@@ -464,8 +464,8 @@ export default function OrderPage() {
             )}
           </div>
           <p className="text-sm text-gray-500 mb-6">You&apos;ll receive updates about your order.</p>
-          <div className="text-xs text-gray-400 pt-4 border-t border-gray-100">
-            Powered by <span className="font-medium">Red Pine</span>
+          <div className="text-xs text-gray-400 pt-4 border-t border-gray-100" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
+            Powered by <span className="font-semibold text-red-600">Red Pine</span>
           </div>
         </div>
       </div>
@@ -1051,8 +1051,8 @@ export default function OrderPage() {
                 {isSubmitting ? 'Placing Order...' : `Place Order \u00B7 ${formatCents(totalCents)}`}
               </button>
 
-              <div className="text-center text-xs text-gray-400 pt-2">
-                Powered by <span className="font-medium">Red Pine</span>
+              <div className="text-center text-xs text-gray-400 pt-2" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
+                Powered by <span className="font-semibold text-red-600">Red Pine</span>
               </div>
             </div>
           </div>

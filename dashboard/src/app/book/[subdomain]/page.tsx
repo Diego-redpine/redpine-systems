@@ -719,7 +719,7 @@ export default function BookingPage() {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-fira-code), monospace' }}>
             Powered by <span className="font-semibold text-gray-500">Red Pine</span>
           </p>
         </div>
