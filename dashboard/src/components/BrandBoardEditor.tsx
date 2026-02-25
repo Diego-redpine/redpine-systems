@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FONT_OPTIONS, loadExtraFonts } from '@/lib/fonts';
 import { ColorItem } from './editors/ColorsEditor';
 import { getContrastText } from '@/lib/view-colors';
@@ -25,6 +25,7 @@ interface BrandBoardEditorProps {
   buttonColor?: string;
   mode: 'onboarding' | 'editor';
   onLaunch?: () => void;
+  launching?: boolean;
 }
 
 // ─── Color Helpers ──────────────────────────────────────────────────────────
@@ -203,6 +204,15 @@ function ColorPresetsSection({ colors, onColorsChange, businessType, buttonColor
   const presets = generatePresets(businessType);
   const [selectedPreset, setSelectedPreset] = useState<number>(0);
   const colorInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const didAutoApply = useRef(false);
+
+  // Auto-apply the first preset when colors are empty (no config loaded)
+  useEffect(() => {
+    if (colors.length === 0 && !didAutoApply.current) {
+      didAutoApply.current = true;
+      onColorsChange(colorConfigToItems(presets[0].config));
+    }
+  }, [colors.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Build a lookup from current colors for the active swatch row
   const colorMap: Record<string, string> = {};
@@ -327,9 +337,6 @@ function FontSection({ headingFont, bodyFont, onFontChange, buttonColor, busines
     } else {
       onFontChange(headingFont, family);
     }
-    // Apply to document
-    document.documentElement.style.setProperty('--font-family', family);
-    document.body.style.fontFamily = family;
     setOpenDropdown(null);
   };
 
@@ -456,6 +463,7 @@ export default function BrandBoardEditor({
   buttonColor = '#1A1A1A',
   mode,
   onLaunch,
+  launching,
 }: BrandBoardEditorProps) {
   const containerClass = mode === 'onboarding'
     ? 'max-w-2xl mx-auto px-6 pb-12'
@@ -500,10 +508,21 @@ export default function BrandBoardEditor({
       {mode === 'onboarding' && onLaunch && (
         <button
           onClick={onLaunch}
-          className="w-full py-4 rounded-xl font-semibold text-lg transition-colors"
+          disabled={launching}
+          className="w-full py-4 rounded-xl font-semibold text-lg transition-all disabled:opacity-70"
           style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}
         >
-          Launch Your Dashboard
+          {launching ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Launching...
+            </span>
+          ) : (
+            'Launch Your Dashboard'
+          )}
         </button>
       )}
     </div>

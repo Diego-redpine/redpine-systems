@@ -117,9 +117,15 @@ export default function EditorOverlay({
   side = 'left',
 }: EditorOverlayProps) {
   const [activeTab, setActiveTab] = useState<'brand-board' | 'colors' | 'sections'>('brand-board');
-  const [selectedFont, setSelectedFont] = useState(() => {
+  const [selectedHeadingFont, setSelectedHeadingFont] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('redpine-font') || 'Inter';
+      return localStorage.getItem('redpine-heading-font') || localStorage.getItem('redpine-font') || 'Inter';
+    }
+    return 'Inter';
+  });
+  const [selectedBodyFont, setSelectedBodyFont] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('redpine-body-font') || localStorage.getItem('redpine-font') || 'Inter';
     }
     return 'Inter';
   });
@@ -134,13 +140,13 @@ export default function EditorOverlay({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Apply saved font on mount — load extra fonts if needed
+  // Apply saved fonts on mount — load extra fonts if needed
   useEffect(() => {
-    const savedFont = localStorage.getItem('redpine-font');
-    if (savedFont) {
-      const fontOption = FONT_OPTIONS.find(f => f.name === savedFont);
+    const bodyName = localStorage.getItem('redpine-body-font') || localStorage.getItem('redpine-font');
+    if (bodyName) {
+      const fontOption = FONT_OPTIONS.find(f => f.name === bodyName);
       if (fontOption) {
-        if (!CORE_FONTS.has(savedFont)) loadExtraFonts();
+        if (!CORE_FONTS.has(bodyName)) loadExtraFonts();
         document.documentElement.style.setProperty('--font-family', fontOption.family);
         document.body.style.fontFamily = fontOption.family;
       }
@@ -156,15 +162,20 @@ export default function EditorOverlay({
     }
   }, [activeTab]);
 
-  const applyFont = (fontFamily: string, fontName: string) => {
-    setSelectedFont(fontName);
-    document.documentElement.style.setProperty('--font-family', fontFamily);
-    document.body.style.fontFamily = fontFamily;
-    localStorage.setItem('redpine-font', fontName);
+  const applyFonts = (headingFamily: string, headingName: string, bodyFamily: string, bodyName: string) => {
+    setSelectedHeadingFont(headingName);
+    setSelectedBodyFont(bodyName);
+    // Body font drives the global dashboard font
+    document.documentElement.style.setProperty('--font-family', bodyFamily);
+    document.body.style.fontFamily = bodyFamily;
+    localStorage.setItem('redpine-heading-font', headingName);
+    localStorage.setItem('redpine-body-font', bodyName);
+    localStorage.setItem('redpine-font', bodyName); // backwards compat
   };
 
-  // Convert font name to font family for BrandBoardEditor
-  const selectedFontFamily = FONT_OPTIONS.find(f => f.name === selectedFont)?.family || selectedFont;
+  // Convert font names to font families for BrandBoardEditor
+  const headingFontFamily = FONT_OPTIONS.find(f => f.name === selectedHeadingFont)?.family || selectedHeadingFont;
+  const bodyFontFamily = FONT_OPTIONS.find(f => f.name === selectedBodyFont)?.family || selectedBodyFont;
 
   const editorTabs = [
     { id: 'brand-board' as const, label: 'Brand' },
@@ -204,9 +215,9 @@ export default function EditorOverlay({
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.88 2.88M6.75 17.25h.008v.008H6.75v-.008z" />
             </svg>
-            <h2 className="text-sm font-semibold text-gray-900">Editor</h2>
+            <h2 className="text-sm font-semibold text-gray-900">Brand & Design</h2>
           </div>
           <button
             onClick={onClose}
@@ -242,11 +253,12 @@ export default function EditorOverlay({
               configId={null}
               colors={colors}
               onColorsChange={onColorsChange}
-              headingFont={selectedFontFamily}
-              bodyFont={selectedFontFamily}
-              onFontChange={(h, _b) => {
-                const fontObj = FONT_OPTIONS.find(f => f.family === h);
-                if (fontObj) applyFont(fontObj.family, fontObj.name);
+              headingFont={headingFontFamily}
+              bodyFont={bodyFontFamily}
+              onFontChange={(h, b) => {
+                const hObj = FONT_OPTIONS.find(f => f.family === h) || FONT_OPTIONS[0];
+                const bObj = FONT_OPTIONS.find(f => f.family === b) || FONT_OPTIONS[0];
+                applyFonts(hObj.family, hObj.name, bObj.family, bObj.name);
               }}
               businessType=""
               buttonColor={buttonColor}

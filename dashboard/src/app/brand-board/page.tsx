@@ -56,6 +56,7 @@ function BrandBoardContent() {
   const [headingFont, setHeadingFont] = useState(FONT_OPTIONS[0].family);
   const [bodyFont, setBodyFont] = useState(FONT_OPTIONS[0].family);
   const [buttonColor, setButtonColor] = useState('#1A1A1A');
+  const [isLaunching, setIsLaunching] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -134,6 +135,7 @@ function BrandBoardContent() {
   };
 
   const handleLaunch = async () => {
+    setIsLaunching(true);
     // Save current brand board state to config
     if (configId) {
       try {
@@ -195,7 +197,7 @@ function BrandBoardContent() {
   // ─── Render ───────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-y-auto fixed inset-0">
       <div className="text-center pt-8 pb-4">
         <h1 className="text-2xl font-bold text-gray-900">{businessName || 'Your Brand'}</h1>
         <p className="text-sm text-gray-500 mt-1">Set up your brand kit</p>
@@ -212,6 +214,7 @@ function BrandBoardContent() {
         buttonColor={buttonColor}
         mode="onboarding"
         onLaunch={handleLaunch}
+        launching={isLaunching}
       />
     </div>
   );
