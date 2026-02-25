@@ -45,7 +45,7 @@ export const defaultNavigation: NavSection[] = [
         icon: 'chat',
         label: 'Comms',
         defaultLabel: 'Comms',
-        subItems: ['Messages', 'Notes', 'Announcements'],
+        subItems: ['COO', 'Messages', 'Notes', 'Announcements'],
       },
       {
         id: 'reviews',

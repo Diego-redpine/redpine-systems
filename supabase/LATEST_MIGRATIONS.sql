@@ -1521,6 +1521,27 @@ CREATE INDEX IF NOT EXISTS idx_chat_conversations_client ON chat_conversations(c
 
 ALTER TABLE portal_sessions ADD COLUMN IF NOT EXISTS cookie_id TEXT;
 
+
+-- ════════════════════════════════════════════════════════════════
+-- Migration 038: Add channel column to chat_conversations
+-- ════════════════════════════════════════════════════════════════
+
+ALTER TABLE public.chat_conversations
+  ADD COLUMN IF NOT EXISTS channel TEXT DEFAULT 'live_chat';
+
+COMMENT ON COLUMN public.chat_conversations.channel IS 'Message source: live_chat, sms, instagram, facebook, tiktok, whatsapp, email';
+
+CREATE INDEX IF NOT EXISTS idx_chat_conversations_channel ON public.chat_conversations(channel);
+
+UPDATE public.chat_conversations SET channel = 'live_chat' WHERE channel IS NULL;
+
 -- ============================================================
--- DONE! All migrations 012-038 + 028b applied.
+-- 039: Add font fields to configs for Brand Board
+-- ============================================================
+ALTER TABLE configs ADD COLUMN IF NOT EXISTS heading_font TEXT;
+ALTER TABLE configs ADD COLUMN IF NOT EXISTS body_font TEXT;
+
+
+-- ============================================================
+-- DONE! All migrations 012-039 + 028b applied.
 -- ============================================================

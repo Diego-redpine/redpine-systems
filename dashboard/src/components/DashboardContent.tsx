@@ -12,6 +12,7 @@ import MarketplaceView from './MarketplaceView';
 import ComingSoonCard from './ComingSoonCard';
 import LiveBoard from './LiveBoard';
 import ReviewsTab from './reviews/ReviewsTab';
+import CommunicationsTab from './communications/CommunicationsTab';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -2023,6 +2024,7 @@ export default function DashboardContent({
         {activeTab === '__marketplace__' && <MarketplaceView colors={colors} />}
         {activeTab === '__marketing__' && <MarketingContent colors={colors} />}
         {activeTab === 'reviews' && <ReviewsTab colors={colors} />}
+        {activeTab === 'comms' && <CommunicationsTab colors={colors} />}
       </div>
     );
   }
