@@ -1542,6 +1542,28 @@ ALTER TABLE configs ADD COLUMN IF NOT EXISTS heading_font TEXT;
 ALTER TABLE configs ADD COLUMN IF NOT EXISTS body_font TEXT;
 
 
+-- ════════════════════════════════════════════════════════════════
+-- Migration 040: Create user_credits table
+-- ════════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS public.user_credits (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+  free_balance INT NOT NULL DEFAULT 100,
+  purchased_balance INT NOT NULL DEFAULT 0,
+  free_reset_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.user_credits ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage own credits"
+  ON public.user_credits FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE INDEX IF NOT EXISTS idx_user_credits_user_id ON public.user_credits(user_id);
+
 -- ============================================================
--- DONE! All migrations 012-039 + 028b applied.
+-- DONE! All migrations 012-040 + 028b applied.
 -- ============================================================

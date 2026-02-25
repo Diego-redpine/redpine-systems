@@ -6,6 +6,8 @@ import { NavIcon, inferIconFromLabel } from '@/lib/nav-icons';
 import { getContrastText } from '@/lib/view-colors';
 import NotificationPanel, { useNotificationCount } from './NotificationPanel';
 import MessagePanel, { useMessageCount } from './MessagePanel';
+import CreditBadge, { useCreditBalance } from './CreditBadge';
+import CreditPurchaseModal from './CreditPurchaseModal';
 
 interface TopBarProps {
   tabs: DashboardTab[];
@@ -34,6 +36,8 @@ export default function TopBar({
   const [isMessagesOpen, setIsMessagesOpen] = useState(false);
   const unreadCount = useNotificationCount();
   const messageCount = useMessageCount();
+  const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
+  const { balance: creditBalance, refetch: refetchCredits } = useCreditBalance();
 
   const headerBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
@@ -287,6 +291,8 @@ export default function TopBar({
               colors={colors}
             />
           </div>
+          {/* Credits badge */}
+          <CreditBadge onClick={() => setIsCreditModalOpen(true)} />
           {/* Profile dropdown */}
           <div ref={profileRef} className="relative ml-1">
             <button
@@ -369,6 +375,15 @@ export default function TopBar({
           </svg>
         </div>
       </header>
+
+      {/* Credit purchase modal */}
+      <CreditPurchaseModal
+        isOpen={isCreditModalOpen}
+        onClose={() => setIsCreditModalOpen(false)}
+        colors={colors}
+        balance={creditBalance}
+        onPurchaseComplete={refetchCredits}
+      />
 
       {/* Mobile bottom tab bar */}
       <MobileBottomBar
