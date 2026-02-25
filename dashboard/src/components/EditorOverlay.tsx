@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import ColorsEditor, { ColorItem } from './editors/ColorsEditor';
+import BrandBoardEditor from './BrandBoardEditor';
 import { DashboardTab } from '@/types/config';
 import { getContrastText } from '@/lib/view-colors';
 import { FONT_OPTIONS, CORE_FONTS, loadExtraFonts } from '@/lib/fonts';
@@ -104,59 +105,6 @@ function SectionsEditor({
   );
 }
 
-// ─── Fonts Tab ───
-function FontsEditor({
-  selectedFont,
-  onSelectFont,
-  buttonColor,
-}: {
-  selectedFont: string;
-  onSelectFont: (fontFamily: string, fontName: string) => void;
-  buttonColor: string;
-}) {
-  const activeBg = buttonColor;
-  const activeText = getContrastText(buttonColor);
-
-  return (
-    <div>
-      <p className="text-xs text-gray-500 mb-3">Choose a font for your dashboard</p>
-      <div className="grid grid-cols-2 gap-2">
-        {FONT_OPTIONS.map(font => {
-          const isSelected = selectedFont === font.name;
-          return (
-            <button
-              key={font.name}
-              onClick={() => onSelectFont(font.family, font.name)}
-              className={`text-left p-3 rounded-xl border transition-all ${
-                isSelected
-                  ? 'shadow-md'
-                  : 'border-gray-100 hover:border-gray-300 hover:shadow-sm bg-white'
-              }`}
-              style={isSelected ? { backgroundColor: activeBg, borderColor: activeBg, color: activeText } : undefined}
-            >
-              <span
-                className="text-xl font-bold block leading-tight"
-                style={{ fontFamily: font.family }}
-              >
-                Aa
-              </span>
-              <span
-                className={`text-[11px] font-medium block mt-1`}
-                style={{ fontFamily: font.family, opacity: isSelected ? 0.7 : 1, color: isSelected ? activeText : '#1F2937' }}
-              >
-                {font.name}
-              </span>
-              <span className="text-[9px] block mt-0.5" style={{ opacity: 0.5, color: isSelected ? activeText : '#9CA3AF' }}>
-                {font.style}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 export default function EditorOverlay({
   isOpen,
   onClose,
@@ -168,7 +116,7 @@ export default function EditorOverlay({
   buttonColor = '#1A1A1A',
   side = 'left',
 }: EditorOverlayProps) {
-  const [activeTab, setActiveTab] = useState<'sections' | 'colors' | 'fonts'>('colors');
+  const [activeTab, setActiveTab] = useState<'brand-board' | 'colors' | 'sections'>('brand-board');
   const [selectedFont, setSelectedFont] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('redpine-font') || 'Inter';
@@ -199,10 +147,10 @@ export default function EditorOverlay({
     }
   }, []);
 
-  // Lazy-load extra fonts when Fonts tab is opened
+  // Lazy-load extra fonts when Brand Board tab is opened
   const fontsLoadedRef = useRef(false);
   useEffect(() => {
-    if (activeTab === 'fonts' && !fontsLoadedRef.current) {
+    if (activeTab === 'brand-board' && !fontsLoadedRef.current) {
       fontsLoadedRef.current = true;
       loadExtraFonts();
     }
@@ -215,10 +163,13 @@ export default function EditorOverlay({
     localStorage.setItem('redpine-font', fontName);
   };
 
+  // Convert font name to font family for BrandBoardEditor
+  const selectedFontFamily = FONT_OPTIONS.find(f => f.name === selectedFont)?.family || selectedFont;
+
   const editorTabs = [
-    { id: 'sections' as const, label: 'Sections' },
+    { id: 'brand-board' as const, label: 'Brand' },
     { id: 'colors' as const, label: 'Colors' },
-    { id: 'fonts' as const, label: 'Fonts' },
+    { id: 'sections' as const, label: 'Sections' },
   ];
 
   const activeBg = buttonColor;
@@ -286,8 +237,21 @@ export default function EditorOverlay({
 
         {/* Tab content */}
         <div className="flex-1 overflow-y-auto px-4 py-3">
-          {activeTab === 'sections' && (
-            <SectionsEditor tabs={tabs} components={components} onTabsReorder={onTabsReorder} />
+          {activeTab === 'brand-board' && (
+            <BrandBoardEditor
+              configId={null}
+              colors={colors}
+              onColorsChange={onColorsChange}
+              headingFont={selectedFontFamily}
+              bodyFont={selectedFontFamily}
+              onFontChange={(h, _b) => {
+                const fontObj = FONT_OPTIONS.find(f => f.family === h);
+                if (fontObj) applyFont(fontObj.family, fontObj.name);
+              }}
+              businessType=""
+              buttonColor={buttonColor}
+              mode="editor"
+            />
           )}
 
           {activeTab === 'colors' && (
@@ -297,12 +261,8 @@ export default function EditorOverlay({
             />
           )}
 
-          {activeTab === 'fonts' && (
-            <FontsEditor
-              selectedFont={selectedFont}
-              onSelectFont={applyFont}
-              buttonColor={buttonColor}
-            />
+          {activeTab === 'sections' && (
+            <SectionsEditor tabs={tabs} components={components} onTabsReorder={onTabsReorder} />
           )}
         </div>
       </div>
