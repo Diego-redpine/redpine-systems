@@ -131,8 +131,8 @@ export default function OnboardingChat({ onReady, dimmed }: OnboardingChatProps)
       const data = await res.json();
 
       if (data.success && data.response) {
-        // Check for READY_TO_BUILD signal
-        if (data.response.includes('READY_TO_BUILD')) {
+        // Check for READY_TO_BUILD signal (strict: must be the entire response or start with it)
+        if (data.response.trim() === 'READY_TO_BUILD') {
           const allMessages = updatedMessages;
           setIsLoading(false);
           triggerConfigure(allMessages);

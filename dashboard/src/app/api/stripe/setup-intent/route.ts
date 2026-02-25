@@ -87,9 +87,10 @@ export async function POST(request: NextRequest) {
         .eq('id', user.id);
     }
 
-    // 4. Create SetupIntent for off-session card collection
+    // 4. Create SetupIntent for off-session card collection (cards only)
     const setupIntent = await stripe.setupIntents.create({
       customer: stripeCustomerId,
+      payment_method_types: ['card'],
       usage: 'off_session',
     });
 

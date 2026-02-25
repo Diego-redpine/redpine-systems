@@ -151,27 +151,29 @@ export default function BuildingAnimation({
         if (cancelled) return;
         activateStep(2);
 
-        try {
-          const subRes = await fetch('/api/stripe/subscribe', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-          });
-
-          const subData = await subRes.json();
-
-          if (!subData.success) {
-            // Non-fatal — log and continue
-            console.warn(
-              'Stripe subscription creation failed (non-fatal):',
-              subData.error || 'Unknown error',
-            );
+        // Retry once on failure before giving up
+        let subscribed = false;
+        for (let attempt = 0; attempt < 2 && !subscribed; attempt++) {
+          try {
+            if (attempt > 0) await wait(1000); // Brief pause before retry
+            const subRes = await fetch('/api/stripe/subscribe', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+            });
+            const subData = await subRes.json();
+            if (subData.success) {
+              subscribed = true;
+            } else {
+              console.warn(`Subscribe attempt ${attempt + 1} failed:`, subData.error);
+            }
+          } catch (err) {
+            console.warn(`Subscribe attempt ${attempt + 1} error:`, err);
           }
-        } catch (err) {
-          // Non-fatal — log and continue
-          console.warn(
-            'Stripe subscription creation failed (non-fatal):',
-            err instanceof Error ? err.message : err,
-          );
+        }
+
+        if (!subscribed) {
+          // Continue but warn — dashboard will prompt to complete subscription
+          console.warn('Stripe subscription creation failed after retries. User will need to subscribe from dashboard.');
         }
 
         await ensureMinDuration(start, MIN_STEP_DURATION);
@@ -292,10 +294,18 @@ export default function BuildingAnimation({
           ))}
         </div>
 
-        {/* Error message */}
+        {/* Error message with recovery */}
         {error && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-left">
-            {error}
+          <div className="mt-6 text-center">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-left mb-4">
+              {error}
+            </div>
+            <button
+              onClick={() => window.location.href = '/onboarding'}
+              className="px-6 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors"
+            >
+              Start Over
+            </button>
           </div>
         )}
       </div>
