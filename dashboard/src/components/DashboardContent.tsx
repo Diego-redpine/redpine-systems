@@ -13,6 +13,7 @@ import ComingSoonCard from './ComingSoonCard';
 import LiveBoard from './LiveBoard';
 import ReviewsTab from './reviews/ReviewsTab';
 import CommunicationsTab from './communications/CommunicationsTab';
+import BrandBoardView from './BrandBoardView';
 
 interface DashboardContentProps {
   activeTab: string;
@@ -24,6 +25,11 @@ interface DashboardContentProps {
   toolbarSide?: 'left' | 'right';
   onComponentVisible?: (componentId: string) => void;
   websiteData?: any;
+  // Brand Board (full-page tab)
+  editorColors?: import('./editors/ColorsEditor').ColorItem[];
+  onColorsChange?: (colors: import('./editors/ColorsEditor').ColorItem[]) => void;
+  tabs?: import('@/types/config').DashboardTab[];
+  onTabsReorder?: (tabs: import('@/types/config').DashboardTab[]) => void;
 }
 
 // Extract pipeline config from PipelineData
@@ -1937,6 +1943,10 @@ export default function DashboardContent({
   colors = {},
   toolbarSide = 'left',
   websiteData,
+  editorColors,
+  onColorsChange,
+  tabs,
+  onTabsReorder,
 }: DashboardContentProps) {
   // Internal sub-tab state — resets when activeTab changes
   const [activeSubTab, setActiveSubTab] = useState<string>('');
@@ -2001,7 +2011,7 @@ export default function DashboardContent({
   // Check if this is a platform tab (Dashboard detected by label, not ID — tab_1 can be anything in demo mode)
   const isDashboardTab = tabLabel.toLowerCase() === 'dashboard' || activeTab.toLowerCase() === 'dashboard';
   const isSettingsTab = activeTab === 'settings' || activeTab === 'profile';
-  const isPlatformTab = isDashboardTab || isSettingsTab || ['site', '__site__', 'analytics', '__marketplace__', '__marketing__', 'reviews'].includes(activeTab);
+  const isPlatformTab = isDashboardTab || isSettingsTab || ['site', '__site__', 'analytics', '__marketplace__', '__marketing__', '__brand__', 'reviews'].includes(activeTab);
   const toolbarPadding = toolbarSide === 'right' ? 'lg:pr-16' : 'lg:pl-16';
 
   if (isPlatformTab) {
@@ -2010,7 +2020,7 @@ export default function DashboardContent({
         {/* Settings/Profile has no heading — sub-tabs handle it */}
         {!isSettingsTab && (
           <h2 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: headingColor }}>
-            {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : activeTab === 'reviews' ? 'Reviews' : ''}
+            {isDashboardTab ? 'Dashboard' : (activeTab === 'site' || activeTab === '__site__') ? 'Website' : activeTab === 'analytics' ? 'Analytics' : activeTab === '__marketplace__' ? 'Marketplace' : activeTab === '__marketing__' ? 'Marketing' : activeTab === '__brand__' ? 'Brand & Design' : activeTab === 'reviews' ? 'Reviews' : ''}
           </h2>
         )}
         {isDashboardTab && (
@@ -2023,6 +2033,18 @@ export default function DashboardContent({
         {isSettingsTab && <SettingsContent colors={colors} defaultTab={activeTab === 'profile' ? 'profile' : 'settings'} />}
         {activeTab === '__marketplace__' && <MarketplaceView colors={colors} />}
         {activeTab === '__marketing__' && <MarketingContent colors={colors} />}
+        {activeTab === '__brand__' && editorColors && onColorsChange && (
+          <BrandBoardView
+            colors={colors}
+            editorColors={editorColors}
+            onColorsChange={onColorsChange}
+            tabs={tabs}
+            components={components}
+            onTabsReorder={onTabsReorder}
+            businessType={businessType}
+            businessName={businessName}
+          />
+        )}
         {activeTab === 'reviews' && <ReviewsTab colors={colors} />}
         {activeTab === 'comms' && <CommunicationsTab colors={colors} />}
       </div>

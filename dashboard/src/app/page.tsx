@@ -7,7 +7,6 @@ import ToolsStrip from '@/components/ToolsStrip';
 import { ColorItem } from '@/components/editors/ColorsEditor';
 
 // Lazy-load overlays — only mount when user opens them
-const EditorOverlay = lazy(() => import('@/components/EditorOverlay'));
 const ChatOverlay = lazy(() => import('@/components/ChatOverlay'));
 const SaveLaunchPopup = lazy(() => import('@/components/SaveLaunchPopup'));
 const PineTreeWidget = lazy(() => import('@/components/PineTreeWidget'));
@@ -135,7 +134,6 @@ export default function PreviewPage() {
   const [showLimitPopup, setShowLimitPopup] = useState(false);
   const [dashboardColors, setDashboardColors] = useState<DashboardColors>(NAIL_SALON_COLORS);
   const [editorColors, setEditorColors] = useState<ColorItem[]>([]);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [toolbarSide, setToolbarSide] = useState<'left' | 'right'>('left');
 
@@ -171,16 +169,20 @@ export default function PreviewPage() {
         businessName={businessName}
         colors={dashboardColors}
         toolbarSide={toolbarSide}
+        editorColors={editorColors}
+        onColorsChange={handleColorsChange}
+        tabs={tabs}
+        onTabsReorder={setTabs}
       />
 
       <ToolsStrip
-        onOpenEditor={() => { setIsEditorOpen(!isEditorOpen); setIsChatOpen(false); }}
-        isEditorOpen={isEditorOpen}
-        onOpenChat={() => { setIsChatOpen(!isChatOpen); setIsEditorOpen(false); }}
+        onOpenChat={() => { setIsChatOpen(!isChatOpen); }}
         isChatOpen={isChatOpen}
         side={toolbarSide}
         onSideChange={setToolbarSide}
         buttonColor={dashboardColors.buttons}
+        onNavigateToBrand={() => setActiveTab('__brand__')}
+        isBrandActive={activeTab === '__brand__'}
         onNavigateToSite={() => setActiveTab('__site__')}
         isSiteActive={activeTab === '__site__'}
         onNavigateToMarketplace={() => setActiveTab('__marketplace__')}
@@ -188,20 +190,6 @@ export default function PreviewPage() {
         onNavigateToMarketing={() => setActiveTab('__marketing__')}
         isMarketingActive={activeTab === '__marketing__'}
       />
-
-      {isEditorOpen && (<Suspense fallback={null}>
-        <EditorOverlay
-          isOpen={isEditorOpen}
-          onClose={() => setIsEditorOpen(false)}
-          colors={editorColors}
-          onColorsChange={handleColorsChange}
-          components={currentComponents}
-          tabs={tabs}
-          onTabsReorder={setTabs}
-          buttonColor={dashboardColors.buttons}
-          side={toolbarSide}
-        />
-      </Suspense>)}
 
       {isChatOpen && (<Suspense fallback={null}>
         <ChatOverlay

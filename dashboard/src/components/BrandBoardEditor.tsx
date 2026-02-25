@@ -156,7 +156,7 @@ function LogoSection() {
             <button
               type="button"
               onClick={() => fileInputRefs.current[i]?.click()}
-              className="w-full aspect-square rounded-xl border-2 border-dashed border-gray-200 hover:border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors flex flex-col items-center justify-center gap-1.5 cursor-pointer overflow-hidden"
+              className="w-full h-32 rounded-xl border-2 border-dashed border-gray-200 hover:border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors flex flex-col items-center justify-center gap-1.5 cursor-pointer overflow-hidden"
             >
               {logo ? (
                 <img

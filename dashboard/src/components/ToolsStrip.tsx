@@ -4,13 +4,13 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { getContrastText } from '@/lib/view-colors';
 
 interface ToolsStripProps {
-  onOpenEditor: () => void;
-  isEditorOpen: boolean;
   onOpenChat: () => void;
   isChatOpen: boolean;
   side?: 'left' | 'right';
   onSideChange?: (side: 'left' | 'right') => void;
   buttonColor?: string;
+  onNavigateToBrand?: () => void;
+  isBrandActive?: boolean;
   onNavigateToSite?: () => void;
   isSiteActive?: boolean;
   onNavigateToMarketplace?: () => void;
@@ -18,9 +18,13 @@ interface ToolsStripProps {
   onNavigateToMarketing?: () => void;
   isMarketingActive?: boolean;
   disableDrag?: boolean;
+  /** @deprecated Use onNavigateToBrand instead */
+  onOpenEditor?: () => void;
+  /** @deprecated Use isBrandActive instead */
+  isEditorOpen?: boolean;
 }
 
-export default function ToolsStrip({ onOpenEditor, isEditorOpen, onOpenChat, isChatOpen, side: controlledSide, onSideChange, buttonColor, onNavigateToSite, isSiteActive, onNavigateToMarketplace, isMarketplaceActive, onNavigateToMarketing, isMarketingActive, disableDrag }: ToolsStripProps) {
+export default function ToolsStrip({ onOpenChat, isChatOpen, side: controlledSide, onSideChange, buttonColor, onNavigateToBrand, isBrandActive, onNavigateToSite, isSiteActive, onNavigateToMarketplace, isMarketplaceActive, onNavigateToMarketing, isMarketingActive, disableDrag, onOpenEditor, isEditorOpen }: ToolsStripProps) {
   const [internalSide, setInternalSide] = useState<'left' | 'right'>('left');
   const side = controlledSide ?? internalSide;
   const setSide = (s: 'left' | 'right') => {
@@ -154,9 +158,13 @@ export default function ToolsStrip({ onOpenEditor, isEditorOpen, onOpenChat, isC
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
       </svg>
     )},
-    { id: 'editor', label: 'Brand & Design', onClick: onOpenEditor, active: isEditorOpen, disabled: false, icon: (
-      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.88 2.88M6.75 17.25h.008v.008H6.75v-.008z" />
+    { id: 'brand', label: 'Brand & Design', onClick: () => onNavigateToBrand?.(), active: !!isBrandActive, disabled: false, icon: (
+      <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.48 2 2 6.48 2 12c0 1.33.26 2.61.74 3.77C3.97 18.75 6.76 20.5 10 20.5c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.37-.61-.37-.99 0-.83.67-1.5 1.5-1.5H14c3.31 0 6-2.69 6-6 0-4.97-4.48-7.5-8-7.5z" />
+        <circle cx="6.5" cy="11.5" r="1.25" fill="currentColor" stroke="none" />
+        <circle cx="9.5" cy="7.5" r="1.25" fill="currentColor" stroke="none" />
+        <circle cx="14.5" cy="7.5" r="1.25" fill="currentColor" stroke="none" />
+        <circle cx="17.5" cy="11.5" r="1.25" fill="currentColor" stroke="none" />
       </svg>
     )},
     { id: 'website', label: 'Website', onClick: () => onNavigateToSite?.(), active: !!isSiteActive, disabled: false, icon: (

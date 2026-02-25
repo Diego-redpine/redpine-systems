@@ -7,7 +7,6 @@ import DashboardContent from '@/components/DashboardContent';
 import ToolsStrip from '@/components/ToolsStrip';
 import { ColorItem } from '@/components/editors/ColorsEditor';
 
-const EditorOverlay = lazy(() => import('@/components/EditorOverlay'));
 const ChatOverlay = lazy(() => import('@/components/ChatOverlay'));
 const WebsitePreviewPopup = lazy(() => import('@/components/views/WebsitePreviewPopup'));
 const SpotlightTour = lazy(() => import('@/components/views/SpotlightTour'));
@@ -89,7 +88,6 @@ function DashboardPageContent() {
   const [colors, setColors] = useState<DashboardColors>({});
   const [editorColors, setEditorColors] = useState<ColorItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [toolbarSide, setToolbarSide] = useState<'left' | 'right'>('left');
 
@@ -288,16 +286,20 @@ function DashboardPageContent() {
           businessName={config?.businessName}
           colors={colors}
           toolbarSide={toolbarSide}
+          editorColors={editorColors}
+          onColorsChange={handleColorsChange}
+          tabs={config?.tabs}
+          onTabsReorder={handleTabsChange}
         />
 
         <ToolsStrip
-          onOpenEditor={() => { setIsEditorOpen(!isEditorOpen); setIsChatOpen(false); }}
-          isEditorOpen={isEditorOpen}
-          onOpenChat={() => { setIsChatOpen(!isChatOpen); setIsEditorOpen(false); }}
+          onOpenChat={() => { setIsChatOpen(!isChatOpen); }}
           isChatOpen={isChatOpen}
           side={toolbarSide}
           onSideChange={setToolbarSide}
           buttonColor={colors.buttons}
+          onNavigateToBrand={() => setActiveTab('__brand__')}
+          isBrandActive={activeTab === '__brand__'}
           onNavigateToSite={() => setActiveTab('__site__')}
           isSiteActive={activeTab === '__site__'}
           onNavigateToMarketplace={() => setActiveTab('__marketplace__')}
@@ -306,20 +308,6 @@ function DashboardPageContent() {
           isMarketingActive={activeTab === '__marketing__'}
           disableDrag={showTour}
         />
-
-        {isEditorOpen && (<Suspense fallback={null}>
-          <EditorOverlay
-            isOpen={isEditorOpen}
-            onClose={() => setIsEditorOpen(false)}
-            colors={editorColors}
-            onColorsChange={handleColorsChange}
-            components={currentComponents}
-            tabs={config?.tabs}
-            onTabsReorder={handleTabsChange}
-            buttonColor={colors.buttons}
-            side={toolbarSide}
-          />
-        </Suspense>)}
 
         {isChatOpen && (<Suspense fallback={null}>
           <ChatOverlay
