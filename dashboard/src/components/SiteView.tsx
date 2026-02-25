@@ -8,7 +8,7 @@ import SiteContent from './SiteContent';
 import SiteAnalytics from './SiteAnalytics';
 import PortalContent from './PortalContent';
 import GalleryManager from './views/GalleryManager';
-import { shouldHavePortal } from '@/lib/portal-templates';
+import { shouldHavePortal, getPortalSections } from '@/lib/portal-templates';
 
 interface SiteViewProps {
   colors: DashboardColors;
@@ -74,9 +74,9 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
           });
         }
 
-        // Auto-create portal if business type warrants it
+        // Auto-create portal project + pages if business type warrants it
         if (!hasPortal && shouldHavePortal(businessType)) {
-          await fetch('/api/projects', {
+          const portalRes = await fetch('/api/projects', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -85,6 +85,40 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
               metadata: { businessName, businessType },
             }),
           });
+
+          // Auto-create portal pages (like Shopify adds /account, /cart, /checkout)
+          if (portalRes.ok) {
+            const portalProject = await portalRes.json();
+            const projectId = portalProject.data?.id;
+            const portalSections = getPortalSections();
+
+            // Login page + all 8 section pages
+            const portalPages = [
+              { title: 'Portal Login', slug: 'portal-login', system: true },
+              ...portalSections.map(s => ({
+                title: `Portal — ${s.title}`,
+                slug: `portal-${s.slug}`,
+                system: true,
+              })),
+            ];
+
+            await Promise.all(
+              portalPages.map(page =>
+                fetch('/api/pages', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    title: page.title,
+                    slug: page.slug,
+                    project_id: projectId,
+                    blocks: [],
+                    published: true,
+                    metadata: { system: true, portal: true },
+                  }),
+                })
+              )
+            );
+          }
         }
       } else if (res.status === 401) {
         setIsDemoMode(true);

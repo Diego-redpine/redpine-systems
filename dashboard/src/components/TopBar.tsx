@@ -5,7 +5,7 @@ import { DashboardTab, DashboardColors } from '@/types/config';
 import { NavIcon, inferIconFromLabel } from '@/lib/nav-icons';
 import { getContrastText } from '@/lib/view-colors';
 import NotificationPanel, { useNotificationCount } from './NotificationPanel';
-import MessagePanel, { useMessageCount } from './MessagePanel';
+import { useMessageCount } from './MessagePanel';
 import CreditBadge, { useCreditBalance } from './CreditBadge';
 import CreditPurchaseModal from './CreditPurchaseModal';
 
@@ -33,7 +33,6 @@ export default function TopBar({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isMessagesOpen, setIsMessagesOpen] = useState(false);
   const unreadCount = useNotificationCount();
   const messageCount = useMessageCount();
   const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
@@ -242,7 +241,7 @@ export default function TopBar({
           {/* Bell — Notifications */}
           <div className="relative">
             <button
-              onClick={() => { setIsNotificationsOpen(!isNotificationsOpen); setIsMessagesOpen(false); }}
+              onClick={() => { setIsNotificationsOpen(!isNotificationsOpen); }}
               className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
               title="Notifications"
               style={{ color: textColor }}
@@ -265,13 +264,13 @@ export default function TopBar({
               colors={colors}
             />
           </div>
-          {/* Envelope — Messages */}
+          {/* Envelope — navigates to Communications tab */}
           <div className="relative">
             <button
-              onClick={() => { setIsMessagesOpen(!isMessagesOpen); setIsNotificationsOpen(false); }}
+              onClick={() => { onTabChange('comms'); setIsNotificationsOpen(false); }}
               className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
               title="Messages"
-              style={{ color: textColor }}
+              style={{ color: activeTab === 'comms' ? buttonColor : textColor }}
             >
               <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -285,18 +284,13 @@ export default function TopBar({
                 </span>
               )}
             </button>
-            <MessagePanel
-              isOpen={isMessagesOpen}
-              onClose={() => setIsMessagesOpen(false)}
-              colors={colors}
-            />
           </div>
           {/* Credits badge */}
           <CreditBadge onClick={() => setIsCreditModalOpen(true)} />
           {/* Profile dropdown */}
           <div ref={profileRef} className="relative ml-1">
             <button
-              onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotificationsOpen(false); setIsMessagesOpen(false); }}
+              onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotificationsOpen(false); }}
               className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:ring-2 hover:ring-gray-200"
               style={{ backgroundColor: (activeTab === 'settings' || activeTab === 'profile') ? buttonColor : '#F3F4F6' }}
             >

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from('site_pages')
-    .select('id, slug, title, published, seo_title, seo_description, project_id, updated_at')
+    .select('id, slug, title, published, seo_title, seo_description, project_id, metadata, updated_at')
     .eq('user_id', user.id)
     .order('created_at', { ascending: true });
 
@@ -71,10 +71,13 @@ export async function POST(request: NextRequest) {
     title,
     slug,
     blocks: body.blocks || [],
-    published: false,
+    published: body.published ?? false,
   };
   if (body.project_id) {
     insertData.project_id = body.project_id;
+  }
+  if (body.metadata) {
+    insertData.metadata = body.metadata;
   }
 
   const { data, error } = await supabase

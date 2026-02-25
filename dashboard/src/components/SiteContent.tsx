@@ -20,6 +20,7 @@ interface Page {
   published: boolean;
   seo_title?: string;
   seo_description?: string;
+  metadata?: { system?: boolean; portal?: boolean };
   updated_at: string;
   blocks?: unknown[];
 }
@@ -321,6 +322,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
 
   // Page icon colors based on slug
   const getPageGradient = (slug: string) => {
+    if (slug.startsWith('portal-')) return 'from-rose-400 to-rose-600';
     const gradients: Record<string, string> = {
       home: 'from-blue-400 to-blue-600',
       about: 'from-purple-400 to-purple-600',
@@ -331,6 +333,8 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
     };
     return gradients[slug] || 'from-gray-400 to-gray-600';
   };
+
+  const isSystemPage = (page: Page) => !!page.metadata?.system;
 
   return (
     <>
@@ -394,14 +398,23 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
                   {/* Status */}
                   <div>
                     <p className="text-xs font-medium mb-1" style={{ color: textMuted }}>Status</p>
-                    <button
-                      onClick={() => handleTogglePublish(page.slug, page.published)}
-                      className={`inline-flex px-3 py-1 text-xs font-medium rounded-full transition-colors cursor-pointer ${
-                        page.published ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {page.published ? 'Published' : 'Draft'}
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      {isSystemPage(page) && (
+                        <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-rose-50 text-rose-600">
+                          Portal
+                        </span>
+                      )}
+                      <button
+                        onClick={() => !isSystemPage(page) && handleTogglePublish(page.slug, page.published)}
+                        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                          isSystemPage(page) ? 'cursor-default' : 'cursor-pointer'
+                        } ${
+                          page.published ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {page.published ? 'Published' : 'Draft'}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Last updated */}
@@ -415,36 +428,44 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor }}>
-                  <button
-                    onClick={() => handleEdit(page.slug)}
-                    className="flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-opacity hover:opacity-90 text-center"
-                    style={{ backgroundColor: buttonColor, color: buttonText }}
-                  >
-                    Edit Page
-                  </button>
-                  {deletingSlug === page.slug ? (
+                  {isSystemPage(page) ? (
+                    <p className="flex-1 text-xs text-center" style={{ color: textMuted }}>
+                      System page — managed automatically
+                    </p>
+                  ) : (
                     <>
                       <button
-                        onClick={() => handleDelete(page.slug)}
-                        className="px-3 py-2 text-xs font-medium rounded-lg bg-red-600 text-white transition-colors hover:bg-red-700"
+                        onClick={() => handleEdit(page.slug)}
+                        className="flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-opacity hover:opacity-90 text-center"
+                        style={{ backgroundColor: buttonColor, color: buttonText }}
                       >
-                        Confirm
+                        Edit Page
                       </button>
-                      <button
-                        onClick={() => setDeletingSlug(null)}
-                        className="px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-gray-100"
-                        style={{ color: textMuted }}
-                      >
-                        Cancel
-                      </button>
+                      {deletingSlug === page.slug ? (
+                        <>
+                          <button
+                            onClick={() => handleDelete(page.slug)}
+                            className="px-3 py-2 text-xs font-medium rounded-lg bg-red-600 text-white transition-colors hover:bg-red-700"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={() => setDeletingSlug(null)}
+                            className="px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-gray-100"
+                            style={{ color: textMuted }}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => setDeletingSlug(page.slug)}
+                          className="px-3 py-2 text-xs font-medium rounded-lg text-red-500 transition-colors hover:bg-red-50"
+                        >
+                          Delete
+                        </button>
+                      )}
                     </>
-                  ) : (
-                    <button
-                      onClick={() => setDeletingSlug(page.slug)}
-                      className="px-3 py-2 text-xs font-medium rounded-lg text-red-500 transition-colors hover:bg-red-50"
-                    >
-                      Delete
-                    </button>
                   )}
                 </div>
               </div>
