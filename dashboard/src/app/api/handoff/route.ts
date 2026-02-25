@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * Flask Onboarding Handoff API
  *
  * This endpoint receives the dashboard configuration from the Flask onboarding app
- * and returns a redirect URL for the preview page.
+ * and returns a redirect URL for the brand board page.
  *
  * Flow:
  * 1. User completes onboarding chat in Flask
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     // Build redirect URL
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const redirectUrl = `${appUrl}/preview?config_id=${configId}`;
+    const redirectUrl = `${appUrl}/brand-board?config_id=${configId}`;
 
     return NextResponse.json({
       success: true,

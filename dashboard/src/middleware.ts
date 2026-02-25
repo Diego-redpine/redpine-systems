@@ -41,7 +41,6 @@ const PUBLIC_ROUTES = [
   '/forgot-password',
   '/onboarding',
   '/api/onboarding',
-  '/preview',
   '/brand-board',
   '/auth',
   '/api/stripe/webhook',

@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
           businessName: businessName || '',
         },
       },
-      success_url: `${appUrl}/preview?config_id=${configId || ''}&payment=success`,
-      cancel_url: `${appUrl}/preview?config_id=${configId || ''}&payment=cancelled`,
+      success_url: `${appUrl}/brand-board?config_id=${configId || ''}&payment=success`,
+      cancel_url: `${appUrl}/brand-board?config_id=${configId || ''}&payment=cancelled`,
       customer_email: email,
       metadata: {
         configId: configId || '',
