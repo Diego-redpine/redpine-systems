@@ -130,7 +130,7 @@ function MiniCanvasPreview({ elements, theme, accentColor = '#E11D48', viewportW
 
   return (
     <div
-      className="relative overflow-hidden rounded"
+      className="relative overflow-hidden"
       style={{
         width: '80px',
         height: `${Math.min(previewHeight, 50)}px`,
@@ -157,7 +157,7 @@ function MiniCanvasPreview({ elements, theme, accentColor = '#E11D48', viewportW
         return (
           <div
             key={element.id || index}
-            className="absolute rounded-sm"
+            className="absolute"
             style={{
               left: `${left}px`,
               top: `${top}px`,
@@ -172,7 +172,7 @@ function MiniCanvasPreview({ elements, theme, accentColor = '#E11D48', viewportW
       {/* Empty state */}
       {elements.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-4 h-4 rounded" style={{ backgroundColor: '#E5E7EB' }} />
+          <div className="w-4 h-4" style={{ backgroundColor: '#E5E7EB' }} />
         </div>
       )}
     </div>
@@ -201,7 +201,7 @@ function ContextMenu({ x, y, onDuplicate, onDelete, onRename, onClose, isDefault
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 py-1 rounded-lg shadow-xl border min-w-[140px]"
+      className="fixed z-50 py-1 shadow-xl border min-w-[140px]"
       style={{
         left: x,
         top: y,
@@ -211,7 +211,7 @@ function ContextMenu({ x, y, onDuplicate, onDelete, onRename, onClose, isDefault
     >
       <button
         onClick={onRename}
-        className="w-full px-3 py-2 text-left text-xs font-['Inter'] flex items-center gap-2 hover:bg-gray-100"
+        className="w-full px-3 py-2 text-left text-xs font-['Fira_Code'] flex items-center gap-2 hover:bg-gray-100"
         style={{ color: '#6B7280' }}
       >
         <Edit3 className="w-3.5 h-3.5" />
@@ -219,7 +219,7 @@ function ContextMenu({ x, y, onDuplicate, onDelete, onRename, onClose, isDefault
       </button>
       <button
         onClick={onDuplicate}
-        className="w-full px-3 py-2 text-left text-xs font-['Inter'] flex items-center gap-2 hover:bg-gray-100"
+        className="w-full px-3 py-2 text-left text-xs font-['Fira_Code'] flex items-center gap-2 hover:bg-gray-100"
         style={{ color: '#6B7280' }}
       >
         <Copy className="w-3.5 h-3.5" />
@@ -228,7 +228,7 @@ function ContextMenu({ x, y, onDuplicate, onDelete, onRename, onClose, isDefault
       {!isDefault && (
         <button
           onClick={onDelete}
-          className="w-full px-3 py-2 text-left text-xs font-['Inter'] flex items-center gap-2 text-red-400 hover:bg-red-500/10"
+          className="w-full px-3 py-2 text-left text-xs font-['Fira_Code'] flex items-center gap-2 text-red-400 hover:bg-red-500/10"
         >
           <Trash2 className="w-3.5 h-3.5" />
           Delete
@@ -269,11 +269,11 @@ function RenameDialog({ isOpen, pageName, onClose, onConfirm, theme, accentColor
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div
-        className="p-4 rounded-lg shadow-xl w-72"
+        className="p-4 shadow-xl w-72"
         style={{ backgroundColor: '#ffffff' }}
       >
         <h3
-          className="text-sm font-semibold mb-3 font-['Inter']"
+          className="text-sm font-semibold mb-3 font-['Fira_Code']"
           style={{ color: '#1A1A1A' }}
         >
           Rename Page
@@ -284,7 +284,7 @@ function RenameDialog({ isOpen, pageName, onClose, onConfirm, theme, accentColor
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg text-sm font-['Inter'] border"
+            className="w-full px-3 py-2 text-sm font-['Fira_Code'] border"
             style={{
               backgroundColor: '#ffffff',
               borderColor: '#E5E7EB',
@@ -295,7 +295,7 @@ function RenameDialog({ isOpen, pageName, onClose, onConfirm, theme, accentColor
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 rounded-lg text-xs font-['Inter']"
+              className="flex-1 py-2 text-xs font-['Fira_Code']"
               style={{
                 backgroundColor: '#f5f5f5',
                 color: '#6B7280',
@@ -305,8 +305,8 @@ function RenameDialog({ isOpen, pageName, onClose, onConfirm, theme, accentColor
             </button>
             <button
               type="submit"
-              className="flex-1 py-2 rounded-lg text-xs font-['Inter'] text-white hover:opacity-90"
-              style={{ backgroundColor: accentColor || '#E11D48' }}
+              className="flex-1 py-2 text-xs font-['Fira_Code'] text-white hover:opacity-90"
+              style={{ backgroundColor: '#1A1A1A' }}
             >
               Save
             </button>
@@ -365,13 +365,13 @@ function PageThumbnail({
       >
         {/* Thumbnail container */}
         <div
-          className="relative p-1.5 rounded-lg transition-all border"
+          className="relative p-1.5 transition-all border"
           style={{
             ...(isActive
               ? {
-                  borderColor: accentColor,
-                  boxShadow: `0 0 0 2px ${accentColor}`,
-                  backgroundColor: `${accentColor}15`,
+                  borderColor: '#1A1A1A',
+                  boxShadow: '0 0 0 2px #1A1A1A',
+                  backgroundColor: '#F3F4F6',
                 }
               : {
                   backgroundColor: '#ffffff',
@@ -400,7 +400,7 @@ function PageThumbnail({
             className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
             style={{
               ...(isActive
-                ? { backgroundColor: accentColor, color: '#ffffff' }
+                ? { backgroundColor: '#1A1A1A', color: '#ffffff' }
                 : { backgroundColor: '#f5f5f5', color: '#6B7280' }),
             }}
           >
@@ -412,7 +412,7 @@ function PageThumbnail({
             <div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 p-1 rounded-full"
               style={{
-                backgroundColor: isActive ? accentColor : '#E5E7EB',
+                backgroundColor: isActive ? '#1A1A1A' : '#E5E7EB',
               }}
             >
               <Icon className="w-3 h-3" style={{ color: isActive ? '#ffffff' : '#6B7280' }} />
@@ -423,7 +423,7 @@ function PageThumbnail({
         {/* Tooltip with page name */}
         {showTooltip && (
           <div
-            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded text-xs font-['Inter'] whitespace-nowrap z-50"
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-['Fira_Code'] whitespace-nowrap z-50"
             style={{ backgroundColor: '#1A1A1A', color: '#ffffff' }}
           >
             {page.name}
@@ -535,11 +535,6 @@ export default function PageThumbnailBar({
     }
   }, [currentPageId, pages, collapsed]);
 
-  // Auto-expand when becoming visible
-  useEffect(() => {
-    if (isVisible) setCollapsed(false);
-  }, [isVisible]);
-
   const showBar = isVisible && !collapsed;
 
   return (
@@ -559,12 +554,12 @@ export default function PageThumbnailBar({
           style={{ borderBottom: showBar ? '1px solid #E5E7EB' : 'none' }}
         >
           <span
-            className="text-[10px] font-['Inter'] font-medium uppercase tracking-wider mr-1.5"
+            className="text-[10px] font-['Fira_Code'] font-medium uppercase tracking-wider mr-1.5"
             style={{ color: '#6B7280' }}
           >
             Pages
           </span>
-          <span className="text-[10px] font-['Inter']" style={{ color: '#9CA3AF' }}>
+          <span className="text-[10px] font-['Fira_Code']" style={{ color: '#9CA3AF' }}>
             {pages.length}
           </span>
           <div className="flex-1" />
@@ -613,7 +608,7 @@ export default function PageThumbnailBar({
             >
               <button
                 onClick={onAddPage}
-                className="p-2 rounded-lg transition-colors flex items-center justify-center border hover:bg-gray-100"
+                className="p-2 transition-colors flex items-center justify-center border hover:bg-gray-100"
                 style={{
                   backgroundColor: '#ffffff',
                   color: '#6B7280',
