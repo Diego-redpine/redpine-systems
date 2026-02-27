@@ -9,6 +9,7 @@ import { MenuWidget } from '@/components/widgets/MenuWidget';
 import { EventsWidget } from '@/components/widgets/EventsWidget';
 import { ClassesWidget } from '@/components/widgets/ClassesWidget';
 import { ReviewCarousel } from '@/components/widgets/ReviewCarousel';
+import { BlogWidget } from '@/components/widgets/BlogWidget';
 
 interface SectionRendererProps {
   section: { id: string; type: string; height: number; properties: Record<string, unknown> };
@@ -26,9 +27,12 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
 
   const wrapStyle: React.CSSProperties = {
     width: '100%',
-    height: section.height,
+    minHeight: section.height,
+    height: '100%',
     overflowY: 'auto',
     backgroundColor: (props.backgroundColor as string) || 'transparent',
+    display: 'flex',
+    flexDirection: 'column',
   };
 
   switch (section.type) {
@@ -166,11 +170,25 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
         </div>
       );
 
+    case 'blogWidget':
+      return (
+        <div style={wrapStyle}>
+          <BlogWidget
+            blockProps={{}}
+            inBuilder={true}
+            heading={(props.heading as string) || 'Our Blog'}
+            columns={isMobile ? 1 : (props.columns as number) || 3}
+            accentColor={widgetAccent}
+            viewportWidth={viewportWidth}
+          />
+        </div>
+      );
+
     default:
       return (
         <div
           className={`flex items-center justify-center ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}
-          style={{ height: section.height || 400 }}
+          style={{ minHeight: section.height || 400, height: '100%' }}
         >
           <p className="text-sm font-['Inter']">{section.type} section</p>
         </div>

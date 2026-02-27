@@ -15,7 +15,6 @@ import {
   Type,
   Heading,
   MousePointerClick,
-  Image,
   Minus,
   Square,
   ChevronLeft,
@@ -26,13 +25,10 @@ import {
   LayoutGrid,
   Search,
   Palette,
-  CloudUpload,
   FolderOpen,
   Grid3X3,
   Sparkles,
   X,
-  Loader2,
-  AlertCircle,
   ImageIcon,
   ClipboardList,
   FormInput,
@@ -46,9 +42,6 @@ import {
   Laptop,
   Frame,
   LayoutTemplate,
-  Grid2X2,
-  Columns,
-  Rows,
   // Text element icons
   Text,
   MessageSquareQuote,
@@ -77,7 +70,8 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { BASE_ELEMENT_SIZES } from '@/hooks/useFreeFormEditor';
-import { useUserUploads } from '@/hooks/useUserUploads';
+import BrandBoardEditor from '@/components/BrandBoardEditor';
+import type { ColorItem } from '@/components/editors/ColorsEditor';
 
 // ============================================
 // TYPE DEFINITIONS
@@ -123,14 +117,6 @@ interface FrameCategory {
   frames: FrameItem[];
 }
 
-interface GridItem {
-  type: string;
-  gridType: string;
-  label: string;
-  icon: LucideIcon;
-  description: string;
-}
-
 interface TextItemData {
   type: string;
   label: string;
@@ -162,19 +148,6 @@ interface PageTemplate {
   elements: Array<{ type: string; properties: Record<string, string> }>;
 }
 
-interface BrandColors {
-  primary: string | null;
-  secondary: string | null;
-  accent1: string | null;
-  accent2: string | null;
-  background: string | null;
-}
-
-interface BrandColorSlot {
-  id: keyof BrandColors;
-  label: string;
-  description: string;
-}
 
 interface SiteSettingsData {
   siteName: string;
@@ -182,15 +155,6 @@ interface SiteSettingsData {
   favicon: string;
   socialImage: string;
   customDomain: string;
-}
-
-interface UserUpload {
-  id: string;
-  public_url: string;
-  file_name: string;
-  file_path: string;
-  file_size?: number;
-  isLocal?: boolean;
 }
 
 // ============================================
@@ -203,7 +167,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'elements', label: 'Elements', icon: LayoutGrid },
   { id: 'text', label: 'Text', icon: Type },
   { id: 'brand', label: 'Brand', icon: Palette },
-  { id: 'uploads', label: 'Uploads', icon: CloudUpload },
   { id: 'projects', label: 'Project', icon: FolderOpen },
 ];
 
@@ -218,6 +181,7 @@ const PREBUILT_SECTION_ITEMS: SectionItem[] = [
   { type: 'eventsWidget', label: 'Events', icon: Ticket, description: 'Event listings with registration' },
   { type: 'classesWidget', label: 'Class Schedule', icon: ClipboardList, description: 'Weekly class schedule with enrollment' },
   { type: 'reviewCarousel', label: 'Reviews', icon: Star, description: 'Client testimonials carousel' },
+  { type: 'blogWidget', label: 'Blog', icon: FileText, description: 'Blog posts feed section' },
 ];
 
 const SECTION_ITEMS: SectionItem[] = [BLANK_SECTION_ITEM, ...PREBUILT_SECTION_ITEMS];
@@ -227,9 +191,8 @@ const PORTABLE_WIDGET_ITEMS: PortableWidgetItem[] = [
   { type: 'customForm', label: 'Custom Form', icon: FormInput, description: 'Build your own form' },
   { type: 'button', label: 'Button', icon: MousePointerClick, description: 'Call-to-action button' },
 ];
-// Media elements
+// Media elements (image removed — now in Images category with frames)
 const MEDIA_ITEMS: MediaItem[] = [
-  { type: 'image', label: 'Image', icon: Image, description: 'Photo or graphic' },
   { type: 'divider', label: 'Divider', icon: Minus, description: 'Horizontal line' },
   { type: 'spacer', label: 'Spacer', icon: Square, description: 'Empty space' },
 ];
@@ -277,15 +240,6 @@ const FRAME_CATEGORIES: FrameCategory[] = [
   },
 ];
 
-// Grid elements - layout containers for multiple images
-const GRID_ITEMS: GridItem[] = [
-  { type: 'grid', gridType: '2-up', label: '2-Up', icon: Columns, description: 'Two images side by side' },
-  { type: 'grid', gridType: '3-up', label: '3-Up', icon: Rows, description: 'Three images in a row' },
-  { type: 'grid', gridType: '4-grid', label: '4 Grid', icon: Grid2X2, description: '2x2 image grid' },
-  { type: 'grid', gridType: '6-grid', label: '6 Grid', icon: Grid3X3, description: '2x3 image grid' },
-  { type: 'grid', gridType: 'collage', label: 'Collage', icon: LayoutTemplate, description: '1 large + 2 small' },
-  { type: 'grid', gridType: 'masonry', label: 'Masonry', icon: LayoutGrid, description: 'Pinterest-style grid' },
-];
 
 // Text elements
 const TEXT_ITEMS: TextItemData[] = [
@@ -362,22 +316,6 @@ const PAGE_TEMPLATES: PageTemplate[] = [
 ];
 
 // Brand color slot configuration
-const BRAND_COLOR_SLOTS: BrandColorSlot[] = [
-  { id: 'primary', label: 'Primary', description: 'Main brand color for headers and titles' },
-  { id: 'secondary', label: 'Secondary', description: 'Accent color for borders and highlights' },
-  { id: 'accent1', label: 'Accent 1', description: 'Additional accent color' },
-  { id: 'accent2', label: 'Accent 2', description: 'Secondary accent color' },
-  { id: 'background', label: 'Background', description: 'Widget background color' },
-];
-
-// Default brand colors
-const DEFAULT_BRAND_COLORS: BrandColors = {
-  primary: null,
-  secondary: null,
-  accent1: null,
-  accent2: null,
-  background: null,
-};
 
 // ============================================
 // SUB-COMPONENTS
@@ -406,7 +344,7 @@ function SearchInput({ placeholder, theme, value, onChange }: SearchInputProps) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full pl-10 pr-4 py-2.5 rounded-lg text-sm font-['Inter'] transition-colors ${
+        className={`w-full pl-10 pr-4 py-2.5 text-sm font-['Fira_Code'] transition-colors ${
           isDark
             ? 'bg-zinc-800 text-white placeholder-zinc-500 border border-zinc-700 focus:border-zinc-600'
             : 'bg-white text-zinc-900 placeholder-zinc-400 border border-zinc-200 focus:border-zinc-300'
@@ -469,7 +407,7 @@ function ElementItem({ item, theme, onClick, onDragStart, compact = false }: Ele
       onDragStart={handleDragStart}
       onClick={() => onClick(item.type)}
       className={`
-        flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-grab
+        flex items-center gap-3 px-3 py-2.5 cursor-grab
         border transition-all duration-150 group
         active:cursor-grabbing active:scale-[0.98]
         ${isDark
@@ -478,7 +416,7 @@ function ElementItem({ item, theme, onClick, onDragStart, compact = false }: Ele
         }
       `}
     >
-      <div className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+      <div className={`p-2 transition-colors flex-shrink-0 ${
         isDark
           ? 'bg-zinc-900 group-hover:bg-zinc-700'
           : 'bg-zinc-100 group-hover:bg-zinc-200'
@@ -490,13 +428,13 @@ function ElementItem({ item, theme, onClick, onDragStart, compact = false }: Ele
         }`} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium font-['Inter'] ${
+        <p className={`text-sm font-medium font-['Fira_Code'] ${
           isDark ? 'text-zinc-200' : 'text-zinc-800'
         }`}>
           {item.label}
         </p>
         {!compact && (
-          <p className={`text-xs font-['Inter'] truncate ${
+          <p className={`text-xs font-['Fira_Code'] truncate ${
             isDark ? 'text-zinc-500' : 'text-zinc-500'
           }`}>
             {item.description}
@@ -541,7 +479,7 @@ function TextItem({ item, theme, onClick, onDragStart }: TextItemProps) {
       onDragStart={handleDragStart}
       onClick={() => onClick(item.type)}
       className={`
-        px-4 py-4 rounded-lg cursor-grab
+        px-4 py-4 cursor-grab
         border transition-all duration-150 group
         active:cursor-grabbing active:scale-[0.98]
         ${isDark
@@ -550,7 +488,7 @@ function TextItem({ item, theme, onClick, onDragStart }: TextItemProps) {
         }
       `}
     >
-      <p className={`font-['Inter'] font-medium ${sizeClasses[item.size]} ${
+      <p className={`font-['Fira_Code'] font-medium ${sizeClasses[item.size]} ${
         isDark ? 'text-zinc-200' : 'text-zinc-800'
       }`}>
         {item.label}
@@ -578,7 +516,7 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
     prebuilt: true,
     widgets: true,
     media: true,
-    grids: true,
+    images: true,
     forms: true,
   });
   const isDark = theme === 'dark';
@@ -632,12 +570,6 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
     ),
   })).filter(category => category.frames.length > 0);
 
-  // Filter grids by search query
-  const filteredGrids = GRID_ITEMS.filter(item =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   // Filter form items
   const filteredForms = FORM_ITEMS.filter(item =>
     item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -649,22 +581,17 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
     onAddElement?.('frame', { frameType });
   };
 
-  // Handler for adding grids with gridType
-  const handleAddGrid = (gridType: string) => {
-    onAddElement?.('grid', { gridType });
-  };
-
   return (
     <div className="p-4 space-y-6">
       {/* Locked Page Warning */}
       {isPageLocked && (
-        <div className={`p-3 rounded-lg border flex items-center gap-2 ${
+        <div className={`p-3 border flex items-center gap-2 ${
           isDark
             ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
             : 'bg-yellow-50 border-yellow-200 text-yellow-700'
         }`}>
           <Lock className="w-4 h-4 flex-shrink-0" />
-          <span className="text-xs font-['Inter']">
+          <span className="text-xs font-['Fira_Code']">
             This page has a locked section. You can edit properties but cannot add or remove sections.
           </span>
         </div>
@@ -688,22 +615,22 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
                   e.dataTransfer.effectAllowed = 'copy';
                 }}
                 onClick={() => onAddSection?.('blank')}
-                className={`w-full p-3 rounded-lg border transition-all text-left flex items-center gap-3 cursor-grab active:cursor-grabbing ${
+                className={`w-full p-3 border transition-all text-left flex items-center gap-3 cursor-grab active:cursor-grabbing ${
                   isDark
                     ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700'
                     : 'bg-white hover:bg-zinc-50 border-zinc-200'
                 }`}
               >
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                <div className={`w-10 h-10 flex items-center justify-center flex-shrink-0 ${
                   isDark ? 'bg-zinc-700' : 'bg-zinc-100'
                 }`}>
-                  <Square className="w-5 h-5" style={{ color: accentColor }} />
+                  <Square className="w-5 h-5" style={{ color: isDark ? '#FFFFFF' : '#1A1A1A' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className={`text-sm font-['Inter'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                  <span className={`text-sm font-['Fira_Code'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
                     Blank Section
                   </span>
-                  <span className={`text-xs font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                  <span className={`text-xs font-['Fira_Code'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
                     Free-form canvas for custom layouts
                   </span>
                 </div>
@@ -735,22 +662,22 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
                       e.dataTransfer.effectAllowed = 'copy';
                     }}
                     onClick={() => onAddSection?.(item.type)}
-                    className={`w-full p-3 rounded-lg border transition-all text-left flex items-center gap-3 cursor-grab active:cursor-grabbing ${
+                    className={`w-full p-3 border transition-all text-left flex items-center gap-3 cursor-grab active:cursor-grabbing ${
                       isDark
                         ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700'
                         : 'bg-white hover:bg-zinc-50 border-zinc-200'
                     }`}
                   >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    <div className={`w-10 h-10 flex items-center justify-center flex-shrink-0 ${
                       isDark ? 'bg-zinc-700' : 'bg-zinc-100'
                     }`}>
                       <Icon className={`w-5 h-5 ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-sm font-['Inter'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                      <span className={`text-sm font-['Fira_Code'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
                         {item.label}
                       </span>
-                      <span className={`text-xs font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      <span className={`text-xs font-['Fira_Code'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
                         {item.description}
                       </span>
                     </div>
@@ -773,7 +700,7 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
           />
           {!collapsedCategories.widgets && (
             <>
-              <p className={`text-xs font-['Inter'] mb-3 ${
+              <p className={`text-xs font-['Fira_Code'] mb-3 ${
                 isDark ? 'text-zinc-500' : 'text-zinc-400'
               }`}>
                 Add to blank sections only
@@ -820,94 +747,73 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
         </div>
       )}
 
-      {/* Frames (nested under Media & Layout visibility) */}
-      {!collapsedCategories.media && filteredFrameCategories.length > 0 && (
-        <div className="space-y-4">
-          {filteredFrameCategories.map((category) => (
-            <div key={`frame-${category.id}`}>
-              <CategoryHeader
-                label={category.label}
-                theme={theme}
-                collapsed={collapsedCategories[`frame-${category.id}`]}
-                onToggle={() => toggleCategory(`frame-${category.id}`)}
-              />
-              {!collapsedCategories[`frame-${category.id}`] && (
-                <div className="grid grid-cols-3 gap-2">
-                  {category.frames.map((frame) => {
-                    const Icon = frame.icon;
-                    return (
-                      <button
-                        key={frame.frameType}
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData('elementType', 'frame');
-                          e.dataTransfer.setData('frameType', frame.frameType);
-                          e.dataTransfer.effectAllowed = 'copy';
-                          onDragStart?.('frame');
-                        }}
-                        onClick={() => handleAddFrame(frame.frameType)}
-                        className={`p-3 rounded-lg border transition-all ${
-                          isDark
-                            ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-zinc-200'
-                            : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-500 hover:text-zinc-700'
-                        }`}
-                      >
-                        <Icon className="w-6 h-6 mx-auto mb-1" />
-                        <span className="text-[10px] font-['Inter'] block truncate">{frame.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Image Grids */}
-      {filteredGrids.length > 0 && (
+      {/* Images — consolidated frames + gallery section */}
+      {(filteredFrameCategories.length > 0 || !searchQuery) && (
         <div>
           <CategoryHeader
-            label="Image Grids"
+            label="Images"
             theme={theme}
-            collapsed={collapsedCategories.grids}
-            onToggle={() => toggleCategory('grids')}
+            collapsed={collapsedCategories.images}
+            onToggle={() => toggleCategory('images')}
           />
-          {!collapsedCategories.grids && (
-            <div className="grid grid-cols-2 gap-2">
-              {filteredGrids.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.gridType}
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('elementType', 'grid');
-                      e.dataTransfer.setData('gridType', item.gridType);
-                      e.dataTransfer.effectAllowed = 'copy';
-                      onDragStart?.('grid');
-                    }}
-                    onClick={() => handleAddGrid(item.gridType)}
-                    className={`p-3 rounded-lg border transition-all text-left ${
-                      isDark
-                        ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700'
-                        : 'bg-white hover:bg-zinc-50 border-zinc-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className={`w-5 h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`} />
-                      <div>
-                        <span className={`text-xs font-['Inter'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
-                          {item.label}
-                        </span>
-                        <span className={`text-[10px] font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                          {item.description}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+          {!collapsedCategories.images && (
+            <div className="space-y-4">
+              {/* All frame types in a flat 3-column grid */}
+              {filteredFrameCategories.map((category) => (
+                <div key={`frame-${category.id}`}>
+                  <p className={`text-[10px] font-['Fira_Code'] uppercase tracking-wider mb-2 px-1 ${
+                    isDark ? 'text-zinc-500' : 'text-zinc-400'
+                  }`}>{category.label}</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {category.frames.map((frame) => {
+                      const Icon = frame.icon;
+                      return (
+                        <button
+                          key={frame.frameType}
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('elementType', 'frame');
+                            e.dataTransfer.setData('frameType', frame.frameType);
+                            e.dataTransfer.effectAllowed = 'copy';
+                            onDragStart?.('frame');
+                          }}
+                          onClick={() => handleAddFrame(frame.frameType)}
+                          className={`p-3 border transition-all ${
+                            isDark
+                              ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-zinc-200'
+                              : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-500 hover:text-zinc-700'
+                          }`}
+                        >
+                          <Icon className="w-6 h-6 mx-auto mb-1" />
+                          <span className="text-[10px] font-['Fira_Code'] block truncate">{frame.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {/* Gallery Section button */}
+              {!isPageLocked && (
+                <button
+                  onClick={() => onAddSection?.('galleryWidget')}
+                  className={`w-full flex items-center gap-3 p-3 border transition-all ${
+                    isDark
+                      ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700 text-zinc-300'
+                      : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-700'
+                  }`}
+                >
+                  <ImageIcon className={`w-5 h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`} />
+                  <div className="text-left">
+                    <span className={`text-xs font-['Fira_Code'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                      Gallery Section
+                    </span>
+                    <span className={`text-[10px] font-['Fira_Code'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      Add photo gallery to page
+                    </span>
+                  </div>
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -978,572 +884,7 @@ function TextPanel({ theme, searchQuery, onAddElement, onDragStart }: TextPanelP
   );
 }
 
-/**
- * Brand Preview Component - shows how colors work together
- */
-interface BrandPreviewProps {
-  brandColors: BrandColors;
-  theme: string;
-}
 
-function BrandPreview({ brandColors, theme }: BrandPreviewProps) {
-  const isDark = theme === 'dark';
-  const primary = brandColors.primary || '#3B82F6';
-  const secondary = brandColors.secondary || '#2563eb';
-  const background = brandColors.background || (isDark ? '#18181b' : '#f4f4f5');
-
-  return (
-    <div
-      className="rounded-lg p-3 border transition-colors"
-      style={{
-        backgroundColor: background,
-        borderColor: secondary,
-      }}
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 rounded" style={{ backgroundColor: primary }} />
-        <div className="flex-1">
-          <div className="h-2 rounded-full w-3/4" style={{ backgroundColor: primary }} />
-          <div className="h-1.5 rounded-full w-1/2 mt-1" style={{ backgroundColor: secondary, opacity: 0.5 }} />
-        </div>
-      </div>
-      <div className="flex gap-1">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="flex-1 h-8 rounded"
-            style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }}
-          />
-        ))}
-      </div>
-      <p className={`text-[10px] font-['Inter'] text-center mt-2 ${
-        isDark ? 'text-zinc-500' : 'text-zinc-400'
-      }`}>
-        Preview
-      </p>
-    </div>
-  );
-}
-
-/**
- * Brand Panel
- */
-interface BrandPanelProps {
-  theme: string;
-  brandColors: BrandColors | null;
-  onUpdateBrandColors?: (colors: BrandColors) => void;
-  onApplyToAllWidgets?: () => void;
-  accentColor?: string;
-}
-
-function BrandPanel({ theme, brandColors, onUpdateBrandColors, onApplyToAllWidgets, accentColor = '#E11D48' }: BrandPanelProps) {
-  const isDark = theme === 'dark';
-  const [editingSlot, setEditingSlot] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  const colors = brandColors || DEFAULT_BRAND_COLORS;
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleColorChange = (slotId: string, color: string) => {
-    onUpdateBrandColors?.({ ...colors, [slotId]: color });
-  };
-
-  const handleDeleteColor = (slotId: string) => {
-    onUpdateBrandColors?.({ ...colors, [slotId]: null });
-    setEditingSlot(null);
-  };
-
-  const handleSlotClick = (e: React.MouseEvent<HTMLDivElement>, slotId: string) => {
-    if (editingSlot === slotId) {
-      setEditingSlot(null);
-      return;
-    }
-
-    // Calculate popup position relative to the container
-    const rect = e.currentTarget.getBoundingClientRect();
-    const containerRect = containerRef.current?.getBoundingClientRect() || { top: 0, left: 0 };
-
-    setPopupPosition({
-      top: rect.top - containerRect.top + rect.height / 2,
-      left: rect.left - containerRect.left + rect.width / 2,
-    });
-    setEditingSlot(slotId);
-  };
-
-  // Calculate text color based on background (for contrast)
-  const getContrastColor = (hexColor: string | null): string => {
-    if (!hexColor) return isDark ? '#a1a1aa' : '#71717a';
-    const r = parseInt(hexColor.slice(1, 3), 16);
-    const g = parseInt(hexColor.slice(3, 5), 16);
-    const b = parseInt(hexColor.slice(5, 7), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.5 ? '#18181b' : '#ffffff';
-  };
-
-  const hasAnyColors = Object.values(colors).some(c => c !== null);
-
-  return (
-    <div ref={containerRef} className="flex flex-col h-full relative">
-      {/* Coolors-style color columns */}
-      <div className="flex-1 flex min-h-[280px] overflow-x-auto">
-        {BRAND_COLOR_SLOTS.map((slot) => {
-          const color = colors[slot.id];
-          const isEmpty = !color;
-          const isEditing = editingSlot === slot.id;
-          const textColor = getContrastColor(color);
-
-          return (
-            <div
-              key={slot.id}
-              className="flex-1 flex flex-col relative group cursor-pointer transition-all flex-shrink-0"
-              style={{ minWidth: '44px', backgroundColor: color || (isDark ? '#27272a' : '#e4e4e7') }}
-              onClick={(e) => handleSlotClick(e, slot.id)}
-            >
-              {/* Empty state plus icon */}
-              {isEmpty && (
-                <div className="flex-1 flex items-center justify-center">
-                  <Plus className={`w-6 h-6 ${isDark ? 'text-zinc-600' : 'text-zinc-400'} group-hover:scale-110 transition-transform`} />
-                </div>
-              )}
-
-              {/* Filled state - shows color fill */}
-              {!isEmpty && (
-                <div className="flex-1" />
-              )}
-
-              {/* Bottom info area */}
-              <div
-                className="p-2 text-center transition-colors"
-                style={{
-                  backgroundColor: isEmpty ? 'transparent' : (color ?? undefined),
-                }}
-              >
-                <p
-                  className="text-[10px] font-['Inter'] font-semibold uppercase tracking-wider mb-0.5"
-                  style={{ color: isEmpty ? (isDark ? '#71717a' : '#a1a1aa') : textColor }}
-                >
-                  {slot.label.replace('Accent ', 'Acc').replace('Primary', 'Pri').replace('Secondary', 'Sec').replace('Background', 'BG')}
-                </p>
-                {!isEmpty && (
-                  <p
-                    className="text-[9px] font-['Inter'] uppercase"
-                    style={{ color: textColor, opacity: 0.7 }}
-                  >
-                    {color}
-                  </p>
-                )}
-              </div>
-
-              {/* Active/editing indicator */}
-              {isEditing && (
-                <div className="absolute inset-0 ring-2 ring-inset pointer-events-none" style={{ '--tw-ring-color': accentColor } as React.CSSProperties} />
-              )}
-
-              {/* Hover overlay with delete button for filled slots */}
-              {!isEmpty && (
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteColor(slot.id);
-                    }}
-                    className="w-6 h-6 rounded-full bg-black/50 hover:bg-red-500 flex items-center justify-center transition-colors"
-                    title="Remove color"
-                  >
-                    <X className="w-3.5 h-3.5 text-white" />
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Color picker popup */}
-      {editingSlot && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setEditingSlot(null)}
-          />
-
-          {/* Popup */}
-          <div
-            className={`absolute z-50 w-64 rounded-xl shadow-2xl border ${
-              isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-white border-zinc-200'
-            }`}
-            style={{
-              top: Math.min(popupPosition.top, 200),
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className={`flex items-center justify-between px-4 py-3 border-b ${
-              isDark ? 'border-zinc-800' : 'border-zinc-200'
-            }`}>
-              <span className={`text-xs font-semibold font-['Inter'] uppercase tracking-wider ${
-                isDark ? 'text-zinc-300' : 'text-zinc-700'
-              }`}>
-                {BRAND_COLOR_SLOTS.find(s => s.id === editingSlot)?.label}
-              </span>
-              <button
-                onClick={() => setEditingSlot(null)}
-                className={`p-1 rounded-full transition-colors ${
-                  isDark ? 'hover:bg-zinc-800 text-zinc-400' : 'hover:bg-zinc-100 text-zinc-600'
-                }`}
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Color input */}
-            <div className="p-4">
-              <div className="flex items-center gap-3 mb-4">
-                <input
-                  type="color"
-                  value={colors[editingSlot as keyof BrandColors] || '#3b82f6'}
-                  onChange={(e) => handleColorChange(editingSlot, e.target.value)}
-                  className="w-12 h-10 rounded cursor-pointer border-0"
-                />
-                <input
-                  type="text"
-                  value={colors[editingSlot as keyof BrandColors] || ''}
-                  placeholder="#000000"
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val.match(/^#[0-9A-Fa-f]{0,6}$/)) {
-                      if (val.length === 7) {
-                        handleColorChange(editingSlot, val);
-                      }
-                    }
-                  }}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-['Inter'] uppercase ${
-                    isDark
-                      ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
-                      : 'bg-zinc-100 border-zinc-300 text-zinc-800'
-                  } border`}
-                />
-              </div>
-
-              {/* Quick color swatches */}
-              <div className="grid grid-cols-8 gap-1.5">
-                {[
-                  '#ef4444', '#f97316', '#eab308', '#22c55e',
-                  '#14b8a6', '#06b6d4', '#3b82f6', '#6366f1',
-                  '#8b5cf6', '#a855f7', '#d946ef', '#ec4899',
-                  '#f43f5e', '#78716c', '#71717a', '#18181b',
-                ].map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => handleColorChange(editingSlot, c)}
-                    className={`aspect-square rounded transition-all hover:scale-110 ${
-                      colors[editingSlot as keyof BrandColors] === c ? 'ring-2 ring-offset-1' : ''
-                    }`}
-                    style={{
-                      backgroundColor: c,
-                      ...(colors[editingSlot as keyof BrandColors] === c ? { '--tw-ring-color': accentColor } as React.CSSProperties : {}),
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Bottom actions */}
-      <div className={`p-4 border-t space-y-3 flex-shrink-0 ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-        {/* Apply to All Widgets Button */}
-        {hasAnyColors && (
-          <button
-            onClick={onApplyToAllWidgets}
-            className="w-full py-2.5 rounded-lg text-sm font-['Inter'] font-medium transition-colors text-white hover:opacity-90"
-            style={{ backgroundColor: accentColor }}
-          >
-            Apply to All Sections
-          </button>
-        )}
-
-        {/* Info text */}
-        <p className={`text-[10px] font-['Inter'] text-center ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-          Click a column to set color
-        </p>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Uploads Panel
- */
-interface UploadsPanelProps {
-  theme: string;
-  onAddImage?: (url: string, name: string) => void;
-  accentColor?: string;
-}
-
-function UploadsPanel({ theme, onAddImage, accentColor = '#E11D48' }: UploadsPanelProps) {
-  const isDark = theme === 'dark';
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [dragOver, setDragOver] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  const {
-    uploads,
-    isLoading,
-    isUploading,
-    error,
-    uploadImage,
-    deleteUpload,
-    validateFile,
-    formatFileSize,
-  } = useUserUploads();
-
-  // Handle file selection
-  const handleFileSelect = async (files: FileList) => {
-    const fileList = Array.from(files);
-
-    for (const file of fileList) {
-      const validation = validateFile(file);
-      if (!validation.valid) {
-        alert(validation.errors.join('\n'));
-        continue;
-      }
-
-      try {
-        await uploadImage(file);
-      } catch (err) {
-        console.error('Upload failed:', err);
-      }
-    }
-  };
-
-  // Handle upload button click
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  // Handle file input change
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) {
-      handleFileSelect(e.target.files);
-      e.target.value = ''; // Reset input
-    }
-  };
-
-  // Handle drag and drop
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    if (e.dataTransfer.files?.length) {
-      handleFileSelect(e.dataTransfer.files);
-    }
-  };
-
-  // Handle image click - add to canvas
-  const handleImageClick = (upload: UserUpload) => {
-    onAddImage?.(upload.public_url, upload.file_name);
-  };
-
-  // Handle delete
-  const handleDelete = async (upload: UserUpload, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (deleteConfirm === upload.id) {
-      try {
-        await deleteUpload(upload.id, upload.file_path);
-        setDeleteConfirm(null);
-      } catch (err) {
-        console.error('Delete failed:', err);
-      }
-    } else {
-      setDeleteConfirm(upload.id);
-      // Auto-reset after 3 seconds
-      setTimeout(() => setDeleteConfirm(null), 3000);
-    }
-  };
-
-  return (
-    <div className="p-4 space-y-4">
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".jpg,.jpeg,.png,.gif,.webp"
-        multiple
-        className="hidden"
-        onChange={handleFileInputChange}
-      />
-
-      {/* Upload Area */}
-      <div
-        onClick={handleUploadClick}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`
-          w-full py-6 rounded-lg border-2 border-dashed transition-all cursor-pointer
-          ${dragOver
-            ? ''
-            : isDark
-              ? 'border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/50'
-              : 'border-zinc-300 hover:border-zinc-400 hover:bg-zinc-100'
-          }
-          ${isUploading ? 'opacity-50 pointer-events-none' : ''}
-        `}
-        style={dragOver ? { borderColor: accentColor, backgroundColor: `${accentColor}15` } : undefined}
-      >
-        {isUploading ? (
-          <div className="text-center">
-            <Loader2 className={`w-8 h-8 mx-auto mb-2 animate-spin ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`} />
-            <p className={`text-sm font-['Inter'] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-              Uploading...
-            </p>
-          </div>
-        ) : (
-          <div className="text-center">
-            <CloudUpload className={`w-8 h-8 mx-auto mb-2 ${
-              dragOver ? '' : isDark ? 'text-zinc-400' : 'text-zinc-500'
-            }`} style={dragOver ? { color: accentColor } : undefined} />
-            <p className={`text-sm font-['Inter'] ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
-              Upload images
-            </p>
-            <p className={`text-xs font-['Inter'] mt-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-              or drag and drop
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* File constraints info */}
-      <p className={`text-[10px] font-['Inter'] text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-        JPG, PNG, GIF, WebP - Max 5MB
-      </p>
-
-      {/* Error Message */}
-      {error && (
-        <div className={`p-3 rounded-lg flex items-start gap-2 ${
-          isDark ? 'bg-red-500/10 border border-red-500/30' : 'bg-red-50 border border-red-200'
-        }`}>
-          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-          <p className={`text-xs font-['Inter'] ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-            {error}
-          </p>
-        </div>
-      )}
-
-      {/* Uploads Grid */}
-      <div>
-        <div className={`text-xs font-semibold uppercase tracking-wider mb-3 ${
-          isDark ? 'text-zinc-500' : 'text-zinc-500'
-        }`}>
-          Your Images {uploads.length > 0 && `(${uploads.length})`}
-        </div>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className={`w-6 h-6 animate-spin ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
-          </div>
-        ) : uploads.length === 0 ? (
-          <div className={`text-center py-8 rounded-lg ${isDark ? 'bg-zinc-800/50' : 'bg-zinc-100'}`}>
-            <ImageIcon className={`w-10 h-10 mx-auto mb-2 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`} />
-            <p className={`text-sm font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
-              No images yet
-            </p>
-            <p className={`text-xs font-['Inter'] mt-1 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-              Upload images to use in your designs
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
-            {uploads.map((upload: UserUpload) => (
-              <div
-                key={upload.id}
-                onClick={() => handleImageClick(upload)}
-                className={`
-                  group relative aspect-square rounded-lg overflow-hidden cursor-pointer
-                  border-2 transition-all
-                  ${isDark
-                    ? 'border-zinc-700'
-                    : 'border-zinc-200'
-                  }
-                `}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = accentColor; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}
-              >
-                {/* Thumbnail */}
-                <img
-                  src={upload.public_url}
-                  alt={upload.file_name}
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Hover Overlay */}
-                <div className={`
-                  absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity
-                  bg-gradient-to-t from-black/80 via-black/30 to-transparent
-                  flex flex-col justify-end p-2
-                `}>
-                  {/* File name */}
-                  <p className="text-white text-[10px] font-['Inter'] truncate">
-                    {upload.file_name}
-                  </p>
-                  {upload.file_size && (
-                    <p className="text-white/60 text-[9px] font-['Inter']">
-                      {formatFileSize(upload.file_size)}
-                    </p>
-                  )}
-                </div>
-
-                {/* Delete Button */}
-                <button
-                  onClick={(e) => handleDelete(upload, e)}
-                  className={`
-                    absolute top-1 right-1 p-1 rounded-md transition-all
-                    ${deleteConfirm === upload.id
-                      ? 'bg-red-500 opacity-100'
-                      : 'bg-black/50 opacity-0 group-hover:opacity-100 hover:bg-red-500'
-                    }
-                  `}
-                  title={deleteConfirm === upload.id ? 'Click again to confirm' : 'Delete'}
-                >
-                  <X className="w-3.5 h-3.5 text-white" />
-                </button>
-
-                {/* Local indicator (for demo mode) */}
-                {upload.isLocal && (
-                  <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-yellow-500/90">
-                    <span className="text-[8px] font-['Inter'] font-bold text-black">
-                      LOCAL
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Tips */}
-      <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800/50' : 'bg-zinc-100'}`}>
-        <p className={`text-[10px] font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
-          Click an image to add it to your canvas
-        </p>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Site Settings Modal Component
@@ -1566,6 +907,9 @@ function SiteSettingsModal({ isOpen, onClose, theme, siteSettings, onUpdateSiteS
     socialImage: '',
     customDomain: '',
   });
+  const [showDomainSetup, setShowDomainSetup] = useState(false);
+  const [domainInput, setDomainInput] = useState(settings.customDomain || '');
+  const subdomain = (settings.siteName || 'mysite').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
   if (!isOpen) return null;
 
@@ -1574,167 +918,177 @@ function SiteSettingsModal({ isOpen, onClose, theme, siteSettings, onUpdateSiteS
     onClose();
   };
 
+  const textMain = isDark ? '#FFFFFF' : '#1A1A1A';
+  const textMuted = isDark ? '#A1A1AA' : '#6B7280';
+  const borderColor = isDark ? '#3F3F46' : '#E5E7EB';
+  const cardBg = isDark ? '#27272A' : '#FFFFFF';
+  const inputBg = isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-zinc-300 text-zinc-900';
+
+  // Domain setup sub-view
+  if (showDomainSetup) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 9999 }}>
+        <div className="absolute inset-0 bg-black/60" onClick={() => setShowDomainSetup(false)} />
+        <div className={`relative w-full max-w-lg mx-4 shadow-2xl ${
+          isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200'
+        }`}>
+          <div className={`flex items-center justify-between px-5 py-4 border-b`} style={{ borderColor }}>
+            <div>
+              <h2 className="text-lg font-semibold font-['Fira_Code']" style={{ color: textMain }}>Domain Settings</h2>
+              <p className="text-xs font-['Fira_Code'] mt-0.5" style={{ color: textMuted }}>Connect a custom domain to your site</p>
+            </div>
+            <button onClick={() => setShowDomainSetup(false)} className={`p-1 transition-colors ${isDark ? 'hover:bg-zinc-800 text-zinc-400' : 'hover:bg-zinc-100 text-zinc-500'}`}>
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="p-5 space-y-5">
+            {/* Default domain */}
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-wide block mb-1.5 font-['Fira_Code']" style={{ color: textMuted }}>Default Domain</label>
+              <div className="flex items-center gap-2 px-3 py-2.5 border" style={{ borderColor, backgroundColor: isDark ? '#18181B' : '#F9FAFB' }}>
+                <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium font-['Fira_Code']" style={{ color: textMain }}>{subdomain}.redpine.systems</span>
+                <span className="ml-auto px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700">Active</span>
+              </div>
+            </div>
+
+            {/* Custom domain input */}
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-wide block mb-1.5 font-['Fira_Code']" style={{ color: textMuted }}>Custom Domain</label>
+              <input
+                type="text"
+                value={domainInput}
+                onChange={(e) => setDomainInput(e.target.value)}
+                placeholder="www.yourdomain.com"
+                className={`w-full px-3 py-2.5 text-sm border font-['Fira_Code'] focus:outline-none ${inputBg}`}
+              />
+            </div>
+
+            {/* DNS Instructions */}
+            <div className="p-4" style={{ backgroundColor: isDark ? '#18181B' : '#F9FAFB', border: `1px solid ${borderColor}` }}>
+              <h4 className="text-xs font-semibold uppercase tracking-wide mb-3 font-['Fira_Code']" style={{ color: textMuted }}>DNS Configuration</h4>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs font-medium mb-1 font-['Fira_Code']" style={{ color: textMuted }}>Step 1</p>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="px-2 py-1.5 font-['Fira_Code']" style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, color: textMain }}>CNAME</div>
+                    <div className="px-2 py-1.5 font-['Fira_Code']" style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, color: textMain }}>www</div>
+                    <div className="px-2 py-1.5 font-['Fira_Code'] truncate" style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, color: textMain }}>{subdomain}.redpine.systems</div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-medium mb-1 font-['Fira_Code']" style={{ color: textMuted }}>Step 2</p>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="px-2 py-1.5 font-['Fira_Code']" style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, color: textMain }}>A</div>
+                    <div className="px-2 py-1.5 font-['Fira_Code']" style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, color: textMain }}>@</div>
+                    <div className="px-2 py-1.5 font-['Fira_Code']" style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, color: textMain }}>76.76.21.21</div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs mt-3 font-['Fira_Code']" style={{ color: textMuted }}>
+                Add these records in your domain registrar&apos;s DNS settings. Changes may take up to 48 hours.
+              </p>
+            </div>
+
+            {/* Verification status */}
+            <div className="flex items-center gap-2 px-3 py-2.5 border" style={{ borderColor }}>
+              <div className="w-2 h-2 bg-amber-400" />
+              <span className="text-xs font-medium font-['Fira_Code']" style={{ color: textMuted }}>Verification pending — DNS not yet detected</span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between px-5 py-4 border-t" style={{ borderColor }}>
+            <button onClick={() => setShowDomainSetup(false)} className="px-4 py-2 text-sm font-['Fira_Code'] transition-opacity hover:opacity-70" style={{ color: textMuted }}>Cancel</button>
+            <button
+              onClick={() => { setSettings({ ...settings, customDomain: domainInput.trim() }); setShowDomainSetup(false); }}
+              disabled={!domainInput.trim()}
+              className="px-5 py-2 text-sm font-['Fira_Code'] text-white hover:opacity-90 transition-opacity disabled:opacity-40"
+              style={{ backgroundColor: '#1A1A1A' }}
+            >
+              Save Domain
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 9999 }}>
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className={`relative w-full max-w-md mx-4 rounded-xl shadow-2xl ${
+      <div className={`relative w-full max-w-md mx-4 shadow-2xl ${
         isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200'
       }`}>
         {/* Header */}
-        <div className={`flex items-center justify-between px-5 py-4 border-b ${
-          isDark ? 'border-zinc-800' : 'border-zinc-200'
-        }`}>
-          <h2 className={`text-lg font-semibold font-['Inter'] ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-            Site Settings
-          </h2>
-          <button onClick={onClose} className={`p-1 rounded-lg transition-colors ${
-            isDark ? 'hover:bg-zinc-800 text-zinc-400' : 'hover:bg-zinc-100 text-zinc-500'
-          }`}>
+        <div className={`flex items-center justify-between px-5 py-4 border-b`} style={{ borderColor }}>
+          <h2 className="text-lg font-semibold font-['Fira_Code']" style={{ color: textMain }}>Site Settings</h2>
+          <button onClick={onClose} className={`p-1 transition-colors ${isDark ? 'hover:bg-zinc-800 text-zinc-400' : 'hover:bg-zinc-100 text-zinc-500'}`}>
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Content */}
+        {/* Content — matches dashboard Website > Settings */}
         <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
-          {/* Site Name */}
-          <div>
-            <label className={`block text-xs font-medium mb-1.5 font-['Inter'] uppercase tracking-wider ${
-              isDark ? 'text-zinc-400' : 'text-zinc-600'
-            }`}>
-              Site Name
-            </label>
+          {/* Site Title */}
+          <div className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+            <label className="text-xs font-semibold uppercase tracking-wide block mb-2 font-['Fira_Code']" style={{ color: textMuted }}>Site Title</label>
             <input
               type="text"
               value={settings.siteName}
               onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
-              placeholder="My Business"
-              className={`w-full px-3 py-2 rounded-lg border text-sm font-['Inter'] ${
-                isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-zinc-300 text-zinc-900'
-              }`}
+              placeholder="Your site name"
+              className={`w-full px-3 py-2 text-sm border font-['Fira_Code'] focus:outline-none ${inputBg}`}
             />
-          </div>
-
-          {/* Site Description */}
-          <div>
-            <label className={`block text-xs font-medium mb-1.5 font-['Inter'] uppercase tracking-wider ${
-              isDark ? 'text-zinc-400' : 'text-zinc-600'
-            }`}>
-              Tagline / Description
-            </label>
-            <textarea
-              value={settings.siteDescription}
-              onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
-              placeholder="Your business tagline"
-              rows={2}
-              className={`w-full px-3 py-2 rounded-lg border text-sm font-['Inter'] resize-none ${
-                isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-zinc-300 text-zinc-900'
-              }`}
-            />
+            <p className="text-xs mt-1.5 font-['Fira_Code']" style={{ color: textMuted }}>Displayed in the browser tab and search results.</p>
           </div>
 
           {/* Favicon */}
-          <div>
-            <label className={`block text-xs font-medium mb-1.5 font-['Inter'] uppercase tracking-wider ${
-              isDark ? 'text-zinc-400' : 'text-zinc-600'
-            }`}>
-              Favicon
-            </label>
-            <div className="flex gap-2">
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                isDark ? 'bg-zinc-800' : 'bg-zinc-100'
-              }`}>
+          <div className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+            <label className="text-xs font-semibold uppercase tracking-wide block mb-2 font-['Fira_Code']" style={{ color: textMuted }}>Favicon</label>
+            <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]" style={{ borderColor }}>
+              <div className={`w-10 h-10 flex items-center justify-center ${isDark ? 'bg-zinc-800' : 'bg-gray-100'}`}>
                 {settings.favicon ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={settings.favicon} alt="Favicon" className="w-8 h-8 object-contain" />
                 ) : (
-                  <Globe className={`w-6 h-6 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`} />
+                  <svg className={`w-5 h-5 ${isDark ? 'text-zinc-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+                  </svg>
                 )}
               </div>
-              <input
-                type="text"
-                value={settings.favicon}
-                onChange={(e) => setSettings({ ...settings, favicon: e.target.value })}
-                placeholder="https://... or upload"
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-['Inter'] ${
-                  isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-zinc-300 text-zinc-900'
-                }`}
-              />
+              <div>
+                <p className="text-sm font-medium font-['Fira_Code']" style={{ color: textMain }}>Upload favicon</p>
+                <p className="text-xs font-['Fira_Code']" style={{ color: textMuted }}>32x32px recommended, PNG or ICO</p>
+              </div>
             </div>
-          </div>
-
-          {/* Social Preview Image */}
-          <div>
-            <label className={`block text-xs font-medium mb-1.5 font-['Inter'] uppercase tracking-wider ${
-              isDark ? 'text-zinc-400' : 'text-zinc-600'
-            }`}>
-              Social Preview Image
-            </label>
-            <div className={`aspect-video rounded-lg flex items-center justify-center mb-2 ${
-              isDark ? 'bg-zinc-800' : 'bg-zinc-100'
-            }`}>
-              {settings.socialImage ? (
-                <img src={settings.socialImage} alt="Social preview" className="w-full h-full object-cover rounded-lg" />
-              ) : (
-                <div className="text-center">
-                  <Upload className={`w-8 h-8 mx-auto mb-1 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`} />
-                  <span className={`text-xs font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                    1200 x 630px recommended
-                  </span>
-                </div>
-              )}
-            </div>
-            <input
-              type="text"
-              value={settings.socialImage}
-              onChange={(e) => setSettings({ ...settings, socialImage: e.target.value })}
-              placeholder="https://... or upload"
-              className={`w-full px-3 py-2 rounded-lg border text-sm font-['Inter'] ${
-                isDark ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-zinc-300 text-zinc-900'
-              }`}
-            />
           </div>
 
           {/* Custom Domain */}
-          <div>
-            <label className={`block text-xs font-medium mb-1.5 font-['Inter'] uppercase tracking-wider ${
-              isDark ? 'text-zinc-400' : 'text-zinc-600'
-            }`}>
-              Custom Domain
-            </label>
-            <div className="flex gap-2 items-center">
-              <Link2 className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
-              <input
-                type="text"
-                value={settings.customDomain}
-                disabled
-                placeholder="yourdomain.com (coming soon)"
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-['Inter'] cursor-not-allowed ${
-                  isDark ? 'bg-zinc-800/50 border-zinc-700 text-zinc-500' : 'bg-zinc-50 border-zinc-200 text-zinc-400'
-                }`}
-              />
+          <div className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+            <label className="text-xs font-semibold uppercase tracking-wide block mb-2 font-['Fira_Code']" style={{ color: textMuted }}>Custom Domain</label>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-['Fira_Code']" style={{ color: textMain }}>
+                {settings.customDomain || 'No custom domain connected'}
+              </p>
+              <button
+                onClick={() => setShowDomainSetup(true)}
+                className="px-3 py-1.5 text-xs font-medium font-['Fira_Code'] transition-colors hover:opacity-80"
+                style={{ backgroundColor: '#F3F4F6', color: '#1A1A1A' }}
+              >
+                {settings.customDomain ? 'Change' : 'Connect Domain'}
+              </button>
             </div>
-            <p className={`text-[10px] mt-1 font-['Inter'] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-              Custom domains available in Pro plan
-            </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className={`flex justify-end gap-2 px-5 py-4 border-t ${
-          isDark ? 'border-zinc-800' : 'border-zinc-200'
-        }`}>
-          <button
-            onClick={onClose}
-            className={`px-4 py-2 rounded-lg text-sm font-['Inter'] transition-colors ${
-              isDark ? 'text-zinc-400 hover:bg-zinc-800' : 'text-zinc-600 hover:bg-zinc-100'
-            }`}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 rounded-lg text-sm font-['Inter'] text-white hover:opacity-90 transition-colors"
-            style={{ backgroundColor: accentColor }}
-          >
+        <div className="flex justify-end gap-2 px-5 py-4 border-t" style={{ borderColor }}>
+          <button onClick={onClose} className="px-4 py-2 text-sm font-['Fira_Code'] transition-colors" style={{ color: textMuted }}>Cancel</button>
+          <button onClick={handleSave} className="px-4 py-2 text-sm font-['Fira_Code'] text-white hover:opacity-90 transition-colors" style={{ backgroundColor: '#1A1A1A' }}>
             Save Changes
           </button>
         </div>
@@ -1883,11 +1237,11 @@ function ProjectsPanel({
         {/* Pages Section */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <div className={`text-xs font-semibold uppercase tracking-wider font-['Inter'] ${
+            <div className={`text-xs font-semibold uppercase tracking-wider font-['Fira_Code'] ${
               isDark ? 'text-zinc-500' : 'text-zinc-500'
             }`}>
               Pages
-              <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] ${
+              <span className={`ml-2 px-1.5 py-0.5 text-[10px] ${
                 isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-200 text-zinc-500'
               }`}>
                 {pages.length}
@@ -1916,7 +1270,7 @@ function ProjectsPanel({
                     onClick={() => !isEditing && onSelectPage?.(page.id)}
                     onDoubleClick={() => handleDoubleClick(page)}
                     className={`
-                      relative flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-all
+                      relative flex items-center gap-2 px-2 py-2 cursor-pointer transition-all
                       ${isActive
                         ? 'border'
                         : isDark
@@ -1925,7 +1279,7 @@ function ProjectsPanel({
                       }
                       ${isDragging ? 'opacity-50' : ''}
                     `}
-                    style={isActive ? { backgroundColor: `${accentColor}20`, borderColor: accentColor } : undefined}
+                    style={isActive ? { backgroundColor: isDark ? '#3F3F46' : '#F3F4F6', borderColor: isDark ? '#52525B' : '#1A1A1A' } : undefined}
                   >
                     {/* Drag Handle */}
                     {!page.isDefault && (
@@ -1935,10 +1289,10 @@ function ProjectsPanel({
                     )}
 
                     {/* Page Icon */}
-                    <div className={`w-6 h-6 rounded flex items-center justify-center flex-shrink-0 ${
+                    <div className={`w-6 h-6 flex items-center justify-center flex-shrink-0 ${
                       isDark ? 'bg-zinc-900' : 'bg-zinc-100'
                     }`}>
-                      <Icon className={`w-3.5 h-3.5 ${isActive ? '' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`} style={isActive ? { color: accentColor } : undefined} />
+                      <Icon className={`w-3.5 h-3.5 ${isActive ? '' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`} style={isActive ? { color: isDark ? '#FFFFFF' : '#1A1A1A' } : undefined} />
                     </div>
 
                     {/* Page Name */}
@@ -1952,27 +1306,27 @@ function ProjectsPanel({
                           onBlur={handleSavePageName}
                           onKeyDown={handleEditKeyDown}
                           autoFocus
-                          className={`w-full px-1 py-0.5 rounded text-sm font-['Inter'] ${
+                          className={`w-full px-1 py-0.5 text-sm font-['Fira_Code'] ${
                             isDark ? 'bg-zinc-700 text-white' : 'bg-zinc-100 text-zinc-900'
                           }`}
                           onClick={(e) => e.stopPropagation()}
                         />
                       ) : (
                         <div className="flex items-center gap-2">
-                          <span className={`text-sm font-['Inter'] truncate ${
+                          <span className={`text-sm font-['Fira_Code'] truncate ${
                             isActive ? '' : isDark ? 'text-zinc-200' : 'text-zinc-800'
-                          }`} style={isActive ? { color: accentColor } : undefined}>
+                          }`} style={isActive ? { color: isDark ? '#FFFFFF' : '#1A1A1A' } : undefined}>
                             {page.name}
                           </span>
                           {page.isHomepage && (
-                            <span className={`text-[9px] px-1 py-0.5 rounded font-['Inter'] ${
+                            <span className={`text-[9px] px-1 py-0.5 font-['Fira_Code'] ${
                               isDark ? 'bg-green-600/20 text-green-400' : 'bg-green-100 text-green-600'
                             }`}>
                               HOME
                             </span>
                           )}
                           {page.isDefault && (
-                            <span className={`text-[9px] px-1 py-0.5 rounded font-['Inter'] ${
+                            <span className={`text-[9px] px-1 py-0.5 font-['Fira_Code'] ${
                               isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-zinc-200 text-zinc-500'
                             }`}>
                               DEFAULT
@@ -1986,7 +1340,7 @@ function ProjectsPanel({
                     {!page.isDefault && (
                       <button
                         onClick={(e) => handleMenuClick(e, page.id)}
-                        className={`p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
+                        className={`p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
                           isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-500'
                         } ${isMenuOpen ? 'opacity-100' : ''}`}
                         style={{ opacity: isMenuOpen ? 1 : undefined }}
@@ -1998,14 +1352,14 @@ function ProjectsPanel({
                     {/* Context Menu */}
                     {isMenuOpen && (
                       <div
-                        className={`absolute right-0 top-full mt-1 w-40 rounded-lg shadow-lg border z-50 ${
+                        className={`absolute right-0 top-full mt-1 w-40 shadow-lg border z-50 ${
                           isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-zinc-200'
                         }`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
                           onClick={() => handleSetHomepage(page.id)}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm font-['Inter'] transition-colors ${
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm font-['Fira_Code'] transition-colors ${
                             isDark ? 'hover:bg-zinc-700 text-zinc-300' : 'hover:bg-zinc-100 text-zinc-700'
                           }`}
                         >
@@ -2014,7 +1368,7 @@ function ProjectsPanel({
                         </button>
                         <button
                           onClick={() => handleDuplicate(page.id)}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm font-['Inter'] transition-colors ${
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm font-['Fira_Code'] transition-colors ${
                             isDark ? 'hover:bg-zinc-700 text-zinc-300' : 'hover:bg-zinc-100 text-zinc-700'
                           }`}
                         >
@@ -2023,7 +1377,7 @@ function ProjectsPanel({
                         </button>
                         <button
                           onClick={() => handleDelete(page.id)}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm font-['Inter'] text-red-500 transition-colors ${
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm font-['Fira_Code'] text-red-500 transition-colors ${
                             isDark ? 'hover:bg-zinc-700' : 'hover:bg-zinc-100'
                           }`}
                         >
@@ -2037,7 +1391,7 @@ function ProjectsPanel({
               })}
             </div>
           ) : (
-            <div className={`py-6 text-center text-sm font-['Inter'] ${
+            <div className={`py-6 text-center text-sm font-['Fira_Code'] ${
               isDark ? 'text-zinc-500' : 'text-zinc-400'
             }`}>
               No pages found
@@ -2047,20 +1401,20 @@ function ProjectsPanel({
           {/* Add Page Button */}
           <button
             onClick={onAddPage}
-            className={`w-full flex items-center justify-center gap-2 px-3 py-2.5 mt-3 rounded-lg border-2 border-dashed transition-colors ${
+            className={`w-full flex items-center justify-center gap-2 px-3 py-2.5 mt-3 border-2 border-dashed transition-colors ${
               isDark
                 ? 'border-zinc-700 text-zinc-500 hover:border-zinc-600 hover:text-zinc-400'
                 : 'border-zinc-300 text-zinc-500 hover:border-zinc-400 hover:text-zinc-600'
             }`}
           >
             <Plus className="w-4 h-4" />
-            <span className="text-sm font-['Inter']">Add Page</span>
+            <span className="text-sm font-['Fira_Code']">Add Page</span>
           </button>
         </div>
 
         {/* Templates Section */}
         <div>
-          <div className={`text-xs font-semibold uppercase tracking-wider mb-3 font-['Inter'] ${
+          <div className={`text-xs font-semibold uppercase tracking-wider mb-3 font-['Fira_Code'] ${
             isDark ? 'text-zinc-500' : 'text-zinc-500'
           }`}>
             Page Templates
@@ -2073,23 +1427,23 @@ function ProjectsPanel({
                 <button
                   key={template.id}
                   onClick={() => handleAddFromTemplate(template)}
-                  className={`p-3 rounded-lg border text-left transition-all ${
+                  className={`p-3 border text-left transition-all ${
                     isDark
                       ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700 hover:border-zinc-600'
                       : 'bg-white hover:bg-zinc-50 border-zinc-200 hover:border-zinc-300'
                   }`}
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${
+                  <div className={`w-8 h-8 flex items-center justify-center mb-2 ${
                     isDark ? 'bg-zinc-900' : 'bg-zinc-100'
                   }`}>
                     <Icon className={`w-4 h-4 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`} />
                   </div>
-                  <div className={`text-xs font-semibold font-['Inter'] truncate ${
+                  <div className={`text-xs font-semibold font-['Fira_Code'] truncate ${
                     isDark ? 'text-zinc-200' : 'text-zinc-800'
                   }`}>
                     {template.name}
                   </div>
-                  <div className={`text-[10px] font-['Inter'] mt-0.5 truncate ${
+                  <div className={`text-[10px] font-['Fira_Code'] mt-0.5 truncate ${
                     isDark ? 'text-zinc-500' : 'text-zinc-400'
                   }`}>
                     {template.description}
@@ -2105,14 +1459,14 @@ function ProjectsPanel({
       <div className={`flex-shrink-0 p-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
         <button
           onClick={() => setShowSiteSettings(true)}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg transition-colors ${
+          className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 transition-colors ${
             isDark
               ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
               : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700'
           }`}
         >
           <Settings className="w-4 h-4" />
-          <span className="text-sm font-['Inter']">Site Settings</span>
+          <span className="text-sm font-['Fira_Code']">Site Settings</span>
         </button>
       </div>
 
@@ -2165,10 +1519,13 @@ export interface FreeFormSidebarProps {
   viewportMode?: string;
   canvasHeight?: number;
   theme?: string;
-  brandColors?: BrandColors | null;
-  onUpdateBrandColors?: (colors: BrandColors) => void;
-  onApplyBrandToAllWidgets?: () => void;
+  brandBoardColors?: ColorItem[];
+  onBrandBoardColorsChange?: (colors: ColorItem[]) => void;
+  brandHeadingFont?: string;
+  brandBodyFont?: string;
+  onBrandFontChange?: (heading: string, body: string) => void;
   accentColor?: string;
+  /** @deprecated No longer used — kept for backward compat */
   onActivePanelChange?: (panel: string | null) => void;
   className?: string;
   // AI editor: page context + mutation callbacks
@@ -2178,6 +1535,9 @@ export interface FreeFormSidebarProps {
   onDeleteElement?: (elementId: string) => void;
   onMoveSection?: (sectionId: string, direction: 'up' | 'down') => void;
   onUpdateSectionProperties?: (sectionId: string, properties: Record<string, unknown>) => void;
+  isOverlayOpen?: boolean;
+  onClose?: () => void;
+  onElementAdded?: () => void;
 }
 
 /**
@@ -2207,9 +1567,11 @@ export default function FreeFormSidebar({
   viewportMode = 'desktop',
   canvasHeight = 800,
   theme = 'dark',
-  brandColors = null,
-  onUpdateBrandColors,
-  onApplyBrandToAllWidgets,
+  brandBoardColors = [],
+  onBrandBoardColorsChange,
+  brandHeadingFont = 'Inter, system-ui, sans-serif',
+  brandBodyFont = 'Inter, system-ui, sans-serif',
+  onBrandFontChange,
   accentColor = '#E11D48',
   onActivePanelChange,
   className = '',
@@ -2220,30 +1582,14 @@ export default function FreeFormSidebar({
   onDeleteElement,
   onMoveSection,
   onUpdateSectionProperties,
+  // Overlay mode
+  isOverlayOpen = false,
+  onClose,
+  onElementAdded,
 }: FreeFormSidebarProps) {
-  const [activePanel, setActivePanel] = useState<string | null>('elements');
+  const [activePanel, setActivePanel] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const isDark = theme === 'dark';
-
-  // Notify parent of active panel changes
-  useEffect(() => {
-    onActivePanelChange?.(activePanel);
-  }, [activePanel, onActivePanelChange]);
-
-  // Handle icon click - toggle panel
-  const handleNavClick = useCallback((panelId: string) => {
-    if (activePanel === panelId) {
-      setActivePanel(null);
-    } else {
-      setActivePanel(panelId);
-      setSearchQuery('');
-    }
-  }, [activePanel]);
-
-  // Handle collapse button click
-  const handleCollapse = useCallback(() => {
-    setActivePanel(null);
-  }, []);
 
   // Handle add element with centering
   const handleAddElement = useCallback((type: string, optionsOrShapeType?: string | Record<string, unknown>) => {
@@ -2296,20 +1642,17 @@ export default function FreeFormSidebar({
       options.sectionId = targetSectionId;
     }
 
-    if (brandColors) {
-      if (brandColors.primary) {
-        options.brandTitleColor = brandColors.primary;
-      }
-      if (brandColors.secondary) {
-        options.brandAccentColor = brandColors.secondary;
-      }
-      if (brandColors.background) {
-        options.brandBackgroundColor = brandColors.background;
-      }
+    if (brandBoardColors.length > 0) {
+      const colorMap: Record<string, string> = {};
+      brandBoardColors.forEach(c => { colorMap[c.target] = c.color; });
+      if (colorMap.buttons) options.brandTitleColor = colorMap.buttons;
+      if (colorMap.headings) options.brandAccentColor = colorMap.headings;
+      if (colorMap.background) options.brandBackgroundColor = colorMap.background;
     }
 
     onAddElement(type, centerX, yPos, viewportMode, viewportWidth, canvasHeight, Object.keys(options).length > 0 ? options : undefined);
-  }, [onAddElement, viewportWidth, viewportMode, canvasHeight, brandColors, sections, elements]);
+    onElementAdded?.();
+  }, [onAddElement, viewportWidth, viewportMode, canvasHeight, brandBoardColors, sections, elements, onElementAdded]);
 
   // ---- AI Chat state ----
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
@@ -2504,9 +1847,14 @@ export default function FreeFormSidebar({
 
   // Get panel title
   const getPanelTitle = (): string => {
-    if (activePanel === 'ai') return 'AI Assistant';
-    const item = NAV_ITEMS.find(n => n.id === activePanel);
-    return item?.label || '';
+    switch (activePanel) {
+      case 'ai': return 'AI Assistant';
+      case 'brand': return 'Brand & Design';
+      case 'projects': return 'Project & Pages';
+      case 'elements': return 'Elements';
+      case 'text': return 'Text';
+      default: return 'Tools';
+    }
   };
 
   // Simple markdown renderer for AI chat
@@ -2590,7 +1938,7 @@ export default function FreeFormSidebar({
                       <button
                         key={suggestion}
                         onClick={() => sendChatMessage(suggestion)}
-                        className={`w-full text-left text-xs px-3 py-2 rounded-lg transition-colors ${
+                        className={`w-full text-left text-xs px-3 py-2 transition-colors ${
                           isDark
                             ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                             : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
@@ -2605,14 +1953,14 @@ export default function FreeFormSidebar({
               {chatMessages.map((msg, i) => (
                 <div key={i} className={msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
                   <div
-                    className={`inline-block px-3 py-2 rounded-xl text-xs max-w-[95%] leading-relaxed ${
+                    className={`inline-block px-3 py-2 text-xs max-w-[95%] leading-relaxed ${
                       msg.role === 'user'
-                        ? 'text-white rounded-br-sm'
+                        ? 'text-white'
                         : isDark
-                          ? 'bg-zinc-800 text-zinc-200 rounded-bl-sm'
-                          : 'bg-zinc-100 text-zinc-700 rounded-bl-sm'
+                          ? 'bg-zinc-800 text-zinc-200'
+                          : 'bg-zinc-100 text-zinc-700'
                     }`}
-                    style={msg.role === 'user' ? { backgroundColor: accentColor } : undefined}
+                    style={msg.role === 'user' ? { backgroundColor: '#1A1A1A' } : undefined}
                   >
                     {msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content}
                   </div>
@@ -2620,12 +1968,12 @@ export default function FreeFormSidebar({
               ))}
               {isChatLoading && (
                 <div className="flex justify-start">
-                  <div className={`inline-flex items-center gap-1 px-3 py-2 rounded-xl rounded-bl-sm text-xs ${
+                  <div className={`inline-flex items-center gap-1 px-3 py-2 text-xs ${
                     isDark ? 'bg-zinc-800' : 'bg-zinc-100'
                   }`}>
-                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accentColor, animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accentColor, animationDelay: '150ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accentColor, animationDelay: '300ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: '#6B7280', animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: '#6B7280', animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: '#6B7280', animationDelay: '300ms' }} />
                   </div>
                 </div>
               )}
@@ -2641,24 +1989,24 @@ export default function FreeFormSidebar({
                   onKeyDown={handleChatKeyDown}
                   placeholder="Ask AI..."
                   rows={1}
-                  className={`flex-1 text-xs resize-none rounded-lg px-2.5 py-2 outline-none max-h-[80px] font-['Inter'] ${
+                  className={`flex-1 text-xs resize-none px-2.5 py-2 outline-none max-h-[80px] font-['Fira_Code'] ${
                     isDark
                       ? 'bg-zinc-800 text-white placeholder-zinc-500 focus:ring-1'
                       : 'bg-zinc-100 text-zinc-900 placeholder-zinc-400 focus:ring-1'
                   }`}
-                  style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
+                  style={{ '--tw-ring-color': '#1A1A1A' } as React.CSSProperties}
                 />
                 <button
                   onClick={() => sendChatMessage()}
                   disabled={!chatInput.trim() || isChatLoading}
-                  className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+                  className={`p-2 transition-colors flex-shrink-0 ${
                     chatInput.trim() && !isChatLoading
                       ? 'text-white'
                       : isDark
                         ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
                         : 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
                   }`}
-                  style={chatInput.trim() && !isChatLoading ? { backgroundColor: accentColor } : undefined}
+                  style={chatInput.trim() && !isChatLoading ? { backgroundColor: '#1A1A1A' } : undefined}
                 >
                   <ArrowUp className="w-3.5 h-3.5" />
                 </button>
@@ -2666,39 +2014,19 @@ export default function FreeFormSidebar({
             </div>
           </div>
         );
-      case 'elements':
-        return (
-          <ElementsPanel
-            theme={theme}
-            searchQuery={searchQuery}
-            isPageLocked={isPageLocked}
-            onAddSection={onAddSection}
-            onAddElement={handleAddElement}
-            onDragStart={() => {}}
-            accentColor={accentColor}
-          />
-        );
-      case 'text':
-        return (
-          <TextPanel
-            theme={theme}
-            searchQuery={searchQuery}
-            onAddElement={handleAddElement}
-            onDragStart={() => {}}
-          />
-        );
       case 'brand':
         return (
-          <BrandPanel
-            theme={theme}
-            brandColors={brandColors}
-            onUpdateBrandColors={onUpdateBrandColors}
-            onApplyToAllWidgets={onApplyBrandToAllWidgets}
-            accentColor={accentColor}
+          <BrandBoardEditor
+            configId={null}
+            colors={brandBoardColors}
+            onColorsChange={onBrandBoardColorsChange || (() => {})}
+            headingFont={brandHeadingFont}
+            bodyFont={brandBodyFont}
+            onFontChange={onBrandFontChange || (() => {})}
+            buttonColor={accentColor}
+            mode="sidebar"
           />
         );
-      case 'uploads':
-        return <UploadsPanel theme={theme} onAddImage={onAddImage} accentColor={accentColor} />;
       case 'projects':
         return (
           <ProjectsPanel
@@ -2720,90 +2048,99 @@ export default function FreeFormSidebar({
           />
         );
       default:
-        return null;
+        // Unified tool list — show elements + text + navigation to sub-panels
+        return (
+          <div className="px-2">
+            {/* Sections + Elements + Widgets + Media + Forms from ElementsPanel */}
+            <ElementsPanel
+              theme={theme}
+              searchQuery={searchQuery}
+              isPageLocked={isPageLocked}
+              onAddSection={(type: string) => { onAddSection?.(type); onElementAdded?.(); }}
+              onAddElement={handleAddElement}
+              onDragStart={() => {}}
+              accentColor={accentColor}
+            />
+
+            {/* Text panel inline */}
+            {!searchQuery && (
+              <TextPanel
+                theme={theme}
+                searchQuery=""
+                onAddElement={handleAddElement}
+                onDragStart={() => {}}
+              />
+            )}
+
+            {/* Navigation to sub-panels */}
+            {!searchQuery && (
+              <div className="mt-2 space-y-1 px-2 pb-4">
+                <button
+                  onClick={() => setActivePanel('brand')}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-100 text-gray-700"
+                >
+                  <Palette className="w-4 h-4 text-gray-400" />
+                  <span className="text-xs font-['Fira_Code'] font-medium">Brand & Design</span>
+                </button>
+                <button
+                  onClick={() => setActivePanel('ai')}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-100 text-gray-700"
+                >
+                  <Sparkles className="w-4 h-4 text-gray-400" />
+                  <span className="text-xs font-['Fira_Code'] font-medium">AI Assistant</span>
+                </button>
+                <button
+                  onClick={() => setActivePanel('projects')}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-100 text-gray-700"
+                >
+                  <FolderOpen className="w-4 h-4 text-gray-400" />
+                  <span className="text-xs font-['Fira_Code'] font-medium">Project & Pages</span>
+                </button>
+              </div>
+            )}
+          </div>
+        );
     }
   };
 
+  if (!isOverlayOpen) return null;
+
   return (
-    <aside className={`flex h-full ${className}`}>
-      {/* Icon Rail */}
-      <div className={`w-[60px] flex-shrink-0 flex flex-col border-r ${
-        isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'
-      }`}>
-        <div className="flex-1 py-2">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            const isActive = activePanel === item.id;
-
-            return (
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
+      {/* Overlay panel */}
+      <aside className={`absolute left-0 top-0 bottom-0 z-50 w-[280px] flex flex-col border-r shadow-xl bg-white border-gray-200 ${className}`}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 flex-shrink-0">
+          {activePanel && activePanel !== 'elements' ? (
+            <>
               <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`
-                  relative w-full flex flex-col items-center justify-center gap-1 py-3 px-1
-                  transition-colors group
-                  ${isActive
-                    ? isDark
-                      ? 'text-white'
-                      : 'text-zinc-900'
-                    : isDark
-                      ? 'text-zinc-500 hover:text-zinc-300'
-                      : 'text-zinc-500 hover:text-zinc-700'
-                  }
-                `}
+                onClick={() => setActivePanel(null)}
+                className="flex items-center gap-1.5 text-sm font-['Fira_Code'] text-gray-500 hover:text-gray-700 transition-colors"
               >
-                {/* Active indicator - left bar */}
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-8 rounded-r-full" style={{ backgroundColor: accentColor }} />
-                )}
-                <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-['Inter'] leading-tight">
-                  {item.label}
-                </span>
+                <ChevronLeft className="w-4 h-4" />
+                Back
               </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Expandable Panel with slide animation */}
-      <div
-        className={`
-          flex-shrink-0 flex flex-col border-r overflow-hidden
-          transition-all duration-300 ease-out
-          ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}
-        `}
-        style={{
-          width: activePanel ? '220px' : '0px',
-          opacity: activePanel ? 1 : 0,
-        }}
-      >
-        {/* Panel Header */}
-        <div className={`flex items-center justify-between px-4 py-3 border-b flex-shrink-0 ${
-          isDark ? 'border-zinc-800' : 'border-zinc-200'
-        }`}>
-          <h2 className={`text-sm font-semibold font-['Inter'] ${
-            isDark ? 'text-white' : 'text-zinc-900'
-          }`}>
-            {getPanelTitle()}
-          </h2>
-          <button
-            onClick={handleCollapse}
-            className={`p-1.5 rounded-lg transition-colors ${
-              isDark
-                ? 'hover:bg-zinc-800 text-zinc-400 hover:text-white'
-                : 'hover:bg-zinc-200 text-zinc-500 hover:text-zinc-700'
-            }`}
-          >
-            <ChevronLeft className="w-4 h-4" />
+              <h2 className="text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider text-zinc-900">
+                {getPanelTitle()}
+              </h2>
+            </>
+          ) : (
+            <h2 className="text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider text-zinc-900">
+              Tools
+            </h2>
+          )}
+          <button onClick={onClose} className="p-1.5 transition-colors hover:bg-gray-100 text-gray-500">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Search Bar - Only for panels that need search */}
-        {activePanel && !['brand', 'ai'].includes(activePanel) && (
+        {/* Search */}
+        {(!activePanel || activePanel === 'elements' || activePanel === 'text') && (
           <div className="px-4 py-3 flex-shrink-0">
             <SearchInput
-              placeholder={`Search ${getPanelTitle().toLowerCase()}...`}
+              placeholder="Search tools..."
               theme={theme}
               value={searchQuery}
               onChange={setSearchQuery}
@@ -2811,20 +2148,11 @@ export default function FreeFormSidebar({
           </div>
         )}
 
-        {/* Panel Content */}
-        <div className={`flex-1 min-w-[220px] ${activePanel === 'ai' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`}>
+        {/* Content */}
+        <div className={`flex-1 ${activePanel === 'ai' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`}>
           {renderPanelContent()}
         </div>
-
-        {/* Help text */}
-        {(activePanel === 'elements' || activePanel === 'text') && (
-          <div className={`px-4 py-3 border-t flex-shrink-0 ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-            <p className={`text-xs font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
-              Click or drag elements to add
-            </p>
-          </div>
-        )}
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }
