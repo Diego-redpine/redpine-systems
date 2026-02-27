@@ -334,28 +334,32 @@ function ColorBarsSection({ colors, onColorsChange, businessType, themeColors }:
   };
 
   return (
-    <div className="flex h-32 overflow-hidden border-2" style={{ borderColor: themeColors?.borders || '#9CA3AF' }}>
+    <div className="flex overflow-hidden border-2" style={{ borderColor: themeColors?.borders || '#9CA3AF' }}>
       {EDITABLE_COLORS.map(({ key, label }, idx) => {
         const hex = colorMap[key] || '#cccccc';
+        const textColor = getContrastText(hex);
         return (
           <label
             key={key}
-            className="flex-1 relative cursor-pointer group"
+            className="flex-1 relative cursor-pointer flex flex-col"
           >
             <div
-              className="w-full h-full transition-opacity group-hover:opacity-90"
+              className="w-full flex-1 min-h-[80px]"
               style={{ backgroundColor: hex }}
             />
-            <div className="absolute bottom-0 inset-x-0 p-1.5 text-center bg-black/0 group-hover:bg-black/40 transition-colors">
+            <div
+              className="px-1.5 py-2 text-center"
+              style={{ backgroundColor: hex }}
+            >
               <span
-                className="text-[10px] font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ color: getContrastText(hex) }}
+                className="text-[10px] font-bold uppercase tracking-wider block"
+                style={{ color: textColor }}
               >
                 {label}
               </span>
               <span
-                className="block text-[9px] font-mono opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ color: getContrastText(hex) }}
+                className="block text-[9px] font-mono mt-0.5"
+                style={{ color: textColor, opacity: 0.7 }}
               >
                 {hex.toUpperCase()}
               </span>
