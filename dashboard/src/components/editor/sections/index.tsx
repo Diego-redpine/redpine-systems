@@ -180,6 +180,7 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
             columns={isMobile ? 1 : (props.columns as number) || 3}
             accentColor={widgetAccent}
             viewportWidth={viewportWidth}
+            sectionHeight={section.height}
           />
         </div>
       );

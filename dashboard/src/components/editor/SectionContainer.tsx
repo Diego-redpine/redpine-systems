@@ -103,7 +103,15 @@ export default function SectionContainer({
     }
   };
 
-  // Handle height resize for blank sections
+  // Per-type max heights to prevent dead space on prebuilt sections
+  const SECTION_MAX_HEIGHTS: Record<string, number> = {
+    blogWidget: 900,
+    reviewCarousel: 500,
+    bookingWidget: 600,
+  };
+  const maxHeight = SECTION_MAX_HEIGHTS[section.type] || 1200;
+
+  // Handle height resize
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -114,7 +122,7 @@ export default function SectionContainer({
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const delta = moveEvent.clientY - startY;
-      const newHeight = Math.max(200, Math.min(1200, startHeight + delta));
+      const newHeight = Math.max(200, Math.min(maxHeight, startHeight + delta));
       onHeightChange?.(section.id, newHeight);
     };
 
@@ -162,7 +170,7 @@ export default function SectionContainer({
       {/* Section label badge */}
       <div
         className={cn(
-          'absolute top-2 left-2 z-10 px-2 py-1 rounded text-[10px] font-[Inter] uppercase tracking-wider flex items-center gap-1.5',
+          `absolute top-2 left-2 z-10 px-2 py-1 text-[10px] font-['Fira_Code'] uppercase tracking-wider flex items-center gap-1.5`,
           isSelected
             ? 'text-white'
             : isDark
@@ -179,7 +187,7 @@ export default function SectionContainer({
       {!isLocked && isSelected && (
         <div
           className={cn(
-            'absolute top-2 right-2 z-10 flex items-center gap-1 p-1 rounded',
+            'absolute top-2 right-2 z-10 flex items-center gap-1 p-1',
             isDark ? 'bg-gray-700' : 'bg-gray-200',
           )}
         >
@@ -191,7 +199,7 @@ export default function SectionContainer({
             }}
             disabled={index === 0}
             className={cn(
-              'p-1 rounded transition-colors',
+              'p-1 transition-colors',
               index === 0
                 ? 'opacity-30 cursor-not-allowed'
                 : isDark
@@ -211,7 +219,7 @@ export default function SectionContainer({
             }}
             disabled={index === totalSections - 1}
             className={cn(
-              'p-1 rounded transition-colors',
+              'p-1 transition-colors',
               index === totalSections - 1
                 ? 'opacity-30 cursor-not-allowed'
                 : isDark
@@ -229,7 +237,7 @@ export default function SectionContainer({
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             className={cn(
-              'p-1 rounded cursor-grab active:cursor-grabbing',
+              'p-1 cursor-grab active:cursor-grabbing',
               isDark
                 ? 'hover:bg-gray-600 text-gray-300'
                 : 'hover:bg-gray-300 text-gray-600',
@@ -246,7 +254,7 @@ export default function SectionContainer({
               onDelete?.(section.id);
             }}
             className={cn(
-              'p-1 rounded transition-colors',
+              'p-1 transition-colors',
               isDark
                 ? 'hover:bg-red-500/20 text-red-400'
                 : 'hover:bg-red-50 text-red-500',
@@ -262,8 +270,11 @@ export default function SectionContainer({
       <div
         className="w-full h-full"
         style={{
-          height: section.height || 400,
+          minHeight: section.height || 400,
+          height: '100%',
           backgroundColor: section.properties?.backgroundColor || 'transparent',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {children}

@@ -10,6 +10,7 @@ interface BlogWidgetProps {
   columns?: number;
   accentColor?: string;
   viewportWidth?: number;
+  sectionHeight?: number;
   [key: string]: unknown;
 }
 
@@ -27,9 +28,12 @@ export const BlogWidget: React.FC<BlogWidgetProps> = ({
   columns = 3,
   accentColor = '#1A1A1A',
   viewportWidth,
+  sectionHeight,
 }) => {
   const isMobile = (viewportWidth || 1280) < 480;
-  const cols = isMobile ? 1 : columns;
+  // Stack vertically when section is expanded tall (> 600px) or on mobile
+  const shouldStack = isMobile || (sectionHeight != null && sectionHeight > 600);
+  const cols = shouldStack ? 1 : columns;
 
   return (
     <div style={{ padding: '48px 32px', fontFamily: FONT_STACK }}>

@@ -547,6 +547,7 @@ export const SECTION_DEFAULT_HEIGHTS: Record<string, number> = {
   eventsWidget: 500,
   classesWidget: 500,
   reviewCarousel: 340,
+  blogWidget: 480,
 };
 
 /**
@@ -620,6 +621,12 @@ export const DEFAULT_SECTION_PROPS: Record<string, Record<string, unknown>> = {
     backgroundColor: 'transparent',
     heading: 'What Our Clients Say',
     autoPlay: true,
+    accentColor: '#1A1A1A',
+  },
+  blogWidget: {
+    backgroundColor: 'transparent',
+    heading: 'Our Blog',
+    columns: 3,
     accentColor: '#1A1A1A',
   },
 };
