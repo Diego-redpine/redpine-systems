@@ -1765,5 +1765,10 @@ CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON public.blog_posts(user_id, slu
 CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON public.blog_posts(user_id, status);
 
 -- ============================================================
--- DONE! All migrations 012-043 + 028b applied.
+-- Migration 044: Blog scheduling support
+-- ============================================================
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ;
+
+-- ============================================================
+-- DONE! All migrations 012-044 + 028b applied.
 -- ============================================================
