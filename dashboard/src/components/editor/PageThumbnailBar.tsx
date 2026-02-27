@@ -542,7 +542,7 @@ export default function PageThumbnailBar({
       <div
         className={`border-t transition-all duration-200 overflow-hidden ${className}`}
         style={{
-          height: showBar ? '100px' : '28px',
+          height: !isVisible ? '0px' : showBar ? '100px' : '28px',
           backgroundColor: '#ffffff',
           borderColor: '#E5E7EB',
         }}
