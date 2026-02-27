@@ -61,9 +61,9 @@ const DEMO_PAGES: Page[] = [
   },
 ];
 
-export default function SiteContent({ colors, isDemoMode = false, businessName, websiteData }: { colors: DashboardColors; isDemoMode?: boolean; businessName?: string; websiteData?: any }) {
+export default function SiteContent({ colors, isDemoMode = false, businessName, businessType, websiteData }: { colors: DashboardColors; isDemoMode?: boolean; businessName?: string; businessType?: string; websiteData?: any }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -284,9 +284,9 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
   // Empty state
   if (pages.length === 0) {
     return (
-      <div className="rounded-2xl p-12 shadow-sm text-center" style={{ backgroundColor: cardBg }}>
-        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="p-12 shadow-sm text-center" style={{ backgroundColor: cardBg }}>
+        <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: `${buttonColor}10` }}>
+          <svg className="w-8 h-8" fill="none" stroke={textMuted} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
           </svg>
         </div>
@@ -296,7 +296,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
         </p>
         <button
           onClick={() => setShowNewPageModal(true)}
-          className="px-6 py-3 text-sm font-medium rounded-xl transition-opacity hover:opacity-90"
+          className="px-6 py-3 text-sm font-medium transition-opacity hover:opacity-90"
           style={{ backgroundColor: buttonColor, color: buttonText }}
         >
           Create First Page
@@ -346,7 +346,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
           </p>
           <button
             onClick={() => setShowNewPageModal(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90"
+            className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             + New Page
@@ -357,7 +357,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
         {pages.map((page) => (
           <div
             key={page.id}
-            className="rounded-2xl shadow-sm overflow-hidden"
+            className="shadow-sm overflow-hidden"
             style={{ backgroundColor: cardBg }}
           >
             {/* Page title header */}
@@ -370,14 +370,14 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
               {/* Left: Preview */}
               <div className="sm:w-1/2 p-4">
                 <div
-                  className={`w-full aspect-[16/10] rounded-xl bg-gradient-to-br ${getPageGradient(page.slug)} flex items-center justify-center relative overflow-hidden`}
+                  className={`w-full aspect-[16/10] bg-gradient-to-br ${getPageGradient(page.slug)} flex items-center justify-center relative overflow-hidden`}
                 >
                   {/* Fake browser chrome */}
                   <div className="absolute top-0 inset-x-0 h-6 bg-white/20 flex items-center px-2 gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                    <div className="flex-1 h-2.5 mx-2 rounded bg-white/20" />
+                    <div className="w-1.5 h-1.5 bg-white/40" />
+                    <div className="w-1.5 h-1.5 bg-white/40" />
+                    <div className="w-1.5 h-1.5 bg-white/40" />
+                    <div className="flex-1 h-2.5 mx-2 bg-white/20" />
                   </div>
                   {/* Page icon */}
                   <svg className="w-10 h-10 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
@@ -404,17 +404,20 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
                     <p className="text-xs font-medium mb-1" style={{ color: textMuted }}>Status</p>
                     <div className="flex items-center gap-1.5">
                       {isSystemPage(page) && (
-                        <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-rose-50 text-rose-600">
+                        <span className="inline-flex px-3 py-1 text-xs font-medium" style={{ backgroundColor: '#F4364C20', color: '#F4364C' }}>
                           Portal
                         </span>
                       )}
                       <button
                         onClick={() => !isSystemPage(page) && handleTogglePublish(page.slug, page.published)}
-                        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                        className={`inline-flex px-3 py-1 text-xs font-medium transition-colors ${
                           isSystemPage(page) ? 'cursor-default' : 'cursor-pointer'
-                        } ${
-                          page.published ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
+                        style={
+                          page.published
+                            ? { backgroundColor: '#10B98120', color: '#10B981' }
+                            : { backgroundColor: `${textMuted}15`, color: textMuted }
+                        }
                       >
                         {page.published ? 'Published' : 'Draft'}
                       </button>
@@ -440,7 +443,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
                     <>
                       <button
                         onClick={() => handleEdit(page.slug)}
-                        className="flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-opacity hover:opacity-90 text-center"
+                        className="flex-1 px-3 py-2 text-xs font-medium transition-opacity hover:opacity-90 text-center"
                         style={{ backgroundColor: buttonColor, color: buttonText }}
                       >
                         Edit Page
@@ -449,13 +452,13 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
                         <>
                           <button
                             onClick={() => handleDelete(page.slug)}
-                            className="px-3 py-2 text-xs font-medium rounded-lg bg-red-600 text-white transition-colors hover:bg-red-700"
+                            className="px-3 py-2 text-xs font-medium bg-red-600 text-white transition-colors hover:bg-red-700"
                           >
                             Confirm
                           </button>
                           <button
                             onClick={() => setDeletingSlug(null)}
-                            className="px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-gray-100"
+                            className="px-3 py-2 text-xs font-medium transition-opacity hover:opacity-70"
                             style={{ color: textMuted }}
                           >
                             Cancel
@@ -464,7 +467,8 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
                       ) : (
                         <button
                           onClick={() => setDeletingSlug(page.slug)}
-                          className="px-3 py-2 text-xs font-medium rounded-lg text-red-500 transition-colors hover:bg-red-50"
+                          className="px-3 py-2 text-xs font-medium transition-opacity hover:opacity-70"
+                          style={{ color: '#EF4444' }}
                         >
                           Delete
                         </button>
@@ -497,8 +501,8 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
       {/* Demo mode: inline FreeForm editor overlay */}
       {editingPage && (
         <Suspense fallback={
-          <div className="fixed inset-0 z-50 bg-white flex items-center justify-center">
-            <div className="w-10 h-10 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: cardBg }}>
+            <div className="w-10 h-10 border-4 rounded-full animate-spin" style={{ borderColor: borderColor, borderTopColor: buttonColor }} />
           </div>
         }>
           <SiteEditor
@@ -507,6 +511,7 @@ export default function SiteContent({ colors, isDemoMode = false, businessName, 
             initialBlocks={editingPage.blocks || []}
             allPages={pages}
             businessName={businessName}
+            businessType={businessType}
             accentColor={colors.buttons}
             dashboardColors={colors}
             onSave={handleDemoSave}
@@ -531,7 +536,7 @@ function NewPageModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative rounded-2xl p-6 shadow-xl w-full max-w-sm mx-4" style={{ backgroundColor: cardBg }}>
+      <div className="relative p-6 shadow-xl w-full max-w-sm mx-4" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-1" style={{ color: textMain }}>New Page</h3>
         <p className="text-xs mb-4" style={{ color: textMuted }}>Enter a title for your new page.</p>
         <input
@@ -540,7 +545,7 @@ function NewPageModal({
           onChange={(e) => setNewPageTitle(e.target.value)}
           placeholder="e.g. About Us"
           autoFocus
-          className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+          className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
           style={{ borderColor, color: textMain }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && newPageTitle.trim()) onSubmit();
@@ -550,7 +555,7 @@ function NewPageModal({
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium border transition-opacity hover:opacity-70"
             style={{ borderColor, color: textMuted }}
           >
             Cancel
@@ -558,7 +563,7 @@ function NewPageModal({
           <button
             onClick={onSubmit}
             disabled={!newPageTitle.trim()}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             Create

@@ -190,6 +190,35 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
         </div>
       );
 
+    case 'faqWidget': {
+      const faqItems = [
+        { q: 'What services do you offer?', a: 'We offer a wide range of services tailored to your needs. Contact us to learn more.' },
+        { q: 'How do I book an appointment?', a: 'You can book directly through our website or give us a call.' },
+        { q: 'What are your hours?', a: 'We\'re open Monday through Saturday. Check our booking page for available times.' },
+        { q: 'Do you offer gift cards?', a: 'Yes! Gift cards are available in any amount.' },
+      ];
+      return (
+        <div style={wrapStyle}>
+          <div className="w-full max-w-3xl mx-auto px-6 py-8">
+            <h2 className="text-2xl font-bold text-center mb-8" style={{ color: isDark ? '#fff' : '#1A1A1A' }}>
+              {(props.heading as string) || 'Frequently Asked Questions'}
+            </h2>
+            <div className="space-y-3">
+              {faqItems.map((item, i) => (
+                <div key={i} className={`border rounded-lg p-4 ${isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-200 bg-white'}`}>
+                  <div className="flex items-center justify-between">
+                    <span className={`font-medium text-sm ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{item.q}</span>
+                    <span className={`text-lg ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>+</span>
+                  </div>
+                  <p className={`text-sm mt-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{item.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     default:
       return (
         <div

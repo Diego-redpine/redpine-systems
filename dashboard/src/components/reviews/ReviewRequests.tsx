@@ -109,7 +109,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const fetchRequests = useCallback(async () => {
     try {
@@ -205,7 +205,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
     <div className="space-y-4">
       {/* Automation settings */}
       <div
-        className="rounded-2xl p-6"
+        className="p-6"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h3 className="text-lg font-bold mb-1" style={{ color: textMain }}>
@@ -218,7 +218,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
         <div className="space-y-4">
           {/* Appointment completed trigger */}
           <div
-            className="rounded-xl p-4"
+            className="p-4"
             style={{
               backgroundColor: colors.background || '#F9FAFB',
               border: `1px solid ${borderColor}`,
@@ -232,7 +232,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                       enabled: !automation.appointment_completed.enabled,
                     })
                   }
-                  className="relative w-11 h-6 rounded-full transition-colors"
+                  className="relative w-11 h-6 transition-colors"
                   style={{
                     backgroundColor: automation.appointment_completed.enabled
                       ? buttonColor
@@ -240,7 +240,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                   }}
                 >
                   <span
-                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+                    className="absolute top-0.5 w-5 h-5 bg-white shadow transition-transform"
                     style={{
                       left: automation.appointment_completed.enabled
                         ? '22px'
@@ -262,7 +262,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                       timing: e.target.value,
                     })
                   }
-                  className="px-3 py-1.5 rounded-lg text-sm"
+                  className="px-3 py-1.5 text-sm"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textMain,
@@ -282,7 +282,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                       channel: e.target.value,
                     })
                   }
-                  className="px-3 py-1.5 rounded-lg text-sm"
+                  className="px-3 py-1.5 text-sm"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textMain,
@@ -301,7 +301,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
 
           {/* Invoice paid trigger */}
           <div
-            className="rounded-xl p-4"
+            className="p-4"
             style={{
               backgroundColor: colors.background || '#F9FAFB',
               border: `1px solid ${borderColor}`,
@@ -315,7 +315,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                       enabled: !automation.invoice_paid.enabled,
                     })
                   }
-                  className="relative w-11 h-6 rounded-full transition-colors"
+                  className="relative w-11 h-6 transition-colors"
                   style={{
                     backgroundColor: automation.invoice_paid.enabled
                       ? buttonColor
@@ -323,7 +323,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                   }}
                 >
                   <span
-                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+                    className="absolute top-0.5 w-5 h-5 bg-white shadow transition-transform"
                     style={{
                       left: automation.invoice_paid.enabled ? '22px' : '2px',
                     }}
@@ -341,7 +341,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                   onChange={(e) =>
                     updateTrigger('invoice_paid', { timing: e.target.value })
                   }
-                  className="px-3 py-1.5 rounded-lg text-sm"
+                  className="px-3 py-1.5 text-sm"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textMain,
@@ -359,7 +359,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                   onChange={(e) =>
                     updateTrigger('invoice_paid', { channel: e.target.value })
                   }
-                  className="px-3 py-1.5 rounded-lg text-sm"
+                  className="px-3 py-1.5 text-sm"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textMain,
@@ -378,7 +378,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
 
           {/* Follow-up drip */}
           <div
-            className="rounded-xl p-4"
+            className="p-4"
             style={{
               backgroundColor: colors.background || '#F9FAFB',
               border: `1px solid ${borderColor}`,
@@ -400,7 +400,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                     drip_enabled: !prev.drip_enabled,
                   }))
                 }
-                className="relative w-11 h-6 rounded-full transition-colors"
+                className="relative w-11 h-6 transition-colors"
                 style={{
                   backgroundColor: automation.drip_enabled
                     ? buttonColor
@@ -408,7 +408,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                 }}
               >
                 <span
-                  className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+                  className="absolute top-0.5 w-5 h-5 bg-white shadow transition-transform"
                   style={{
                     left: automation.drip_enabled ? '22px' : '2px',
                   }}
@@ -424,7 +424,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                 ].map((step) => (
                   <div
                     key={step.day}
-                    className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg"
+                    className="flex items-center gap-2 text-xs px-3 py-1.5"
                     style={{
                       backgroundColor: `${buttonColor}08`,
                       color: textMain,
@@ -442,7 +442,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
 
       {/* Manual send */}
       <div
-        className="rounded-2xl p-6"
+        className="p-6"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h3 className="text-sm font-semibold mb-3" style={{ color: textMain }}>
@@ -460,7 +460,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
               }}
               onFocus={() => setShowClientDropdown(true)}
               placeholder="Search for a client..."
-              className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2"
+              className="w-full px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
               style={{
                 border: `1px solid ${borderColor}`,
                 color: textMain,
@@ -469,7 +469,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
             />
             {showClientDropdown && filteredClients.length > 0 && !selectedClientId && (
               <div
-                className="absolute top-full left-0 right-0 mt-1 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto"
+                className="absolute top-full left-0 right-0 mt-1 shadow-lg z-20 max-h-48 overflow-y-auto"
                 style={{
                   backgroundColor: cardBg,
                   border: `1px solid ${borderColor}`,
@@ -500,7 +500,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
           <button
             onClick={handleSendRequest}
             disabled={!selectedClientId || sending}
-            className="px-5 py-2.5 rounded-xl text-sm font-medium transition-opacity disabled:opacity-50 whitespace-nowrap"
+            className="px-5 py-2.5 text-sm font-medium transition-opacity disabled:opacity-50 whitespace-nowrap"
             style={{
               backgroundColor: buttonColor,
               color: buttonText,
@@ -513,7 +513,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
 
       {/* Request history */}
       <div
-        className="rounded-2xl p-6"
+        className="p-6"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h3 className="text-sm font-semibold mb-4" style={{ color: textMain }}>
@@ -592,7 +592,7 @@ export default function ReviewRequests({ colors }: ReviewRequestsProps) {
                         style={{ borderBottom: `1px solid ${borderColor}` }}
                       >
                         <span
-                          className="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                          className="px-2.5 py-0.5 text-xs font-medium"
                           style={{
                             backgroundColor: statusStyle.bg,
                             color: statusStyle.text,

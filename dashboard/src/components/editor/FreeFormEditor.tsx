@@ -22,9 +22,11 @@ import FreeFormCanvas from './FreeFormCanvas';
 import FreeFormSidebar from './FreeFormSidebar';
 import FreeFormPropertiesPanel from './FreeFormPropertiesPanel';
 import PageThumbnailBar from './PageThumbnailBar';
+import ImagePickerModal from './ImagePickerModal';
+import type { ColorItem } from '@/components/editors/ColorsEditor';
 import {
   Undo2, Redo2, Monitor, Tablet, Smartphone,
-  ZoomIn, ZoomOut, Save, Eye,
+  ZoomIn, ZoomOut, Save, Eye, X, Home,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -44,9 +46,12 @@ interface PageData {
 export interface FreeFormEditorProps {
   initialData?: FreeFormSaveData | null;
   businessName?: string;
+  businessType?: string;
   accentColor?: string;
   dashboardColors?: Record<string, string | undefined>;
   onSave?: (data: FreeFormSaveData) => Promise<void>;
+  onPreviewChange?: (isPreview: boolean) => void;
+  onClose?: () => void;
   className?: string;
 }
 
@@ -111,27 +116,44 @@ function serialize(pages: PageData[], elements: EditorElement[], pageIndex: numb
 export default function FreeFormEditor({
   initialData,
   businessName = 'My Business',
-  accentColor,
+  businessType,
+  accentColor = '#1A1A1A',
   dashboardColors,
   onSave,
+  onPreviewChange,
+  onClose,
   className = '',
 }: FreeFormEditorProps) {
-  // Build colors object from accentColor for PresetHeader/PresetFooter
-  const editorColors = accentColor ? { buttons: accentColor } : undefined;
-
-  // Map dashboard colors → brand colors for the Brand panel
-  const initialBrandColors = useMemo(() => {
-    if (!dashboardColors) return null;
-    return {
-      primary: dashboardColors.buttons || dashboardColors.sidebar_bg || null,
-      secondary: dashboardColors.headings || dashboardColors.text || null,
-      accent1: dashboardColors.sidebar_buttons || null,
-      accent2: dashboardColors.borders || null,
-      background: dashboardColors.background || dashboardColors.cards || null,
-    };
+  // Map dashboard colors → ColorItem[] for the Brand Board panel
+  const initialBrandBoardColors = useMemo<ColorItem[]>(() => {
+    if (!dashboardColors) return [];
+    const items: ColorItem[] = [];
+    const colorKeys: ColorItem['target'][] = [
+      'background', 'buttons', 'text', 'sidebar_bg', 'sidebar_buttons',
+      'sidebar_icons', 'sidebar_text', 'cards', 'headings', 'borders',
+    ];
+    for (const key of colorKeys) {
+      const val = dashboardColors[key];
+      if (val) items.push({ color: val, target: key });
+    }
+    return items;
   }, [dashboardColors]);
 
-  const [brandColors, setBrandColors] = useState(initialBrandColors);
+  const [brandBoardColors, setBrandBoardColors] = useState<ColorItem[]>(initialBrandBoardColors);
+  const [brandHeadingFont, setBrandHeadingFont] = useState('Inter, system-ui, sans-serif');
+  const [brandBodyFont, setBrandBodyFont] = useState('Inter, system-ui, sans-serif');
+
+  // Build colors object from accentColor + brandBoardColors for PresetHeader/PresetFooter
+  const editorColors = useMemo(() => {
+    const colors: Record<string, string> = {};
+    if (accentColor) colors.buttons = accentColor;
+    // Overlay brand board color changes (these take priority)
+    for (const item of brandBoardColors) {
+      if (item.color) colors[item.target] = item.color;
+    }
+    return Object.keys(colors).length > 0 ? colors : undefined;
+  }, [accentColor, brandBoardColors]);
+
   const initial = useRef(deserialize(initialData));
 
   // Page state
@@ -146,13 +168,20 @@ export default function FreeFormEditor({
   const theme = 'light' as const;
   const isDark = false;
 
-  // Sidebar panel tracking (for conditional PageThumbnailBar visibility)
-  const [sidebarPanel, setSidebarPanel] = useState<string | null>('elements');
+  // Tools overlay state
+  const [toolsOverlayOpen, setToolsOverlayOpen] = useState(false);
 
   // Selection state
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [selectedSectionData, setSelectedSectionData] = useState<HookSection | null>(null);
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(-1);
+
+  // Properties panel — hidden by default, auto-opens on selection
+  const [propertiesPanelOpen, setPropertiesPanelOpen] = useState(false);
+
+  // Image picker for blank frames
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
+  const [imagePickerTargetId, setImagePickerTargetId] = useState<string | null>(null);
 
   // Save / preview
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
@@ -191,6 +220,16 @@ export default function FreeFormEditor({
     () => currentPage.sections.reduce((sum, s) => sum + (sectionHeightOverrides[s.id] ?? s.height), 0) + 200,
     [currentPage.sections, sectionHeightOverrides],
   );
+
+  // Auto-open properties panel when a NEW section/element/preset is selected
+  const selectionKey = selectedSection || editor.selectedElement?.id || null;
+  const prevSelectionKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (selectionKey && selectionKey !== prevSelectionKeyRef.current) {
+      setPropertiesPanelOpen(true);
+    }
+    prevSelectionKeyRef.current = selectionKey;
+  }, [selectionKey]);
 
   const markUnsaved = useCallback(() => setSaveStatus('unsaved'), []);
 
@@ -487,6 +526,13 @@ export default function FreeFormEditor({
     setSelectedSection(null);
     setSelectedSectionData(null);
     editor.selectElement(elementId, addToSelection);
+
+    // If this is a blank frame (no image), open the image picker
+    const el = editor.elements.find(e => e.id === elementId);
+    if (el && el.type === 'frame' && !el.properties?.imageSrc) {
+      setImagePickerTargetId(elementId);
+      setImagePickerOpen(true);
+    }
   }, [editor]);
 
   const handleClearSelection = useCallback(() => {
@@ -603,8 +649,8 @@ export default function FreeFormEditor({
     return (
       <div className={`flex flex-col h-full bg-gray-100 ${className}`}>
         <div className="flex items-center justify-between px-4 py-2 border-b bg-white border-gray-200">
-          <span className="text-sm font-medium font-['Inter'] text-gray-800">Preview</span>
-          <button onClick={() => setIsPreview(false)} className="px-3 py-1.5 rounded-lg text-xs font-medium font-['Inter'] bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300">
+          <span className="text-sm font-medium font-['Fira_Code'] text-gray-800">Preview</span>
+          <button onClick={() => { setIsPreview(false); onPreviewChange?.(false); }} className="px-3 py-1.5 text-xs font-medium font-['Fira_Code'] bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300">
             Back to Editor
           </button>
         </div>
@@ -640,57 +686,79 @@ export default function FreeFormEditor({
       }}
     >
       <div className={`flex flex-col h-full bg-white ${className}`}>
-        {/* TOOLBAR */}
-        <div className="flex items-center justify-between px-3 py-2 border-b bg-white border-gray-200">
-          <div className="flex items-center gap-1">
-            <button onClick={editor.undo} disabled={!editor.canUndo} className="p-2 rounded-lg transition-colors disabled:opacity-30 hover:bg-gray-100 text-gray-500" title="Undo (Cmd+Z)">
-              <Undo2 className="w-4 h-4" />
+        {/* MAIN LAYOUT */}
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* Vertical TOOLS tab */}
+          <button
+            onClick={() => setToolsOverlayOpen(prev => !prev)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center bg-white border border-l-0 border-gray-200 hover:bg-gray-50 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            style={{ width: 24, height: 80, writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+            title="Toggle tools panel"
+          >
+            <span className="text-[10px] font-semibold font-['Fira_Code'] tracking-widest uppercase">TOOLS</span>
+          </button>
+
+          {/* Floating Toolbar — actions (top-right) */}
+          <div className="absolute top-3 right-3 z-20 flex items-center gap-1 px-2 py-1.5 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-sm">
+            {onClose && (
+              <>
+                <button onClick={onClose} className="p-1.5 hover:bg-gray-100 text-gray-500" title="Back to dashboard">
+                  <Home className="w-4 h-4" />
+                </button>
+                <div className="w-px h-5 bg-gray-200" />
+              </>
+            )}
+            <button onClick={editor.undo} disabled={!editor.canUndo} className="p-1.5 hover:bg-gray-100 text-gray-500 disabled:opacity-30" title="Undo (Cmd+Z)">
+              <Undo2 className="w-3.5 h-3.5" />
             </button>
-            <button onClick={editor.redo} disabled={!editor.canRedo} className="p-2 rounded-lg transition-colors disabled:opacity-30 hover:bg-gray-100 text-gray-500" title="Redo (Cmd+Shift+Z)">
-              <Redo2 className="w-4 h-4" />
+            <button onClick={editor.redo} disabled={!editor.canRedo} className="p-1.5 hover:bg-gray-100 text-gray-500 disabled:opacity-30" title="Redo (Cmd+Shift+Z)">
+              <Redo2 className="w-3.5 h-3.5" />
+            </button>
+            <div className="w-px h-5 bg-gray-200" />
+            <button onClick={() => { setIsPreview(true); onPreviewChange?.(true); }} className="p-1.5 hover:bg-gray-100 text-gray-500" title="Preview">
+              <Eye className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saveStatus === 'saved'}
+              className={`p-1.5 transition-colors ${saveStatus === 'unsaved' ? 'hover:opacity-80' : saveStatus === 'saving' ? 'text-amber-500' : 'text-gray-400'}`}
+              style={saveStatus === 'unsaved' ? { color: '#1A1A1A' } : undefined}
+              title={saveStatus === 'saved' ? 'Saved' : saveStatus === 'saving' ? 'Saving...' : 'Save (Cmd+S)'}
+            >
+              <Save className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100">
+          {/* Viewport switcher — top left */}
+          <div className="absolute top-3 left-8 z-20 flex items-center gap-1 px-2 py-1.5 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-sm">
             {VIEWPORT_BUTTONS.map(({ mode, icon: Icon, label }) => (
               <button
                 key={mode}
                 onClick={() => { setViewportMode(mode); setZoom(VIEWPORT_ZOOM[mode]); editor.generateBreakpointPositions(mode, BREAKPOINTS[mode]); }}
-                className={`p-2 rounded-lg text-xs font-['Inter'] transition-colors flex items-center gap-1.5 ${
-                  viewportMode === mode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className={`p-1.5 transition-colors ${viewportMode === mode ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
                 title={label}
               >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{label}</span>
+                <Icon className="w-3.5 h-3.5" />
               </button>
             ))}
-          </div>
-
-          <div className="flex items-center gap-1">
-            <button onClick={zoomOut} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500" title="Zoom out"><ZoomOut className="w-4 h-4" /></button>
-            <span className="text-xs font-['Inter'] min-w-[40px] text-center text-gray-500">{Math.round(zoom * 100)}%</span>
-            <button onClick={zoomIn} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500" title="Zoom in"><ZoomIn className="w-4 h-4" /></button>
-            <div className="w-px h-5 mx-1 bg-gray-200" />
-            <button onClick={() => setIsPreview(true)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500" title="Preview"><Eye className="w-4 h-4" /></button>
-            <button
-              onClick={handleSave}
-              disabled={saveStatus === 'saved'}
-              className={`p-2 rounded-lg transition-colors ${saveStatus === 'unsaved' ? 'hover:opacity-80' : saveStatus === 'saving' ? 'text-amber-500' : 'text-gray-400'}`}
-              style={saveStatus === 'unsaved' ? { color: accentColor } : undefined}
-              title={saveStatus === 'saved' ? 'Saved' : saveStatus === 'saving' ? 'Saving...' : 'Save (Cmd+S)'}
-            >
-              <Save className="w-4 h-4" />
+            <div className="w-px h-5 bg-gray-200" />
+            <button onClick={zoomOut} className="p-1.5 hover:bg-gray-100 text-gray-500" title="Zoom out">
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-[10px] font-['Fira_Code'] min-w-[32px] text-center text-gray-500">{Math.round(zoom * 100)}%</span>
+            <button onClick={zoomIn} className="p-1.5 hover:bg-gray-100 text-gray-500" title="Zoom in">
+              <ZoomIn className="w-3.5 h-3.5" />
             </button>
           </div>
-        </div>
 
-        {/* MAIN LAYOUT */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* LEFT SIDEBAR */}
+          {/* LEFT SIDEBAR (overlay) */}
           <FreeFormSidebar
+            isOverlayOpen={toolsOverlayOpen}
+            onClose={() => setToolsOverlayOpen(false)}
+            onElementAdded={() => setToolsOverlayOpen(false)}
             pages={pages.map(p => ({ id: p.id, name: p.title }))}
             currentPageId={currentPage.id}
+            businessType={businessType}
             onAddElement={handleSidebarAddElement}
             onAddSection={addSection}
             onSelectPage={switchPage}
@@ -702,10 +770,12 @@ export default function FreeFormEditor({
             viewportMode={viewportMode}
             canvasHeight={canvasHeight}
             theme={theme}
-            brandColors={brandColors}
-            onUpdateBrandColors={setBrandColors}
+            brandBoardColors={brandBoardColors}
+            onBrandBoardColorsChange={setBrandBoardColors}
+            brandHeadingFont={brandHeadingFont}
+            brandBodyFont={brandBodyFont}
+            onBrandFontChange={(h, b) => { setBrandHeadingFont(h); setBrandBodyFont(b); }}
             accentColor={accentColor}
-            onActivePanelChange={setSidebarPanel}
             className="flex-shrink-0"
             sections={currentPage.sections.map(s => ({ id: s.id, type: s.type, properties: s.properties }))}
             elements={editor.elements.map(el => ({ id: el.id, type: el.type, sectionId: el.sectionId, x: el.x, y: el.y, width: el.width, height: el.height, properties: el.properties }))}
@@ -755,32 +825,62 @@ export default function FreeFormEditor({
             className="flex-1 min-w-0"
           />
 
-          {/* RIGHT PROPERTIES PANEL */}
-          <FreeFormPropertiesPanel
-            selectedElement={editor.selectedElement}
-            selectedSection={selectedSection}
-            selectedSectionData={selectedSectionData}
-            sectionIndex={selectedSectionIndex}
-            totalSections={currentPage.sections.length}
-            headerConfig={{ ...currentPage.headerConfig, storeName: businessName }}
-            footerConfig={{ ...currentPage.footerConfig, storeName: businessName }}
-            canvasConfig={currentPage.canvasConfig}
-            onUpdateProperties={handleUpdateProperties}
-            onUpdateHeaderConfig={updateHeaderConfig}
-            onUpdateFooterConfig={updateFooterConfig}
-            onUpdateCanvasConfig={updateCanvasConfig}
-            onUpdateSectionProperties={updateSectionProperties}
-            onUpdateSectionHeight={updateSectionHeight}
-            onMoveSection={moveSection}
-            onDeleteSection={deleteSection}
-            onDelete={(id: string) => { editor.deleteElements(id); markUnsaved(); }}
-            onDuplicate={(id: string) => { editor.duplicateElements(id); markUnsaved(); }}
-            onBringToFront={(id: string) => { editor.bringToFront(id); markUnsaved(); }}
-            onSendToBack={(id: string) => { editor.sendToBack(id); markUnsaved(); }}
-            theme={theme}
-            accentColor={accentColor}
-            className="w-[260px] flex-shrink-0"
-          />
+          {/* Vertical PROPS tab — right edge */}
+          <button
+            onClick={() => setPropertiesPanelOpen(prev => !prev)}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center bg-white border border-r-0 border-gray-200 hover:bg-gray-50 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            style={{ width: 24, height: 80, writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+            title="Toggle properties panel"
+          >
+            <span className="text-[10px] font-semibold font-['Fira_Code'] tracking-widest uppercase">PROPS</span>
+          </button>
+
+          {/* RIGHT PROPERTIES PANEL — overlay from right */}
+          {propertiesPanelOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40 bg-black/20"
+                onClick={() => setPropertiesPanelOpen(false)}
+              />
+              <aside className="absolute right-0 top-0 bottom-0 z-50 w-[280px] flex flex-col border-l shadow-xl bg-white border-gray-200">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 flex-shrink-0">
+                  <h2 className="text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider text-zinc-900">
+                    Properties
+                  </h2>
+                  <button onClick={() => setPropertiesPanelOpen(false)} className="p-1.5 hover:bg-gray-100 text-gray-500 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                  <FreeFormPropertiesPanel
+                    selectedElement={editor.selectedElement}
+                    selectedSection={selectedSection}
+                    selectedSectionData={selectedSectionData}
+                    sectionIndex={selectedSectionIndex}
+                    totalSections={currentPage.sections.length}
+                    headerConfig={{ ...currentPage.headerConfig, storeName: businessName }}
+                    footerConfig={{ ...currentPage.footerConfig, storeName: businessName }}
+                    canvasConfig={currentPage.canvasConfig}
+                    onUpdateProperties={handleUpdateProperties}
+                    onUpdateHeaderConfig={updateHeaderConfig}
+                    onUpdateFooterConfig={updateFooterConfig}
+                    onUpdateCanvasConfig={updateCanvasConfig}
+                    onUpdateSectionProperties={updateSectionProperties}
+                    onUpdateSectionHeight={updateSectionHeight}
+                    onMoveSection={moveSection}
+                    onDeleteSection={deleteSection}
+                    onDelete={(id: string) => { editor.deleteElements(id); markUnsaved(); }}
+                    onDuplicate={(id: string) => { editor.duplicateElements(id); markUnsaved(); }}
+                    onBringToFront={(id: string) => { editor.bringToFront(id); markUnsaved(); }}
+                    onSendToBack={(id: string) => { editor.sendToBack(id); markUnsaved(); }}
+                    theme={theme}
+                    accentColor={accentColor}
+                    className="w-[280px] flex-shrink-0"
+                  />
+                </div>
+              </aside>
+            </>
+          )}
         </div>
 
         {/* BOTTOM: Page Thumbnail Bar */}
@@ -790,7 +890,7 @@ export default function FreeFormEditor({
           pageElements={pageElements}
           viewportWidth={viewportWidth}
           canvasHeight={canvasHeight}
-          isVisible={sidebarPanel === 'projects'}
+          isVisible={!toolsOverlayOpen && !propertiesPanelOpen}
           onSelectPage={switchPage}
           onAddPage={addPage}
           onDuplicatePage={duplicatePageById}
@@ -801,6 +901,21 @@ export default function FreeFormEditor({
           accentColor={accentColor}
         />
       </div>
+
+      {/* Image Picker Modal — opens when clicking a blank frame */}
+      <ImagePickerModal
+        isOpen={imagePickerOpen}
+        onClose={() => { setImagePickerOpen(false); setImagePickerTargetId(null); }}
+        onImageSelected={(url) => {
+          if (imagePickerTargetId) {
+            editor.updateProperties(imagePickerTargetId, { imageSrc: url });
+            markUnsaved();
+          }
+          setImagePickerOpen(false);
+          setImagePickerTargetId(null);
+        }}
+        accentColor={accentColor}
+      />
     </DragDropProvider>
   );
 }

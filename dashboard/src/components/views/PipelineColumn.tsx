@@ -56,7 +56,7 @@ function DraggableCard({
       {...listeners}
       {...attributes}
       onClick={() => onItemClick?.(record)}
-      className="relative flex cursor-grab active:cursor-grabbing rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+      className="relative flex cursor-grab active:cursor-grabbing shadow-sm hover:shadow-md transition-shadow overflow-hidden"
       style={{
         transform: transform ? CSS.Translate.toString(transform) : undefined,
         opacity: isDragging ? 0.4 : 1,
@@ -77,7 +77,7 @@ function DraggableCard({
           {title}
         </p>
         {subtitle && (
-          <p className="text-xs truncate mt-1" style={{ color: '#6B7280' }}>
+          <p className="text-xs truncate mt-1" style={{ color: configColors.icons || '#6B7280' }}>
             {subtitle}
           </p>
         )}
@@ -128,7 +128,7 @@ export default memo(function PipelineColumn({
       <div
         key={String(record.id)}
         onClick={() => onItemClick?.(record)}
-        className="relative flex cursor-pointer rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+        className="relative flex cursor-pointer shadow-sm hover:shadow-md transition-shadow overflow-hidden"
         style={{ backgroundColor: configColors.cards || '#FFFFFF' }}
       >
         <div className="flex-1 p-4 min-w-0">
@@ -136,7 +136,7 @@ export default memo(function PipelineColumn({
             {title}
           </p>
           {subtitle && (
-            <p className="text-xs truncate mt-1" style={{ color: '#6B7280' }}>{subtitle}</p>
+            <p className="text-xs truncate mt-1" style={{ color: configColors.icons || '#6B7280' }}>{subtitle}</p>
           )}
         </div>
       </div>
@@ -146,9 +146,9 @@ export default memo(function PipelineColumn({
   return (
     <div
       ref={readOnly ? undefined : setNodeRef}
-      className="flex flex-col w-[300px] min-w-[300px] min-h-[600px] rounded-2xl overflow-hidden transition-shadow"
+      className="flex flex-col w-[300px] min-w-[300px] min-h-[600px] overflow-hidden transition-shadow"
       style={{
-        backgroundColor: !readOnly && isOver ? `${stage.color}10` : '#F9FAFB',
+        backgroundColor: !readOnly && isOver ? `${stage.color}10` : (configColors.background || '#F9FAFB'),
         boxShadow: !readOnly && isOver ? `inset 0 0 0 2px ${stage.color}` : undefined,
       }}
     >
@@ -162,7 +162,7 @@ export default memo(function PipelineColumn({
             {stage.name}
           </span>
           <span
-            className="px-2.5 py-0.5 text-xs font-medium rounded-full"
+            className="px-2.5 py-0.5 text-xs font-medium "
             style={{
               backgroundColor: `${rightText}20`,
               color: rightText,
@@ -205,8 +205,8 @@ export default memo(function PipelineColumn({
 
         {items.length === 0 && !readOnly && (
           <div
-            className="flex items-center justify-center h-24 rounded-xl border-2 border-dashed"
-            style={{ borderColor: '#E5E7EB', color: '#9CA3AF' }}
+            className="flex items-center justify-center h-24 border-2 border-dashed"
+            style={{ borderColor: configColors.borders || '#E5E7EB', color: configColors.icons || '#9CA3AF' }}
           >
             <span className="text-sm">Drop items here</span>
           </div>
@@ -217,7 +217,7 @@ export default memo(function PipelineColumn({
       {onAddClick && !readOnly && (
         <button
           onClick={onAddClick}
-          className="mx-3 mb-3 py-2 rounded-xl border-2 border-dashed text-sm font-medium hover:opacity-70 transition-opacity"
+          className="mx-3 mb-3 py-2 border-2 border-dashed text-sm font-medium hover:opacity-70 transition-opacity"
           style={{
             borderColor: `${configColors.buttons || stage.color}40`,
             color: configColors.buttons || stage.color,

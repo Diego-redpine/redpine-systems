@@ -164,7 +164,7 @@ export default function OutlookCalendarSync({
       {steps.map((s, i) => (
         <div
           key={s}
-          className="w-2 h-2 rounded-full transition-all duration-200"
+          className="w-2 h-2 transition-all duration-200"
           style={{
             backgroundColor: i <= currentStepIndex ? buttonBg : borderColor,
             transform: i === currentStepIndex ? 'scale(1.3)' : 'scale(1)',
@@ -193,7 +193,7 @@ export default function OutlookCalendarSync({
     if (!connected) {
       return (
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: bgColor }}>
+          <div className="w-14 h-14 flex items-center justify-center mb-4" style={{ backgroundColor: bgColor }}>
             <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={textColor} strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
             </svg>
@@ -206,7 +206,7 @@ export default function OutlookCalendarSync({
           </p>
           <button
             onClick={handleConnect}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition-opacity hover:opacity-90"
             style={{ backgroundColor: buttonBg, color: buttonText }}
           >
             <svg className="w-4 h-4" viewBox="0 0 21 21" fill="currentColor">
@@ -248,7 +248,7 @@ export default function OutlookCalendarSync({
                   setSelectedCalendar(cal);
                   setStep('date-range');
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all hover:shadow-sm"
+                className="w-full flex items-center gap-3 px-4 py-3 border text-left transition-all hover:shadow-sm"
                 style={{
                   borderColor: isSelected ? buttonBg : borderColor,
                   backgroundColor: isSelected ? `${buttonBg}08` : 'transparent',
@@ -299,7 +299,7 @@ export default function OutlookCalendarSync({
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-offset-1"
+            className="w-full px-3 py-2 border text-sm outline-none focus:ring-2 focus:ring-offset-1"
             style={{
               borderColor,
               color: textColor,
@@ -317,7 +317,7 @@ export default function OutlookCalendarSync({
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-offset-1"
+            className="w-full px-3 py-2 border text-sm outline-none focus:ring-2 focus:ring-offset-1"
             style={{
               borderColor,
               color: textColor,
@@ -330,7 +330,7 @@ export default function OutlookCalendarSync({
       </div>
 
       <div
-        className="rounded-lg px-4 py-3 text-sm"
+        className="px-4 py-3 text-sm"
         style={{ backgroundColor: bgColor, color: textColor }}
       >
         Sync events from <strong>{new Date(startDate).toLocaleDateString()}</strong> to{' '}
@@ -340,7 +340,7 @@ export default function OutlookCalendarSync({
       <div className="flex items-center justify-between mt-6">
         <button
           onClick={() => setStep('select-calendar')}
-          className="px-4 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70"
+          className="px-4 py-2 text-sm border transition-opacity hover:opacity-70"
           style={{ borderColor, color: textColor }}
         >
           Back
@@ -351,7 +351,7 @@ export default function OutlookCalendarSync({
             handleSync();
           }}
           disabled={!startDate || !endDate}
-          className="px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
           style={{ backgroundColor: buttonBg, color: buttonText }}
         >
           Start Sync
@@ -434,7 +434,7 @@ export default function OutlookCalendarSync({
 
           <button
             onClick={onClose}
-            className="mt-6 px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90"
+            className="mt-6 px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90"
             style={{ backgroundColor: buttonBg, color: buttonText }}
           >
             Done
@@ -461,14 +461,14 @@ export default function OutlookCalendarSync({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setStep('date-range')}
-              className="px-4 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70"
+              className="px-4 py-2 text-sm border transition-opacity hover:opacity-70"
               style={{ borderColor, color: textColor }}
             >
               Back
             </button>
             <button
               onClick={handleSync}
-              className="px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90"
+              className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               Retry

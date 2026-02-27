@@ -49,3 +49,4 @@ social-media/
 *.orig
 *.log
 npm-debug.log*
+.vercel

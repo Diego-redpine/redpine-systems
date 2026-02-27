@@ -25,7 +25,7 @@ export default function BlogPost({ post, colors, businessName }: BlogPostProps) 
   const buttonBg = colors.buttons || '#1A1A1A';
   const cardBg = colors.cards || '#FFFFFF';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
 
   const formatDate = (iso: string) =>
@@ -40,7 +40,7 @@ export default function BlogPost({ post, colors, businessName }: BlogPostProps) 
       {/* Header */}
       <header className="mb-8">
         {post.cover_image && (
-          <div className="rounded-2xl overflow-hidden mb-6 aspect-[2/1]">
+          <div className="overflow-hidden mb-6 aspect-[2/1]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.cover_image}
@@ -53,7 +53,7 @@ export default function BlogPost({ post, colors, businessName }: BlogPostProps) 
           {post.tags.map(tag => (
             <span
               key={tag}
-              className="px-2.5 py-1 rounded-full text-xs font-medium"
+              className="px-2.5 py-1 text-xs font-medium"
               style={{ backgroundColor: `${buttonBg}10`, color: buttonBg }}
             >
               {tag}
@@ -76,7 +76,7 @@ export default function BlogPost({ post, colors, businessName }: BlogPostProps) 
 
       {/* Content */}
       <div
-        className="rounded-2xl p-6 md:p-8 shadow-sm prose prose-sm max-w-none"
+        className="p-6 md:p-8 shadow-sm prose prose-sm max-w-none"
         style={{
           backgroundColor: cardBg,
           color: textMain,

@@ -135,7 +135,7 @@ export function PortalNav({
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm font-medium transition-colors"
+              className="flex items-center gap-3 px-4 py-2.5 mx-2 text-sm font-medium transition-colors"
               style={{
                 backgroundColor: isActive ? accentColor : 'transparent',
                 color: isActive ? accentTextColor : '#6b7280',
@@ -160,7 +160,7 @@ export function PortalNav({
                 className="flex flex-col items-center gap-0.5 py-2 px-2 min-w-0 flex-1"
               >
                 <span
-                  className="p-1.5 rounded-lg transition-colors"
+                  className="p-1.5 transition-colors"
                   style={{
                     backgroundColor: isActive ? `${accentColor}15` : 'transparent',
                     color: isActive ? accentColor : '#9ca3af',
@@ -186,7 +186,7 @@ export function PortalNav({
                 className="flex flex-col items-center gap-0.5"
               >
                 <span
-                  className="p-1.5 rounded-lg transition-colors"
+                  className="p-1.5 transition-colors"
                   style={{
                     backgroundColor: mobileOverflow.some(i => i.id === activeSection) ? `${accentColor}15` : 'transparent',
                     color: mobileOverflow.some(i => i.id === activeSection) ? accentColor : '#9ca3af',
@@ -206,7 +206,7 @@ export function PortalNav({
                     className="fixed inset-0 z-40"
                     onClick={() => setMoreOpen(false)}
                   />
-                  <div className="absolute bottom-full right-0 mb-2 z-50 bg-white rounded-2xl shadow-xl border border-gray-200 py-2 min-w-[160px]">
+                  <div className="absolute bottom-full right-0 mb-2 z-50 bg-white shadow-xl border border-gray-200 py-2 min-w-[160px]">
                     {mobileOverflow.map(item => {
                       const isActive = activeSection === item.id;
                       return (

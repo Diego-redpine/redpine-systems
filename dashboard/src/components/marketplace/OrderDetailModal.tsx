@@ -88,7 +88,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const cardBg = colors.cards || '#FFFFFF';
 
@@ -182,7 +182,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
     return (
       <>
         <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} />
-        <div className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl rounded-2xl p-8 text-center" style={{ backgroundColor: cardBg }}>
+        <div className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl p-8 text-center" style={{ backgroundColor: cardBg }}>
           <p className="text-sm" style={{ color: textMuted }}>Loading order...</p>
         </div>
       </>
@@ -199,7 +199,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
     <>
       <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} />
       <div
-        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
         style={{ backgroundColor: cardBg }}
       >
         {/* Header */}
@@ -210,7 +210,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
                 {order.gig?.title || 'Order Details'}
               </h3>
               <span
-                className="px-2.5 py-0.5 text-xs font-medium rounded-full"
+                className="px-2.5 py-0.5 text-xs font-medium "
                 style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}
               >
                 {statusConfig.label}
@@ -273,7 +273,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
 
           {/* Order details */}
           <div className="px-6 pb-4">
-            <div className="rounded-xl border divide-y text-sm" style={{ borderColor }}>
+            <div className="border divide-y text-sm" style={{ borderColor }}>
               <div className="flex justify-between p-3">
                 <span style={{ color: textMuted }}>Tier</span>
                 <span className="capitalize font-medium" style={{ color: textMain }}>{order.tier}</span>
@@ -301,7 +301,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
           {order.requirements && (
             <div className="px-6 pb-4">
               <h5 className="text-xs font-semibold mb-2" style={{ color: textMuted }}>REQUIREMENTS</h5>
-              <p className="text-sm p-3 rounded-xl" style={{ color: textMain, backgroundColor: `${borderColor}40` }}>
+              <p className="text-sm p-3" style={{ color: textMain, backgroundColor: `${borderColor}40` }}>
                 {order.requirements}
               </p>
             </div>
@@ -314,7 +314,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
                 <button
                   onClick={() => handleAction('deliver')}
                   disabled={isUpdating}
-                  className="px-4 py-2 text-sm font-medium rounded-xl transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
                   style={{ backgroundColor: buttonColor, color: buttonText }}
                 >
                   Mark Delivered
@@ -325,7 +325,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
                   <button
                     onClick={() => handleAction('approve')}
                     disabled={isUpdating}
-                    className="px-4 py-2 text-sm font-medium rounded-xl transition-opacity hover:opacity-90 disabled:opacity-50"
+                    className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
                     style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
                   >
                     Approve & Release Payment
@@ -334,7 +334,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
                     <button
                       onClick={() => handleAction('request_revision')}
                       disabled={isUpdating}
-                      className="px-4 py-2 text-sm font-medium rounded-xl border disabled:opacity-50"
+                      className="px-4 py-2 text-sm font-medium border disabled:opacity-50"
                       style={{ borderColor, color: textMain }}
                     >
                       Request Revision ({order.max_revisions - order.revision_count} left)
@@ -346,7 +346,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
                 <button
                   onClick={() => handleAction('cancel')}
                   disabled={isUpdating}
-                  className="px-4 py-2 text-sm font-medium rounded-xl border disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-medium border disabled:opacity-50"
                   style={{ borderColor: '#FCA5A5', color: '#DC2626' }}
                 >
                   Cancel Order
@@ -355,7 +355,7 @@ export default function OrderDetailModal({ orderId, colors, onClose, onStatusCha
               {role === 'buyer' && status === 'completed' && (
                 <button
                   onClick={() => setShowReview(true)}
-                  className="px-4 py-2 text-sm font-medium rounded-xl transition-opacity hover:opacity-90"
+                  className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
                   style={{ backgroundColor: '#F59E0B', color: '#FFFFFF' }}
                 >
                   Leave Review

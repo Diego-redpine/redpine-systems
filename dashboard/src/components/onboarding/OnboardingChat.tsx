@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Brand from '@/components/Brand';
+import Image from 'next/image';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -170,16 +170,17 @@ export default function OnboardingChat({ onReady, dimmed }: OnboardingChatProps)
 
   return (
     <div
-      className={`h-screen bg-gray-50 flex flex-col transition-opacity duration-500 ${
+      className={`h-screen bg-white flex flex-col transition-opacity duration-500 ${
         dimmed ? 'opacity-30 pointer-events-none' : ''
       }`}
+      style={{ fontFamily: "'Fira Code', monospace" }}
     >
       {/* Header */}
       <div className="shrink-0 pt-10 pb-6 text-center">
         <div className="flex justify-center mb-5">
-          <Brand size="lg" linkToHome={false} />
+          <Image src="/logo.png" alt="Red Pine" width={80} height={80} />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl font-bold text-black mb-2">
           Tell me about your business
         </h1>
         <p className="text-sm text-gray-500 max-w-md mx-auto">
@@ -200,8 +201,8 @@ export default function OnboardingChat({ onReady, dimmed }: OnboardingChatProps)
               <div
                 className={`max-w-[80%] px-4 py-3 text-sm leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-gray-900 text-white rounded-2xl rounded-br-md'
-                    : 'bg-white text-gray-800 border border-gray-200 shadow-sm rounded-2xl rounded-bl-md'
+                    ? 'bg-black text-white'
+                    : 'bg-white text-gray-800 border-2 border-black'
                 }`}
               >
                 {msg.content}
@@ -212,18 +213,18 @@ export default function OnboardingChat({ onReady, dimmed }: OnboardingChatProps)
           {/* Typing indicator */}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-md px-4 py-3">
+              <div className="bg-white border-2 border-black px-4 py-3">
                 <div className="flex gap-1.5">
                   <div
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-gray-400 animate-bounce"
                     style={{ animationDelay: '0ms' }}
                   />
                   <div
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-gray-400 animate-bounce"
                     style={{ animationDelay: '150ms' }}
                   />
                   <div
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-gray-400 animate-bounce"
                     style={{ animationDelay: '300ms' }}
                   />
                 </div>
@@ -236,9 +237,9 @@ export default function OnboardingChat({ onReady, dimmed }: OnboardingChatProps)
       </div>
 
       {/* Input bar */}
-      <div className="shrink-0 border-t border-gray-200 bg-white">
+      <div className="shrink-0 border-t-2 border-black bg-white">
         <div className="max-w-2xl mx-auto px-4 py-3">
-          <div className="flex items-end gap-3 bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-200">
+          <div className="flex items-end gap-3 border-2 border-black px-4 py-2.5">
             <textarea
               ref={inputRef}
               value={input}
@@ -249,13 +250,13 @@ export default function OnboardingChat({ onReady, dimmed }: OnboardingChatProps)
               }
               rows={1}
               disabled={inputDisabled}
-              className="flex-1 bg-transparent text-sm text-gray-800 placeholder-gray-400 resize-none outline-none max-h-24 disabled:opacity-50"
+              className="flex-1 bg-transparent text-sm text-black placeholder-gray-400 resize-none outline-none max-h-24 disabled:opacity-50"
               style={{ minHeight: '24px' }}
             />
             <button
               onClick={sendMessage}
               disabled={!input.trim() || inputDisabled}
-              className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-900 text-white shrink-0 disabled:opacity-30 hover:bg-gray-800 transition-all"
+              className="w-8 h-8 flex items-center justify-center bg-black text-white shrink-0 disabled:opacity-30 hover:bg-[#ce0707] transition-all"
             >
               <svg
                 className="w-4 h-4"

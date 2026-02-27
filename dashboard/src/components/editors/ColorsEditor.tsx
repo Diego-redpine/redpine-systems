@@ -300,7 +300,7 @@ export default function ColorsEditor({ colors, onColorsChange }: ColorsEditorPro
       {/* Apply Palette button */}
       <button
         onClick={applyPalette}
-        className="mx-3 mt-3 mb-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+        className="mx-3 mt-3 mb-2 px-3 py-2 text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
@@ -432,7 +432,7 @@ export default function ColorsEditor({ colors, onColorsChange }: ColorsEditorPro
           {/* Target picker overlay */}
           {showTargetPicker && (
             <div
-              className="absolute bottom-full left-0 right-0 mb-[-1px] max-h-[250px] overflow-y-auto z-30 shadow-lg bg-white border border-gray-200 rounded-t-lg"
+              className="absolute bottom-full left-0 right-0 mb-[-1px] max-h-[250px] overflow-y-auto z-30 shadow-lg bg-white border border-gray-200"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-3 py-2 text-xs font-semibold sticky top-0 bg-gray-50 border-b border-gray-200 text-gray-500">

@@ -202,7 +202,7 @@ export default function OnboardingTour({
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <div
               key={i}
-              className="h-1.5 rounded-full transition-all"
+              className="h-1.5 transition-all"
               style={{
                 width: i === step ? 28 : 12,
                 backgroundColor: i <= step ? buttonBg : borderColor,
@@ -218,7 +218,7 @@ export default function OnboardingTour({
           {step === 0 && (
             <div className="flex flex-col items-center text-center py-6">
               <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+                className="w-16 h-16 flex items-center justify-center mb-5"
                 style={{ backgroundColor: `${buttonBg}15` }}
               >
                 <svg className="w-8 h-8" style={{ color: buttonBg }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -247,11 +247,11 @@ export default function OnboardingTour({
                   return (
                     <div
                       key={i}
-                      className="flex items-start gap-3 p-3 rounded-xl border"
+                      className="flex items-start gap-3 p-3 border"
                       style={{ borderColor }}
                     >
                       <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                        className="w-8 h-8 flex items-center justify-center flex-shrink-0 mt-0.5"
                         style={{ backgroundColor: `${buttonBg}12` }}
                       >
                         <span className="text-xs font-bold" style={{ color: buttonBg }}>
@@ -283,11 +283,11 @@ export default function OnboardingTour({
                 {TOOLKIT_ITEMS.map((item, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-3 p-3 rounded-xl border"
+                    className="flex items-start gap-3 p-3 border"
                     style={{ borderColor }}
                   >
                     <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                      className="w-9 h-9 flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${buttonBg}12`, color: buttonBg }}
                     >
                       {item.icon}
@@ -316,12 +316,12 @@ export default function OnboardingTour({
                 {DATA_IMPORT_OPTIONS.map((opt, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between p-4 rounded-xl border"
+                    className="flex items-center justify-between p-4 border"
                     style={{ borderColor }}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        className="w-10 h-10 flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${buttonBg}10`, color: buttonBg }}
                       >
                         {opt.icon}
@@ -334,14 +334,14 @@ export default function OnboardingTour({
                     {opt.connectUrl ? (
                       <a
                         href={opt.connectUrl}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
+                        className="px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
                         style={{ backgroundColor: buttonBg, color: buttonText }}
                       >
                         Connect
                       </a>
                     ) : (
                       <span
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium border flex-shrink-0"
+                        className="px-3 py-1.5 text-xs font-medium border flex-shrink-0"
                         style={{ borderColor, color: mutedColor }}
                       >
                         Built-in
@@ -360,12 +360,12 @@ export default function OnboardingTour({
                 Using Outlook for scheduling? Connect it to sync your existing calendar events into your dashboard.
               </p>
               <div
-                className="flex items-center justify-between p-4 rounded-xl border"
+                className="flex items-center justify-between p-4 border"
                 style={{ borderColor }}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    className="w-10 h-10 flex items-center justify-center flex-shrink-0"
                     style={{ backgroundColor: `${buttonBg}10`, color: buttonBg }}
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -379,7 +379,7 @@ export default function OnboardingTour({
                 </div>
                 <a
                   href="/api/integrations/outlook/connect"
-                  className="px-4 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
+                  className="px-4 py-2 text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
                   style={{ backgroundColor: buttonBg, color: buttonText }}
                 >
                   Connect Outlook
@@ -400,7 +400,7 @@ export default function OnboardingTour({
 
               {paymentConnected && (
                 <div
-                  className="flex items-center gap-2 p-3 rounded-xl"
+                  className="flex items-center gap-2 p-3"
                   style={{ backgroundColor: '#ECFDF5' }}
                 >
                   <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -419,12 +419,12 @@ export default function OnboardingTour({
                 ] as const).map((provider, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between p-4 rounded-xl border"
+                    className="flex items-center justify-between p-4 border"
                     style={{ borderColor }}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        className="w-10 h-10 flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${buttonBg}10`, color: buttonBg }}
                       >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -437,13 +437,13 @@ export default function OnboardingTour({
                       </div>
                     </div>
                     {paymentConnected ? (
-                      <span className="px-3 py-1 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 flex-shrink-0">
+                      <span className="px-3 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 flex-shrink-0">
                         Connected
                       </span>
                     ) : (
                       <a
                         href={provider.connectUrl}
-                        className="px-4 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
+                        className="px-4 py-2 text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
                         style={{ backgroundColor: buttonBg, color: buttonText }}
                       >
                         Connect
@@ -462,11 +462,11 @@ export default function OnboardingTour({
                 {tourContent.firstRecordPrompt}
               </p>
               <div
-                className="rounded-xl border p-5 flex flex-col items-center text-center"
+                className="border p-5 flex flex-col items-center text-center"
                 style={{ borderColor, backgroundColor: pageBg }}
               >
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                  className="w-12 h-12 flex items-center justify-center mb-3"
                   style={{ backgroundColor: `${buttonBg}15` }}
                 >
                   <svg className="w-6 h-6" style={{ color: buttonBg }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -490,7 +490,7 @@ export default function OnboardingTour({
                 {tourContent.bookingDescription}
               </p>
               <div
-                className="rounded-xl border p-4"
+                className="border p-4"
                 style={{ borderColor, backgroundColor: pageBg }}
               >
                 <p className="text-xs font-medium mb-2" style={{ color: mutedColor }}>
@@ -498,14 +498,14 @@ export default function OnboardingTour({
                 </p>
                 <div className="flex items-center gap-2">
                   <div
-                    className="flex-1 px-3 py-2.5 rounded-lg border text-sm font-medium truncate"
+                    className="flex-1 px-3 py-2.5 border text-sm font-medium truncate"
                     style={{ borderColor, backgroundColor: cardBg, color: textColor }}
                   >
                     https://{subdomain}.redpine.systems
                   </div>
                   <button
                     onClick={handleCopyUrl}
-                    className="px-3 py-2.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
+                    className="px-3 py-2.5 text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
                   >
                     {copiedUrl ? 'Copied!' : 'Copy'}
@@ -528,7 +528,7 @@ export default function OnboardingTour({
                 {tourContent.checklist.map((item, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-3 p-3 rounded-xl border"
+                    className="flex items-start gap-3 p-3 border"
                     style={{ borderColor }}
                   >
                     <div
@@ -561,7 +561,7 @@ export default function OnboardingTour({
             {step > 0 ? (
               <button
                 onClick={handleBack}
-                className="px-4 py-2 rounded-lg text-sm font-medium border transition-opacity hover:opacity-70"
+                className="px-4 py-2 text-sm font-medium border transition-opacity hover:opacity-70"
                 style={{ borderColor, color: textColor }}
               >
                 Back
@@ -590,7 +590,7 @@ export default function OnboardingTour({
             )}
             <button
               onClick={step === TOTAL_STEPS - 1 ? handleClose : handleNext}
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+              className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               {step === TOTAL_STEPS - 1 ? 'Get Started' : 'Next'}

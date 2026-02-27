@@ -17,7 +17,7 @@ export default function EmptyState({ entityType, configColors, onAdd }: EmptySta
 
   return (
     <div
-      className="flex flex-col items-center justify-center py-16 px-8 rounded-lg border-2 border-dashed"
+      className="flex flex-col items-center justify-center py-16 px-8 border-2 border-dashed"
       style={{
         backgroundColor: configColors.cards || '#FFFFFF',
         borderColor: configColors.borders || '#E5E7EB',
@@ -25,7 +25,7 @@ export default function EmptyState({ entityType, configColors, onAdd }: EmptySta
     >
       {/* Icon placeholder - simple SVG box */}
       <div
-        className="w-16 h-16 rounded-lg flex items-center justify-center mb-4"
+        className="w-16 h-16 flex items-center justify-center mb-4"
         style={{
           backgroundColor: configColors.background || '#F9FAFB',
           border: `2px solid ${configColors.borders || '#E5E7EB'}`,
@@ -65,7 +65,7 @@ export default function EmptyState({ entityType, configColors, onAdd }: EmptySta
       {onAdd && (
         <button
           onClick={onAdd}
-          className="px-4 py-2 rounded-md font-medium transition-opacity hover:opacity-90"
+          className="px-4 py-2 font-medium transition-opacity hover:opacity-90"
           style={{
             backgroundColor: buttonBg,
             color: buttonText,

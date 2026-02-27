@@ -25,7 +25,7 @@ export function ClassScheduleCard({ classes, accentColor = '#3B82F6', tvMode = f
   const fontSize = tvMode ? 'text-base' : 'text-sm';
 
   return (
-    <div className="rounded-2xl p-5" style={{ backgroundColor: bg }}>
+    <div className="p-5" style={{ backgroundColor: bg }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className={`font-semibold ${tvMode ? 'text-xl' : 'text-lg'}`} style={{ color: textPrimary }}>
@@ -50,7 +50,7 @@ export function ClassScheduleCard({ classes, accentColor = '#3B82F6', tvMode = f
           return (
             <div
               key={cls.id}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${fontSize}`}
+              className={`flex items-center gap-3 px-3 py-2.5 ${fontSize}`}
               style={{
                 opacity: isCompleted ? 0.45 : 1,
                 borderLeft: isInProgress ? `3px solid ${accentColor}` : '3px solid transparent',
@@ -84,7 +84,7 @@ export function ClassScheduleCard({ classes, accentColor = '#3B82F6', tvMode = f
                   style={{ backgroundColor: barBg }}
                 >
                   <div
-                    className="h-full rounded-full transition-all"
+                    className="h-full transition-all"
                     style={{
                       width: `${fillPct}%`,
                       backgroundColor: isFull ? '#EF4444' : accentColor,

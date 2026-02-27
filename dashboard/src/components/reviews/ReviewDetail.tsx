@@ -58,7 +58,7 @@ export default function ReviewDetail({
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const handleSendResponse = async () => {
     if (!responseText.trim()) return;
@@ -131,7 +131,7 @@ export default function ReviewDetail({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors"
           >
             <svg
               width="18"
@@ -153,7 +153,7 @@ export default function ReviewDetail({
         <div className="p-5 space-y-5">
           {/* Full review text */}
           <div
-            className="rounded-2xl p-5"
+            className="p-5"
             style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
           >
             <p className="text-sm leading-relaxed" style={{ color: textMain }}>
@@ -163,7 +163,7 @@ export default function ReviewDetail({
 
           {/* Contact match section */}
           <div
-            className="rounded-2xl p-5"
+            className="p-5"
             style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
           >
             <h3
@@ -197,7 +197,7 @@ export default function ReviewDetail({
                   </p>
                 </div>
                 <button
-                  className="ml-auto text-xs font-medium px-3 py-1 rounded-lg"
+                  className="ml-auto text-xs font-medium px-3 py-1"
                   style={{
                     color: buttonColor,
                     border: `1px solid ${buttonColor}30`,
@@ -212,7 +212,7 @@ export default function ReviewDetail({
                   Not matched to any client
                 </p>
                 <button
-                  className="text-xs font-medium px-3 py-1.5 rounded-lg"
+                  className="text-xs font-medium px-3 py-1.5"
                   style={{
                     color: buttonColor,
                     border: `1px solid ${buttonColor}30`,
@@ -226,7 +226,7 @@ export default function ReviewDetail({
 
           {/* Response composer */}
           <div
-            className="rounded-2xl p-5"
+            className="p-5"
             style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
           >
             <h3
@@ -239,7 +239,7 @@ export default function ReviewDetail({
             {/* Existing response */}
             {review.response && (
               <div
-                className="rounded-xl p-4 mb-4"
+                className="p-4 mb-4"
                 style={{
                   backgroundColor: `${buttonColor}05`,
                   border: `1px solid ${buttonColor}15`,
@@ -265,7 +265,7 @@ export default function ReviewDetail({
                 <button
                   key={mode.id}
                   onClick={() => setResponseMode(mode.id)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium transition-colors"
                   style={{
                     backgroundColor:
                       responseMode === mode.id ? `${buttonColor}10` : 'transparent',
@@ -286,7 +286,7 @@ export default function ReviewDetail({
                   onChange={(e) => setResponseText(e.target.value)}
                   placeholder="Write your response..."
                   rows={4}
-                  className="w-full rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2"
+                  className="w-full p-3 text-sm resize-none focus:outline-none focus:ring-2"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textMain,
@@ -298,7 +298,7 @@ export default function ReviewDetail({
                 <button
                   onClick={handleSendResponse}
                   disabled={!responseText.trim() || sending}
-                  className="px-4 py-2 rounded-xl text-sm font-medium transition-opacity disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-medium transition-opacity disabled:opacity-50"
                   style={{
                     backgroundColor: buttonColor,
                     color: buttonText,
@@ -312,14 +312,14 @@ export default function ReviewDetail({
             {/* AI Suggest mode (placeholder) */}
             {responseMode === 'ai_suggest' && (
               <div
-                className="rounded-xl p-6 text-center"
+                className="p-6 text-center"
                 style={{
                   backgroundColor: colors.background || '#F9FAFB',
                   border: `1px dashed ${borderColor}`,
                 }}
               >
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3"
+                  className="w-10 h-10 flex items-center justify-center mx-auto mb-3"
                   style={{ backgroundColor: `${buttonColor}10` }}
                 >
                   <svg
@@ -349,14 +349,14 @@ export default function ReviewDetail({
             {/* Autopilot mode (upsell) */}
             {responseMode === 'autopilot' && (
               <div
-                className="rounded-xl p-6 text-center"
+                className="p-6 text-center"
                 style={{
                   backgroundColor: colors.background || '#F9FAFB',
                   border: `1px dashed ${borderColor}`,
                 }}
               >
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3"
+                  className="w-10 h-10 flex items-center justify-center mx-auto mb-3"
                   style={{ backgroundColor: `${buttonColor}10` }}
                 >
                   <svg
@@ -381,7 +381,7 @@ export default function ReviewDetail({
                   Auto-respond to reviews based on star rating rules, with configurable delays and brand voice training.
                 </p>
                 <div
-                  className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold"
+                  className="inline-block px-3 py-1.5 text-xs font-semibold"
                   style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}
                 >
                   $15/mo add-on
@@ -392,7 +392,7 @@ export default function ReviewDetail({
 
           {/* Action buttons */}
           <div
-            className="rounded-2xl p-5"
+            className="p-5"
             style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
           >
             <h3
@@ -405,7 +405,7 @@ export default function ReviewDetail({
               {review.status !== 'published' && (
                 <button
                   onClick={handlePublish}
-                  className="px-4 py-2 rounded-xl text-sm font-medium"
+                  className="px-4 py-2 text-sm font-medium"
                   style={{
                     backgroundColor: '#D1FAE5',
                     color: '#047857',
@@ -417,7 +417,7 @@ export default function ReviewDetail({
               {review.status !== 'hidden' && (
                 <button
                   onClick={handleHide}
-                  className="px-4 py-2 rounded-xl text-sm font-medium"
+                  className="px-4 py-2 text-sm font-medium"
                   style={{
                     backgroundColor: '#F3F4F6',
                     color: '#374151',
@@ -428,7 +428,7 @@ export default function ReviewDetail({
               )}
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 rounded-xl text-sm font-medium"
+                className="px-4 py-2 text-sm font-medium"
                 style={{
                   backgroundColor: confirmDelete ? '#EF4444' : '#FEE2E2',
                   color: confirmDelete ? '#FFFFFF' : '#B91C1C',

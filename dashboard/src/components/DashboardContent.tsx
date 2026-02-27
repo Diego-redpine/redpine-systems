@@ -32,6 +32,8 @@ interface DashboardContentProps {
   onColorsChange?: (colors: import('./editors/ColorsEditor').ColorItem[]) => void;
   tabs?: import('@/types/config').DashboardTab[];
   onTabsReorder?: (tabs: import('@/types/config').DashboardTab[]) => void;
+  configHeadingFont?: string;
+  configBodyFont?: string;
 }
 
 // Extract pipeline config from PipelineData
@@ -556,7 +558,7 @@ function getTabAnalyticsTemplate(tabLabel?: string): AnalyticsTemplate | null {
 // ─── Clients Analytics Layout: Funnel + Donut + Conversion ───
 const ClientsAnalytics = memo(function ClientsAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -591,17 +593,17 @@ const ClientsAnalytics = memo(function ClientsAnalytics({ colors }: { colors: Da
     <div className="space-y-6">
       {/* Big numbers row — 3 cards */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <p className="text-xs font-medium uppercase tracking-wide mb-2" style={{ color: textMuted }}>Total Contacts</p>
           <p className="text-4xl font-bold tracking-tight" style={{ color: textMain }}>156</p>
           <p className="text-xs font-medium mt-2 text-emerald-600">+12 this month</p>
         </div>
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: buttonColor }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: buttonColor }}>
           <p className="text-xs font-medium uppercase tracking-wide mb-2" style={{ color: isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3' }}>Conversion Rate</p>
           <p className="text-4xl font-bold tracking-tight" style={{ color: isColorLight(buttonColor) ? '#000' : '#FFF' }}>18.5%</p>
           <p className="text-xs font-medium mt-2" style={{ color: isColorLight(buttonColor) ? '#059669' : '#34D399' }}>+2.3% vs last month</p>
         </div>
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <p className="text-xs font-medium uppercase tracking-wide mb-2" style={{ color: textMuted }}>Avg Lifetime Value</p>
           <p className="text-4xl font-bold tracking-tight" style={{ color: textMain }}>$1,240</p>
           <p className="text-xs font-medium mt-2 text-emerald-600">+$180</p>
@@ -609,7 +611,7 @@ const ClientsAnalytics = memo(function ClientsAnalytics({ colors }: { colors: Da
       </div>
 
       {/* Conversion Funnel — full width */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Conversion Funnel</h3>
         <div className="space-y-3">
           {funnelStages.map((stage, i) => (
@@ -639,7 +641,7 @@ const ClientsAnalytics = memo(function ClientsAnalytics({ colors }: { colors: Da
 
       {/* Two column: Lead Sources Donut + Monthly Leads Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-4" style={{ color: textMain }}>Lead Sources</h3>
           <div className="flex items-center gap-6">
             <div style={{ width: 140, height: 140 }}>
@@ -663,13 +665,13 @@ const ClientsAnalytics = memo(function ClientsAnalytics({ colors }: { colors: Da
           </div>
         </div>
 
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-4" style={{ color: textMain }}>New vs Converted</h3>
           <div style={{ height: 180 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyLeads} barGap={2}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, fontSize: '0.75rem' }} />
                 <Bar dataKey="new" name="New Leads" fill="#E5E7EB" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="converted" name="Converted" fill={buttonColor} radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -684,7 +686,7 @@ const ClientsAnalytics = memo(function ClientsAnalytics({ colors }: { colors: Da
 // ─── Schedule Analytics Layout: Booking Volume + Peak Hours + Trends ───
 const ScheduleAnalytics = memo(function ScheduleAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -727,7 +729,7 @@ const ScheduleAnalytics = memo(function ScheduleAnalytics({ colors }: { colors: 
           { label: 'No-show Rate', value: '5.2%', change: '-1.1%' },
           { label: 'Utilization', value: '87%', change: '+4%' },
         ].map((s, i) => (
-          <div key={i} className="rounded-2xl p-5 shadow-sm" style={{ backgroundColor: s.featured ? buttonColor : cardBg }}>
+          <div key={i} className="p-5 shadow-sm" style={{ backgroundColor: s.featured ? buttonColor : cardBg }}>
             <p className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: s.featured ? (isColorLight(buttonColor) ? '#00000060' : '#FFFFFF80') : textMuted }}>{s.label}</p>
             <p className="text-2xl font-bold" style={{ color: s.featured ? (isColorLight(buttonColor) ? '#000' : '#FFF') : textMain }}>{s.value}</p>
             <p className="text-xs font-medium mt-1" style={{ color: s.featured ? (isColorLight(buttonColor) ? '#059669' : '#34D399') : '#10B981' }}>{s.change}</p>
@@ -736,7 +738,7 @@ const ScheduleAnalytics = memo(function ScheduleAnalytics({ colors }: { colors: 
       </div>
 
       {/* Peak Hours — full width area chart */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-4" style={{ color: textMain }}>Peak Hours Today</h3>
         <div style={{ height: 200 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -749,7 +751,7 @@ const ScheduleAnalytics = memo(function ScheduleAnalytics({ colors }: { colors: 
               </defs>
               <XAxis dataKey="hour" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 11 }} />
               <YAxis hide />
-              <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+              <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, fontSize: '0.75rem' }} />
               <Area type="monotone" dataKey="count" stroke={buttonColor} strokeWidth={2.5} fill="url(#peakGrad)" dot={{ fill: cardBg, stroke: buttonColor, strokeWidth: 2, r: 3 }} />
             </AreaChart>
           </ResponsiveContainer>
@@ -758,13 +760,13 @@ const ScheduleAnalytics = memo(function ScheduleAnalytics({ colors }: { colors: 
 
       {/* Two column: Weekly Bookings + Status Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-4" style={{ color: textMain }}>Bookings by Day</h3>
           <div style={{ height: 180 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyBookings}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, fontSize: '0.75rem' }} />
                 <Bar dataKey="bookings" radius={[6, 6, 0, 0]}>
                   {weeklyBookings.map((d, i) => {
                     const max = Math.max(...weeklyBookings.map(w => w.bookings));
@@ -776,7 +778,7 @@ const ScheduleAnalytics = memo(function ScheduleAnalytics({ colors }: { colors: 
           </div>
         </div>
 
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-4" style={{ color: textMain }}>Booking Status</h3>
           <div className="flex items-center gap-6">
             <div style={{ width: 130, height: 130 }}>
@@ -808,7 +810,7 @@ const ScheduleAnalytics = memo(function ScheduleAnalytics({ colors }: { colors: 
 // ─── Payments Analytics Layout: Revenue Trend + Aging + Methods ───
 const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -838,13 +840,13 @@ const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: 
     <div className="space-y-6">
       {/* Revenue hero + two side stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="lg:col-span-2 p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide" style={{ color: textMuted }}>Total Revenue</p>
               <p className="text-3xl font-bold mt-1" style={{ color: textMain }}>$65,200</p>
             </div>
-            <span className="text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 text-emerald-700">+18.5% YoY</span>
+            <span className="text-xs font-medium px-3 py-1 bg-emerald-50 text-emerald-700">+18.5% YoY</span>
           </div>
           <div style={{ height: 160 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -856,7 +858,7 @@ const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: 
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Revenue']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Revenue']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, fontSize: '0.75rem' }} />
                 <Area type="monotone" dataKey="revenue" stroke={buttonColor} strokeWidth={2.5} fill="url(#revGrad)" dot={{ fill: cardBg, stroke: buttonColor, strokeWidth: 2, r: 4 }} />
               </AreaChart>
             </ResponsiveContainer>
@@ -864,12 +866,12 @@ const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: 
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex-1 rounded-2xl p-5 shadow-sm" style={{ backgroundColor: buttonColor }}>
+          <div className="flex-1 p-5 shadow-sm" style={{ backgroundColor: buttonColor }}>
             <p className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: isColorLight(buttonColor) ? '#00000060' : '#FFFFFF80' }}>Outstanding</p>
             <p className="text-2xl font-bold" style={{ color: isColorLight(buttonColor) ? '#000' : '#FFF' }}>$8,400</p>
             <p className="text-xs mt-1" style={{ color: isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3' }}>12 pending invoices</p>
           </div>
-          <div className="flex-1 rounded-2xl p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+          <div className="flex-1 p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
             <p className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: textMuted }}>Avg Invoice</p>
             <p className="text-2xl font-bold" style={{ color: textMain }}>$285</p>
             <p className="text-xs font-medium mt-1 text-emerald-600">+$22 vs last month</p>
@@ -879,7 +881,7 @@ const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: 
 
       {/* Two column: Invoice Aging + Payment Methods */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-5" style={{ color: textMain }}>Invoice Aging</h3>
           {/* Stacked horizontal bar */}
           <div className="flex rounded-full h-6 overflow-hidden mb-5">
@@ -891,7 +893,7 @@ const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: 
             {agingData.map((d, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: d.color }} />
+                  <div className="w-3 h-3 " style={{ backgroundColor: d.color }} />
                   <span className="text-sm" style={{ color: textMain }}>{d.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -903,7 +905,7 @@ const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: 
           </div>
         </div>
 
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-4" style={{ color: textMain }}>Payment Methods</h3>
           <div className="flex items-center gap-6">
             <div style={{ width: 140, height: 140 }}>
@@ -934,7 +936,7 @@ const PaymentsAnalytics = memo(function PaymentsAnalytics({ colors }: { colors: 
 // ─── Staff Analytics Layout: Headcount + Utilization + Pay ───
 const StaffAnalytics = memo(function StaffAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const buttonColor = colors.buttons || '#1A1A1A';
 
@@ -976,7 +978,7 @@ const StaffAnalytics = memo(function StaffAnalytics({ colors }: { colors: Dashbo
           const mainColor = isFeatured ? (isColorLight(buttonColor) ? '#000000' : '#FFFFFF') : textMain;
           const subColor = isFeatured ? (isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3') : textMuted;
           return (
-            <div key={i} className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: bg }}>
+            <div key={i} className="p-6 shadow-sm" style={{ backgroundColor: bg }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: subColor }}>{stat.label}</p>
               <p className="text-3xl font-bold tracking-tight" style={{ color: mainColor }}>{stat.value}</p>
               <p className="text-xs font-medium mt-2" style={{ color: isFeatured ? (isColorLight(buttonColor) ? '#059669' : '#34D399') : '#10B981' }}>{stat.change}</p>
@@ -986,13 +988,13 @@ const StaffAnalytics = memo(function StaffAnalytics({ colors }: { colors: Dashbo
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Team Hours by Day</h3>
           <div style={{ height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={utilization}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip formatter={(value) => [`${value} hours`, 'Total']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip formatter={(value) => [`${value} hours`, 'Total']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, fontSize: '0.75rem' }} />
                 <Bar dataKey="hours" radius={[6, 6, 0, 0]}>
                   {utilization.map((_, index) => (
                     <Cell key={index} fill={index === 4 ? buttonColor : '#E5E7EB'} />
@@ -1003,12 +1005,12 @@ const StaffAnalytics = memo(function StaffAnalytics({ colors }: { colors: Dashbo
           </div>
         </div>
 
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Top Performers</h3>
           <div className="space-y-4">
             {topPerformers.map((person, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : '#F5F5F5', color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : '#6B7280' }}>
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : (colors.cards || '#F5F5F5'), color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : (colors.text || '#6B7280'), opacity: i === 0 ? 1 : 0.7 }}>
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -1026,11 +1028,11 @@ const StaffAnalytics = memo(function StaffAnalytics({ colors }: { colors: Dashbo
         </div>
       </div>
 
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Staff by Type</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {breakdown.map((item, i) => (
-            <div key={i} className="text-center p-4 rounded-xl" style={{ backgroundColor: `${item.color}10` }}>
+            <div key={i} className="text-center p-4" style={{ backgroundColor: `${item.color}10` }}>
               <p className="text-2xl font-bold" style={{ color: item.color }}>{item.value}</p>
               <p className="text-xs font-medium mt-1" style={{ color: textMain }}>{item.label}</p>
             </div>
@@ -1044,7 +1046,7 @@ const StaffAnalytics = memo(function StaffAnalytics({ colors }: { colors: Dashbo
 // ─── Products Analytics Layout: Sales + Inventory + Categories ───
 const ProductsAnalytics = memo(function ProductsAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const buttonColor = colors.buttons || '#1A1A1A';
 
@@ -1085,7 +1087,7 @@ const ProductsAnalytics = memo(function ProductsAnalytics({ colors }: { colors: 
           const mainColor = isFeatured ? (isColorLight(buttonColor) ? '#000000' : '#FFFFFF') : textMain;
           const subColor = isFeatured ? (isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3') : textMuted;
           return (
-            <div key={i} className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: bg }}>
+            <div key={i} className="p-6 shadow-sm" style={{ backgroundColor: bg }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: subColor }}>{stat.label}</p>
               <p className="text-3xl font-bold tracking-tight" style={{ color: mainColor }}>{stat.value}</p>
               <p className="text-xs font-medium mt-2" style={{ color: isFeatured ? (isColorLight(buttonColor) ? '#059669' : '#34D399') : '#10B981' }}>{stat.change}</p>
@@ -1095,28 +1097,28 @@ const ProductsAnalytics = memo(function ProductsAnalytics({ colors }: { colors: 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-base font-semibold" style={{ color: textMain }}>Monthly Sales</h3>
-            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">6 months</span>
+            <span className="text-xs font-medium px-2.5 py-1 bg-emerald-50 text-emerald-700">6 months</span>
           </div>
           <div style={{ height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={salesTrend}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip formatter={(value) => [`${value} units`, 'Sold']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip formatter={(value) => [`${value} units`, 'Sold']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, fontSize: '0.75rem' }} />
                 <Area type="monotone" dataKey="sales" stroke={buttonColor} fill={`${buttonColor}20`} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Top Products</h3>
           <div className="space-y-4">
             {topProducts.map((product, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : '#F5F5F5', color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : '#6B7280' }}>
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : (colors.cards || '#F5F5F5'), color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : (colors.text || '#6B7280'), opacity: i === 0 ? 1 : 0.7 }}>
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -1134,11 +1136,11 @@ const ProductsAnalytics = memo(function ProductsAnalytics({ colors }: { colors: 
         </div>
       </div>
 
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Inventory Status</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {categories.map((item, i) => (
-            <div key={i} className="text-center p-4 rounded-xl" style={{ backgroundColor: `${item.color}10` }}>
+            <div key={i} className="text-center p-4" style={{ backgroundColor: `${item.color}10` }}>
               <p className="text-2xl font-bold" style={{ color: item.color }}>{item.value}</p>
               <p className="text-xs font-medium mt-1" style={{ color: textMain }}>{item.label}</p>
             </div>
@@ -1154,7 +1156,7 @@ const DefaultAnalytics = memo(function DefaultAnalytics({ colors, businessType }
   const data = platformDummyData.analytics;
   const template = getAnalyticsTemplate(businessType);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -1168,7 +1170,7 @@ const DefaultAnalytics = memo(function DefaultAnalytics({ colors, businessType }
           const mainColor = isFeatured ? (isColorLight(buttonColor) ? '#000000' : '#FFFFFF') : textMain;
           const subColor = isFeatured ? (isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3') : textMuted;
           return (
-            <div key={i} className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: bg }}>
+            <div key={i} className="p-6 shadow-sm" style={{ backgroundColor: bg }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: subColor }}>{label}</p>
               <p className="text-3xl font-bold tracking-tight" style={{ color: mainColor }}>
                 {typeof template.statValues[i] === 'number' ? template.statValues[i].toLocaleString() : template.statValues[i]}
@@ -1182,16 +1184,16 @@ const DefaultAnalytics = memo(function DefaultAnalytics({ colors, businessType }
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-base font-semibold" style={{ color: textMain }}>Monthly Revenue</h3>
-            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">6 months</span>
+            <span className="text-xs font-medium px-2.5 py-1 bg-emerald-50 text-emerald-700">6 months</span>
           </div>
           <div style={{ height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.monthlyRevenue.labels.map((l, i) => ({ name: l, value: data.monthlyRevenue.values[i] }))}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip formatter={(value) => [`$${(Number(value) / 1000).toFixed(1)}k`, 'Revenue']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip formatter={(value) => [`$${(Number(value) / 1000).toFixed(1)}k`, 'Revenue']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, fontSize: '0.75rem' }} />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {data.monthlyRevenue.values.map((_, index) => (
                     <Cell key={index} fill={index === data.monthlyRevenue.values.length - 1 ? buttonColor : '#E5E7EB'} />
@@ -1202,12 +1204,12 @@ const DefaultAnalytics = memo(function DefaultAnalytics({ colors, businessType }
           </div>
         </div>
 
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>{template.topItemsLabel}</h3>
           <div className="space-y-4">
             {template.topItems.map((item, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : '#F5F5F5', color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : '#6B7280' }}>
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : (colors.cards || '#F5F5F5'), color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : (colors.text || '#6B7280'), opacity: i === 0 ? 1 : 0.7 }}>
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -1225,11 +1227,11 @@ const DefaultAnalytics = memo(function DefaultAnalytics({ colors, businessType }
         </div>
       </div>
 
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>{template.breakdownLabel}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {template.breakdownItems.map((item, i) => (
-            <div key={i} className="text-center p-4 rounded-xl" style={{ backgroundColor: `${item.color}10` }}>
+            <div key={i} className="text-center p-4" style={{ backgroundColor: `${item.color}10` }}>
               <p className="text-2xl font-bold" style={{ color: item.color }}>{item.value}</p>
               <p className="text-xs font-medium mt-1" style={{ color: textMain }}>{item.label}</p>
             </div>
@@ -1243,7 +1245,7 @@ const DefaultAnalytics = memo(function DefaultAnalytics({ colors, businessType }
 // ─── Tasks Analytics Layout: Completion + Priority + Burndown ───
 const TasksAnalytics = memo(function TasksAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const buttonColor = colors.buttons || '#1A1A1A';
 
@@ -1283,7 +1285,7 @@ const TasksAnalytics = memo(function TasksAnalytics({ colors }: { colors: Dashbo
           const mainColor = isFeatured ? (isColorLight(buttonColor) ? '#000000' : '#FFFFFF') : textMain;
           const subColor = isFeatured ? (isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3') : textMuted;
           return (
-            <div key={i} className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: bg }}>
+            <div key={i} className="p-6 shadow-sm" style={{ backgroundColor: bg }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: subColor }}>{stat.label}</p>
               <p className="text-3xl font-bold tracking-tight" style={{ color: mainColor }}>{stat.value}</p>
               <p className="text-xs font-medium mt-2" style={{ color: isFeatured ? (isColorLight(buttonColor) ? '#059669' : '#34D399') : '#10B981' }}>{stat.change}</p>
@@ -1292,25 +1294,25 @@ const TasksAnalytics = memo(function TasksAnalytics({ colors }: { colors: Dashbo
         })}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Weekly: Completed vs Created</h3>
           <div style={{ height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyProgress}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, fontSize: '0.75rem' }} />
                 <Bar dataKey="completed" name="Completed" fill={buttonColor} radius={[4, 4, 0, 0]} />
                 <Bar dataKey="created" name="Created" fill="#E5E7EB" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Tasks by Assignee</h3>
           <div className="space-y-4">
             {byPriority.map((person, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : '#F5F5F5', color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : '#6B7280' }}>{i + 1}</span>
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : (colors.cards || '#F5F5F5'), color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : (colors.text || '#6B7280'), opacity: i === 0 ? 1 : 0.7 }}>{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium truncate" style={{ color: textMain }}>{person.name}</span>
@@ -1325,11 +1327,11 @@ const TasksAnalytics = memo(function TasksAnalytics({ colors }: { colors: Dashbo
           </div>
         </div>
       </div>
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Task Status</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {breakdown.map((item, i) => (
-            <div key={i} className="text-center p-4 rounded-xl" style={{ backgroundColor: `${item.color}10` }}>
+            <div key={i} className="text-center p-4" style={{ backgroundColor: `${item.color}10` }}>
               <p className="text-2xl font-bold" style={{ color: item.color }}>{item.value}</p>
               <p className="text-xs font-medium mt-1" style={{ color: textMain }}>{item.label}</p>
             </div>
@@ -1343,7 +1345,7 @@ const TasksAnalytics = memo(function TasksAnalytics({ colors }: { colors: Dashbo
 // ─── Marketing Analytics Layout: Campaigns + Reviews + Engagement ───
 const MarketingAnalytics = memo(function MarketingAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const buttonColor = colors.buttons || '#1A1A1A';
 
@@ -1384,7 +1386,7 @@ const MarketingAnalytics = memo(function MarketingAnalytics({ colors }: { colors
           const mainColor = isFeatured ? (isColorLight(buttonColor) ? '#000000' : '#FFFFFF') : textMain;
           const subColor = isFeatured ? (isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3') : textMuted;
           return (
-            <div key={i} className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: bg }}>
+            <div key={i} className="p-6 shadow-sm" style={{ backgroundColor: bg }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: subColor }}>{stat.label}</p>
               <p className="text-3xl font-bold tracking-tight" style={{ color: mainColor }}>{stat.value}</p>
               <p className="text-xs font-medium mt-2" style={{ color: isFeatured ? (isColorLight(buttonColor) ? '#059669' : '#34D399') : '#10B981' }}>{stat.change}</p>
@@ -1393,13 +1395,13 @@ const MarketingAnalytics = memo(function MarketingAnalytics({ colors }: { colors
         })}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Reviews Over Time</h3>
           <div style={{ height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyReviews}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, fontSize: '0.75rem' }} />
                 <Bar dataKey="reviews" name="Reviews" radius={[6, 6, 0, 0]}>
                   {monthlyReviews.map((_, index) => (
                     <Cell key={index} fill={index === monthlyReviews.length - 1 ? buttonColor : '#E5E7EB'} />
@@ -1409,12 +1411,12 @@ const MarketingAnalytics = memo(function MarketingAnalytics({ colors }: { colors
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Top Campaigns</h3>
           <div className="space-y-4">
             {topCampaigns.map((campaign, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : '#F5F5F5', color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : '#6B7280' }}>{i + 1}</span>
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : (colors.cards || '#F5F5F5'), color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : (colors.text || '#6B7280'), opacity: i === 0 ? 1 : 0.7 }}>{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium truncate" style={{ color: textMain }}>{campaign.name}</span>
@@ -1429,11 +1431,11 @@ const MarketingAnalytics = memo(function MarketingAnalytics({ colors }: { colors
           </div>
         </div>
       </div>
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Review Breakdown</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {breakdown.map((item, i) => (
-            <div key={i} className="text-center p-4 rounded-xl" style={{ backgroundColor: `${item.color}10` }}>
+            <div key={i} className="text-center p-4" style={{ backgroundColor: `${item.color}10` }}>
               <p className="text-2xl font-bold" style={{ color: item.color }}>{item.value}</p>
               <p className="text-xs font-medium mt-1" style={{ color: textMain }}>{item.label}</p>
             </div>
@@ -1447,7 +1449,7 @@ const MarketingAnalytics = memo(function MarketingAnalytics({ colors }: { colors
 // ─── Documents Analytics Layout: Status + Signatures + Expiration ───
 const DocumentsAnalytics = memo(function DocumentsAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const buttonColor = colors.buttons || '#1A1A1A';
 
@@ -1488,7 +1490,7 @@ const DocumentsAnalytics = memo(function DocumentsAnalytics({ colors }: { colors
           const mainColor = isFeatured ? (isColorLight(buttonColor) ? '#000000' : '#FFFFFF') : textMain;
           const subColor = isFeatured ? (isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3') : textMuted;
           return (
-            <div key={i} className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: bg }}>
+            <div key={i} className="p-6 shadow-sm" style={{ backgroundColor: bg }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: subColor }}>{stat.label}</p>
               <p className="text-3xl font-bold tracking-tight" style={{ color: mainColor }}>{stat.value}</p>
               <p className="text-xs font-medium mt-2" style={{ color: isFeatured ? (isColorLight(buttonColor) ? '#059669' : '#34D399') : '#10B981' }}>{stat.change}</p>
@@ -1497,27 +1499,27 @@ const DocumentsAnalytics = memo(function DocumentsAnalytics({ colors }: { colors
         })}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-base font-semibold" style={{ color: textMain }}>Monthly Uploads</h3>
-            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">6 months</span>
+            <span className="text-xs font-medium px-2.5 py-1 bg-emerald-50 text-emerald-700">6 months</span>
           </div>
           <div style={{ height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={monthlyUploads}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip formatter={(value) => [`${value} files`, 'Uploaded']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip formatter={(value) => [`${value} files`, 'Uploaded']} contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, fontSize: '0.75rem' }} />
                 <Area type="monotone" dataKey="uploads" stroke={buttonColor} fill={`${buttonColor}20`} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>By Category</h3>
           <div className="space-y-4">
             {topCategories.map((cat, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : '#F5F5F5', color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : '#6B7280' }}>{i + 1}</span>
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : (colors.cards || '#F5F5F5'), color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : (colors.text || '#6B7280'), opacity: i === 0 ? 1 : 0.7 }}>{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium truncate" style={{ color: textMain }}>{cat.name}</span>
@@ -1532,11 +1534,11 @@ const DocumentsAnalytics = memo(function DocumentsAnalytics({ colors }: { colors
           </div>
         </div>
       </div>
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Document Status</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {breakdown.map((item, i) => (
-            <div key={i} className="text-center p-4 rounded-xl" style={{ backgroundColor: `${item.color}10` }}>
+            <div key={i} className="text-center p-4" style={{ backgroundColor: `${item.color}10` }}>
               <p className="text-2xl font-bold" style={{ color: item.color }}>{item.value}</p>
               <p className="text-xs font-medium mt-1" style={{ color: textMain }}>{item.label}</p>
             </div>
@@ -1550,7 +1552,7 @@ const DocumentsAnalytics = memo(function DocumentsAnalytics({ colors }: { colors
 // ─── Support Analytics Layout: Tickets + Response Time + CSAT ───
 const SupportAnalytics = memo(function SupportAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const buttonColor = colors.buttons || '#1A1A1A';
 
@@ -1592,7 +1594,7 @@ const SupportAnalytics = memo(function SupportAnalytics({ colors }: { colors: Da
           const mainColor = isFeatured ? (isColorLight(buttonColor) ? '#000000' : '#FFFFFF') : textMain;
           const subColor = isFeatured ? (isColorLight(buttonColor) ? '#00000080' : '#FFFFFFB3') : textMuted;
           return (
-            <div key={i} className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: bg }}>
+            <div key={i} className="p-6 shadow-sm" style={{ backgroundColor: bg }}>
               <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: subColor }}>{stat.label}</p>
               <p className="text-3xl font-bold tracking-tight" style={{ color: mainColor }}>{stat.value}</p>
               <p className="text-xs font-medium mt-2" style={{ color: isFeatured ? (isColorLight(buttonColor) ? '#059669' : '#34D399') : '#10B981' }}>{stat.change}</p>
@@ -1601,25 +1603,25 @@ const SupportAnalytics = memo(function SupportAnalytics({ colors }: { colors: Da
         })}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Opened vs Resolved</h3>
           <div style={{ height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyTickets}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: textMuted, fontSize: 12 }} />
-                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, borderRadius: '0.5rem', fontSize: '0.75rem' }} />
+                <Tooltip contentStyle={{ backgroundColor: cardBg, border: `1px solid ${colors.borders || '#E5E7EB'}`, fontSize: '0.75rem' }} />
                 <Bar dataKey="opened" name="Opened" fill="#E5E7EB" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="resolved" name="Resolved" fill={buttonColor} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>By Category</h3>
           <div className="space-y-4">
             {topCategories.map((cat, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : '#F5F5F5', color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : '#6B7280' }}>{i + 1}</span>
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0" style={{ backgroundColor: i === 0 ? buttonColor : (colors.cards || '#F5F5F5'), color: i === 0 ? (isColorLight(buttonColor) ? '#000' : '#FFF') : (colors.text || '#6B7280'), opacity: i === 0 ? 1 : 0.7 }}>{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium truncate" style={{ color: textMain }}>{cat.name}</span>
@@ -1634,11 +1636,11 @@ const SupportAnalytics = memo(function SupportAnalytics({ colors }: { colors: Da
           </div>
         </div>
       </div>
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Ticket Status</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {breakdown.map((item, i) => (
-            <div key={i} className="text-center p-4 rounded-xl" style={{ backgroundColor: `${item.color}10` }}>
+            <div key={i} className="text-center p-4" style={{ backgroundColor: `${item.color}10` }}>
               <p className="text-2xl font-bold" style={{ color: item.color }}>{item.value}</p>
               <p className="text-xs font-medium mt-1" style={{ color: textMain }}>{item.label}</p>
             </div>
@@ -1688,7 +1690,7 @@ function MarketingContent({ colors }: { colors: DashboardColors }) {
           <button
             key={tab.id}
             onClick={() => setSubTab(tab.id)}
-            className="px-4 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+            className="px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
             style={{
               backgroundColor: subTab === tab.id ? buttonColor : 'transparent',
               color: subTab === tab.id ? buttonText : textMain,
@@ -1759,7 +1761,7 @@ function TeamManagement({ colors }: { colors: DashboardColors }) {
   const [inviteUrl, setInviteUrl] = useState('');
 
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonBg = colors.buttons || '#3B82F6';
@@ -1827,19 +1829,19 @@ function TeamManagement({ colors }: { colors: DashboardColors }) {
       deactivated: 'bg-gray-100 text-gray-500',
     };
     return (
-      <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${styles[status] || styles.pending}`}>
+      <span className={`inline-flex px-3 py-1 text-xs font-medium ${styles[status] || styles.pending}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
   };
 
   return (
-    <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+    <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-base font-semibold" style={{ color: textMain }}>Team</h3>
         <button
           onClick={() => setShowInvite(!showInvite)}
-          className="px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors hover:opacity-90"
+          className="px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
           style={{ backgroundColor: buttonBg }}
         >
           {showInvite ? 'Cancel' : '+ Invite Member'}
@@ -1847,14 +1849,14 @@ function TeamManagement({ colors }: { colors: DashboardColors }) {
       </div>
 
       {showInvite && (
-        <form onSubmit={handleInvite} className="mb-6 p-4 rounded-xl border" style={{ borderColor }}>
+        <form onSubmit={handleInvite} className="mb-6 p-4 border" style={{ borderColor }}>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <input
               type="text"
               placeholder="Name"
               value={inviteName}
               onChange={(e) => setInviteName(e.target.value)}
-              className="px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className="px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-200"
               style={{ borderColor, color: textMain }}
             />
             <input
@@ -1863,13 +1865,13 @@ function TeamManagement({ colors }: { colors: DashboardColors }) {
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               required
-              className="px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className="px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-200"
               style={{ borderColor, color: textMain }}
             />
           </div>
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors hover:opacity-90"
+            className="px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
             style={{ backgroundColor: buttonBg }}
           >
             Send Invite
@@ -1878,7 +1880,7 @@ function TeamManagement({ colors }: { colors: DashboardColors }) {
             <p className="mt-2 text-sm text-red-600">{inviteError}</p>
           )}
           {inviteUrl && (
-            <div className="mt-3 p-3 rounded-lg bg-emerald-50 text-emerald-800 text-sm">
+            <div className="mt-3 p-3 bg-emerald-50 text-emerald-800 text-sm">
               <p className="font-medium mb-1">Invite link created:</p>
               <code className="text-xs break-all">{inviteUrl}</code>
             </div>
@@ -1908,7 +1910,7 @@ function TeamManagement({ colors }: { colors: DashboardColors }) {
               </div>
               <div className="flex items-center gap-3">
                 {statusBadge(member.status)}
-                <span className="text-xs px-2 py-0.5 rounded bg-gray-100" style={{ color: textMuted }}>
+                <span className="text-xs px-2 py-0.5 bg-gray-100" style={{ color: textMuted }}>
                   {member.role}
                 </span>
                 {member.status !== 'deactivated' && (
@@ -1949,6 +1951,8 @@ export default function DashboardContent({
   onColorsChange,
   tabs,
   onTabsReorder,
+  configHeadingFont,
+  configBodyFont,
 }: DashboardContentProps) {
   // Internal sub-tab state — resets when activeTab changes
   const [activeSubTab, setActiveSubTab] = useState<string>('');
@@ -2046,6 +2050,8 @@ export default function DashboardContent({
             onTabsReorder={onTabsReorder}
             businessType={businessType}
             businessName={businessName}
+            configHeadingFont={configHeadingFont}
+            configBodyFont={configBodyFont}
           />
         )}
         {activeTab === 'reviews' && <ReviewsTab colors={colors} />}
@@ -2123,7 +2129,7 @@ export default function DashboardContent({
               <button
                 key={sub.id}
                 onClick={() => setActiveSubTab(sub.id)}
-                className="px-4 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+                className="px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
                 style={{
                   backgroundColor: isActive ? buttonColor : 'transparent',
                   color: isActive ? getContrastText(buttonColor) : textColor,

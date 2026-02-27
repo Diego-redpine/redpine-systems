@@ -34,7 +34,7 @@ export default function MessagePanel({ isOpen, onClose, colors }: MessagePanelPr
 
   const cardBg = colors.cards || '#FFFFFF';
   const headingColor = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const buttonColor = colors.buttons || '#1A1A1A';
   const borderColor = colors.borders || '#E5E7EB';
 
@@ -65,7 +65,7 @@ export default function MessagePanel({ isOpen, onClose, colors }: MessagePanelPr
       {/* Invisible backdrop to catch outside clicks */}
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
-        className="absolute top-full right-0 mt-2 w-96 max-h-[520px] rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50"
+        className="absolute top-full right-0 mt-2 w-96 max-h-[520px] shadow-xl border overflow-hidden flex flex-col z-50"
         style={{ backgroundColor: cardBg, borderColor }}
       >
         {/* Header */}
@@ -73,7 +73,7 @@ export default function MessagePanel({ isOpen, onClose, colors }: MessagePanelPr
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold" style={{ color: headingColor }}>Messages</h3>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 text-xs font-medium rounded-full" style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}>
+              <span className="px-2 py-0.5 text-xs font-medium " style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}>
                 {unreadCount}
               </span>
             )}
@@ -120,7 +120,7 @@ export default function MessagePanel({ isOpen, onClose, colors }: MessagePanelPr
                       {m.from}
                     </p>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[11px]" style={{ color: '#9CA3AF' }}>{m.time}</span>
+                      <span className="text-[11px]" style={{ color: textMuted }}>{m.time}</span>
                       {!m.read && (
                         <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: buttonColor }} />
                       )}

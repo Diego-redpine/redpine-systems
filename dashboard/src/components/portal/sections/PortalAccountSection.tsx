@@ -197,7 +197,7 @@ export function PortalAccountSection({
   return (
     <div className="space-y-6">
       {/* Profile Card */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+      <div className="bg-white p-6 shadow-sm border border-gray-200">
         <h2 className="text-lg font-bold text-gray-900 mb-4">Profile</h2>
 
         <div className="space-y-4">
@@ -221,7 +221,7 @@ export function PortalAccountSection({
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
             />
           </div>
@@ -232,7 +232,7 @@ export function PortalAccountSection({
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
             />
           </div>
@@ -244,7 +244,7 @@ export function PortalAccountSection({
               value={phone}
               onChange={e => setPhone(e.target.value)}
               placeholder="(555) 123-4567"
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
             />
           </div>
@@ -256,7 +256,7 @@ export function PortalAccountSection({
               value={address}
               onChange={e => setAddress(e.target.value)}
               placeholder="123 Main St"
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
             />
           </div>
@@ -264,7 +264,7 @@ export function PortalAccountSection({
           <button
             onClick={handleSaveProfile}
             disabled={profileSaving}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50"
+            className="w-full py-2.5 text-sm font-semibold transition-opacity disabled:opacity-50"
             style={{ backgroundColor: accentColor, color: accentTextColor }}
           >
             {profileSaved ? 'Saved!' : profileSaving ? 'Saving...' : 'Save Profile'}
@@ -274,7 +274,7 @@ export function PortalAccountSection({
 
       {/* Preferences Card (only if industry has preference fields) */}
       {portalConfig.preferenceFields.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white p-6 shadow-sm border border-gray-200">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Preferences</h2>
 
           <div className="space-y-4">
@@ -288,14 +288,14 @@ export function PortalAccountSection({
                     value={preferences[field.key] || ''}
                     onChange={e => handlePreferenceChange(field.key, e.target.value)}
                     rows={3}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none"
+                    className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none"
                     style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                   />
                 ) : field.type === 'select' && field.options ? (
                   <select
                     value={preferences[field.key] || ''}
                     onChange={e => handlePreferenceChange(field.key, e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white"
                     style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                   >
                     <option value="">Select...</option>
@@ -308,7 +308,7 @@ export function PortalAccountSection({
                     type="text"
                     value={preferences[field.key] || ''}
                     onChange={e => handlePreferenceChange(field.key, e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                    className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                     style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                   />
                 )}
@@ -318,7 +318,7 @@ export function PortalAccountSection({
             <button
               onClick={handleSavePreferences}
               disabled={prefsSaving}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50"
+              className="w-full py-2.5 text-sm font-semibold transition-opacity disabled:opacity-50"
               style={{ backgroundColor: accentColor, color: accentTextColor }}
             >
               {prefsSaved ? 'Saved!' : prefsSaving ? 'Saving...' : 'Save Preferences'}
@@ -328,7 +328,7 @@ export function PortalAccountSection({
       )}
 
       {/* Family Members Card — Full Management */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+      <div className="bg-white p-6 shadow-sm border border-gray-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900">Family Members</h2>
           <button
@@ -342,7 +342,7 @@ export function PortalAccountSection({
 
         {/* Add Family Member Form */}
         {showAddFamily && (
-          <div className="mb-4 p-4 rounded-xl bg-gray-50 space-y-3">
+          <div className="mb-4 p-4 bg-gray-50 space-y-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
               <input
@@ -350,7 +350,7 @@ export function PortalAccountSection({
                 value={newMemberName}
                 onChange={e => setNewMemberName(e.target.value)}
                 placeholder="Family member name"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                className="w-full px-3 py-2 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                 style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
               />
             </div>
@@ -362,7 +362,7 @@ export function PortalAccountSection({
                   value={newMemberEmail}
                   onChange={e => setNewMemberEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                  className="w-full px-3 py-2 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                   style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                 />
               </div>
@@ -373,7 +373,7 @@ export function PortalAccountSection({
                   value={newMemberPhone}
                   onChange={e => setNewMemberPhone(e.target.value)}
                   placeholder="(555) 123-4567"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                  className="w-full px-3 py-2 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                   style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                 />
               </div>
@@ -383,7 +383,7 @@ export function PortalAccountSection({
               <select
                 value={newMemberRelation}
                 onChange={e => setNewMemberRelation(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-offset-1"
+                className="w-full px-3 py-2 border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-offset-1"
                 style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
               >
                 <option value="family">Family</option>
@@ -397,7 +397,7 @@ export function PortalAccountSection({
             <button
               onClick={handleAddFamilyMember}
               disabled={familySaving || !newMemberName.trim()}
-              className="w-full py-2 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-50"
+              className="w-full py-2 text-sm font-semibold transition-opacity disabled:opacity-50"
               style={{ backgroundColor: accentColor, color: accentTextColor }}
             >
               {familySaving ? 'Adding...' : 'Add Family Member'}
@@ -418,7 +418,7 @@ export function PortalAccountSection({
             {familyMembers.map(member => (
               <div
                 key={member.id}
-                className={`flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer ${
+                className={`flex items-center gap-3 p-3 transition-colors cursor-pointer ${
                   activeMemberId === member.id ? 'ring-2' : 'bg-gray-50 hover:bg-gray-100'
                 }`}
                 style={activeMemberId === member.id ? { outline: `2px solid ${accentColor}`, outlineOffset: '-2px', backgroundColor: `${accentColor}08` } : undefined}
@@ -440,13 +440,13 @@ export function PortalAccountSection({
                 {/* Switch / Remove actions */}
                 <div className="flex items-center gap-1 flex-shrink-0">
                   {activeMemberId === member.id && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${accentColor}15`, color: accentColor }}>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 " style={{ backgroundColor: `${accentColor}15`, color: accentColor }}>
                       Active
                     </span>
                   )}
                   <button
                     onClick={(e) => { e.stopPropagation(); handleRemoveFamilyMember(member.id); }}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                     title="Remove"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -467,21 +467,21 @@ export function PortalAccountSection({
       </div>
 
       {/* Login Link Card */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+      <div className="bg-white p-6 shadow-sm border border-gray-200">
         <h2 className="text-lg font-bold text-gray-900 mb-2">Sign In</h2>
         <p className="text-sm text-gray-500 mb-4">
           We use magic links instead of passwords. Click below to receive a new sign-in link.
         </p>
 
         {linkSent ? (
-          <div className="p-3 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700">
+          <div className="p-3 bg-green-50 border border-green-200 text-sm text-green-700">
             Login link sent to <strong>{email}</strong>. Check your inbox.
           </div>
         ) : (
           <button
             onClick={handleSendMagicLink}
             disabled={linkSending}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold border-2 transition-opacity disabled:opacity-50"
+            className="w-full py-2.5 text-sm font-semibold border-2 transition-opacity disabled:opacity-50"
             style={{ borderColor: accentColor, color: accentColor, backgroundColor: 'transparent' }}
           >
             {linkSending ? 'Sending...' : 'Send Me a New Login Link'}

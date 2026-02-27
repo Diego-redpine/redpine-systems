@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Brand from '@/components/Brand';
+import Image from 'next/image';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -210,22 +210,25 @@ export default function BuildingAnimation({
   // Render
   // -------------------------------------------------------------------------
   return (
-    <div className="h-screen bg-gray-50 flex items-center justify-center">
+    <div
+      className="h-screen bg-white flex items-center justify-center"
+      style={{ fontFamily: "'Fira Code', monospace" }}
+    >
       <div className="text-center w-full max-w-sm px-6">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <Brand size="lg" linkToHome={false} />
+          <Image src="/logo.png" alt="Red Pine" width={80} height={80} />
         </div>
 
         {/* Heading */}
-        <h1 className="text-xl font-bold text-gray-900 mb-8">
+        <h1 className="text-xl font-bold text-black mb-8">
           Building your platform...
         </h1>
 
         {/* Progress bar */}
-        <div className="w-72 h-2 bg-gray-200 rounded-full mx-auto mb-8">
+        <div className="w-72 h-2 bg-gray-200 mx-auto mb-8">
           <div
-            className="h-full bg-gray-900 rounded-full transition-all duration-700"
+            className="h-full bg-black transition-all duration-700"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -236,55 +239,31 @@ export default function BuildingAnimation({
             <div key={i} className="flex items-center gap-3">
               {/* Icon */}
               {step.status === 'done' && (
-                <svg
-                  className="w-5 h-5 text-green-500 shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                <span className="text-[#ce0707] font-bold text-sm w-5 text-center shrink-0">[x]</span>
               )}
               {step.status === 'active' && (
-                <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                  <div className="w-2.5 h-2.5 bg-gray-900 rounded-full animate-pulse" />
+                <div className="w-5 flex items-center justify-center shrink-0">
+                  <div className="w-2.5 h-2.5 bg-black animate-pulse" />
                 </div>
               )}
               {step.status === 'pending' && (
-                <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                  <div className="w-2.5 h-2.5 bg-gray-300 rounded-full" />
+                <div className="w-5 flex items-center justify-center shrink-0">
+                  <div className="w-2.5 h-2.5 bg-gray-300" />
                 </div>
               )}
               {step.status === 'error' && (
-                <svg
-                  className="w-5 h-5 text-red-500 shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <span className="text-[#ce0707] font-bold text-sm w-5 text-center shrink-0">[!]</span>
               )}
 
               {/* Label */}
               <span
                 className={`text-sm ${
                   step.status === 'active'
-                    ? 'text-gray-900 font-medium'
+                    ? 'text-black font-medium'
                     : step.status === 'done'
                       ? 'text-gray-400'
                       : step.status === 'error'
-                        ? 'text-red-600'
+                        ? 'text-[#ce0707]'
                         : 'text-gray-300'
                 }`}
               >
@@ -297,12 +276,12 @@ export default function BuildingAnimation({
         {/* Error message with recovery */}
         {error && (
           <div className="mt-6 text-center">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-left mb-4">
+            <div className="p-4 bg-white border-2 border-[#ce0707] text-[#ce0707] text-sm text-left mb-4">
               {error}
             </div>
             <button
               onClick={() => window.location.href = '/onboarding'}
-              className="px-6 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors"
+              className="px-6 py-2.5 bg-white text-[#ce0707] border-2 border-black text-sm font-semibold hover:bg-[#ce0707] hover:text-white transition-all"
             >
               Start Over
             </button>

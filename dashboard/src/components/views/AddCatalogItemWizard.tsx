@@ -183,7 +183,7 @@ export default function AddCatalogItemWizard({
           {steps.map((s, i) => (
             <div
               key={s}
-              className="h-1.5 rounded-full transition-all"
+              className="h-1.5 transition-all"
               style={{
                 width: i === currentIdx ? 32 : 16,
                 backgroundColor: i <= currentIdx ? buttonBg : borderColor,
@@ -229,7 +229,7 @@ export default function AddCatalogItemWizard({
                     <button
                       key={opt.value}
                       onClick={() => setData(d => ({ ...d, item_type: opt.value }))}
-                      className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 text-center transition-all hover:shadow-md"
+                      className="flex flex-col items-center gap-3 p-6 border-2 text-center transition-all hover:shadow-md"
                       style={{
                         borderColor: selected ? buttonBg : borderColor,
                         backgroundColor: selected ? `${buttonBg}08` : cardBg,
@@ -237,7 +237,7 @@ export default function AddCatalogItemWizard({
                       }}
                     >
                       <div
-                        className="w-14 h-14 rounded-lg flex items-center justify-center"
+                        className="w-14 h-14 flex items-center justify-center"
                         style={{ backgroundColor: `${buttonBg}15` }}
                       >
                         <div style={{ color: buttonBg }}>{opt.icon}</div>
@@ -270,7 +270,7 @@ export default function AddCatalogItemWizard({
                   value={data.name}
                   onChange={e => setData(d => ({ ...d, name: e.target.value }))}
                   placeholder={data.item_type === 'service' ? 'e.g. Gel Manicure, Deep Tissue Massage' : 'e.g. Hair Oil, Gift Card'}
-                  className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                  className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                   style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                   autoFocus
                 />
@@ -290,7 +290,7 @@ export default function AddCatalogItemWizard({
                       value={data.price}
                       onChange={e => setData(d => ({ ...d, price: e.target.value }))}
                       placeholder="0.00"
-                      className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                      className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                       style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                     />
                   </div>
@@ -307,7 +307,7 @@ export default function AddCatalogItemWizard({
                           <button
                             key={opt.value}
                             onClick={() => setData(d => ({ ...d, duration_minutes: opt.value }))}
-                            className="px-2.5 py-1.5 rounded-lg border-2 text-xs font-medium transition-all"
+                            className="px-2.5 py-1.5 border-2 text-xs font-medium transition-all"
                             style={{
                               borderColor: selected ? buttonBg : borderColor,
                               backgroundColor: selected ? `${buttonBg}10` : 'transparent',
@@ -330,7 +330,7 @@ export default function AddCatalogItemWizard({
                       value={data.sku}
                       onChange={e => setData(d => ({ ...d, sku: e.target.value }))}
                       placeholder="e.g. OPI-001"
-                      className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                      className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                       style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                     />
                   </div>
@@ -346,7 +346,7 @@ export default function AddCatalogItemWizard({
                   value={data.category}
                   onChange={e => setData(d => ({ ...d, category: e.target.value }))}
                   placeholder={data.item_type === 'service' ? 'e.g. Nails, Massage' : 'e.g. Hair Care, Accessories'}
-                  className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                  className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                   style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                 />
               </div>
@@ -389,7 +389,7 @@ export default function AddCatalogItemWizard({
                               <button
                                 key={opt.value}
                                 onClick={() => setData(d => ({ ...d, buffer_minutes: opt.value }))}
-                                className="px-3.5 py-2 rounded-lg border-2 text-xs font-medium transition-all"
+                                className="px-3.5 py-2 border-2 text-xs font-medium transition-all"
                                 style={{
                                   borderColor: selected ? buttonBg : borderColor,
                                   backgroundColor: selected ? `${buttonBg}10` : 'transparent',
@@ -417,7 +417,7 @@ export default function AddCatalogItemWizard({
                               style={{ backgroundColor: data.pricingPerStaff ? buttonBg : borderColor }}
                             >
                               <div
-                                className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                                className="absolute top-0.5 w-4 h-4 bg-white shadow-sm transition-transform"
                                 style={{ transform: data.pricingPerStaff ? 'translateX(18px)' : 'translateX(2px)' }}
                               />
                             </button>
@@ -439,7 +439,7 @@ export default function AddCatalogItemWizard({
                                         staffPricing: { ...d.staffPricing, [s.id]: e.target.value },
                                       }))}
                                       placeholder={data.price || '0.00'}
-                                      className="w-24 px-2 py-1.5 rounded-lg border text-xs outline-none"
+                                      className="w-24 px-2 py-1.5 border text-xs outline-none"
                                       style={inputStyle}
                                     />
                                   </div>
@@ -464,7 +464,7 @@ export default function AddCatalogItemWizard({
                         value={data.quantity}
                         onChange={e => setData(d => ({ ...d, quantity: e.target.value }))}
                         placeholder="e.g. 50"
-                        className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                        className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                         style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                       />
                     </div>
@@ -479,7 +479,7 @@ export default function AddCatalogItemWizard({
                       onChange={e => setData(d => ({ ...d, description: e.target.value }))}
                       placeholder={data.item_type === 'service' ? 'What does this service include?' : 'Product details'}
                       rows={3}
-                      className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2 resize-none"
+                      className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2 resize-none"
                       style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                     />
                   </div>
@@ -495,7 +495,7 @@ export default function AddCatalogItemWizard({
                 Review and confirm
               </p>
               <div
-                className="rounded-xl border p-4 space-y-3"
+                className="border p-4 space-y-3"
                 style={{ borderColor, backgroundColor: pageBg }}
               >
                 <Row label="Type" value={typeLabel} textColor={textColor} mutedColor={mutedColor} badge badgeBg={buttonBg} badgeText={buttonText} />
@@ -552,7 +552,7 @@ export default function AddCatalogItemWizard({
         >
           <button
             onClick={currentIdx > 0 ? goBack : handleClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium border transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm font-medium border transition-opacity hover:opacity-70"
             style={{ borderColor, color: textColor }}
           >
             {currentIdx > 0 ? 'Back' : 'Cancel'}
@@ -562,7 +562,7 @@ export default function AddCatalogItemWizard({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               {isSaving ? 'Adding...' : `Add ${typeLabel}`}
@@ -571,7 +571,7 @@ export default function AddCatalogItemWizard({
             <button
               onClick={goNext}
               disabled={!isStepValid()}
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               Next
@@ -598,7 +598,7 @@ function Row({ label, value, textColor, mutedColor, badge, badgeBg, badgeText }:
       <span className="text-xs font-medium" style={{ color: mutedColor }}>{label}</span>
       {badge ? (
         <span
-          className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+          className="text-xs font-medium px-2.5 py-0.5 "
           style={{ backgroundColor: badgeBg, color: badgeText }}
         >
           {value}

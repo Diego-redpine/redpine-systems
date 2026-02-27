@@ -70,7 +70,7 @@ function PlatformIcon({ platform, size = 16 }: { platform: string; size?: number
 
 export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -120,7 +120,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
           { label: 'Scheduled', value: scheduledCount.toString() },
           { label: 'Connected', value: `${connectedCount}/${PLATFORM_ACCOUNTS.length}` },
         ].map(stat => (
-          <div key={stat.label} className="rounded-xl p-4 shadow-sm" style={{ backgroundColor: cardBg }}>
+          <div key={stat.label} className="p-4 shadow-sm" style={{ backgroundColor: cardBg }}>
             <p className="text-xl font-bold" style={{ color: textMain }}>{stat.value}</p>
             <p className="text-xs" style={{ color: textMuted }}>{stat.label}</p>
           </div>
@@ -137,7 +137,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
                 <button
                   key={v}
                   onClick={() => setView(v)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors capitalize"
+                  className="px-3 py-1.5 text-xs font-medium transition-colors capitalize"
                   style={{
                     backgroundColor: view === v ? buttonColor : 'transparent',
                     color: view === v ? buttonText : textMuted,
@@ -150,7 +150,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
             </div>
             <button
               onClick={() => setShowComposer(!showComposer)}
-              className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90"
+              className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
               style={{ backgroundColor: buttonColor, color: buttonText }}
             >
               + Create Post
@@ -159,7 +159,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
 
           {/* Calendar view */}
           {view === 'calendar' && (
-            <div className="rounded-2xl shadow-sm overflow-hidden" style={{ backgroundColor: cardBg }}>
+            <div className="shadow-sm overflow-hidden" style={{ backgroundColor: cardBg }}>
               {/* Day headers */}
               <div className="grid grid-cols-7 border-b" style={{ borderColor }}>
                 {calendarDates.map((date, i) => {
@@ -193,7 +193,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
                         return (
                           <div
                             key={post.id}
-                            className={`px-2 py-1.5 rounded-lg text-[10px] cursor-pointer transition-opacity hover:opacity-80 ${sc.bg}`}
+                            className={`px-2 py-1.5 text-[10px] cursor-pointer transition-opacity hover:opacity-80 ${sc.bg}`}
                           >
                             <p className={`font-medium ${sc.text}`}>{post.scheduledTime}</p>
                             <p className="line-clamp-2 mt-0.5" style={{ color: textMain }}>{post.content}</p>
@@ -218,7 +218,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
               {DEMO_POSTS.map(post => {
                 const sc = STATUS_COLORS[post.status];
                 return (
-                  <div key={post.id} className="rounded-xl p-4 shadow-sm flex items-start gap-3" style={{ backgroundColor: cardBg }}>
+                  <div key={post.id} className="p-4 shadow-sm flex items-start gap-3" style={{ backgroundColor: cardBg }}>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm line-clamp-2" style={{ color: textMain }}>{post.content}</p>
                       <div className="flex items-center gap-3 mt-2">
@@ -230,7 +230,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
                         </div>
                       </div>
                     </div>
-                    <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full capitalize shrink-0 ${sc.bg} ${sc.text}`}>
+                    <span className={`px-2.5 py-0.5 text-xs font-medium capitalize shrink-0 ${sc.bg} ${sc.text}`}>
                       {post.status}
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
 
           {/* Post composer */}
           {showComposer && (
-            <div className="rounded-2xl p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+            <div className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-semibold" style={{ color: textMain }}>Create Post</h4>
                 <button onClick={() => setShowComposer(false)} className="text-gray-400 hover:text-gray-600">
@@ -251,7 +251,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
               <textarea
                 placeholder="What do you want to share?"
                 rows={4}
-                className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none resize-none mb-3"
+                className="w-full px-3 py-2.5 text-sm border focus:outline-none resize-none mb-3"
                 style={{ borderColor, color: textMain }}
               />
               <div className="flex items-center justify-between">
@@ -270,13 +270,13 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg border"
+                    className="px-3 py-1.5 text-xs font-medium border"
                     style={{ borderColor, color: textMuted }}
                   >
                     Schedule
                   </button>
                   <button
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg transition-opacity hover:opacity-90"
+                    className="px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-90"
                     style={{ backgroundColor: buttonColor, color: buttonText }}
                   >
                     Post Now
@@ -289,7 +289,7 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
 
         {/* Sidebar: Connected accounts */}
         <div className="w-full lg:w-64 shrink-0">
-          <div className="rounded-2xl p-4 shadow-sm" style={{ backgroundColor: cardBg }}>
+          <div className="p-4 shadow-sm" style={{ backgroundColor: cardBg }}>
             <h4 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: textMuted }}>Connected Accounts</h4>
             <div className="space-y-2">
               {PLATFORM_ACCOUNTS.map(account => (
@@ -307,10 +307,10 @@ export default function SocialMediaHub({ colors }: SocialMediaHubProps) {
                     </p>
                   </div>
                   {account.connected ? (
-                    <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <div className="w-2 h-2 bg-emerald-400" />
                   ) : (
                     <button
-                      className="px-2 py-1 text-[10px] font-medium rounded-md transition-colors"
+                      className="px-2 py-1 text-[10px] font-medium transition-colors"
                       style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}
                     >
                       Connect

@@ -20,7 +20,7 @@ export default function OrderChat({ messages, currentUserId, colors, onSendMessa
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const cardBg = colors.cards || '#FFFFFF';
 
@@ -50,7 +50,7 @@ export default function OrderChat({ messages, currentUserId, colors, onSendMessa
           return (
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div
-                className="max-w-[75%] px-3.5 py-2 rounded-2xl text-sm"
+                className="max-w-[75%] px-3.5 py-2 text-sm"
                 style={{
                   backgroundColor: isMe ? buttonColor : `${borderColor}80`,
                   color: isMe ? buttonText : textMain,
@@ -76,13 +76,13 @@ export default function OrderChat({ messages, currentUserId, colors, onSendMessa
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
           placeholder="Type a message..."
-          className="flex-1 px-3 py-2 rounded-xl border text-sm"
+          className="flex-1 px-3 py-2 border text-sm"
           style={{ borderColor, color: textMain, backgroundColor: cardBg }}
         />
         <button
           onClick={handleSend}
           disabled={!input.trim()}
-          className="p-2 rounded-xl transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="p-2 transition-opacity hover:opacity-90 disabled:opacity-40"
           style={{ backgroundColor: buttonColor, color: buttonText }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

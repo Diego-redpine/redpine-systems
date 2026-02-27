@@ -1770,5 +1770,12 @@ CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON public.blog_posts(user_id, s
 ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ;
 
 -- ============================================================
--- DONE! All migrations 012-044 + 028b applied.
+-- Migration 045: Gallery include_in_gallery flag
+-- When false, image is stored in platform but not shown in public gallery widget
+-- ============================================================
+ALTER TABLE public.gallery_images
+  ADD COLUMN IF NOT EXISTS include_in_gallery BOOLEAN DEFAULT TRUE;
+
+-- ============================================================
+-- DONE! All migrations 012-045 + 028b applied.
 -- ============================================================

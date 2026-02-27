@@ -52,7 +52,7 @@ export function OrderBoard({
 
   return (
     <div
-      className="rounded-2xl p-5 h-full flex flex-col"
+      className="p-5 h-full flex flex-col"
       style={{ backgroundColor: bg }}
     >
       {/* Header */}
@@ -75,7 +75,7 @@ export function OrderBoard({
           {grouped.map((col) => (
             <div
               key={col.status}
-              className="rounded-xl p-3 flex flex-col gap-2 overflow-y-auto"
+              className="p-3 flex flex-col gap-2 overflow-y-auto"
               style={{ backgroundColor: colBg }}
             >
               {/* Column Header */}
@@ -107,7 +107,7 @@ export function OrderBoard({
               {col.orders.map((order) => (
                 <div
                   key={order.id}
-                  className="rounded-lg p-2.5"
+                  className="p-2.5"
                   style={{
                     backgroundColor: cardBg,
                     border: tvMode ? '1px solid #222' : '1px solid #E5E7EB',

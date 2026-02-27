@@ -54,7 +54,7 @@ export default function CenterModal({
       {/* Modal container */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div
-          className={`${maxWidth} w-full rounded-2xl shadow-xl flex flex-col max-h-[85vh] pointer-events-auto animate-modalScaleIn overflow-hidden`}
+          className={`${maxWidth} w-full shadow-xl flex flex-col max-h-[85vh] pointer-events-auto animate-modalScaleIn overflow-hidden`}
           style={{ backgroundColor: bg }}
         >
           {/* Header */}
@@ -77,7 +77,7 @@ export default function CenterModal({
                 {headerRight}
                 <button
                   onClick={onClose}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:opacity-70"
+                  className="w-7 h-7 flex items-center justify-center transition-colors hover:opacity-70"
                   style={{ color: headingColor, opacity: 0.5 }}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

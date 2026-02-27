@@ -33,7 +33,7 @@ export default function DeliveryRequestModal({
           href="https://drive.doordash.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors hover:opacity-90"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
           style={{ backgroundColor: buttonBg }}
           onClick={() => setStep(2)}
         >
@@ -62,14 +62,14 @@ export default function DeliveryRequestModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl max-w-md w-full max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
+      <div className="bg-white max-w-md w-full max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-lg font-bold" style={{ color: textMain }}>Request Delivery Driver</h2>
               <p className="text-sm text-gray-500">Order {order.order_number} · {order.customer_name}</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 ">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -85,7 +85,7 @@ export default function DeliveryRequestModal({
               return (
                 <div
                   key={stepNum}
-                  className={`rounded-xl p-4 border transition-colors cursor-pointer ${
+                  className={`p-4 border transition-colors cursor-pointer ${
                     isActive ? 'border-blue-300 bg-blue-50' : isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-100'
                   }`}
                   onClick={() => setStep(stepNum)}
@@ -104,7 +104,7 @@ export default function DeliveryRequestModal({
                       <h3 className="text-sm font-semibold" style={{ color: textMain }}>{s.title}</h3>
                       <p className="text-xs text-gray-500 mt-0.5">{s.description}</p>
                       {s.detail && isActive && (
-                        <div className="mt-2 px-3 py-2 bg-white rounded-lg border border-gray-200 text-sm font-mono text-gray-700">
+                        <div className="mt-2 px-3 py-2 bg-white border border-gray-200 text-sm font-mono text-gray-700">
                           {s.detail}
                         </div>
                       )}
@@ -119,7 +119,7 @@ export default function DeliveryRequestModal({
           </div>
 
           <div className="mt-6 pt-4 border-t border-gray-100">
-            <div className="bg-yellow-50 rounded-xl p-3 text-xs text-yellow-800">
+            <div className="bg-yellow-50 p-3 text-xs text-yellow-800">
               <p className="font-medium mb-1">Cost Comparison</p>
               <p>DoorDash Drive: ~$9.75 flat fee per delivery</p>
               <p>vs. DoorDash Marketplace: 15-30% of order total</p>

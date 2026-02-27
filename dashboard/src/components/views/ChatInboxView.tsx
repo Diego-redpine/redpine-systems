@@ -275,7 +275,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
         ].map((stat, i) => (
           <div
             key={i}
-            className="flex-1 rounded-xl p-4"
+            className="flex-1 p-4"
             style={{
               backgroundColor: stat.featured ? buttonBg : cardBg,
               border: stat.featured ? 'none' : `1px solid ${borderColor}`,
@@ -292,7 +292,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
       </div>
 
       {/* Main inbox area */}
-      <div className="flex flex-1 rounded-xl overflow-hidden min-h-0" style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg }}>
+      <div className="flex flex-1 overflow-hidden min-h-0" style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg }}>
         {/* Conversation list */}
         <div className="w-80 flex flex-col border-r" style={{ borderColor }}>
           {/* Search + filter */}
@@ -306,7 +306,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search chats..."
-                className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs"
+                className="w-full pl-8 pr-3 py-1.5 text-xs"
                 style={{ backgroundColor: bgColor, color: headingColor, border: `1px solid ${borderColor}` }}
               />
             </div>
@@ -315,7 +315,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
-                  className="px-2 py-1 rounded-full text-xs capitalize"
+                  className="px-2 py-1 text-xs capitalize"
                   style={{
                     backgroundColor: statusFilter === s ? buttonBg : 'transparent',
                     color: statusFilter === s ? buttonText : textColor,
@@ -359,12 +359,12 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
                     <span className="text-xs" style={{ color: textColor }}>{formatTime(conv.updated_at)}</span>
                     {conv.unread_count > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-xs font-bold" style={{ backgroundColor: buttonBg, color: buttonText }}>
+                      <span className="px-1.5 py-0.5 text-xs font-bold" style={{ backgroundColor: buttonBg, color: buttonText }}>
                         {conv.unread_count}
                       </span>
                     )}
                     {conv.unread_count === 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-xs" style={statusColors[conv.status]}>
+                      <span className="px-1.5 py-0.5 text-xs" style={statusColors[conv.status]}>
                         {conv.status}
                       </span>
                     )}
@@ -405,13 +405,13 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 rounded-full text-xs font-medium" style={statusColors[selectedConv.status]}>
+                  <span className="px-2 py-1 text-xs font-medium" style={statusColors[selectedConv.status]}>
                     {selectedConv.status}
                   </span>
                   {selectedConv.status === 'active' && (
                     <button
                       onClick={() => handleEndConversation(selectedConv.id)}
-                      className="px-3 py-1 rounded-lg text-xs font-medium transition-opacity hover:opacity-80"
+                      className="px-3 py-1 text-xs font-medium transition-opacity hover:opacity-80"
                       style={{ border: `1px solid ${borderColor}`, color: textColor }}
                     >
                       End Chat
@@ -426,7 +426,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                   if (msg.sender_type === 'system') {
                     return (
                       <div key={msg.id} className="text-center">
-                        <span className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: `${borderColor}80`, color: textColor }}>
+                        <span className="text-xs px-3 py-1 " style={{ backgroundColor: `${borderColor}80`, color: textColor }}>
                           {msg.content} · {formatTime(msg.created_at)}
                         </span>
                       </div>
@@ -437,7 +437,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                     <div key={msg.id} className={`flex ${isStaff ? 'justify-end' : 'justify-start'}`}>
                       <div className="max-w-[70%]">
                         <div
-                          className="px-3 py-2 rounded-xl text-sm"
+                          className="px-3 py-2 text-sm"
                           style={{
                             backgroundColor: isStaff ? buttonBg : `${borderColor}60`,
                             color: isStaff ? buttonText : headingColor,
@@ -462,7 +462,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                 <div className="px-4 py-3" style={{ borderTop: `1px solid ${borderColor}` }}>
                   {/* Canned responses */}
                   {showCanned && (
-                    <div className="mb-2 rounded-lg overflow-hidden" style={{ border: `1px solid ${borderColor}` }}>
+                    <div className="mb-2 overflow-hidden" style={{ border: `1px solid ${borderColor}` }}>
                       {DEFAULT_CANNED.map(cr => (
                         <button
                           key={cr.id}
@@ -480,7 +480,7 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setShowCanned(!showCanned)}
-                      className="px-2 py-2 rounded-lg transition-opacity hover:opacity-70 flex-shrink-0"
+                      className="px-2 py-2 transition-opacity hover:opacity-70 flex-shrink-0"
                       style={{ border: `1px solid ${borderColor}`, color: showCanned ? buttonBg : textColor }}
                       title="Canned responses"
                     >
@@ -494,13 +494,13 @@ export default function ChatInboxView({ colors }: ChatInboxViewProps) {
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendReply(); } }}
                       placeholder="Type a reply..."
-                      className="flex-1 px-3 py-2 rounded-lg text-sm"
+                      className="flex-1 px-3 py-2 text-sm"
                       style={{ border: `1px solid ${borderColor}`, backgroundColor: bgColor, color: headingColor }}
                     />
                     <button
                       onClick={handleSendReply}
                       disabled={!replyText.trim() || isSending}
-                      className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 transition-opacity"
+                      className="px-4 py-2 text-sm font-medium disabled:opacity-40 transition-opacity"
                       style={{ backgroundColor: buttonBg, color: buttonText }}
                     >
                       {isSending ? '...' : 'Send'}

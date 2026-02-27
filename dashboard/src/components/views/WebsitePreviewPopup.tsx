@@ -53,7 +53,7 @@ export default function WebsitePreviewPopup({
         {/* iframe preview */}
         <div className="px-6">
           <div
-            className="w-full rounded-xl border overflow-hidden"
+            className="w-full border overflow-hidden"
             style={{ borderColor }}
           >
             <iframe
@@ -79,7 +79,7 @@ export default function WebsitePreviewPopup({
             href={siteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-opacity hover:opacity-80"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border transition-opacity hover:opacity-80"
             style={{ borderColor, color: textColor }}
           >
             Visit Your Website
@@ -96,14 +96,14 @@ export default function WebsitePreviewPopup({
         >
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70"
             style={{ color: mutedColor }}
           >
             Skip
           </button>
           <button
             onClick={onStartTour}
-            className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+            className="px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
             style={{ backgroundColor: buttonBg, color: buttonText }}
           >
             Take a Tour

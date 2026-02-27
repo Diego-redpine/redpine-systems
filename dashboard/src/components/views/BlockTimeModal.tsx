@@ -27,7 +27,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const cardBg = colors.cards || '#FFFFFF';
 
@@ -87,7 +87,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+            className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
             style={inputStyle}
           />
         </div>
@@ -100,7 +100,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
             onClick={() => setAllDay(!allDay)}
           >
             <div
-              className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"
+              className="absolute top-0.5 w-4 h-4 bg-white shadow transition-transform"
               style={{ transform: allDay ? 'translateX(22px)' : 'translateX(2px)' }}
             />
           </div>
@@ -118,7 +118,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
                 type="time"
                 value={startTime}
                 onChange={e => setStartTime(e.target.value)}
-                className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+                className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
                 style={inputStyle}
               />
             </div>
@@ -130,7 +130,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
                 type="time"
                 value={endTime}
                 onChange={e => setEndTime(e.target.value)}
-                className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+                className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
                 style={inputStyle}
               />
             </div>
@@ -147,7 +147,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
             value={reason}
             onChange={e => setReason(e.target.value)}
             placeholder="e.g. Lunch break, Staff meeting, Personal"
-            className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+            className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
             style={inputStyle}
           />
         </div>
@@ -156,7 +156,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
         <div className="flex items-center gap-3 pt-2">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl border transition-colors hover:bg-black/[0.02]"
+            className="flex-1 px-4 py-2.5 text-sm font-medium border transition-colors hover:bg-black/[0.02]"
             style={{ borderColor, color: textMuted }}
           >
             Cancel
@@ -164,7 +164,7 @@ export default function BlockTimeModal({ isOpen, onClose, onSave, colors, isLoad
           <button
             onClick={handleSave}
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             {isLoading ? 'Blocking...' : 'Block Time'}

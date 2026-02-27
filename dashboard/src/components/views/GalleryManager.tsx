@@ -186,10 +186,10 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
       {/* Header toolbar */}
       <div className="flex items-center gap-3">
         {/* View toggle */}
-        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center gap-1 p-1" style={{ backgroundColor: `${borderColor}40` }}>
           <button
             onClick={() => { setViewMode('albums'); setSelectedAlbum(null); }}
-            className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+            className="px-3 py-1.5 text-xs font-medium transition-colors"
             style={{
               backgroundColor: viewMode === 'albums' ? btnColor : 'transparent',
               color: viewMode === 'albums' ? '#FFFFFF' : textColor,
@@ -199,7 +199,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
           </button>
           <button
             onClick={() => { setViewMode('gallery'); setSelectedAlbum(null); }}
-            className="px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+            className="px-3 py-1.5 text-xs font-medium transition-colors"
             style={{
               backgroundColor: viewMode === 'gallery' ? btnColor : 'transparent',
               color: viewMode === 'gallery' ? '#FFFFFF' : textColor,
@@ -213,7 +213,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
         {selectedAlbum && (
           <button
             onClick={() => setSelectedAlbum(null)}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs hover:opacity-70 transition-colors"
             style={{ color: textColor }}
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -233,7 +233,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
         {/* Upload button */}
         <button
           onClick={() => setIsUploadOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white"
           style={{ backgroundColor: btnColor }}
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -247,7 +247,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
       {viewMode === 'albums' && !selectedAlbum && (
         <div>
           {albums.length === 0 ? (
-            <div className="text-center py-16 rounded-2xl" style={{ backgroundColor: cardBg }}>
+            <div className="text-center py-16" style={{ backgroundColor: cardBg }}>
               <svg className="w-12 h-12 mx-auto mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
               </svg>
@@ -255,7 +255,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
               <p className="text-xs mt-1 opacity-50">Create an album to organize your photos</p>
               <button
                 onClick={() => setIsUploadOpen(true)}
-                className="mt-4 px-4 py-2 rounded-lg text-xs font-medium text-white"
+                className="mt-4 px-4 py-2 text-xs font-medium text-white"
                 style={{ backgroundColor: btnColor }}
               >
                 Create Album
@@ -268,7 +268,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
                 return (
                   <div
                     key={album.id}
-                    className="rounded-xl overflow-hidden cursor-pointer group relative"
+                    className="overflow-hidden cursor-pointer group relative"
                     style={{ backgroundColor: cardBg }}
                     onClick={() => setSelectedAlbum(album)}
                   >
@@ -288,7 +288,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
                       {/* Delete button */}
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteAlbum(album.id); }}
-                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 w-7 h-7 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -328,7 +328,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
       {viewMode === 'gallery' && (
         <div>
           {displayImages.length === 0 ? (
-            <div className="text-center py-16 rounded-2xl" style={{ backgroundColor: cardBg }}>
+            <div className="text-center py-16" style={{ backgroundColor: cardBg }}>
               <svg className="w-12 h-12 mx-auto mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
               </svg>
@@ -336,7 +336,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
               <p className="text-xs mt-1 opacity-50">Upload your first photo to get started</p>
               <button
                 onClick={() => setIsUploadOpen(true)}
-                className="mt-4 px-4 py-2 rounded-lg text-xs font-medium text-white"
+                className="mt-4 px-4 py-2 text-xs font-medium text-white"
                 style={{ backgroundColor: btnColor }}
               >
                 Upload Photos
@@ -378,7 +378,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
           return (
             <div
               key={photo.id}
-              className="relative group rounded-xl overflow-hidden mb-3"
+              className="relative group overflow-hidden mb-3"
               style={{ breakInside: 'avoid' }}
             >
               {photo.image_url ? (
@@ -412,13 +412,13 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
                         type="text"
                         value={captionText}
                         onChange={e => setCaptionText(e.target.value)}
-                        className="flex-1 px-2 py-1 rounded text-xs bg-white/90 text-black"
+                        className="flex-1 px-2 py-1 text-xs bg-white/90 text-black"
                         autoFocus
                         onKeyDown={e => { if (e.key === 'Enter') handleSaveCaption(photo.id); if (e.key === 'Escape') setEditingCaption(null); }}
                       />
                       <button
                         onClick={() => handleSaveCaption(photo.id)}
-                        className="px-2 py-1 rounded text-xs bg-white/90 text-black"
+                        className="px-2 py-1 text-xs bg-white/90 text-black"
                       >
                         Save
                       </button>
@@ -433,7 +433,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
                     {/* Edit caption */}
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditingCaption(photo.id); setCaptionText(photo.caption || ''); }}
-                      className="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/40"
+                      className="w-6 h-6 bg-white/20 text-white flex items-center justify-center hover:bg-white/40"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z" />
@@ -442,7 +442,7 @@ export default function GalleryManager({ configColors, entityType }: GalleryMana
                     {/* Delete */}
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDelete(photo.id); }}
-                      className="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-red-500/80"
+                      className="w-6 h-6 bg-white/20 text-white flex items-center justify-center hover:bg-red-500/80"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -494,7 +494,7 @@ function Lightbox({
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 z-10"
+        className="absolute top-4 right-4 w-10 h-10 bg-white/10 text-white flex items-center justify-center hover:bg-white/20 z-10"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -505,7 +505,7 @@ function Lightbox({
       {hasPrev && (
         <button
           onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex - 1); }}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 z-10"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 text-white flex items-center justify-center hover:bg-white/20 z-10"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -517,7 +517,7 @@ function Lightbox({
       {hasNext && (
         <button
           onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex + 1); }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 z-10"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 text-white flex items-center justify-center hover:bg-white/20 z-10"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -532,10 +532,10 @@ function Lightbox({
           <img
             src={image.image_url}
             alt={image.caption || ''}
-            className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            className="max-w-full max-h-[80vh] object-contain"
           />
         ) : (
-          <div className="w-96 h-96 rounded-lg flex items-center justify-center" style={{ backgroundColor: PLACEHOLDER_COLORS[currentIndex % PLACEHOLDER_COLORS.length] }}>
+          <div className="w-96 h-96 flex items-center justify-center" style={{ backgroundColor: PLACEHOLDER_COLORS[currentIndex % PLACEHOLDER_COLORS.length] }}>
             <svg className="w-16 h-16 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
             </svg>

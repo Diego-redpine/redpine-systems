@@ -135,7 +135,7 @@ export default function CustomSelect({
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        className="w-full px-3 py-2 rounded-lg border text-sm text-left flex items-center justify-between gap-2 outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        className="w-full px-3 py-2 border text-sm text-left flex items-center justify-between gap-2 outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         style={style}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -159,7 +159,7 @@ export default function CustomSelect({
         <div
           ref={listRef}
           role="listbox"
-          className="absolute z-[60] top-full left-0 w-full mt-1 rounded-lg border shadow-lg overflow-y-auto"
+          className="absolute z-[60] top-full left-0 w-full mt-1 border shadow-lg overflow-y-auto"
           style={{
             backgroundColor: style?.backgroundColor || '#FFFFFF',
             borderColor: style?.borderColor || '#E5E7EB',

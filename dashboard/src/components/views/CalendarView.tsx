@@ -116,8 +116,8 @@ export default function CalendarView({
   if (!fields) {
     return (
       <div
-        className="flex items-center justify-center h-full rounded-2xl shadow-sm p-12"
-        style={{ backgroundColor: cardBg, color: '#6B7280' }}
+        className="flex items-center justify-center h-full shadow-sm p-12"
+        style={{ backgroundColor: cardBg, color: configColors.icons || '#6B7280' }}
       >
         No calendar configuration available for this entity
       </div>
@@ -127,7 +127,7 @@ export default function CalendarView({
   const bgColor = configColors.background || '#F5F5F5';
 
   return (
-    <div className="rounded-2xl overflow-hidden p-6" style={{ backgroundColor: bgColor }}>
+    <div className="overflow-hidden p-6" style={{ backgroundColor: bgColor }}>
       <style>{`
         .fc {
           --fc-border-color: transparent;
@@ -158,7 +158,7 @@ export default function CalendarView({
         .fc .fc-button {
           font-size: 0.8rem;
           padding: 0.35rem 0.75rem;
-          border-radius: 8px;
+          border-radius: 0;
           font-weight: 500;
         }
         .fc .fc-button-primary:not(:disabled).fc-button-active {
@@ -202,7 +202,7 @@ export default function CalendarView({
           background: ${buttonColor};
           color: ${getContrastText(buttonColor)};
           opacity: 1;
-          border-radius: 8px;
+          border-radius: 0;
           padding: 4px 12px;
           display: inline-block;
         }
@@ -211,7 +211,7 @@ export default function CalendarView({
         .fc-timeGridWeek-view .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame,
         .fc-timeGridDay-view .fc-daygrid-day .fc-daygrid-day-frame {
           background: ${buttonColor} !important;
-          border-radius: 12px;
+          border-radius: 0;
         }
 
         /* Day cells as mini cards — fixed height */
@@ -219,15 +219,15 @@ export default function CalendarView({
           background: transparent !important;
         }
         .fc .fc-daygrid-day-frame {
-          border-radius: 12px;
+          border-radius: 0;
           background: ${cardBg};
-          box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+          border: 1px solid ${borderColor};
           height: 110px;
           overflow: hidden;
-          transition: box-shadow 0.15s ease;
+          transition: border-color 0.15s ease;
         }
         .fc .fc-daygrid-day-frame:hover {
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          border-color: ${textColor}40;
         }
         .fc .fc-daygrid-day-number {
           color: ${textColor};
@@ -242,7 +242,7 @@ export default function CalendarView({
           background: transparent !important;
         }
         .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
-          box-shadow: inset 0 0 0 2px ${buttonColor}, 0 1px 3px rgba(0,0,0,0.06);
+          border: 2px solid ${buttonColor};
         }
 
         /* Other month days */
@@ -276,7 +276,7 @@ export default function CalendarView({
 
         /* Events */
         .fc .fc-event {
-          border-radius: 8px;
+          border-radius: 0;
           padding: 3px 8px;
           margin: 2px 4px;
           font-size: 0.75rem;
@@ -290,18 +290,18 @@ export default function CalendarView({
           margin: 2px 4px;
         }
         .fc .fc-timegrid-event {
-          border-radius: 8px;
+          border-radius: 0;
         }
         .fc .fc-highlight {
           background: ${buttonColor}20;
-          border-radius: 12px;
+          border-radius: 0;
         }
 
         /* Week view — card columns */
         .fc-timeGridWeek-view .fc-timegrid-col {
           background: ${cardBg} !important;
-          border-radius: 12px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+          border-radius: 0;
+          border: 1px solid ${borderColor} !important;
         }
         .fc-timeGridWeek-view .fc-timegrid-col-frame {
           margin: 0 2px;
@@ -309,8 +309,8 @@ export default function CalendarView({
         /* Day view — full-width card */
         .fc-timeGridDay-view .fc-timegrid-col {
           background: ${cardBg} !important;
-          border-radius: 16px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+          border-radius: 0;
+          border: 1px solid ${borderColor} !important;
         }
 
         /* Time labels */
@@ -340,7 +340,7 @@ export default function CalendarView({
                 <button
                   key={f.key}
                   onClick={() => setActiveFilter(f.key)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors"
                   style={{
                     backgroundColor: isActive ? f.color : 'transparent',
                     color: isActive ? getContrastText(f.color) : textColor,
@@ -350,7 +350,7 @@ export default function CalendarView({
                 >
                   {f.key !== 'all' && (
                     <span
-                      className="w-2 h-2 rounded-full"
+                      className="w-2 h-2 "
                       style={{ backgroundColor: f.color }}
                     />
                   )}

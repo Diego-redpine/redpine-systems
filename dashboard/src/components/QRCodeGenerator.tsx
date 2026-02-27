@@ -46,7 +46,7 @@ export default function QRCodeGenerator({ subdomain, colors }: QRCodeGeneratorPr
   const printRef = useRef<HTMLDivElement>(null);
 
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const buttonBg = colors.buttons || '#3B82F6';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
@@ -78,7 +78,7 @@ export default function QRCodeGenerator({ subdomain, colors }: QRCodeGeneratorPr
   };
 
   return (
-    <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+    <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
       <h3 className="text-base font-semibold mb-2" style={{ color: textMain }}>Table QR Codes</h3>
       <p className="text-sm mb-4" style={{ color: textMuted }}>
         Generate QR codes for each table. Customers scan to order directly from their phone.
@@ -92,12 +92,12 @@ export default function QRCodeGenerator({ subdomain, colors }: QRCodeGeneratorPr
           max={100}
           value={tableCount}
           onChange={(e) => setTableCount(Math.max(1, Math.min(100, parseInt(e.target.value) || 1)))}
-          className="w-20 px-3 py-1.5 border rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className="w-20 px-3 py-1.5 border text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
           style={{ borderColor }}
         />
         <button
           onClick={() => setShowCodes(!showCodes)}
-          className="px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors hover:opacity-90"
+          className="px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
           style={{ backgroundColor: buttonBg }}
         >
           {showCodes ? 'Hide' : 'Generate'} QR Codes
@@ -106,14 +106,14 @@ export default function QRCodeGenerator({ subdomain, colors }: QRCodeGeneratorPr
           <>
             <button
               onClick={handlePrint}
-              className="px-4 py-2 text-sm font-medium rounded-xl border transition-colors hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium border transition-colors hover:bg-gray-50"
               style={{ borderColor }}
             >
               Print All
             </button>
             <button
               onClick={handleDownloadAll}
-              className="px-4 py-2 text-sm font-medium rounded-xl border transition-colors hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium border transition-colors hover:bg-gray-50"
               style={{ borderColor }}
             >
               Download PNGs
@@ -127,7 +127,7 @@ export default function QRCodeGenerator({ subdomain, colors }: QRCodeGeneratorPr
           {Array.from({ length: tableCount }, (_, i) => i + 1).map(tableNum => {
             const url = `https://${baseUrl}?table=${tableNum}`;
             return (
-              <div key={tableNum} className="border rounded-xl p-4 text-center" style={{ borderColor }}>
+              <div key={tableNum} className="border p-4 text-center" style={{ borderColor }}>
                 <QRCodeSvg url={url} />
                 <p className="text-lg font-bold" style={{ color: textMain }}>Table {tableNum}</p>
                 <p className="text-xs mt-1 break-all" style={{ color: textMuted }}>{url}</p>

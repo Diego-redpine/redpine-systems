@@ -250,7 +250,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
             if (!showForm) resetForm();
             setShowForm(!showForm);
           }}
-          className="px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+          className="px-4 py-2 text-sm font-medium transition-colors"
           style={{ backgroundColor: buttonColor, color: buttonText }}
         >
           {showForm ? 'Cancel' : '+ New Coupon'}
@@ -260,7 +260,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
       {/* ── Create form ─────────────────────────────────────────────── */}
       {showForm && (
         <div
-          className="rounded-2xl p-6 space-y-4"
+          className="p-6 space-y-4"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           {/* Code input */}
@@ -274,7 +274,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 placeholder="SAVE20"
-                className="flex-1 px-3 py-2 rounded-xl text-sm outline-none"
+                className="flex-1 px-3 py-2 text-sm outline-none"
                 style={{
                   border: `1px solid ${borderColor}`,
                   color: textColor,
@@ -283,7 +283,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
               />
               <button
                 onClick={() => setCode(generateCode())}
-                className="px-3 py-2 rounded-xl text-xs font-medium transition-colors"
+                className="px-3 py-2 text-xs font-medium transition-colors"
                 style={{ border: `1px solid ${borderColor}`, color: textColor }}
                 title="Generate random code"
               >
@@ -306,7 +306,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                   <button
                     key={t}
                     onClick={() => setType(t)}
-                    className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                    className="px-4 py-2 text-sm font-medium transition-colors"
                     style={
                       isSelected
                         ? { backgroundColor: buttonColor, color: buttonText }
@@ -341,7 +341,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   placeholder={type === 'percent' ? '20' : '5.00'}
-                  className="w-full pl-8 pr-3 py-2 rounded-xl text-sm outline-none"
+                  className="w-full pl-8 pr-3 py-2 text-sm outline-none"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textColor,
@@ -366,7 +366,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                 value={minOrderAmount}
                 onChange={(e) => setMinOrderAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                className="w-full px-3 py-2 text-sm outline-none"
                 style={{
                   border: `1px solid ${borderColor}`,
                   color: textColor,
@@ -385,7 +385,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                 value={maxUses}
                 onChange={(e) => setMaxUses(e.target.value)}
                 placeholder="Unlimited"
-                className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                className="w-full px-3 py-2 text-sm outline-none"
                 style={{
                   border: `1px solid ${borderColor}`,
                   color: textColor,
@@ -403,7 +403,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                 value={expiresAt}
                 onChange={(e) => setExpiresAt(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                className="w-full px-3 py-2 text-sm outline-none"
                 style={{
                   border: `1px solid ${borderColor}`,
                   color: textColor,
@@ -418,7 +418,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
             <button
               onClick={handleCreate}
               disabled={submitting}
-              className="px-6 py-2 rounded-xl text-sm font-medium transition-opacity disabled:opacity-50"
+              className="px-6 py-2 text-sm font-medium transition-opacity disabled:opacity-50"
               style={{ backgroundColor: buttonColor, color: buttonText }}
             >
               {submitting ? 'Creating...' : 'Create Coupon'}
@@ -434,7 +434,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
         </div>
       ) : coupons.length === 0 ? (
         <div
-          className="rounded-2xl p-8 text-center"
+          className="p-8 text-center"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           <p className="text-sm" style={{ color: textColor, opacity: 0.5 }}>
@@ -451,7 +451,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
             return (
               <div
                 key={coupon.id}
-                className="rounded-2xl p-4 flex items-center gap-4"
+                className="p-4 flex items-center gap-4"
                 style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
               >
                 {/* Code + type */}
@@ -461,13 +461,13 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                       {coupon.code}
                     </span>
                     <span
-                      className="px-2 py-0.5 rounded-full text-xs font-medium"
+                      className="px-2 py-0.5 text-xs font-medium"
                       style={{ backgroundColor: buttonColor + '1A', color: buttonColor }}
                     >
                       {formatCouponValue(coupon)}
                     </span>
                     <span
-                      className="px-2 py-0.5 rounded-full text-xs font-medium"
+                      className="px-2 py-0.5 text-xs font-medium"
                       style={{ backgroundColor: statusStyle.bg, color: statusStyle.text }}
                     >
                       {statusStyle.label}
@@ -501,7 +501,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                   title={isToggleable ? (coupon.is_active ? 'Deactivate' : 'Activate') : status}
                 >
                   <span
-                    className="inline-block h-4 w-4 rounded-full bg-white transition-transform shadow-sm"
+                    className="inline-block h-4 w-4 bg-white transition-transform shadow-sm"
                     style={{
                       transform: coupon.is_active ? 'translateX(22px)' : 'translateX(4px)',
                     }}
@@ -511,7 +511,7 @@ export default function CouponManager({ configColors }: CouponManagerProps) {
                 {/* Delete button */}
                 <button
                   onClick={() => deleteCoupon(coupon)}
-                  className="p-2 rounded-xl transition-colors hover:opacity-70 shrink-0"
+                  className="p-2 transition-colors hover:opacity-70 shrink-0"
                   style={{ color: textColor, opacity: 0.4 }}
                   title="Delete coupon"
                 >

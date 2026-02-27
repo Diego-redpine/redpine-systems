@@ -9,7 +9,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
-import CenterModal from '@/components/ui/CenterModal';
+import Link from 'next/link';
 
 // ---------------------------------------------------------------------------
 // Supabase browser client
@@ -35,27 +35,27 @@ interface SignUpModalProps {
 }
 
 // ---------------------------------------------------------------------------
-// Step indicator dots
+// Step indicator dots (sharp squares, not circles)
 // ---------------------------------------------------------------------------
 function StepDots({ currentStep }: { currentStep: 1 | 2 }) {
   return (
     <div className="flex items-center justify-center gap-0 mb-6">
       {/* Dot 1 */}
       <div
-        className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
-          currentStep >= 1 ? 'bg-gray-900' : 'bg-gray-300'
+        className={`w-2.5 h-2.5 transition-colors duration-300 ${
+          currentStep >= 1 ? 'bg-black' : 'bg-gray-300'
         }`}
       />
       {/* Connector line */}
       <div
         className={`w-8 h-0.5 transition-colors duration-300 ${
-          currentStep >= 2 ? 'bg-gray-900' : 'bg-gray-300'
+          currentStep >= 2 ? 'bg-black' : 'bg-gray-300'
         }`}
       />
       {/* Dot 2 */}
       <div
-        className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
-          currentStep >= 2 ? 'bg-gray-900' : 'bg-gray-300'
+        className={`w-2.5 h-2.5 transition-colors duration-300 ${
+          currentStep >= 2 ? 'bg-black' : 'bg-gray-300'
         }`}
       />
     </div>
@@ -106,7 +106,7 @@ function CardForm({ onSuccess }: { onSuccess: () => void }) {
       />
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="p-3 border-2 border-[#ce0707] text-[#ce0707] text-sm">
           {error}
         </div>
       )}
@@ -114,7 +114,7 @@ function CardForm({ onSuccess }: { onSuccess: () => void }) {
       <button
         type="submit"
         disabled={isSubmitting || !stripe || !elements}
-        className="w-full py-3 px-6 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
+        className="w-full py-3 px-6 bg-white text-[#ce0707] border-2 border-black font-semibold hover:bg-[#ce0707] hover:text-white transition-all disabled:opacity-50"
       >
         {isSubmitting ? 'Saving...' : 'Start Building'}
       </button>
@@ -242,216 +242,235 @@ export default function SignUpModal({ isOpen, onComplete }: SignUpModalProps) {
     onComplete();
   };
 
-  // -------------------------------------------------------------------------
-  // No-op close handler (user must complete signup)
-  // -------------------------------------------------------------------------
-  const noop = useCallback(() => {}, []);
+  if (!isOpen) return null;
 
   // -------------------------------------------------------------------------
   // Render
   // -------------------------------------------------------------------------
   return (
-    <CenterModal isOpen={isOpen} onClose={noop} maxWidth="max-w-md" noPadding>
-      <div className="p-6">
-        <StepDots currentStep={step} />
+    <>
+      {/* Backdrop — non-dismissable */}
+      <div className="fixed inset-0 bg-black/60 z-40" />
 
-        {/* -------- Step 1: Create Account -------- */}
-        {step === 1 && (
-          <div>
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">
-                Create Your Account
-              </h2>
-              <p className="text-sm text-gray-500">
-                Quick setup, then we&apos;ll finish building your platform.
-              </p>
-            </div>
+      {/* Modal container */}
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ fontFamily: "'Fira Code', monospace" }}
+      >
+        <div className="bg-white border-2 border-black max-w-md w-full">
+          <div className="p-6">
+            <StepDots currentStep={step} />
 
-            {needsConfirmation ? (
-              <div className="text-center py-4">
-                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                  <svg
-                    className="w-7 h-7 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                    />
-                  </svg>
+            {/* -------- Step 1: Create Account -------- */}
+            {step === 1 && (
+              <div>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-black mb-1">
+                    Create Your Account
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Quick setup, then we&apos;ll finish building your platform.
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Check Your Email
-                </h3>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  We sent a confirmation link to{' '}
-                  <span className="font-medium text-gray-700">{email}</span>.
-                  <br />
-                  Please confirm your email, then come back here.
-                </p>
+
+                {needsConfirmation ? (
+                  <div className="text-center py-4">
+                    <div className="w-14 h-14 border-2 border-black bg-gray-50 flex items-center justify-center mx-auto mb-4">
+                      <svg
+                        className="w-7 h-7"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-black mb-2">
+                      Check Your Email
+                    </h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      We sent a confirmation link to{' '}
+                      <span className="font-semibold text-black">{email}</span>.
+                      <br />
+                      Please confirm your email, then come back here.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleCreateAccount} className="space-y-4">
+                    {authError && (
+                      <div className="p-3 border-2 border-[#ce0707] text-[#ce0707] text-sm">
+                        {authError}
+                      </div>
+                    )}
+
+                    <div>
+                      <label
+                        htmlFor="signup-email"
+                        className="block text-sm font-medium mb-1"
+                      >
+                        Email
+                      </label>
+                      <input
+                        id="signup-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); if (authError) setAuthError(''); }}
+                        required
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        className="w-full px-4 py-2.5 border-2 border-black text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="signup-password"
+                        className="block text-sm font-medium mb-1"
+                      >
+                        Password
+                      </label>
+                      <input
+                        id="signup-password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => { setPassword(e.target.value); if (authError) setAuthError(''); }}
+                        required
+                        minLength={6}
+                        autoComplete="new-password"
+                        placeholder="At least 6 characters"
+                        className="w-full px-4 py-2.5 border-2 border-black text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="signup-confirm"
+                        className="block text-sm font-medium mb-1"
+                      >
+                        Confirm Password
+                      </label>
+                      <input
+                        id="signup-confirm"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => { setConfirmPassword(e.target.value); if (authError) setAuthError(''); }}
+                        required
+                        minLength={6}
+                        autoComplete="new-password"
+                        placeholder="Re-enter your password"
+                        className="w-full px-4 py-2.5 border-2 border-black text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isCreating}
+                      className="w-full py-3 px-6 bg-white text-[#ce0707] border-2 border-black font-semibold hover:bg-[#ce0707] hover:text-white transition-all disabled:opacity-50"
+                    >
+                      {isCreating ? 'Creating account...' : 'Continue'}
+                    </button>
+
+                    <p className="text-xs text-gray-400 text-center leading-relaxed">
+                      By continuing, you agree to our{' '}
+                      <Link href="/terms" className="text-[#ce0707] hover:underline">Terms of Service</Link>
+                      {' '}and{' '}
+                      <Link href="/privacy" className="text-[#ce0707] hover:underline">Privacy Policy</Link>.
+                    </p>
+                  </form>
+                )}
               </div>
-            ) : (
-              <form onSubmit={handleCreateAccount} className="space-y-4">
-                {authError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                    {authError}
+            )}
+
+            {/* -------- Step 2: Card on File -------- */}
+            {step === 2 && (
+              <div>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-black mb-1">
+                    Start Your Free Trial
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    14-day free trial &middot; Cancel anytime
+                  </p>
+                </div>
+
+                {isLoadingSetup && (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="w-8 h-8 border-2 border-gray-200 border-t-black animate-spin mb-4" />
+                    <p className="text-sm text-gray-500">Setting up payment...</p>
                   </div>
                 )}
 
-                <div>
-                  <label
-                    htmlFor="signup-email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                {setupError && !isLoadingSetup && (
+                  <div className="text-center py-8">
+                    <div className="p-3 border-2 border-[#ce0707] text-[#ce0707] text-sm mb-4">
+                      {setupError}
+                    </div>
+                    <button
+                      onClick={() => {
+                        setClientSecret(null);
+                        fetchSetupIntent();
+                      }}
+                      className="px-6 py-2.5 bg-white text-[#ce0707] border-2 border-black text-sm font-semibold hover:bg-[#ce0707] hover:text-white transition-all"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+
+                {clientSecret && !isLoadingSetup && !setupError && (
+                  <Elements
+                    stripe={stripePromise}
+                    options={{
+                      clientSecret,
+                      appearance: {
+                        theme: 'stripe',
+                        variables: {
+                          colorPrimary: '#000000',
+                          borderRadius: '0px',
+                          fontFamily: "'Fira Code', monospace",
+                          fontSizeBase: '14px',
+                        },
+                        rules: {
+                          '.Input': {
+                            border: '2px solid #000000',
+                            boxShadow: 'none',
+                            padding: '10px 16px',
+                            borderRadius: '0px',
+                          },
+                          '.Input:focus': {
+                            border: '2px solid #9CA3AF',
+                            boxShadow: 'none',
+                          },
+                          '.Label': {
+                            fontWeight: '500',
+                            color: '#000000',
+                            marginBottom: '4px',
+                          },
+                          '.Tab': {
+                            borderRadius: '0px',
+                            border: '2px solid #E5E7EB',
+                          },
+                          '.Tab--selected': {
+                            borderRadius: '0px',
+                            border: '2px solid #000000',
+                          },
+                        },
+                      },
+                    }}
                   >
-                    Email
-                  </label>
-                  <input
-                    id="signup-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300 transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="signup-password"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Password
-                  </label>
-                  <input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    autoComplete="new-password"
-                    placeholder="At least 6 characters"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300 transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="signup-confirm"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Confirm Password
-                  </label>
-                  <input
-                    id="signup-confirm"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    autoComplete="new-password"
-                    placeholder="Re-enter your password"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300 transition-colors"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isCreating}
-                  className="w-full py-3 px-6 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
-                >
-                  {isCreating ? 'Creating account...' : 'Continue'}
-                </button>
-
-                <p className="text-xs text-gray-400 text-center leading-relaxed">
-                  By continuing, you agree to our Terms of Service and Privacy
-                  Policy.
-                </p>
-              </form>
-            )}
-          </div>
-        )}
-
-        {/* -------- Step 2: Card on File -------- */}
-        {step === 2 && (
-          <div>
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">
-                Start Your Free Trial
-              </h2>
-              <p className="text-sm text-gray-500">
-                14-day free trial &middot; Cancel anytime
-              </p>
-            </div>
-
-            {isLoadingSetup && (
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin mb-4" />
-                <p className="text-sm text-gray-500">Setting up payment...</p>
+                    <CardForm onSuccess={handleCardSaved} />
+                  </Elements>
+                )}
               </div>
             )}
-
-            {setupError && !isLoadingSetup && (
-              <div className="text-center py-8">
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-4">
-                  {setupError}
-                </div>
-                <button
-                  onClick={() => {
-                    setClientSecret(null);
-                    fetchSetupIntent();
-                  }}
-                  className="px-6 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-
-            {clientSecret && !isLoadingSetup && !setupError && (
-              <Elements
-                stripe={stripePromise}
-                options={{
-                  clientSecret,
-                  appearance: {
-                    theme: 'stripe',
-                    variables: {
-                      colorPrimary: '#111827',
-                      borderRadius: '12px',
-                      fontFamily: 'inherit',
-                      fontSizeBase: '14px',
-                    },
-                    rules: {
-                      '.Input': {
-                        border: '1px solid #E5E7EB',
-                        boxShadow: 'none',
-                        padding: '10px 16px',
-                      },
-                      '.Input:focus': {
-                        border: '1px solid #D1D5DB',
-                        boxShadow: '0 0 0 2px rgba(17,24,39,0.1)',
-                      },
-                      '.Label': {
-                        fontWeight: '500',
-                        color: '#374151',
-                        marginBottom: '4px',
-                      },
-                    },
-                  },
-                }}
-              >
-                <CardForm onSuccess={handleCardSaved} />
-              </Elements>
-            )}
           </div>
-        )}
+        </div>
       </div>
-    </CenterModal>
+    </>
   );
 }

@@ -914,6 +914,11 @@ const DEFAULT_ELEMENT_PROPS: Record<string, Record<string, unknown>> = {
     // Font
     fontFamily: 'Inter',
   },
+  videoEmbed: {
+    videoUrl: '',
+    aspectRatio: '16:9',
+    borderRadius: 8,
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -939,6 +944,7 @@ export const BASE_ELEMENT_SIZES: Record<string, ElementSize> = {
   // Form Elements
   contactForm: { width: 400, height: 420 },
   customForm: { width: 400, height: 300 },
+  videoEmbed: { width: 480, height: 270 },
 };
 
 

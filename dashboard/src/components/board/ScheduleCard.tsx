@@ -50,7 +50,7 @@ export function ScheduleCard({
 
   return (
     <div
-      className="rounded-2xl p-5 h-full flex flex-col"
+      className="p-5 h-full flex flex-col"
       style={{ backgroundColor: bg }}
     >
       {/* Header */}
@@ -62,7 +62,7 @@ export function ScheduleCard({
           Today&apos;s Schedule
         </h3>
         <span
-          className="text-xs font-medium px-2 py-0.5 rounded-full"
+          className="text-xs font-medium px-2 py-0.5 "
           style={{
             backgroundColor: accentColor + '20',
             color: accentColor,
@@ -89,7 +89,7 @@ export function ScheduleCard({
             return (
               <div
                 key={appt.id}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg ${textSize}`}
+                className={`flex items-center gap-3 px-3 py-2 ${textSize}`}
                 style={{
                   borderLeft: isActive
                     ? `3px solid ${accentColor}`
@@ -137,7 +137,7 @@ export function ScheduleCard({
 
                 {/* Status Badge */}
                 <span
-                  className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full"
+                  className="shrink-0 text-xs font-medium px-2 py-0.5 "
                   style={{
                     backgroundColor: statusColor + '20',
                     color: statusColor,

@@ -60,13 +60,13 @@ function SortableStageRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 p-3 rounded-xl border bg-white"
+      className="flex items-center gap-3 p-3 border bg-white"
       {...attributes}
     >
       {/* Drag handle */}
       <button
         {...listeners}
-        className="shrink-0 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-gray-100 transition-colors"
+        className="shrink-0 cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 transition-colors"
         style={{ color: configColors.text || '#9CA3AF' }}
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -76,7 +76,7 @@ function SortableStageRow({
 
       {/* Color swatch */}
       <div className="shrink-0 flex items-center gap-1">
-        <label className="relative w-7 h-7 rounded-lg overflow-hidden cursor-pointer border border-gray-200">
+        <label className="relative w-7 h-7 overflow-hidden cursor-pointer border border-gray-200">
           <input
             type="color"
             value={stage.color}
@@ -86,7 +86,7 @@ function SortableStageRow({
           <div className="w-full h-full" style={{ backgroundColor: stage.color }} />
         </label>
         {showSecondary && (
-          <label className="relative w-7 h-7 rounded-lg overflow-hidden cursor-pointer border border-gray-200">
+          <label className="relative w-7 h-7 overflow-hidden cursor-pointer border border-gray-200">
             <input
               type="color"
               value={stage.color_secondary || '#3B82F6'}
@@ -103,7 +103,7 @@ function SortableStageRow({
         type="text"
         value={stage.name}
         onChange={(e) => onUpdate(stage.id, { name: e.target.value })}
-        className="flex-1 text-sm px-2 py-1.5 rounded-lg border border-gray-200 bg-gray-50 outline-none focus:border-gray-400"
+        className="flex-1 text-sm px-2 py-1.5 border border-gray-200 bg-gray-50 outline-none focus:border-gray-400"
         style={{ color: configColors.text || '#111827' }}
       />
 
@@ -118,7 +118,7 @@ function SortableStageRow({
             onUpdate(stage.id, { color_secondary: '#3B82F6' });
           }
         }}
-        className="shrink-0 text-[10px] px-2 py-1 rounded-md border transition-colors"
+        className="shrink-0 text-[10px] px-2 py-1 border transition-colors"
         style={{
           backgroundColor: showSecondary ? (configColors.buttons || '#1A1A1A') : 'transparent',
           color: showSecondary ? getContrastText(configColors.buttons || '#1A1A1A') : '#9CA3AF',
@@ -132,7 +132,7 @@ function SortableStageRow({
       {/* Delete */}
       <button
         onClick={() => onDelete(stage.id)}
-        className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+        className="shrink-0 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
       >
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -250,7 +250,7 @@ export default function StageManagerModal({
       {/* Add stage button */}
       <button
         onClick={handleAdd}
-        className="w-full mt-3 py-2.5 text-sm font-medium rounded-xl border-2 border-dashed border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors"
+        className="w-full mt-3 py-2.5 text-sm font-medium border-2 border-dashed border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors"
       >
         + Add Stage
       </button>
@@ -259,7 +259,7 @@ export default function StageManagerModal({
       <div className="flex gap-3 mt-4 pt-4 border-t" style={{ borderColor: configColors.borders || '#E5E7EB' }}>
         <button
           onClick={onClose}
-          className="flex-1 py-2 text-sm font-medium rounded-lg border transition-colors hover:bg-gray-50"
+          className="flex-1 py-2 text-sm font-medium border transition-colors hover:bg-gray-50"
           style={{
             borderColor: configColors.borders || '#E5E7EB',
             color: configColors.text || '#374151',
@@ -269,7 +269,7 @@ export default function StageManagerModal({
         </button>
         <button
           onClick={handleSave}
-          className="flex-1 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90"
+          className="flex-1 py-2 text-sm font-medium transition-opacity hover:opacity-90"
           style={{ backgroundColor: buttonBg, color: buttonText }}
         >
           Save

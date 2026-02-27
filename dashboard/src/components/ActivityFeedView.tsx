@@ -230,7 +230,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
         ].map((stat) => (
           <div
             key={stat.label}
-            className="rounded-2xl p-5"
+            className="p-5"
             style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
           >
             <p className="text-sm mb-1" style={{ color: textColor }}>{stat.label}</p>
@@ -247,7 +247,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
           placeholder="Search activities..."
           value={searchQuery}
           onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-          className="px-4 py-2 rounded-xl text-sm flex-1 min-w-[200px]"
+          className="px-4 py-2 text-sm flex-1 min-w-[200px]"
           style={{
             backgroundColor: cardBg,
             border: `1px solid ${borderColor}`,
@@ -259,7 +259,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
         <select
           value={filterAction}
           onChange={(e) => { setFilterAction(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-xl text-sm"
+          className="px-3 py-2 text-sm"
           style={{
             backgroundColor: cardBg,
             border: `1px solid ${borderColor}`,
@@ -277,7 +277,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
         <select
           value={filterEntity}
           onChange={(e) => { setFilterEntity(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-xl text-sm"
+          className="px-3 py-2 text-sm"
           style={{
             backgroundColor: cardBg,
             border: `1px solid ${borderColor}`,
@@ -293,7 +293,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
 
       {isDemoMode && (
         <div
-          className="rounded-xl px-4 py-3 text-sm"
+          className="px-4 py-3 text-sm"
           style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}
         >
           Showing sample activity data. Real activity will appear here as you use the platform.
@@ -307,7 +307,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
         </div>
       ) : filteredActivities.length === 0 ? (
         <div
-          className="rounded-2xl p-12 text-center"
+          className="p-12 text-center"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           <p className="text-4xl mb-3">📋</p>
@@ -322,7 +322,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
                 {dateLabel}
               </h3>
               <div
-                className="rounded-2xl overflow-hidden divide-y"
+                className="overflow-hidden divide-y"
                 style={{
                   backgroundColor: cardBg,
                   border: `1px solid ${borderColor}`,
@@ -401,7 +401,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="px-4 py-2 rounded-xl text-sm disabled:opacity-40"
+                className="px-4 py-2 text-sm disabled:opacity-40"
                 style={{
                   backgroundColor: buttonColor,
                   color: getContrastText(buttonColor),
@@ -415,7 +415,7 @@ export default function ActivityFeedView({ colors }: ActivityFeedViewProps) {
               <button
                 onClick={() => setPage(p => p + 1)}
                 disabled={page >= Math.ceil(totalCount / pageSize)}
-                className="px-4 py-2 rounded-xl text-sm disabled:opacity-40"
+                className="px-4 py-2 text-sm disabled:opacity-40"
                 style={{
                   backgroundColor: buttonColor,
                   color: getContrastText(buttonColor),

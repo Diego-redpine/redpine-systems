@@ -99,7 +99,7 @@ export default function ReviewInbox({ colors, onStatsChange }: ReviewInboxProps)
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const fetchReviews = useCallback(async () => {
     try {
@@ -209,7 +209,7 @@ export default function ReviewInbox({ colors, onStatsChange }: ReviewInboxProps)
             key={idx}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm font-medium appearance-none cursor-pointer"
+            className="px-3 py-2 text-sm font-medium appearance-none cursor-pointer"
             style={{
               backgroundColor: cardBg,
               border: `1px solid ${borderColor}`,
@@ -232,18 +232,18 @@ export default function ReviewInbox({ colors, onStatsChange }: ReviewInboxProps)
       {/* Review list */}
       {loading ? (
         <div
-          className="rounded-2xl p-12 text-center"
+          className="p-12 text-center"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           <p style={{ color: textMuted }}>Loading reviews...</p>
         </div>
       ) : filteredReviews.length === 0 ? (
         <div
-          className="rounded-2xl p-12 text-center"
+          className="p-12 text-center"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           <div
-            className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
+            className="w-14 h-14 flex items-center justify-center mx-auto mb-4"
             style={{ backgroundColor: `${buttonColor}10` }}
           >
             <svg
@@ -283,7 +283,7 @@ export default function ReviewInbox({ colors, onStatsChange }: ReviewInboxProps)
               <button
                 key={review.id}
                 onClick={() => setSelectedReview(review)}
-                className="w-full flex items-center gap-4 p-4 rounded-xl transition-colors text-left"
+                className="w-full flex items-center gap-4 p-4 transition-colors text-left"
                 style={{
                   backgroundColor:
                     selectedReview?.id === review.id
@@ -345,7 +345,7 @@ export default function ReviewInbox({ colors, onStatsChange }: ReviewInboxProps)
 
                   {/* Status pill */}
                   <span
-                    className="px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
+                    className="px-2.5 py-0.5 text-xs font-medium whitespace-nowrap"
                     style={{
                       backgroundColor: statusStyle.bg,
                       color: statusStyle.text,

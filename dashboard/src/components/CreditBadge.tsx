@@ -36,7 +36,7 @@ export default function CreditBadge({ onClick }: CreditBadgeProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-all hover:opacity-80 ${isLow ? 'animate-pulse' : ''}`}
+      className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold transition-all hover:opacity-80 ${isLow ? 'animate-pulse' : ''}`}
       style={{ backgroundColor: `${badgeColor}15`, color: badgeColor, border: `1px solid ${badgeColor}30` }}
       title={`${balance.total} AI credits remaining (${balance.free_balance} free · ${balance.purchased_balance} purchased)`}
     >

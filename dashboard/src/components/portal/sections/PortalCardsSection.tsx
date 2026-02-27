@@ -76,7 +76,7 @@ function WalletCard({
       }}
     >
       <div
-        className="rounded-2xl p-6 text-white shadow-xl cursor-pointer transition-transform duration-200 hover:scale-[1.01]"
+        className="p-6 text-white shadow-xl cursor-pointer transition-transform duration-200 hover:scale-[1.01]"
         style={{
           background: brandStyle.gradient,
           minHeight: '190px',
@@ -85,10 +85,10 @@ function WalletCard({
         onClick={onExpand}
       >
         {/* Decorative pattern */}
-        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-          <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white/5" />
-          <div className="absolute -left-6 bottom-4 w-24 h-24 rounded-full bg-white/5" />
-          <div className="absolute right-1/3 top-1/2 w-16 h-16 rounded-full bg-white/5" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/5" />
+          <div className="absolute -left-6 bottom-4 w-24 h-24 bg-white/5" />
+          <div className="absolute right-1/3 top-1/2 w-16 h-16 bg-white/5" />
         </div>
 
         <div className="relative z-10">
@@ -132,9 +132,9 @@ function WalletCard({
             </div>
 
             {/* Chip */}
-            <div className="w-10 h-7 rounded-md overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200/80 to-yellow-500/60 border border-yellow-600/30 rounded-md" />
-              <div className="absolute inset-[3px] border border-yellow-700/20 rounded-sm" />
+            <div className="w-10 h-7 overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200/80 to-yellow-500/60 border border-yellow-600/30" />
+              <div className="absolute inset-[3px] border border-yellow-700/20" />
               <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-yellow-700/20" />
               <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-yellow-700/20" />
             </div>
@@ -148,14 +148,14 @@ function WalletCard({
           {!card.is_default && (
             <button
               onClick={(e) => { e.stopPropagation(); onSetDefault(); }}
-              className="flex-1 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex-1 py-2.5 bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Set as Default
             </button>
           )}
           <button
             onClick={(e) => { e.stopPropagation(); onRemove(); }}
-            className="flex-1 py-2.5 rounded-xl bg-white border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+            className="flex-1 py-2.5 bg-white border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
           >
             Remove Card
           </button>
@@ -266,7 +266,7 @@ export function PortalCardsSection({
         <button
           onClick={handleAddCard}
           disabled={actionLoading}
-          className="px-4 py-2 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50"
+          className="px-4 py-2 text-sm font-semibold transition-opacity disabled:opacity-50"
           style={{ backgroundColor: accentColor, color: accentTextColor }}
         >
           + Add Card
@@ -275,8 +275,8 @@ export function PortalCardsSection({
 
       {/* Apple Wallet-Style Card Stack */}
       {cards.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-100 flex items-center justify-center">
+        <div className="bg-white border border-gray-200 p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 flex items-center justify-center">
             <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
             </svg>
@@ -313,7 +313,7 @@ export function PortalCardsSection({
       )}
 
       {/* Security Info */}
-      <div className="bg-gray-50 rounded-xl p-4 flex items-start gap-3">
+      <div className="bg-gray-50 p-4 flex items-start gap-3">
         <svg className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
         </svg>

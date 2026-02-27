@@ -92,7 +92,7 @@ export default function MyOrders({ colors, onClose }: MyOrdersProps) {
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const cardBg = colors.cards || '#FFFFFF';
 
@@ -118,7 +118,7 @@ export default function MyOrders({ colors, onClose }: MyOrdersProps) {
     <>
       <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} />
       <div
-        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
+        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
         style={{ backgroundColor: cardBg }}
       >
         {/* Header */}
@@ -137,7 +137,7 @@ export default function MyOrders({ colors, onClose }: MyOrdersProps) {
             <button
               key={tab}
               onClick={() => setRoleTab(tab)}
-              className="px-4 py-1.5 text-sm font-medium rounded-full transition-colors"
+              className="px-4 py-1.5 text-sm font-medium transition-colors"
               style={{
                 backgroundColor: roleTab === tab ? buttonColor : 'transparent',
                 color: roleTab === tab ? buttonText : textMuted,
@@ -151,7 +151,7 @@ export default function MyOrders({ colors, onClose }: MyOrdersProps) {
 
         {/* Demo mode banner */}
         {isDemoMode && (
-          <div className="mx-6 mt-3 px-3 py-2 rounded-xl text-xs" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+          <div className="mx-6 mt-3 px-3 py-2 text-xs" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
             Showing sample orders. Real orders appear when you place or receive them.
           </div>
         )}
@@ -180,7 +180,7 @@ export default function MyOrders({ colors, onClose }: MyOrdersProps) {
               <button
                 key={order.id}
                 onClick={() => setSelectedOrderId(order.id)}
-                className="w-full text-left rounded-xl p-4 border transition-shadow hover:shadow-md"
+                className="w-full text-left p-4 border transition-shadow hover:shadow-md"
                 style={{ borderColor, backgroundColor: cardBg }}
               >
                 <div className="flex items-start gap-3">
@@ -193,7 +193,7 @@ export default function MyOrders({ colors, onClose }: MyOrdersProps) {
                         {order.gig?.title || 'Order'}
                       </h4>
                       <span
-                        className="px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap shrink-0"
+                        className="px-2 py-0.5 text-xs font-medium whitespace-nowrap shrink-0"
                         style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}
                       >
                         {statusConfig.label}

@@ -98,7 +98,7 @@ export default function FilterBar({
       {Object.keys(activeFilters).length > 0 && (
         <button
           onClick={() => onChange({})}
-          className="px-2 py-1.5 text-sm rounded-md hover:bg-black/5 transition-colors"
+          className="px-2 py-1.5 text-sm hover:bg-black/5 transition-colors"
           style={{ color: textColor, opacity: 0.7 }}
         >
           Clear

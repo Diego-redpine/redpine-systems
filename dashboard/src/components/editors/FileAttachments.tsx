@@ -128,7 +128,7 @@ export default function FileAttachments({
           {attachments.map((att) => (
             <div
               key={att.id}
-              className="flex items-center gap-3 p-2 rounded-lg border text-sm"
+              className="flex items-center gap-3 p-2 border text-sm"
               style={{ borderColor: configColors.borders || '#E5E7EB' }}
             >
               <span className="text-lg">{getFileIcon(att.file_type)}</span>
@@ -174,7 +174,7 @@ export default function FileAttachments({
       {/* Drop zone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed p-4 text-center cursor-pointer transition-colors ${
           isDragActive ? 'border-blue-400 bg-blue-50' : ''
         }`}
         style={{

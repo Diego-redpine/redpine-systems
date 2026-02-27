@@ -160,16 +160,16 @@ function BrandBoardContent() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
+      <div className="flex h-screen items-center justify-center bg-white" style={{ fontFamily: "'Fira Code', monospace" }}>
         <div className="text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.png"
-            alt="Red Pine OS"
+            alt="Red Pine"
             className="mx-auto mb-8"
             style={{ height: '10rem', animation: 'heartbeat 1.2s ease-in-out infinite' }}
           />
-          <p className="text-xl font-semibold text-gray-900">Loading<span className="loading-dots" /></p>
+          <p className="text-xl font-bold text-black">Loading<span className="loading-dots" /></p>
           <style>{`
             @keyframes heartbeat {
               0% { transform: scale(1); }
@@ -197,9 +197,9 @@ function BrandBoardContent() {
   // ─── Render ───────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-white overflow-y-auto fixed inset-0">
+    <div className="min-h-screen bg-white overflow-y-auto fixed inset-0" style={{ fontFamily: "'Fira Code', monospace" }}>
       <div className="text-center pt-8 pb-4">
-        <h1 className="text-2xl font-bold text-gray-900">{businessName || 'Your Brand'}</h1>
+        <h1 className="text-2xl font-bold text-black">{businessName || 'Your Brand'}</h1>
         <p className="text-sm text-gray-500 mt-1">Set up your brand kit</p>
       </div>
       <BrandBoardEditor
@@ -226,10 +226,10 @@ export default function BrandBoardPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-screen items-center justify-center bg-white">
+        <div className="flex h-screen items-center justify-center bg-white" style={{ fontFamily: "'Fira Code', monospace" }}>
           <div className="text-center">
-            <div className="inline-block w-12 h-12 border-4 border-[#ce0707] border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-lg text-gray-600">Loading brand board</p>
+            <div className="inline-block w-8 h-8 border-2 border-gray-200 border-t-black animate-spin mb-4" />
+            <p className="text-sm text-gray-500">Loading brand board</p>
           </div>
         </div>
       }

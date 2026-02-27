@@ -13,7 +13,7 @@ export async function PATCH(
   const body = await request.json();
 
   // Only allow updating these fields
-  const allowedFields = ['caption', 'album_id', 'display_order'];
+  const allowedFields = ['caption', 'album_id', 'display_order', 'include_in_gallery'];
   const updates: Record<string, unknown> = {};
   for (const field of allowedFields) {
     if (field in body) {

@@ -68,8 +68,36 @@ function SuccessContent() {
 export default function CheckoutSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-muted">Loading...</div>
+      <div className="flex h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Red Pine OS"
+            className="mx-auto mb-8"
+            style={{ height: '10rem', animation: 'heartbeat 1.2s ease-in-out infinite' }}
+          />
+          <p className="text-xl font-semibold text-gray-900">Loading<span className="loading-dots" /></p>
+          <style>{`
+            @keyframes heartbeat {
+              0% { transform: scale(1); }
+              14% { transform: scale(1.1); }
+              28% { transform: scale(1); }
+              42% { transform: scale(1.1); }
+              70% { transform: scale(1); }
+            }
+            .loading-dots::after {
+              content: '';
+              animation: dots 1.5s steps(4, end) infinite;
+            }
+            @keyframes dots {
+              0% { content: ''; }
+              25% { content: '.'; }
+              50% { content: '..'; }
+              75% { content: '...'; }
+            }
+          `}</style>
+        </div>
       </div>
     }>
       <SuccessContent />

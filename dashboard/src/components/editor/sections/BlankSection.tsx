@@ -400,13 +400,13 @@ export default function BlankSection({
         >
           <div className="text-center">
             <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
-              isDark ? 'bg-zinc-800' : 'bg-zinc-200'
+              isDark ? 'bg-zinc-800' : 'bg-gray-200'
             }`}>
-              <svg className={`w-6 h-6 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className={`w-6 h-6 ${isDark ? 'text-zinc-500' : 'text-gray-900'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <p className={`text-sm font-['Inter'] ${isDark ? 'text-zinc-600' : 'text-zinc-500'}`}>
+            <p className={`text-sm font-['Fira_Code'] ${isDark ? 'text-zinc-500' : 'text-gray-500'}`}>
               Drag elements here
             </p>
           </div>
@@ -415,7 +415,7 @@ export default function BlankSection({
 
       {/* Section size indicator */}
       {!isPreviewMode && (
-        <div className={`absolute bottom-2 right-2 px-2 py-1 rounded text-[10px] font-['Inter'] ${
+        <div className={`absolute bottom-2 right-2 px-2 py-1 text-[10px] font-['Fira_Code'] ${
           isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-200 text-zinc-600'
         }`}>
           {viewportWidth}px x {sectionHeight}px

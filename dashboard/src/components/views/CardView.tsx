@@ -127,7 +127,7 @@ export default function CardView({
 }: CardViewProps) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full rounded-2xl shadow-sm p-12" style={{ backgroundColor: configColors.cards || '#FFFFFF', color: '#6B7280' }}>
+      <div className="flex items-center justify-center h-full shadow-sm p-12" style={{ backgroundColor: configColors.cards || '#FFFFFF', color: configColors.icons || '#6B7280' }}>
         No data to display
       </div>
     );
@@ -136,14 +136,16 @@ export default function CardView({
   const cardBg = configColors.cards || '#FFFFFF';
   const headingColor = configColors.headings || '#1A1A1A';
   const buttonColor = configColors.buttons || '#1A1A1A';
+  const borderColor = configColors.borders || '#E5E7EB';
+  const mutedColor = configColors.icons || '#6B7280';
   const category = getEntityCategory(entityType);
 
   // Hover actions overlay — shared across all card types
   const renderHoverActions = (record: Record<string, unknown>) => (
     <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
       <button
-        className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
-        style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: '#6B7280' }}
+        className="w-8 h-8 flex items-center justify-center transition-colors hover:bg-gray-100"
+        style={{ backgroundColor: `${cardBg}E6`, color: mutedColor }}
         onClick={(e) => { e.stopPropagation(); onRecordClick?.(record); }}
         title="Edit"
       >
@@ -154,8 +156,8 @@ export default function CardView({
       </button>
       {onQuickDelete && (
         <button
-          className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
-          style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: '#6B7280' }}
+          className="w-8 h-8 flex items-center justify-center transition-colors hover:bg-red-50"
+          style={{ backgroundColor: `${cardBg}E6`, color: mutedColor }}
           onClick={(e) => {
             e.stopPropagation();
             const id = String(record.id || '');
@@ -178,7 +180,7 @@ export default function CardView({
     const badgeStyle = getStatusBadgeStyle(badge);
     return (
       <span
-        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full capitalize ${extraClass || ''}`}
+        className={`inline-flex px-3 py-1 text-xs font-medium capitalize ${extraClass || ''}`}
         style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
       >
         {badge.replace(/_/g, ' ')}
@@ -190,9 +192,9 @@ export default function CardView({
   const renderMeta = (metaValues: string[]) => {
     if (metaValues.length === 0) return null;
     return (
-      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 pt-3 border-t" style={{ borderColor: '#F3F4F6' }}>
+      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 pt-3 border-t" style={{ borderColor }}>
         {metaValues.map((value, i) => (
-          <span key={i} className="text-xs" style={{ color: '#9CA3AF' }}>{value}</span>
+          <span key={i} className="text-xs" style={{ color: mutedColor }}>{value}</span>
         ))}
       </div>
     );
@@ -217,17 +219,17 @@ export default function CardView({
             <div
               key={recordId}
               onClick={() => onRecordClick?.(record)}
-              className="rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group relative"
-              style={{ backgroundColor: cardBg }}
+              className="transition-shadow cursor-pointer overflow-hidden group relative"
+              style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
             >
-              <div className="h-1.5 rounded-t-2xl" style={{ backgroundColor: badge ? getFinancialBarColor(badge) : buttonColor }} />
+              <div className="h-1.5" style={{ backgroundColor: badge ? getFinancialBarColor(badge) : buttonColor }} />
               <div className="p-6">
                 {amount !== undefined && amount !== '' && (
                   <p className="text-2xl font-bold mb-1" style={{ color: headingColor }}>
                     {formatCurrency(amount)}
                   </p>
                 )}
-                <h3 className="font-medium text-sm truncate mb-2" style={{ color: '#6B7280' }}>{title}</h3>
+                <h3 className="font-medium text-sm truncate mb-2" style={{ color: mutedColor }}>{title}</h3>
                 {renderBadge(badge)}
                 {renderMeta(metaValues)}
               </div>
@@ -243,8 +245,8 @@ export default function CardView({
             <div
               key={recordId}
               onClick={() => onRecordClick?.(record)}
-              className="rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group relative"
-              style={{ backgroundColor: cardBg }}
+              className="transition-shadow cursor-pointer overflow-hidden group relative"
+              style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
             >
               <div className="p-6">
                 <div className="flex items-start gap-4">
@@ -256,7 +258,7 @@ export default function CardView({
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold text-base truncate" style={{ color: headingColor }}>{title}</h3>
-                    {subtitle && <p className="text-sm truncate" style={{ color: '#6B7280' }}>{subtitle}</p>}
+                    {subtitle && <p className="text-sm truncate" style={{ color: mutedColor }}>{subtitle}</p>}
                   </div>
                 </div>
                 {badge && <div className="mt-3">{renderBadge(badge)}</div>}
@@ -278,8 +280,8 @@ export default function CardView({
           return (
             <div
               key={recordId}
-              className="rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group relative"
-              style={{ backgroundColor: cardBg, borderLeft: `4px solid ${priorityColor}` }}
+              className="transition-shadow cursor-pointer overflow-hidden group relative"
+              style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, borderLeft: `4px solid ${priorityColor}` }}
               onClick={() => onRecordClick?.(record)}
             >
               <div className="p-6">
@@ -292,7 +294,7 @@ export default function CardView({
                     }}
                   >
                     <div
-                      className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer transition-colors ${isComplete ? '' : 'hover:bg-gray-50'}`}
+                      className={`w-5 h-5 border-2 flex items-center justify-center cursor-pointer transition-colors ${isComplete ? '' : 'hover:bg-gray-50'}`}
                       style={{
                         borderColor: isComplete ? '#059669' : '#D1D5DB',
                         backgroundColor: isComplete ? '#059669' : 'transparent',
@@ -313,7 +315,7 @@ export default function CardView({
                       {title}
                     </h3>
                     {record.due_date != null && (
-                      <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>
+                      <p className="text-xs mt-1" style={{ color: mutedColor }}>
                         Due: {String(record.due_date).split('T')[0]}
                       </p>
                     )}
@@ -338,13 +340,13 @@ export default function CardView({
             <div
               key={recordId}
               onClick={() => onRecordClick?.(record)}
-              className="rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group relative"
-              style={{ backgroundColor: cardBg }}
+              className="transition-shadow cursor-pointer overflow-hidden group relative"
+              style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
             >
               <div className="p-6 flex gap-4">
                 {dateBadge && (
                   <div
-                    className="w-14 h-14 rounded-xl flex flex-col items-center justify-center shrink-0"
+                    className="w-14 h-14 flex flex-col items-center justify-center shrink-0"
                     style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}
                   >
                     <span className="text-[10px] font-bold leading-none">{dateBadge.month}</span>
@@ -354,11 +356,11 @@ export default function CardView({
                 <div className="min-w-0 flex-1">
                   <h3 className="font-semibold text-base truncate" style={{ color: headingColor }}>{title}</h3>
                   {timeStart && (
-                    <p className="text-sm mt-1" style={{ color: '#6B7280' }}>
+                    <p className="text-sm mt-1" style={{ color: mutedColor }}>
                       {timeStart}{timeEnd ? ` – ${timeEnd}` : ''}
                     </p>
                   )}
-                  {subtitle && <p className="text-xs mt-1 truncate" style={{ color: '#9CA3AF' }}>{subtitle}</p>}
+                  {subtitle && <p className="text-xs mt-1 truncate" style={{ color: mutedColor }}>{subtitle}</p>}
                 </div>
               </div>
               {badge && (
@@ -381,13 +383,13 @@ export default function CardView({
           <div
             key={recordId}
             onClick={() => onRecordClick?.(record)}
-            className="rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group relative"
-            style={{ backgroundColor: cardBg }}
+            className="transition-shadow cursor-pointer overflow-hidden group relative"
+            style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
           >
-            <div className="h-2 rounded-t-2xl" style={dualColorStyle || defaultBarStyle} />
+            <div className="h-2" style={dualColorStyle || defaultBarStyle} />
             <div className="p-6">
               <h3 className="font-semibold text-base truncate mb-1" style={{ color: headingColor }}>{title}</h3>
-              {subtitle && <p className="text-sm truncate mb-3" style={{ color: '#6B7280' }}>{subtitle}</p>}
+              {subtitle && <p className="text-sm truncate mb-3" style={{ color: mutedColor }}>{subtitle}</p>}
               {renderBadge(badge, 'mb-3')}
               {renderMeta(metaValues)}
             </div>

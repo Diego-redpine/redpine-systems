@@ -40,12 +40,12 @@ export default function DragPreview({ type, isValid, componentMeta, accentColor 
 
   return (
     <div
-      className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-xl font-sans text-sm pointer-events-none transition-colors duration-150 text-white border-2"
+      className="flex items-center gap-2 px-3 py-2 shadow-xl font-sans text-sm pointer-events-none transition-colors duration-150 text-white border-2"
       style={{
         opacity: 0.9,
         transform: 'rotate(2deg)',
-        backgroundColor: isValid ? accentColor : '#DC2626',
-        borderColor: isValid ? `${accentColor}99` : '#F87171',
+        backgroundColor: isValid ? '#1A1A1A' : '#DC2626',
+        borderColor: isValid ? '#374151' : '#F87171',
       }}
     >
       <IconComponent className="w-4 h-4" />

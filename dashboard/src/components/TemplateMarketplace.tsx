@@ -231,14 +231,14 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search templates..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm"
+            className="w-full pl-10 pr-4 py-2.5 text-sm"
             style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, color: headingColor }}
           />
         </div>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="px-4 py-2.5 rounded-xl text-sm appearance-none cursor-pointer"
+          className="px-4 py-2.5 text-sm appearance-none cursor-pointer"
           style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, color: headingColor }}
         >
           {SORT_OPTIONS.map(s => (
@@ -253,7 +253,7 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
+            className="px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors"
             style={{
               backgroundColor: selectedCategory === cat.id ? buttonBg : 'transparent',
               color: selectedCategory === cat.id ? buttonText : textColor,
@@ -274,14 +274,14 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
               <button
                 key={template.id}
                 onClick={() => setSelectedTemplate(template)}
-                className="text-left rounded-2xl p-5 transition-shadow hover:shadow-md"
+                className="text-left p-5 transition-shadow hover:shadow-md"
                 style={{
                   backgroundColor: cardBg,
                   border: `2px solid ${buttonBg}30`,
                 }}
               >
                 {/* Mini dashboard preview */}
-                <div className="rounded-lg overflow-hidden mb-3 h-20" style={{ backgroundColor: bgColor }}>
+                <div className="overflow-hidden mb-3 h-20" style={{ backgroundColor: bgColor }}>
                   <div className="flex h-full">
                     <div className="w-8" style={{ backgroundColor: template.colors.sidebar_bg || '#1A1A1A' }} />
                     <div className="flex-1 p-1.5">
@@ -328,12 +328,12 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
             <button
               key={template.id}
               onClick={() => setSelectedTemplate(template)}
-              className="text-left rounded-xl p-4 transition-shadow hover:shadow-md"
+              className="text-left p-4 transition-shadow hover:shadow-md"
               style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
             >
               <div className="flex items-start justify-between mb-1">
                 <p className="text-sm font-semibold" style={{ color: headingColor }}>{template.name}</p>
-                <span className="text-xs capitalize px-2 py-0.5 rounded-full" style={{ backgroundColor: `${borderColor}80`, color: textColor }}>
+                <span className="text-xs capitalize px-2 py-0.5 " style={{ backgroundColor: `${borderColor}80`, color: textColor }}>
                   {template.business_type.replace(/_/g, ' ')}
                 </span>
               </div>
@@ -359,7 +359,7 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
         <>
           <div className="fixed inset-0 z-50 bg-black/40" onClick={() => setSelectedTemplate(null)} />
           <div
-            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg shadow-2xl overflow-hidden"
             style={{ backgroundColor: cardBg }}
           >
             {/* Preview banner */}
@@ -368,7 +368,7 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
                 <div className="w-14" style={{ backgroundColor: selectedTemplate.colors.sidebar_bg || '#1A1A1A' }}>
                   <div className="p-2 space-y-2 pt-4">
                     {[1, 2, 3, 4].map(i => (
-                      <div key={i} className="w-full h-1.5 rounded-full" style={{ backgroundColor: '#ffffff30' }} />
+                      <div key={i} className="w-full h-1.5 " style={{ backgroundColor: '#ffffff30' }} />
                     ))}
                   </div>
                 </div>
@@ -376,10 +376,10 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
                   <div className="h-2.5 w-24 rounded-full mb-2" style={{ backgroundColor: selectedTemplate.colors.buttons || '#3B82F6', opacity: 0.5 }} />
                   <div className="grid grid-cols-3 gap-2">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="h-8 rounded-lg" style={{ backgroundColor: selectedTemplate.colors.cards || '#FFF', border: `1px solid ${borderColor}` }} />
+                      <div key={i} className="h-8" style={{ backgroundColor: selectedTemplate.colors.cards || '#FFF', border: `1px solid ${borderColor}` }} />
                     ))}
                   </div>
-                  <div className="mt-2 h-10 rounded-lg" style={{ backgroundColor: selectedTemplate.colors.cards || '#FFF', border: `1px solid ${borderColor}` }} />
+                  <div className="mt-2 h-10" style={{ backgroundColor: selectedTemplate.colors.cards || '#FFF', border: `1px solid ${borderColor}` }} />
                 </div>
               </div>
               {selectedTemplate.is_featured && (
@@ -414,7 +414,7 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
                 <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: textColor }}>Included Tabs</p>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedTemplate.tabs.map((tab, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded-full text-xs" style={{ backgroundColor: `${buttonBg}10`, color: headingColor, border: `1px solid ${borderColor}` }}>
+                    <span key={i} className="px-2.5 py-1 text-xs" style={{ backgroundColor: `${buttonBg}10`, color: headingColor, border: `1px solid ${borderColor}` }}>
                       {tab.label}
                     </span>
                   ))}
@@ -440,7 +440,7 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
               <div className="flex gap-3 mt-5">
                 <button
                   onClick={() => setSelectedTemplate(null)}
-                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium"
                   style={{ border: `1px solid ${borderColor}`, color: textColor }}
                 >
                   Cancel
@@ -448,7 +448,7 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
                 <button
                   onClick={() => handleClone(selectedTemplate)}
                   disabled={isCloning}
-                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50 transition-opacity"
+                  className="flex-1 px-4 py-2.5 text-sm font-semibold disabled:opacity-50 transition-opacity"
                   style={{ backgroundColor: buttonBg, color: buttonText }}
                 >
                   {isCloning ? 'Cloning...' : 'Use This Template'}
@@ -461,7 +461,7 @@ export default function TemplateMarketplace({ colors }: TemplateMarketplaceProps
 
       {/* Demo banner */}
       {isDemoMode && (
-        <div className="mt-6 text-center py-3 rounded-xl" style={{ backgroundColor: `${buttonBg}05`, border: `1px solid ${borderColor}` }}>
+        <div className="mt-6 text-center py-3" style={{ backgroundColor: `${buttonBg}05`, border: `1px solid ${borderColor}` }}>
           <p className="text-xs" style={{ color: textColor }}>Showing demo templates — sign in to browse the full marketplace</p>
         </div>
       )}

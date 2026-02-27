@@ -58,7 +58,7 @@ function SectionsEditor({
         {items.map((tab, tabIdx) => (
           <div
             key={tab.id}
-            className="rounded-xl border border-gray-200 overflow-hidden"
+            className="border border-gray-200 overflow-hidden"
           >
             <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border-b border-gray-100">
               <div className="flex flex-col gap-0.5 shrink-0">
@@ -221,7 +221,7 @@ export default function EditorOverlay({
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -235,7 +235,7 @@ export default function EditorOverlay({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
+              className="flex-1 py-1.5 text-xs font-medium transition-colors"
               style={{
                 backgroundColor: activeTab === tab.id ? activeBg : 'transparent',
                 color: activeTab === tab.id ? activeText : '#6B7280',

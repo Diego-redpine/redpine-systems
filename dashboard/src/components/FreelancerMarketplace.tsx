@@ -267,7 +267,7 @@ function formatPrice(cents: number) {
 
 export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceProps) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -338,14 +338,14 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search freelancers and services..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm"
+            className="w-full pl-10 pr-4 py-2.5 border text-sm"
             style={{ borderColor, color: textMain, backgroundColor: cardBg }}
           />
         </div>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="px-4 py-2.5 rounded-xl border text-sm"
+          className="px-4 py-2.5 border text-sm"
           style={{ borderColor, color: textMain, backgroundColor: cardBg }}
         >
           {SORT_OPTIONS.map(opt => (
@@ -360,7 +360,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
           <button
             key={key}
             onClick={() => setCategory(key)}
-            className="px-4 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+            className="px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
             style={{
               backgroundColor: category === key ? buttonColor : 'transparent',
               color: category === key ? buttonText : textMain,
@@ -374,7 +374,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
 
       {/* Demo mode banner */}
       {isDemoMode && (
-        <div className="px-4 py-2.5 rounded-xl text-sm" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+        <div className="px-4 py-2.5 text-sm" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
           Showing sample freelancers. Real freelancers will appear when the marketplace is live.
         </div>
       )}
@@ -388,7 +388,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
               <button
                 key={gig.id}
                 onClick={() => { setSelectedGig(gig); setSelectedTier('basic'); setGigImageIndex(0); }}
-                className="text-left rounded-2xl overflow-hidden transition-shadow hover:shadow-md"
+                className="text-left overflow-hidden transition-shadow hover:shadow-md"
                 style={{ backgroundColor: cardBg, border: `2px solid ${buttonColor}30` }}
               >
                 {gig.images[0] && (
@@ -434,7 +434,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
             <button
               key={gig.id}
               onClick={() => { setSelectedGig(gig); setSelectedTier('basic'); setGigImageIndex(0); }}
-              className="text-left rounded-2xl overflow-hidden transition-shadow hover:shadow-md flex flex-col"
+              className="text-left overflow-hidden transition-shadow hover:shadow-md flex flex-col"
               style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
             >
               {gig.images[0] ? (
@@ -466,7 +466,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
                   <span className="text-sm font-bold" style={{ color: textMain }}>
                     From {formatPrice(gig.pricing_tiers.basic.price_cents)}
                   </span>
-                  <span className="px-2 py-0.5 text-xs rounded-full" style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
+                  <span className="px-2 py-0.5 text-xs " style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
                     {CATEGORY_LABELS[gig.category] || gig.category}
                   </span>
                 </div>
@@ -498,7 +498,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
         <>
           <div className="fixed inset-0 z-50 bg-black/40" onClick={() => setSelectedGig(null)} />
           <div
-            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
             style={{ backgroundColor: cardBg }}
           >
             {/* Photo gallery */}
@@ -511,13 +511,13 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
                   <>
                     <button
                       onClick={(e) => { e.stopPropagation(); setGigImageIndex(i => (i - 1 + selectedGig.images.length) % selectedGig.images.length); }}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/40 text-white flex items-center justify-center hover:bg-black/60"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); setGigImageIndex(i => (i + 1) % selectedGig.images.length); }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/40 text-white flex items-center justify-center hover:bg-black/60"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
                     </button>
@@ -591,7 +591,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
                       <button
                         key={tier}
                         onClick={() => setSelectedTier(tier)}
-                        className="text-left rounded-xl p-4 transition-all"
+                        className="text-left p-4 transition-all"
                         style={{
                           backgroundColor: isSelected ? `${buttonColor}08` : bgColor,
                           border: isSelected ? `2px solid ${buttonColor}` : `1px solid ${borderColor}`,
@@ -633,7 +633,7 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
                 <h5 className="text-xs font-semibold mb-2" style={{ color: textMuted }}>SKILLS</h5>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedGig.freelancer.skills.map(skill => (
-                    <span key={skill} className="px-2.5 py-0.5 text-xs rounded-full" style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
+                    <span key={skill} className="px-2.5 py-0.5 text-xs " style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
                       {skill}
                     </span>
                   ))}
@@ -660,14 +660,14 @@ export default function FreelancerMarketplace({ colors }: FreelancerMarketplaceP
               <div className="flex gap-3">
                 <button
                   onClick={() => setSelectedGig(null)}
-                  className="px-4 py-2.5 text-sm font-medium rounded-xl border"
+                  className="px-4 py-2.5 text-sm font-medium border"
                   style={{ borderColor, color: textMain }}
                 >
                   Close
                 </button>
                 <button
                   onClick={() => { setOrderFlowGig({ gig: selectedGig, tier: selectedTier }); setSelectedGig(null); }}
-                  className="px-6 py-2.5 text-sm font-medium rounded-xl text-white transition-opacity hover:opacity-90"
+                  className="px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
                   style={{ backgroundColor: buttonColor, color: buttonText }}
                 >
                   Hire Now

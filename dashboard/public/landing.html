@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Pine OS - Business platforms, built by AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
+
+        * { font-family: 'Fira Code', monospace; }
+
+        .typewriter {
+            display: inline;
+            color: #ce0707;
+            font-weight: 700;
+        }
+
+        .typewriter-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1em;
+            background: #000;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: blink-cursor 0.7s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: typewriter-dots 1.5s steps(1) infinite;
+        }
+        @keyframes typewriter-dots {
+            0%   { content: ''; }
+            25%  { content: '.'; }
+            50%  { content: '..'; }
+            75%  { content: '...'; }
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            border: 3px solid black;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 101;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .chat-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+
+        .chat-container.expanded {
+            max-height: 400px;
+            padding-top: 1rem;
+        }
+
+        .chat-message {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-wrapper {
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper.chat-mode {
+            /* sharp edges in chat mode too */
+        }
+
+        .loading-dots span {
+            animation: blink 1.4s infinite both;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #ce0707;
+            border: 2px solid #000;
+            transition: all 0.15s ease;
+        }
+        .btn-primary:hover,
+        .btn-primary:active {
+            background: #ce0707;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            border: 2px solid #000;
+            transition: all 0.15s ease;
+        }
+        .btn-secondary:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        /* Heartbeat pulse animation */
+        .heartbeat {
+            animation: heartbeat 1.2s ease-in-out infinite;
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+
+
+        /* Section illustration */
+        .section-illustration {
+            overflow: hidden;
+        }
+        .section-illustration img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Portfolio card hover */
+        .portfolio-card {
+            transition: all 0.15s ease;
+        }
+        .portfolio-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Checklist styling */
+        .checklist-item::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #ce0707;
+            border-radius: 4px;
+            margin-right: 12px;
+            position: relative;
+        }
+        .checklist-item::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+        }
+
+        /* Scroll animations */
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-scale {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .scroll-scale.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-white text-black min-h-screen" style="background-attachment: fixed;">
+    <!-- Top bar with login -->
+    <nav class="absolute top-0 left-0 right-0 flex justify-end items-center px-6 py-4">
+        <a href="/login" class="flex items-center gap-2 border-2 border-black px-4 py-2 bg-white text-black font-semibold text-sm hover:bg-black hover:text-white transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+            </svg>
+            Log in
+        </a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="min-h-screen flex flex-col items-center justify-center px-6 py-20">
+        <!-- Logo -->
+        <div class="mb-10">
+            <img src="/static/images/logo.png" alt="Red Pine OS" class="h-44 mx-auto">
+        </div>
+
+        <!-- Headline with animated words -->
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-12 leading-tight">
+            Build me a system for<br>
+            <span class="typewriter" id="industry-word"></span><span class="typewriter-cursor"></span>
+        </h1>
+
+        <!-- Hidden list of industries for JS -->
+        <div id="industries-list" class="hidden">landscaping,nail salons,barbershops,martial arts,bakeries,restaurants,cafes,food trucks,catering,florists,pet grooming,dog walking,veterinarians,dentists,chiropractors,therapists,yoga studios,pilates,personal training,gyms,dance studios,music lessons,tutoring,daycares,preschools,photography,videography,web design,graphic design,tattoo shops,piercing studios,auto detailing,car washes,mechanics,tire shops,locksmiths,plumbers,electricians,HVAC,roofing,painting,cleaning services,pressure washing,pool service,pest control,lawn care,tree service,moving companies,storage units,real estate,property management,insurance agencies,accounting firms,law offices,consulting,coaching,ecommerce,boutiques,jewelry stores,thrift shops</div>
+
+        <!-- Input Section -->
+        <div id="input-section" class="w-full max-w-3xl px-4">
+            <div class="input-wrapper bg-gray-50 border-2 border-black p-4" id="input-wrapper">
+                <!-- Chat Messages (hidden initially) -->
+                <div id="chat-container" class="chat-container">
+                    <div id="chat-messages" class="space-y-3 mb-4"></div>
+                </div>
+
+                <!-- Textarea row -->
+                <div class="flex gap-2 items-end">
+                    <textarea
+                        id="business-input"
+                        placeholder="Describe your business in any language"
+                        class="flex-1 bg-transparent px-4 py-4 text-lg focus:outline-none resize-none"
+                        rows="3"
+                        oninput="autoResize(this)"
+                        onkeydown="handleTextareaKeydown(event)"
+                    ></textarea>
+                    <!-- Small send button - only visible in chat mode -->
+                    <button
+                        onclick="handleSubmit()"
+                        id="chat-send-btn"
+                        class="hidden btn-primary px-4 py-2 text-sm font-semibold flex-shrink-0 self-end mb-1"
+                    >
+                        Send
+                    </button>
+                </div>
+            </div>
+
+            <!-- Initial buttons (hidden in chat mode) -->
+            <div id="initial-buttons" class="flex flex-col items-center gap-3 mt-4">
+                <button
+                    onclick="handleSubmit()"
+                    id="build-btn"
+                    class="btn-primary font-semibold px-8 py-4 text-lg"
+                >
+                    Create
+                </button>
+                <button onclick="openFormModal()" class="btn-secondary bg-white text-black font-semibold px-6 py-3">
+                    Start with a form instead
+                </button>
+            </div>
+
+            <!-- Action Buttons (shown after 3 messages in chat) -->
+            <div id="action-buttons" class="hidden mt-4 flex flex-col items-center gap-3">
+                <button onclick="createPlatform()" class="btn-primary font-semibold px-6 py-3">
+                    Build it now
+                </button>
+                <button onclick="openForm()" class="btn-secondary bg-white text-black font-semibold px-6 py-3">
+                    Continue with form
+                </button>
+            </div>
+        </div>
+
+
+    </section>
+
+    <!-- Full Screen Success State -->
+    <div id="success-section" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center px-6 overflow-y-auto py-10">
+        <img src="/static/images/logo.png" alt="Red Pine OS" class="h-24 mb-6">
+        <h3 class="text-3xl font-bold mb-4">System Ready!</h3>
+        <div id="config-details" class="space-y-1 mb-6 text-sm text-gray-500 text-center"></div>
+
+        <!-- Branding Options -->
+        <div class="mb-10 w-full max-w-4xl">
+            <div class="flex gap-4 items-stretch justify-center">
+                <!-- Logo Upload - Big Square -->
+                <label for="logo-upload" class="w-80 h-80 border-2 border-black cursor-pointer flex items-center justify-center bg-white hover:bg-gray-50 transition-colors shrink-0 relative overflow-hidden">
+                    <input type="file" id="logo-upload" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+                    <div id="logo-preview" class="w-full h-full flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="w-20 h-20 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="text-lg text-gray-500">Upload Logo</span>
+                        </div>
+                    </div>
+                </label>
+
+                <!-- Color Palette - 3 Vertical Rectangles -->
+                <div class="flex h-80 border-2 border-black">
+                    <div class="w-44 h-full relative cursor-pointer active:scale-95 transition-transform" id="color-swatch-1" onclick="randomizeAllColors()">
+                        <div id="color-preview-1" class="w-full h-full" style="background: #ce0707;"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="color-hex-1" onclick="event.stopPropagation(); document.getElementById('brand-color-1').click();" class="font-mono text-sm font-bold px-3 py-1.5 rounded cursor-pointer hover:ring-2 hover:ring-white/50 transition-all select-none" style="color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">#CE0707</span>
+                        </div>
+                        <input type="color" id="brand-color-1" value="#ce0707" class="sr-only" onclick="event.stopPropagation()">
+                    </div>
+                    <div class="w-44 h-full relative cursor-pointer active:scale-95 transition-transform border-l-2 border-black" id="color-swatch-2" onclick="randomizeAllColors()">
+                        <div id="color-preview-2" class="w-full h-full" style="background: #000000;"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="color-hex-2" onclick="event.stopPropagation(); document.getElementById('brand-color-2').click();" class="font-mono text-sm font-bold px-3 py-1.5 rounded cursor-pointer hover:ring-2 hover:ring-white/50 transition-all select-none" style="color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">#000000</span>
+                        </div>
+                        <input type="color" id="brand-color-2" value="#000000" class="sr-only" onclick="event.stopPropagation()">
+                    </div>
+                    <div class="w-44 h-full relative cursor-pointer active:scale-95 transition-transform border-l-2 border-black" id="color-swatch-3" onclick="randomizeAllColors()">
+                        <div id="color-preview-3" class="w-full h-full" style="background: #ffffff;"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="color-hex-3" onclick="event.stopPropagation(); document.getElementById('brand-color-3').click();" class="font-mono text-sm font-bold px-3 py-1.5 rounded cursor-pointer hover:ring-2 hover:ring-white/50 transition-all select-none" style="color: #000000; text-shadow: 0 1px 3px rgba(255,255,255,0.4);">#FFFFFF</span>
+                        </div>
+                        <input type="color" id="brand-color-3" value="#ffffff" class="sr-only" onclick="event.stopPropagation()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="launch-dashboard-btn" onclick="launchDashboard()" class="btn-primary font-semibold px-8 py-4 text-lg">
+            Launch Dashboard
+        </button>
+    </div>
+
+
+    <!-- Section: Why System Matters -->
+    <section id="section-why" class="py-20 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <!-- Illustration (left) -->
+            <div class="section-illustration h-[450px] scroll-scale">
+                <img src="/static/images/image_1.png" alt="Why a system matters illustration">
+            </div>
+
+            <!-- Content (right) -->
+            <div class="scroll-scale" style="transition-delay: 0.1s;">
+                <h2 class="text-3xl md:text-4xl font-black uppercase mb-6">
+                    <span class="section-typewriter" data-text="WHY DOES A SYSTEM MATTER?"></span><span class="typewriter-cursor section-cursor hidden"></span>
+                </h2>
+                <p class="text-gray-600 text-lg leading-relaxed mb-6 scroll-fade" style="transition-delay: 0.2s;">
+                    A system is how your business keeps its promises—every time, without you babysitting it.
+                    Leads get answered, appointments land on the calendar, estimates go out, jobs get closed, reviews roll in.
+                    No juggling, no guessing. <span style="color: #ce0707; font-weight: 600;">Red Pine</span> gives you one simple flow so nothing slips and everyone knows the next step.
+                    You get your time back to work on the business, not in it—and growth becomes repeatable, not accidental.
+                </p>
+                <p class="text-lg scroll-fade" style="transition-delay: 0.4s;">
+                    <span class="section-typewriter" data-text="What Red Pine Delivers..." data-delay="6500" style="font-weight: 700;"></span><span class="typewriter-cursor section-cursor hidden"></span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Section: One System That Fits -->
+    <section id="section-fits" class="py-20 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <!-- Content (left) -->
+            <div class="scroll-scale">
+                <h2 class="text-3xl md:text-4xl font-black uppercase mb-6">
+                    <span class="section-typewriter" data-text="ONE SYSTEM THAT FITS"></span><span class="typewriter-cursor section-cursor hidden"></span>
+                </h2>
+                <p class="text-gray-600 text-lg leading-relaxed mb-8 scroll-fade" style="transition-delay: 0.2s;">
+                    When the work gets busy, tools should get quieter—not louder.
+                    <span style="color: #ce0707; font-weight: 600;">Red Pine</span> gives you one place where leads, calendars, estimates, and reviews move in a clean rhythm.
+                    Start small, stay organized, and plug in new capabilities only when they make you faster.
+                    It feels simple on day one and stays simple when you scale.
+                </p>
+
+                <p class="font-bold mb-4 scroll-fade" style="transition-delay: 0.3s;">How we help:</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center text-lg scroll-fade" style="transition-delay: 0.4s;">
+                        <span class="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0" style="background: #ce0707;">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </span>
+                        One login. One flow.
+                    </li>
+                    <li class="flex items-center text-lg scroll-fade" style="transition-delay: 0.5s;">
+                        <span class="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0" style="background: #ce0707;">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </span>
+                        Built for your day-to-day.
+                    </li>
+                    <li class="flex items-center text-lg scroll-fade" style="transition-delay: 0.6s;">
+                        <span class="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0" style="background: #ce0707;">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </span>
+                        Starts simple. Scales clean.
+                    </li>
+                </ul>
+
+                <button onclick="scrollToHero()" class="btn-primary font-semibold px-8 py-4 text-lg inline-flex items-center gap-2 scroll-scale" style="transition-delay: 0.7s;">
+                    Build your system now
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Illustration (right) -->
+            <div class="section-illustration h-[450px] order-first md:order-last scroll-scale" style="transition-delay: 0.1s;">
+                <img src="/static/images/image_2.png" alt="One system that fits illustration">
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-20 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black text-center mb-12">
+                <span class="section-typewriter" data-text="See what's possible"></span><span class="typewriter-cursor section-cursor hidden"></span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1: Nail Salon -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.1s;">
+                    <div class="h-40 bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center">
+                        <span class="text-4xl">💅</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Nail Salon</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Landscaping -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.15s;">
+                    <div class="h-40 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                        <span class="text-4xl">🌿</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Landscaping</p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Barbershop -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.2s;">
+                    <div class="h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                        <span class="text-4xl">💈</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Barbershop</p>
+                    </div>
+                </div>
+
+                <!-- Card 4: Martial Arts -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.25s;">
+                    <div class="h-40 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
+                        <span class="text-4xl">🥋</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Martial Arts</p>
+                    </div>
+                </div>
+
+                <!-- Card 5: Bakery -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.3s;">
+                    <div class="h-40 bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+                        <span class="text-4xl">🥐</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Bakery</p>
+                    </div>
+                </div>
+
+                <!-- Card 6: Auto Detailing -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.35s;">
+                    <div class="h-40 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                        <span class="text-4xl">🚗</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Auto Detailing</p>
+                    </div>
+                </div>
+
+                <!-- Card 7: Photography -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.4s;">
+                    <div class="h-40 bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                        <span class="text-4xl">📸</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Photography</p>
+                    </div>
+                </div>
+
+                <!-- Card 8: Yoga Studio -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.45s;">
+                    <div class="h-40 bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center">
+                        <span class="text-4xl">🧘</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Yoga Studio</p>
+                    </div>
+                </div>
+
+                <!-- Card 9: Restaurant -->
+                <div class="portfolio-card bg-white overflow-hidden border-2 border-black scroll-scale" style="transition-delay: 0.5s;">
+                    <div class="h-40 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                        <span class="text-4xl">🍽️</span>
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold">Restaurant</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-10 scroll-fade" style="transition-delay: 0.6s;">
+                <a href="/examples" class="text-gray-600 hover:text-[#ce0707] underline font-medium">
+                    View all examples →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 border-t border-gray-200">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <img src="/static/images/logo.png" alt="Red Pine OS" class="h-8">
+            </div>
+            <div class="flex gap-6 text-sm text-gray-500">
+                <a href="/privacy" class="hover:text-black">Privacy Policy</a>
+                <a href="/terms" class="hover:text-black">Terms & Conditions</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal-overlay" onclick="if(event.target === this) closeSignupModal()">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-xl font-bold">Start Your 14-Day Free Trial</h2>
+                <button onclick="closeSignupModal()" class="text-gray-400 hover:text-black text-2xl">&times;</button>
+            </div>
+            <p class="text-gray-500 text-sm mb-6">No charge today. Cancel anytime.</p>
+
+            <div id="signup-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm"></div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="John Smith" class="w-full border-2 border-gray-200 px-3 py-2.5 focus:outline-none focus:border-gray-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="signup-email" placeholder="you@business.com" class="w-full border-2 border-gray-200 px-3 py-2.5 focus:outline-none focus:border-gray-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="signup-password" placeholder="At least 6 characters" class="w-full border-2 border-gray-200 px-3 py-2.5 focus:outline-none focus:border-gray-400">
+                </div>
+            </div>
+
+            <button onclick="handleSignup()" id="signup-submit-btn" class="btn-primary font-semibold px-6 py-3 w-full mt-6">
+                Start Free Trial
+            </button>
+            <p class="text-center text-gray-400 text-xs mt-3">$29/mo after trial. Cancel anytime.</p>
+        </div>
+    </div>
+
+    <!-- Full Screen Loading Overlay (multi-phase: building → signup → launching) -->
+    <div id="loading-section" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center px-6">
+        <!-- Phase 1: Building -->
+        <div id="loading-building" class="flex flex-col items-center">
+            <img src="/static/images/logo.png" alt="Red Pine OS" class="h-40 mb-8 heartbeat">
+            <p class="text-xl font-semibold" id="loading-text">Building your system<span class="loading-dots"></span></p>
+            <p class="text-gray-500 mt-2">This takes just a moment</p>
+        </div>
+
+        <!-- Phase 2: Signup form (slides in after config is ready) -->
+        <div id="loading-signup" class="hidden w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="/static/images/logo.png" alt="Red Pine OS" class="h-24 mx-auto mb-4">
+                <h2 class="text-2xl font-bold mb-1">Your system is ready!</h2>
+                <p id="loading-signup-business" class="text-gray-500 text-sm"></p>
+            </div>
+
+            <div id="loading-signup-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm"></div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="loading-signup-email" placeholder="you@business.com" class="w-full border-2 border-gray-200 px-3 py-2.5 focus:outline-none focus:border-gray-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="loading-signup-password" placeholder="At least 6 characters" class="w-full border-2 border-gray-200 px-3 py-2.5 focus:outline-none focus:border-gray-400">
+                </div>
+            </div>
+
+            <button onclick="handleLoadingSignup()" id="loading-signup-btn" class="btn-primary font-semibold px-6 py-3 w-full mt-6">
+                Create Your Account
+            </button>
+            <p class="text-center text-gray-400 text-xs mt-3">14-day free trial. $29/mo after. Cancel anytime.</p>
+
+            <div class="text-center mt-4">
+                <button onclick="skipSignupAndLaunch()" class="text-gray-400 hover:text-gray-600 text-sm underline">
+                    Skip — I already have an account
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase 3: Launching -->
+        <div id="loading-launching" class="hidden flex flex-col items-center">
+            <img src="/static/images/logo.png" alt="Red Pine OS" class="h-40 mb-8 heartbeat">
+            <p class="text-xl font-semibold">Launching your dashboard<span class="loading-dots"></span></p>
+            <p class="text-gray-500 mt-2">Setting everything up</p>
+        </div>
+    </div>
+
+    <!-- Form Modal -->
+    <div id="form-modal" class="modal-overlay" onclick="if(event.target === this) closeFormModal()">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Tell us about your business</h2>
+                <button onclick="closeFormModal()" class="text-gray-400 hover:text-black text-2xl">&times;</button>
+            </div>
+
+            <!-- Progress dots -->
+            <div class="flex justify-center gap-2 mb-6">
+                <div class="modal-progress-dot w-2 h-2 rounded-full bg-gray-300" data-step="1"></div>
+                <div class="modal-progress-dot w-2 h-2 rounded-full bg-gray-300" data-step="2"></div>
+                <div class="modal-progress-dot w-2 h-2 rounded-full bg-gray-300" data-step="3"></div>
+                <div class="modal-progress-dot w-2 h-2 rounded-full bg-gray-300" data-step="4"></div>
+                <div class="modal-progress-dot w-2 h-2 rounded-full bg-gray-300" data-step="5"></div>
+            </div>
+
+            <!-- Step 1: Business Type -->
+            <div class="modal-step" data-step="1">
+                <p class="text-gray-600 mb-4">What type of business?</p>
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="salon">💇 Salon / Spa</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="fitness">🏋️ Fitness</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="food">🍽️ Food</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="home_services">🔧 Home Services</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="retail">🛍️ Retail</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="professional">💼 Professional</button>
+                </div>
+                <input type="text" id="modal-type-other" placeholder="Or type something else..." class="w-full border-2 border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-gray-400">
+            </div>
+
+            <!-- Step 2: Business Name -->
+            <div class="modal-step hidden" data-step="2">
+                <p class="text-gray-600 mb-4">What's your business called?</p>
+                <input type="text" id="modal-business-name" placeholder="e.g., Joe's Barbershop" class="w-full border-2 border-gray-200 px-3 py-3 focus:outline-none focus:border-gray-400">
+            </div>
+
+            <!-- Step 3: Team Size -->
+            <div class="modal-step hidden" data-step="3">
+                <p class="text-gray-600 mb-4">How many people work with you?</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="1">👤 Just me</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="2-5">👥 2-5</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="6-20">👥👥 6-20</button>
+                    <button class="modal-option border-2 border-gray-200 p-3 text-sm hover:border-[#ce0707]" data-value="20+">🏢 20+</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Features -->
+            <div class="modal-step hidden" data-step="4">
+                <p class="text-gray-600 mb-4">What do you need?</p>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-3 p-3 border-2 border-gray-200 cursor-pointer hover:border-[#ce0707]">
+                        <input type="checkbox" id="modal-products" class="w-4 h-4 accent-[#ce0707]">
+                        <span class="text-sm">Sell products</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border-2 border-gray-200 cursor-pointer hover:border-[#ce0707]">
+                        <input type="checkbox" id="modal-appointments" class="w-4 h-4 accent-[#ce0707]">
+                        <span class="text-sm">Book appointments</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border-2 border-gray-200 cursor-pointer hover:border-[#ce0707]">
+                        <input type="checkbox" id="modal-website" class="w-4 h-4 accent-[#ce0707]">
+                        <span class="text-sm">Need a website</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border-2 border-gray-200 cursor-pointer hover:border-[#ce0707]">
+                        <input type="checkbox" id="modal-invoices" class="w-4 h-4 accent-[#ce0707]">
+                        <span class="text-sm">Invoice customers</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Step 5: Loading/Success -->
+            <div class="modal-step hidden" data-step="5">
+                <div id="modal-loading" class="text-center py-8">
+                    <div class="inline-block w-10 h-10 border-4 border-[#ce0707] border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p class="text-gray-600">Building your system<span class="loading-dots"></span></p>
+                </div>
+                <div id="modal-success" class="hidden text-center py-4">
+                    <p class="text-2xl mb-2">✓</p>
+                    <h3 class="font-bold text-lg mb-2">System Ready!</h3>
+                    <p id="modal-summary" class="text-gray-600 text-sm mb-4"></p>
+                    <a id="modal-launch-btn" href="#" target="_blank" class="btn-primary font-semibold px-6 py-3 inline-block">
+                        Launch Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="modal-nav" class="flex justify-between mt-6">
+                <button onclick="modalPrevStep()" id="modal-prev" class="text-gray-500 hover:text-black hidden">← Back</button>
+                <button onclick="modalNextStep()" id="modal-next" class="btn-primary font-semibold px-6 py-2 ml-auto" disabled>Continue →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chatMode = false;
+        let messageCount = 0;
+        let conversationHistory = [];
+        let collectedInfo = '';
+        let isSubmitting = false; // Prevent double submit
+
+        // Typewriter animation
+        const industries = document.getElementById('industries-list').textContent.split(',');
+        let industryIndex = 0;
+        const industryWord = document.getElementById('industry-word');
+        const typeSpeed = 80;      // ms per character when typing
+        const deleteSpeed = 40;    // ms per character when deleting
+        const pauseAfterType = 2000;  // pause after typing complete
+        const pauseAfterDelete = 300; // pause after deleting complete
+
+        function typeWriter() {
+            const currentWord = industries[industryIndex];
+            let charIndex = 0;
+
+            function type() {
+                if (charIndex < currentWord.length) {
+                    industryWord.textContent = currentWord.substring(0, charIndex + 1);
+                    charIndex++;
+                    setTimeout(type, typeSpeed);
+                } else {
+                    // Done typing, pause then delete
+                    setTimeout(deleteWord, pauseAfterType);
+                }
+            }
+
+            function deleteWord() {
+                if (charIndex > 0) {
+                    charIndex--;
+                    industryWord.textContent = currentWord.substring(0, charIndex);
+                    setTimeout(deleteWord, deleteSpeed);
+                } else {
+                    // Done deleting, move to next word
+                    industryIndex = (industryIndex + 1) % industries.length;
+                    setTimeout(typeWriter, pauseAfterDelete);
+                }
+            }
+
+            type();
+        }
+
+        // Start the typewriter
+        typeWriter();
+
+        // Scroll to hero section
+        function scrollToHero() {
+            document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                document.getElementById('business-input').focus();
+            }, 500);
+        }
+
+        // Modal functionality
+        let modalStep = 1;
+        const modalData = {};
+
+        function openFormModal() {
+            document.getElementById('form-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            modalStep = 1;
+            showModalStep(1);
+            updateModalProgress();
+            setupModalOptions();
+        }
+
+        function closeFormModal() {
+            document.getElementById('form-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function showModalStep(step) {
+            document.querySelectorAll('.modal-step').forEach(s => s.classList.add('hidden'));
+            document.querySelector(`.modal-step[data-step="${step}"]`).classList.remove('hidden');
+
+            const prevBtn = document.getElementById('modal-prev');
+            const nextBtn = document.getElementById('modal-next');
+            const nav = document.getElementById('modal-nav');
+
+            if (step === 5) {
+                nav.classList.add('hidden');
+            } else {
+                nav.classList.remove('hidden');
+                prevBtn.classList.toggle('hidden', step === 1);
+                nextBtn.textContent = step === 4 ? 'Build System →' : 'Continue →';
+            }
+            updateModalNextButton();
+        }
+
+        function updateModalProgress() {
+            document.querySelectorAll('.modal-progress-dot').forEach(dot => {
+                const s = parseInt(dot.dataset.step);
+                dot.style.background = s <= modalStep ? '#ce0707' : '#d1d5db';
+            });
+        }
+
+        function setupModalOptions() {
+            document.querySelectorAll('.modal-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const step = opt.closest('.modal-step');
+                    step.querySelectorAll('.modal-option').forEach(o => {
+                        o.classList.remove('border-[#ce0707]', 'bg-red-50');
+                        o.classList.add('border-gray-200');
+                    });
+                    opt.classList.remove('border-gray-200');
+                    opt.classList.add('border-[#ce0707]', 'bg-red-50');
+
+                    const stepNum = parseInt(step.dataset.step);
+                    if (stepNum === 1) modalData.type = opt.dataset.value;
+                    if (stepNum === 3) modalData.team = opt.dataset.value;
+                    updateModalNextButton();
+                });
+            });
+
+            document.getElementById('modal-type-other').addEventListener('input', (e) => {
+                if (e.target.value.trim()) {
+                    document.querySelectorAll('.modal-step[data-step="1"] .modal-option').forEach(o => {
+                        o.classList.remove('border-[#ce0707]', 'bg-red-50');
+                        o.classList.add('border-gray-200');
+                    });
+                    modalData.type = e.target.value.trim();
+                }
+                updateModalNextButton();
+            });
+
+            document.getElementById('modal-business-name').addEventListener('input', (e) => {
+                modalData.name = e.target.value.trim();
+                updateModalNextButton();
+            });
+        }
+
+        function updateModalNextButton() {
+            const nextBtn = document.getElementById('modal-next');
+            let valid = false;
+            switch(modalStep) {
+                case 1: valid = !!modalData.type; break;
+                case 2: valid = !!modalData.name; break;
+                case 3: valid = !!modalData.team; break;
+                case 4: valid = true; break;
+            }
+            nextBtn.disabled = !valid;
+        }
+
+        function modalNextStep() {
+            if (modalStep === 4) {
+                submitModalForm();
+                return;
+            }
+            modalStep++;
+            showModalStep(modalStep);
+            updateModalProgress();
+        }
+
+        function modalPrevStep() {
+            if (modalStep > 1) {
+                modalStep--;
+                showModalStep(modalStep);
+                updateModalProgress();
+            }
+        }
+
+        // Pending form submission — used when form flow is interrupted by signup modal
+        let pendingFormSubmission = null;
+
+        async function submitModalForm() {
+            // If user hasn't signed up yet, show signup modal first
+            if (!signupAuthData) {
+                // Collect form data now so we can use it after signup
+                modalData.products = document.getElementById('modal-products').checked;
+                modalData.appointments = document.getElementById('modal-appointments').checked;
+                modalData.website = document.getElementById('modal-website').checked;
+                modalData.invoices = document.getElementById('modal-invoices').checked;
+                pendingFormSubmission = true;
+                closeFormModal();
+                openSignupModal();
+                return;
+            }
+
+            modalStep = 5;
+            showModalStep(5);
+            updateModalProgress();
+
+            if (!pendingFormSubmission) {
+                modalData.products = document.getElementById('modal-products').checked;
+                modalData.appointments = document.getElementById('modal-appointments').checked;
+                modalData.website = document.getElementById('modal-website').checked;
+                modalData.invoices = document.getElementById('modal-invoices').checked;
+            }
+            pendingFormSubmission = null;
+
+            let desc = `${modalData.name} is a ${modalData.type} business with ${modalData.team} people.`;
+            if (modalData.products) desc += ' We sell products.';
+            if (modalData.appointments) desc += ' We book appointments.';
+            if (modalData.website) desc += ' We need a website.';
+            if (modalData.invoices) desc += ' We invoice customers.';
+
+            try {
+                const configPayload = {
+                    description: desc,
+                    conversation_history: [],
+                };
+                if (signupAuthData && signupAuthData.user_id) {
+                    configPayload.user_id = signupAuthData.user_id;
+                }
+
+                const response = await fetch('/api/onboarding/configure', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(configPayload)
+                });
+                const result = await response.json();
+
+                document.getElementById('modal-loading').classList.add('hidden');
+                document.getElementById('modal-success').classList.remove('hidden');
+                if (result.success) {
+                    document.getElementById('modal-summary').textContent = result.config.summary;
+                    // Use AI-generated colors, fall back to swatch values, then defaults
+                    let url = new URL(result.redirect_url, window.location.origin);
+                    const aiColors = result.config.colors || {};
+                    const primary = aiColors.buttons || document.getElementById('brand-color-1')?.value || '#ce0707';
+                    const secondary = aiColors.text || document.getElementById('brand-color-2')?.value || '#000000';
+                    const bg = aiColors.background || document.getElementById('brand-color-3')?.value || '#ffffff';
+                    url.searchParams.set('primary_color', primary);
+                    url.searchParams.set('secondary_color', secondary);
+                    url.searchParams.set('bg_color', bg);
+                    // Add auth tokens for seamless login
+                    if (signupAuthData) {
+                        url.searchParams.set('access_token', signupAuthData.access_token);
+                        url.searchParams.set('refresh_token', signupAuthData.refresh_token);
+                    }
+                    document.getElementById('modal-launch-btn').href = url.toString();
+                } else {
+                    document.getElementById('modal-summary').textContent = 'Error: ' + result.error;
+                }
+            } catch (error) {
+                document.getElementById('modal-loading').classList.add('hidden');
+                document.getElementById('modal-success').classList.remove('hidden');
+                document.getElementById('modal-summary').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Section typewriter animation (scroll-triggered, slower)
+        function initSectionTypewriters() {
+            const sectionTypeSpeed = 120; // slower than hero
+
+            // Helper to colorize "Red Pine" in text
+            function colorizeRedPine(text) {
+                return text.replace(/Red Pine/g, '<span style="color: #ce0707;">Red Pine</span>');
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !entry.target.dataset.typed) {
+                        entry.target.dataset.typed = 'true';
+                        const text = entry.target.dataset.text;
+                        const delay = parseInt(entry.target.dataset.delay) || 0;
+                        const cursor = entry.target.nextElementSibling;
+
+                        setTimeout(() => {
+                            if (cursor) cursor.classList.remove('hidden');
+                            let i = 0;
+                            function type() {
+                                if (i < text.length) {
+                                    const currentText = text.substring(0, i + 1);
+                                    entry.target.innerHTML = colorizeRedPine(currentText);
+                                    i++;
+                                    setTimeout(type, sectionTypeSpeed);
+                                } else {
+                                    // Hide cursor after typing complete
+                                    setTimeout(() => {
+                                        if (cursor) cursor.classList.add('hidden');
+                                    }, 1000);
+                                }
+                            }
+                            type();
+                        }, delay);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section-typewriter').forEach(el => {
+                // Skip the delayed one - it has its own timing
+                if (!el.dataset.delay) {
+                    observer.observe(el);
+                }
+            });
+
+            // Handle "What Red Pine Delivers..." separately with its delay
+            document.querySelectorAll('.section-typewriter[data-delay]').forEach(el => {
+                const delayedObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !entry.target.dataset.typed) {
+                            entry.target.dataset.typed = 'true';
+                            const text = entry.target.dataset.text;
+                            const delay = parseInt(entry.target.dataset.delay) || 0;
+                            const cursor = entry.target.nextElementSibling;
+
+                            setTimeout(() => {
+                                if (cursor) cursor.classList.remove('hidden');
+                                let i = 0;
+                                function type() {
+                                    if (i < text.length) {
+                                        const currentText = text.substring(0, i + 1);
+                                        entry.target.innerHTML = colorizeRedPine(currentText);
+                                        i++;
+                                        setTimeout(type, sectionTypeSpeed);
+                                    } else {
+                                        setTimeout(() => {
+                                            if (cursor) cursor.classList.add('hidden');
+                                        }, 1000);
+                                    }
+                                }
+                                type();
+                            }, delay);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                delayedObserver.observe(el);
+            });
+        }
+
+        // Doodle connector animation - draws lines like hand-drawing
+        function initDoodleAnimations() {
+            const connectors = document.querySelectorAll('.doodle-connector');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !entry.target.dataset.animated) {
+                        entry.target.dataset.animated = 'true';
+
+                        // Animate the main path first
+                        const paths = entry.target.querySelectorAll('.doodle-path');
+                        paths.forEach(path => {
+                            path.classList.add('drawing');
+                        });
+
+                        // Then animate dots with their delays
+                        const dots = entry.target.querySelectorAll('.doodle-dot');
+                        dots.forEach(dot => {
+                            dot.classList.add('drawing');
+                        });
+
+                        // Finally animate arrows
+                        const arrows = entry.target.querySelectorAll('.doodle-arrow');
+                        arrows.forEach(arrow => {
+                            arrow.classList.add('drawing');
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            connectors.forEach(connector => observer.observe(connector));
+        }
+
+        // Scroll animations for all elements
+        function initScrollAnimations() {
+            const scrollElements = document.querySelectorAll('.scroll-fade, .scroll-scale');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            scrollElements.forEach(el => observer.observe(el));
+        }
+
+        // Initialize on page load (moved to bottom with color picker setup)
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                handleSubmit();
+            }
+        }
+
+        // Auto-resize textarea as user types
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
+        }
+
+        // Handle Enter key in textarea (Shift+Enter for new line, Enter to submit)
+        function handleTextareaKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleSubmit();
+            }
+        }
+
+        async function handleSubmit() {
+            if (isSubmitting) return; // Prevent double submit
+
+            const input = document.getElementById('business-input');
+            const value = input.value.trim();
+            if (!value) return;
+
+            isSubmitting = true;
+            input.value = '';
+            input.style.height = 'auto';
+
+            try {
+                if (chatMode) {
+                    await sendChatMessage(value);
+                } else {
+                    await checkAndProcess(value);
+                }
+            } finally {
+                isSubmitting = false;
+            }
+        }
+
+        async function checkAndProcess(description) {
+            // Check if input is detailed enough
+            try {
+                const response = await fetch('/api/onboarding/check-input', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description })
+                });
+                const result = await response.json();
+
+                if (result.success && result.detailed) {
+                    // Input is detailed - auto build immediately!
+                    document.getElementById('initial-buttons').classList.add('hidden');
+                    await buildPlatform(description);
+                } else {
+                    // Input is vague, expand to chat
+                    expandToChat(description);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Default to chat mode on error
+                expandToChat(description);
+            }
+        }
+
+        function expandToChat(initialMessage) {
+            chatMode = true;
+            collectedInfo = initialMessage;
+
+            const wrapper = document.getElementById('input-wrapper');
+            const chatContainer = document.getElementById('chat-container');
+
+            wrapper.classList.add('chat-mode');
+            chatContainer.classList.add('expanded');
+
+            // Hide initial buttons, show chat send button
+            document.getElementById('initial-buttons').classList.add('hidden');
+            document.getElementById('chat-send-btn').classList.remove('hidden');
+
+            // Add user's initial message
+            addChatMessage(initialMessage, 'user');
+
+            // Add AI response
+            conversationHistory.push({ role: 'user', content: initialMessage });
+            sendChatToAI();
+        }
+
+        async function sendChatMessage(message) {
+            addChatMessage(message, 'user');
+            collectedInfo += ' ' + message;
+            conversationHistory.push({ role: 'user', content: message });
+            messageCount++;
+
+            await sendChatToAI();
+        }
+
+        async function sendChatToAI() {
+            // Show typing indicator
+            const typingId = addTypingIndicator();
+
+            try {
+                const response = await fetch('/api/onboarding/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: conversationHistory })
+                });
+                const result = await response.json();
+
+                // Remove typing indicator
+                removeTypingIndicator(typingId);
+
+                if (result.success) {
+                    const aiResponse = result.response;
+
+                    if (aiResponse.includes('READY_TO_BUILD')) {
+                        // AI says we have enough info - auto build!
+                        addChatMessage("Got it! Building your system now...", 'ai');
+                        // Small delay so user sees the message
+                        setTimeout(() => {
+                            buildPlatform(collectedInfo);
+                        }, 1000);
+                    } else {
+                        addChatMessage(aiResponse, 'ai');
+                        conversationHistory.push({ role: 'assistant', content: aiResponse });
+                        messageCount++;
+
+                        // Show quick action buttons after 5 exchanges
+                        if (messageCount >= 5) {
+                            showActionButtons();
+                        }
+                    }
+                } else {
+                    addChatMessage("Something went wrong. Let's try building with what we have.", 'ai');
+                    showActionButtons();
+                }
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                addChatMessage("Something went wrong. Let's try building with what we have.", 'ai');
+                showActionButtons();
+            }
+        }
+
+        function addChatMessage(text, role) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `chat-message flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = role === 'user'
+                ? 'bg-black text-white px-4 py-2 max-w-[80%]'
+                : 'bg-gray-200 text-black px-4 py-2 max-w-[80%]';
+            bubble.textContent = text;
+
+            div.appendChild(bubble);
+            container.appendChild(div);
+
+            // Scroll to bottom
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            const id = 'typing-' + Date.now();
+            div.id = id;
+            div.className = 'chat-message flex justify-start';
+            div.innerHTML = `
+                <div class="bg-gray-200 text-black px-4 py-2">
+                    <span class="loading-dots">
+                        <span>.</span><span>.</span><span>.</span>
+                    </span>
+                </div>
+            `;
+            container.appendChild(div);
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            const element = document.getElementById(id);
+            if (element) element.remove();
+        }
+
+        function showActionButtons() {
+            document.getElementById('action-buttons').classList.remove('hidden');
+        }
+
+        function openForm() {
+            // Open modal with collected info prefilled
+            openFormModal();
+        }
+
+        // Signup modal helpers
+        let signupAuthData = null; // Stores auth tokens after signup
+
+        function openSignupModal() {
+            document.getElementById('signup-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('signup-error').classList.add('hidden');
+            document.getElementById('signup-name').focus();
+        }
+
+        function closeSignupModal() {
+            document.getElementById('signup-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        async function handleSignup() {
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const errorEl = document.getElementById('signup-error');
+            const btn = document.getElementById('signup-submit-btn');
+
+            // Validation
+            if (!name || !email || !password) {
+                errorEl.textContent = 'Please fill in all fields.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (password.length < 6) {
+                errorEl.textContent = 'Password must be at least 6 characters.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            btn.textContent = 'Creating account...';
+            btn.disabled = true;
+
+            try {
+                const resp = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password }),
+                });
+                const result = await resp.json();
+
+                if (result.success) {
+                    signupAuthData = result.auth;
+                    closeSignupModal();
+                    // Check if there's a pending form submission
+                    if (pendingFormSubmission) {
+                        openFormModal();
+                        await submitModalForm();
+                    } else {
+                        // Chat flow — proceed to build the platform
+                        await buildPlatform(collectedInfo);
+                    }
+                } else {
+                    errorEl.textContent = result.error || 'Signup failed. Please try again.';
+                    errorEl.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorEl.textContent = 'Network error. Please try again.';
+                errorEl.classList.remove('hidden');
+            } finally {
+                btn.textContent = 'Start Free Trial';
+                btn.disabled = false;
+            }
+        }
+
+        async function createPlatform() {
+            // Show signup modal first — build happens after successful signup
+            openSignupModal();
+        }
+
+        async function buildPlatform(description) {
+            // Show full screen loading overlay (building phase)
+            document.getElementById('loading-section').classList.remove('hidden');
+            document.getElementById('loading-building').classList.remove('hidden');
+            document.getElementById('loading-signup').classList.add('hidden');
+            document.getElementById('loading-launching').classList.add('hidden');
+
+            try {
+                const configPayload = {
+                    description,
+                    conversation_history: conversationHistory,
+                };
+                // If user already signed up, pass user_id so config gets associated
+                if (signupAuthData && signupAuthData.user_id) {
+                    configPayload.user_id = signupAuthData.user_id;
+                }
+
+                const response = await fetch('/api/onboarding/configure', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(configPayload)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    // Store config data
+                    window.configData = result.config;
+                    window.configId = result.config.id || result.config_id;
+                    window.baseRedirectUrl = result.redirect_url;
+
+                    if (signupAuthData) {
+                        // User already signed up — link config and redirect
+                        await linkConfigAndRedirect();
+                    } else {
+                        // Show signup form inside the loading overlay
+                        document.getElementById('loading-building').classList.add('hidden');
+                        document.getElementById('loading-signup').classList.remove('hidden');
+                        document.getElementById('loading-signup-business').textContent =
+                            `${result.config.business_name} — ${result.config.business_type}`;
+                        document.getElementById('loading-signup-email').focus();
+                    }
+                } else {
+                    document.getElementById('loading-section').classList.add('hidden');
+                    alert('Error: ' + result.error);
+                    location.reload();
+                }
+            } catch (error) {
+                document.getElementById('loading-section').classList.add('hidden');
+                alert('Error: ' + error.message);
+                location.reload();
+            }
+        }
+
+        // Handle signup from the loading overlay
+        async function handleLoadingSignup() {
+            const email = document.getElementById('loading-signup-email').value.trim();
+            const password = document.getElementById('loading-signup-password').value;
+            const errorEl = document.getElementById('loading-signup-error');
+            const btn = document.getElementById('loading-signup-btn');
+
+            if (!email || !password) {
+                errorEl.textContent = 'Please fill in all fields.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (password.length < 6) {
+                errorEl.textContent = 'Password must be at least 6 characters.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            btn.textContent = 'Creating account...';
+            btn.disabled = true;
+
+            try {
+                const resp = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: window.configData?.business_name || '',
+                        email,
+                        password,
+                        config_id: window.configId,
+                    }),
+                });
+                const result = await resp.json();
+
+                if (result.success) {
+                    signupAuthData = result.auth;
+                    await linkConfigAndRedirect();
+                } else {
+                    errorEl.textContent = result.error || 'Signup failed. Please try again.';
+                    errorEl.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorEl.textContent = 'Network error. Please try again.';
+                errorEl.classList.remove('hidden');
+            } finally {
+                btn.textContent = 'Create Your Account';
+                btn.disabled = false;
+            }
+        }
+
+        // Link config to user and redirect to dashboard
+        async function linkConfigAndRedirect() {
+            // Show launching phase
+            document.getElementById('loading-signup').classList.add('hidden');
+            document.getElementById('loading-building').classList.add('hidden');
+            document.getElementById('loading-launching').classList.remove('hidden');
+
+            const dashboardOrigin = window.baseRedirectUrl
+                ? new URL(window.baseRedirectUrl).origin
+                : window.location.origin;
+
+            // Redirect to /brand-board — it establishes cookies + links config, then user completes Brand Board
+            const brandBoardUrl = new URL(dashboardOrigin + '/brand-board');
+            if (signupAuthData) {
+                brandBoardUrl.searchParams.set('access_token', signupAuthData.access_token);
+                brandBoardUrl.searchParams.set('refresh_token', signupAuthData.refresh_token);
+            }
+            if (window.configId) {
+                brandBoardUrl.searchParams.set('config_id', window.configId);
+            }
+
+            // Brief delay so user sees "Launching..." then redirect
+            setTimeout(() => {
+                window.location.href = brandBoardUrl.toString();
+            }, 1500);
+        }
+
+        // Skip signup — redirect to login page
+        function skipSignupAndLaunch() {
+            const dashboardUrl = window.baseRedirectUrl
+                ? new URL(window.baseRedirectUrl).origin
+                : window.location.origin;
+            window.location.href = dashboardUrl + '/login';
+        }
+
+        // Logo upload handling
+        let uploadedLogoData = null;
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedLogoData = e.target.result;
+                    const preview = document.getElementById('logo-preview');
+                    preview.innerHTML = `<img src="${uploadedLogoData}" class="w-full h-full object-contain p-2">`;
+                    updateLaunchUrl();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Color swatch update function
+        function updateColorSwatch(num, value) {
+            document.getElementById(`color-preview-${num}`).style.background = value;
+            document.getElementById(`brand-color-${num}`).value = value;
+            // Update hex code display
+            const hexEl = document.getElementById(`color-hex-${num}`);
+            if (hexEl) {
+                hexEl.textContent = value.toUpperCase();
+                // Set text color based on background brightness
+                const hex = value.replace('#', '');
+                const r = parseInt(hex.substr(0, 2), 16);
+                const g = parseInt(hex.substr(2, 2), 16);
+                const b = parseInt(hex.substr(4, 2), 16);
+                const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                hexEl.style.color = brightness > 128 ? '#000000' : '#FFFFFF';
+                hexEl.style.textShadow = brightness > 128
+                    ? '0 1px 3px rgba(255,255,255,0.4)'
+                    : '0 1px 3px rgba(0,0,0,0.4)';
+            }
+            updateLaunchUrl();
+        }
+
+        // Curated professional palettes [primary, secondary, background]
+        const CURATED_PALETTES = [
+            ['#2563EB', '#1E293B', '#F8FAFC'],  // Deep blue
+            ['#16A34A', '#14532D', '#F0FDF4'],  // Forest green
+            ['#7C3AED', '#1E1B4B', '#FAF5FF'],  // Royal purple
+            ['#D97706', '#451A03', '#FFFBEB'],  // Warm amber
+            ['#0D9488', '#134E4A', '#F0FDFA'],  // Teal modern
+            ['#E11D48', '#4C0519', '#FFF1F2'],  // Rose elegant
+            ['#4F46E5', '#1E1B4B', '#EEF2FF'],  // Indigo tech
+            ['#0284C7', '#0C4A6E', '#F0F9FF'],  // Sky trust
+            ['#475569', '#0F172A', '#F8FAFC'],  // Slate minimal
+            ['#059669', '#064E3B', '#ECFDF5'],  // Emerald fresh
+            ['#EA580C', '#431407', '#FFF7ED'],  // Orange energetic
+            ['#C026D3', '#4A044E', '#FDF4FF'],  // Fuchsia bold
+            ['#0891B2', '#164E63', '#ECFEFF'],  // Cyan clean
+            ['#65A30D', '#1A2E05', '#F7FEE7'],  // Lime vivid
+            ['#78716C', '#1C1917', '#FAFAF9'],  // Stone sophisticated
+            ['#3B82F6', '#1E3A5F', '#EFF6FF'],  // Blue steel
+            ['#F43F5E', '#4C0519', '#FFF1F2'],  // Coral friendly
+            ['#8B5CF6', '#2E1065', '#F5F3FF'],  // Violet premium
+        ];
+
+        // Randomize all 3 colors at once using curated palettes
+        function randomizeAllColors() {
+            const palette = CURATED_PALETTES[Math.floor(Math.random() * CURATED_PALETTES.length)];
+            updateColorSwatch(1, palette[0]);
+            updateColorSwatch(2, palette[1]);
+            updateColorSwatch(3, palette[2]);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initDoodleAnimations();
+            initSectionTypewriters();
+            initScrollAnimations();
+
+            // Pick a random curated palette on load
+            const randomPalette = CURATED_PALETTES[Math.floor(Math.random() * CURATED_PALETTES.length)];
+            updateColorSwatch(1, randomPalette[0]);
+            updateColorSwatch(2, randomPalette[1]);
+            updateColorSwatch(3, randomPalette[2]);
+
+            // Setup color input listeners (native picker changes update swatch)
+            ['1', '2', '3'].forEach(num => {
+                const input = document.getElementById(`brand-color-${num}`);
+                if (input) {
+                    input.addEventListener('input', (e) => {
+                        updateColorSwatch(num, e.target.value);
+                    });
+                    input.addEventListener('change', (e) => {
+                        updateColorSwatch(num, e.target.value);
+                    });
+                }
+            });
+        });
+
+        function getLaunchUrl() {
+            if (!window.baseRedirectUrl) return '#';
+
+            try {
+                let url = new URL(window.baseRedirectUrl);
+
+                // Add colors to URL
+                const color1 = document.getElementById('brand-color-1')?.value || '#ce0707';
+                const color2 = document.getElementById('brand-color-2')?.value || '#000000';
+                const color3 = document.getElementById('brand-color-3')?.value || '#ffffff';
+
+                url.searchParams.set('primary_color', color1);
+                url.searchParams.set('secondary_color', color2);
+                url.searchParams.set('bg_color', color3);
+
+                // Add logo if uploaded (skip if too large for URL)
+                if (uploadedLogoData && uploadedLogoData.length < 50000) {
+                    url.searchParams.set('logo', encodeURIComponent(uploadedLogoData));
+                }
+
+                // Add auth tokens for seamless login (if user signed up)
+                if (signupAuthData) {
+                    url.searchParams.set('access_token', signupAuthData.access_token);
+                    url.searchParams.set('refresh_token', signupAuthData.refresh_token);
+                }
+
+                return url.toString();
+            } catch (e) {
+                console.error('Error building launch URL:', e);
+                return window.baseRedirectUrl || '#';
+            }
+        }
+
+        function updateLaunchUrl() {
+            // Keep for color/logo change updates - no longer sets href since we use a button now
+        }
+
+        function launchDashboard() {
+            const url = getLaunchUrl();
+            if (url && url !== '#') {
+                window.location.href = url;
+            }
+        }
+    </script>
+</body>
+</html>

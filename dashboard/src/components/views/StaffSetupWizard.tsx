@@ -273,7 +273,7 @@ export default function StaffSetupWizard({
           {allSteps.map((s, i) => (
             <div
               key={s}
-              className="h-1.5 rounded-full transition-all"
+              className="h-1.5 transition-all"
               style={{
                 width: i === currentIdx ? 32 : 16,
                 backgroundColor: i <= currentIdx ? buttonBg : borderColor,
@@ -306,14 +306,14 @@ export default function StaffSetupWizard({
                           commission_percent: 0,
                         }));
                       }}
-                      className="flex flex-col items-center gap-3 p-5 rounded-xl border-2 text-center transition-all hover:shadow-md"
+                      className="flex flex-col items-center gap-3 p-5 border-2 text-center transition-all hover:shadow-md"
                       style={{
                         borderColor: selected ? buttonBg : borderColor,
                         backgroundColor: selected ? `${buttonBg}08` : cardBg,
                         boxShadow: selected ? `0 0 0 1px ${buttonBg}` : undefined,
                       }}
                     >
-                      <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                      <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
                         <div style={{ color: buttonBg }}>
                           {opt.icon}
                         </div>
@@ -345,7 +345,7 @@ export default function StaffSetupWizard({
                   value={data.name}
                   onChange={e => setData(d => ({ ...d, name: e.target.value }))}
                   placeholder="e.g. John Smith"
-                  className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                  className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                   style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                   autoFocus
                 />
@@ -360,7 +360,7 @@ export default function StaffSetupWizard({
                     value={data.email}
                     onChange={e => setData(d => ({ ...d, email: e.target.value }))}
                     placeholder="john@email.com"
-                    className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                    className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                     style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                   />
                 </div>
@@ -373,7 +373,7 @@ export default function StaffSetupWizard({
                     value={data.phone}
                     onChange={e => setData(d => ({ ...d, phone: e.target.value }))}
                     placeholder="(555) 123-4567"
-                    className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                    className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                     style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                   />
                 </div>
@@ -387,7 +387,7 @@ export default function StaffSetupWizard({
                   value={data.role}
                   onChange={e => setData(d => ({ ...d, role: e.target.value }))}
                   placeholder={getRolePlaceholder(data.staff_model)}
-                  className="w-full px-3 py-2.5 rounded-lg border text-sm outline-none focus:ring-2"
+                  className="w-full px-3 py-2.5 border text-sm outline-none focus:ring-2"
                   style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                 />
               </div>
@@ -405,7 +405,7 @@ export default function StaffSetupWizard({
                 return (
                   <div
                     key={day}
-                    className="flex items-center gap-3 py-2 px-3 rounded-lg"
+                    className="flex items-center gap-3 py-2 px-3"
                     style={{ backgroundColor: dayData.enabled ? `${buttonBg}06` : 'transparent' }}
                   >
                     {/* Toggle */}
@@ -423,7 +423,7 @@ export default function StaffSetupWizard({
                       }}
                     >
                       <div
-                        className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                        className="absolute top-0.5 w-4 h-4 bg-white shadow-sm transition-transform"
                         style={{
                           transform: dayData.enabled ? 'translateX(22px)' : 'translateX(2px)',
                         }}
@@ -451,7 +451,7 @@ export default function StaffSetupWizard({
                               [day]: { ...dayData, start: e.target.value },
                             },
                           }))}
-                          className="px-2 py-1.5 rounded-lg border text-xs outline-none"
+                          className="px-2 py-1.5 border text-xs outline-none"
                           style={inputStyle}
                         />
                         <span className="text-xs" style={{ color: mutedColor }}>to</span>
@@ -465,7 +465,7 @@ export default function StaffSetupWizard({
                               [day]: { ...dayData, end: e.target.value },
                             },
                           }))}
-                          className="px-2 py-1.5 rounded-lg border text-xs outline-none"
+                          className="px-2 py-1.5 border text-xs outline-none"
                           style={inputStyle}
                         />
                       </div>
@@ -493,7 +493,7 @@ export default function StaffSetupWizard({
                     <button
                       key={opt.value}
                       onClick={() => setData(d => ({ ...d, pay_type: opt.value, pay_rate_cents: 0, commission_percent: 0 }))}
-                      className="flex-1 py-2.5 px-4 rounded-lg border-2 text-sm font-medium transition-all"
+                      className="flex-1 py-2.5 px-4 border-2 text-sm font-medium transition-all"
                       style={{
                         borderColor: selected ? buttonBg : borderColor,
                         backgroundColor: selected ? `${buttonBg}10` : 'transparent',
@@ -522,7 +522,7 @@ export default function StaffSetupWizard({
                           value={data.commission_percent || ''}
                           onChange={e => setData(d => ({ ...d, commission_percent: parseFloat(e.target.value) || 0 }))}
                           placeholder="e.g. 60"
-                          className="w-32 px-3 py-2.5 rounded-lg border text-sm outline-none"
+                          className="w-32 px-3 py-2.5 border text-sm outline-none"
                           style={inputStyle}
                         />
                         <span className="text-sm font-medium" style={{ color: mutedColor }}>%</span>
@@ -543,7 +543,7 @@ export default function StaffSetupWizard({
                             value={data.pay_rate_cents ? (data.pay_rate_cents / 100).toFixed(2) : ''}
                             onChange={e => setData(d => ({ ...d, pay_rate_cents: Math.round(parseFloat(e.target.value || '0') * 100) }))}
                             placeholder="e.g. 75.00"
-                            className="w-40 px-3 py-2.5 rounded-lg border text-sm outline-none"
+                            className="w-40 px-3 py-2.5 border text-sm outline-none"
                             style={inputStyle}
                           />
                         </div>
@@ -560,7 +560,7 @@ export default function StaffSetupWizard({
                             value={data.commission_percent || ''}
                             onChange={e => setData(d => ({ ...d, commission_percent: parseFloat(e.target.value) || 0 }))}
                             placeholder="e.g. 70"
-                            className="w-32 px-3 py-2.5 rounded-lg border text-sm outline-none"
+                            className="w-32 px-3 py-2.5 border text-sm outline-none"
                             style={inputStyle}
                           />
                           <span className="text-sm font-medium" style={{ color: mutedColor }}>%</span>
@@ -583,7 +583,7 @@ export default function StaffSetupWizard({
                           value={data.pay_rate_cents ? (data.pay_rate_cents / 100).toFixed(data.pay_type === 'salary' ? 0 : 2) : ''}
                           onChange={e => setData(d => ({ ...d, pay_rate_cents: Math.round(parseFloat(e.target.value || '0') * 100) }))}
                           placeholder={data.pay_type === 'salary' ? 'e.g. 45000' : data.pay_type === 'booth_rental' ? 'e.g. 1200' : 'e.g. 18.50'}
-                          className="w-40 px-3 py-2.5 rounded-lg border text-sm outline-none"
+                          className="w-40 px-3 py-2.5 border text-sm outline-none"
                           style={inputStyle}
                         />
                         <span className="text-xs" style={{ color: mutedColor }}>
@@ -606,7 +606,7 @@ export default function StaffSetupWizard({
                 Review and confirm
               </p>
               <div
-                className="rounded-xl border p-4 space-y-3"
+                className="border p-4 space-y-3"
                 style={{ borderColor, backgroundColor: pageBg }}
               >
                 <Row label="Name" value={data.name} textColor={textColor} mutedColor={mutedColor} />
@@ -644,7 +644,7 @@ export default function StaffSetupWizard({
         >
           <button
             onClick={canGoBack ? goBack : handleClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium border transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm font-medium border transition-opacity hover:opacity-70"
             style={{ borderColor, color: textColor }}
           >
             {canGoBack ? 'Back' : 'Cancel'}
@@ -654,7 +654,7 @@ export default function StaffSetupWizard({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               {isSaving ? 'Adding...' : 'Add Team Member'}
@@ -663,7 +663,7 @@ export default function StaffSetupWizard({
             <button
               onClick={goNext}
               disabled={!isStepValid()}
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               Next
@@ -690,7 +690,7 @@ function Row({ label, value, textColor, mutedColor, badge, badgeBg, badgeText }:
       <span className="text-xs font-medium" style={{ color: mutedColor }}>{label}</span>
       {badge ? (
         <span
-          className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+          className="text-xs font-medium px-2.5 py-0.5 "
           style={{ backgroundColor: badgeBg, color: badgeText }}
         >
           {value}

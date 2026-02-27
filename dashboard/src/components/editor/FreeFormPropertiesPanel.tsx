@@ -48,7 +48,7 @@ function CollapsibleSection({ title, icon: Icon, isOpen, onToggle, children, the
       >
         <div className="flex items-center gap-2">
           {Icon && <Icon className={`w-4 h-4 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`} />}
-          <span className={`text-xs font-semibold font-['Inter'] uppercase tracking-wider ${
+          <span className={`text-xs font-semibold font-['Fira_Code'] uppercase tracking-wider ${
             isDark ? 'text-zinc-300' : 'text-zinc-700'
           }`}>
             {title}
@@ -102,7 +102,7 @@ function PropertyInput({ label, value, onChange, type = 'text', min, max, step, 
 
   return (
     <div className="mb-3">
-      <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${
+      <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${
         isDark ? 'text-zinc-400' : 'text-zinc-600'
       }`}>
         {label}
@@ -112,7 +112,7 @@ function PropertyInput({ label, value, onChange, type = 'text', min, max, step, 
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         className={`
-          w-full px-3 py-2 border rounded-lg text-sm font-['Inter']
+          w-full px-3 py-2 border text-sm font-['Fira_Code']
           focus:outline-none focus:ring-2 focus:ring-[--editor-accent] focus:border-transparent
           ${isDark
             ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
@@ -180,12 +180,12 @@ function SliderInput({ label, value, onChange, min = 0, max = 100, step = 1, the
   return (
     <div className="mb-3">
       <div className="flex items-center justify-between mb-2">
-        <label className={`text-xs font-medium font-['Inter'] uppercase tracking-wider ${
+        <label className={`text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${
           isDark ? 'text-zinc-400' : 'text-zinc-600'
         }`}>
           {label}
         </label>
-        <span className={`text-xs font-['Inter'] font-medium ${
+        <span className={`text-xs font-['Fira_Code'] font-medium ${
           isDark ? 'text-zinc-300' : 'text-zinc-700'
         }`}>
           {numValue}{finalUnit}
@@ -217,7 +217,7 @@ function SliderInput({ label, value, onChange, min = 0, max = 100, step = 1, the
           [&::-moz-range-thumb]:cursor-pointer
         `}
       />
-      <div className={`flex justify-between mt-1 text-[10px] font-['Inter'] ${
+      <div className={`flex justify-between mt-1 text-[10px] font-['Fira_Code'] ${
         isDark ? 'text-zinc-600' : 'text-zinc-400'
       }`}>
         <span>{finalMin}{finalUnit}</span>
@@ -274,12 +274,12 @@ function RotationControl({ value, onChange, theme = 'dark' }: RotationControlPro
   return (
     <div className="mb-3">
       <div className="flex items-center justify-between mb-2">
-        <label className={`text-xs font-medium font-['Inter'] uppercase tracking-wider ${
+        <label className={`text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${
           isDark ? 'text-zinc-400' : 'text-zinc-600'
         }`}>
           Rotation
         </label>
-        <span className={`text-xs font-['Inter'] font-medium ${
+        <span className={`text-xs font-['Fira_Code'] font-medium ${
           isDark ? 'text-zinc-300' : 'text-zinc-700'
         }`}>
           {rotation}°
@@ -305,7 +305,7 @@ function RotationControl({ value, onChange, theme = 'dark' }: RotationControlPro
           onChange={(e) => onChange(Number(e.target.value) % 360)}
           min={0}
           max={360}
-          className={`flex-1 px-3 py-2 border rounded-lg text-sm font-['Inter'] ${
+          className={`flex-1 px-3 py-2 border text-sm font-['Fira_Code'] ${
             isDark
               ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
               : 'bg-white border-zinc-300 text-zinc-800'
@@ -317,7 +317,7 @@ function RotationControl({ value, onChange, theme = 'dark' }: RotationControlPro
           <button
             key={deg}
             onClick={() => onChange(deg)}
-            className={`flex-1 py-1 text-[10px] font-['Inter'] rounded transition-colors ${
+            className={`flex-1 py-1 text-[10px] font-['Fira_Code'] transition-colors ${
               rotation === deg
                 ? 'editor-accent-active'
                 : isDark
@@ -348,7 +348,7 @@ function ToggleSwitch({ label, value, onChange, theme = 'dark' }: ToggleSwitchPr
 
   return (
     <div className="flex items-center justify-between mb-3">
-      <label className={`text-xs font-medium font-['Inter'] uppercase tracking-wider ${
+      <label className={`text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${
         isDark ? 'text-zinc-400' : 'text-zinc-600'
       }`}>
         {label}
@@ -386,7 +386,7 @@ function PropertyTextarea({ label, value, onChange, theme = 'dark' }: PropertyTe
 
   return (
     <div className="mb-3">
-      <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${
+      <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${
         isDark ? 'text-zinc-400' : 'text-zinc-600'
       }`}>
         {label}
@@ -396,7 +396,7 @@ function PropertyTextarea({ label, value, onChange, theme = 'dark' }: PropertyTe
         onChange={(e) => onChange(e.target.value)}
         rows={3}
         className={`
-          w-full px-3 py-2 border rounded-lg text-sm font-['Inter'] resize-none
+          w-full px-3 py-2 border text-sm font-['Fira_Code'] resize-none
           focus:outline-none focus:ring-2 focus:ring-[--editor-accent] focus:border-transparent
           ${isDark
             ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
@@ -428,7 +428,7 @@ function FontFamilySelect({ value, onChange, theme = 'dark' }: FontFamilySelectP
 
   return (
     <div className="mb-3">
-      <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${
+      <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${
         isDark ? 'text-zinc-400' : 'text-zinc-600'
       }`}>
         Font Family
@@ -438,7 +438,7 @@ function FontFamilySelect({ value, onChange, theme = 'dark' }: FontFamilySelectP
         onChange={(e) => handleChange(e.target.value)}
         style={{ fontFamily: value || 'Inter' }}
         className={`
-          w-full px-3 py-2 border rounded-lg text-sm
+          w-full px-3 py-2 border text-sm
           focus:outline-none focus:ring-2 focus:ring-[--editor-accent] focus:border-transparent
           ${isDark
             ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
@@ -477,12 +477,12 @@ function ColorPicker({ label, value, onChange, theme = 'dark' }: ColorPickerProp
   return (
     <div className="mb-3">
       <div className="flex items-center justify-between mb-2">
-        <label className={`text-xs font-medium font-['Inter'] uppercase tracking-wider ${
+        <label className={`text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${
           isDark ? 'text-zinc-400' : 'text-zinc-600'
         }`}>
           {label}
         </label>
-        <span className={`text-[10px] font-['Inter'] ${
+        <span className={`text-[10px] font-['Fira_Code'] ${
           isDark ? 'text-zinc-500' : 'text-zinc-400'
         }`}>
           {colorValue}
@@ -493,10 +493,10 @@ function ColorPicker({ label, value, onChange, theme = 'dark' }: ColorPickerProp
           type="color"
           value={colorValue}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full h-10 rounded-lg cursor-pointer opacity-0 absolute inset-0 z-10"
+          className="w-full h-10 cursor-pointer opacity-0 absolute inset-0 z-10"
         />
         <div
-          className={`w-full h-10 rounded-lg pointer-events-none border-2 ${
+          className={`w-full h-10 pointer-events-none border-2 ${
             isDark ? 'border-zinc-600' : 'border-zinc-400'
           } shadow-sm`}
           style={{ backgroundColor: colorValue }}
@@ -547,7 +547,7 @@ function ImageDropZone({ label, value, onChange, theme = 'dark' }: ImageDropZone
 
   return (
     <div className="mb-3">
-      <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${
+      <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${
         isDark ? 'text-zinc-400' : 'text-zinc-600'
       }`}>
         {label}
@@ -559,7 +559,7 @@ function ImageDropZone({ label, value, onChange, theme = 'dark' }: ImageDropZone
             <img
               src={value}
               alt="Preview"
-              className="w-full h-24 object-cover rounded-lg border-2 border-zinc-700"
+              className="w-full h-24 object-cover border-2 border-zinc-700"
             />
             <button
               onClick={() => onChange('')}
@@ -571,7 +571,7 @@ function ImageDropZone({ label, value, onChange, theme = 'dark' }: ImageDropZone
           </div>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className={`w-full py-2 px-3 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`w-full py-2 px-3 text-xs font-['Fira_Code'] font-medium transition-colors flex items-center justify-center gap-2 ${
               isDark
                 ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
                 : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-300'
@@ -588,7 +588,7 @@ function ImageDropZone({ label, value, onChange, theme = 'dark' }: ImageDropZone
           onDragLeave={() => setIsDragOver(false)}
           onClick={() => fileInputRef.current?.click()}
           className={`
-            w-full h-24 rounded-lg border-2 border-dashed cursor-pointer
+            w-full h-24 border-2 border-dashed cursor-pointer
             flex flex-col items-center justify-center gap-2 transition-colors
             ${isDragOver
               ? 'editor-accent-border editor-accent-active'
@@ -599,7 +599,7 @@ function ImageDropZone({ label, value, onChange, theme = 'dark' }: ImageDropZone
           `}
         >
           <Upload className={`w-6 h-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
-          <span className={`text-xs font-['Inter'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+          <span className={`text-xs font-['Fira_Code'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
             Drop image or click
           </span>
         </div>
@@ -681,12 +681,12 @@ function QuoteProperties({ properties, onChange, theme }: ElementPropertiesProps
         theme={theme}
       />
       <div className="mb-3">
-        <label className={`flex items-center gap-2 text-xs font-medium font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+        <label className={`flex items-center gap-2 text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
           <input
             type="checkbox"
             checked={!!properties.showQuoteIcon}
             onChange={(e) => onChange({ showQuoteIcon: e.target.checked })}
-            className="rounded"
+            className="accent-black"
           />
           Show Quote Icon
         </label>
@@ -722,13 +722,13 @@ function FrameProperties({ properties, onChange, theme }: ElementPropertiesProps
   return (
     <>
       <div className="mb-3">
-        <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+        <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
           Frame Shape
         </label>
         <select
           value={(properties.frameType as string) || 'circle'}
           onChange={(e) => onChange({ frameType: e.target.value })}
-          className={`w-full px-3 py-2 border rounded-lg text-sm font-['Inter'] ${
+          className={`w-full px-3 py-2 border text-sm font-['Fira_Code'] ${
             isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'
           }`}
         >
@@ -772,13 +772,13 @@ function GridProperties({ properties, onChange, theme }: ElementPropertiesProps)
   return (
     <>
       <div className="mb-3">
-        <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+        <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
           Grid Layout
         </label>
         <select
           value={(properties.gridType as string) || '2-up'}
           onChange={(e) => onChange({ gridType: e.target.value })}
-          className={`w-full px-3 py-2 border rounded-lg text-sm font-['Inter'] ${
+          className={`w-full px-3 py-2 border text-sm font-['Fira_Code'] ${
             isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'
           }`}
         >
@@ -791,13 +791,13 @@ function GridProperties({ properties, onChange, theme }: ElementPropertiesProps)
       <SliderInput label="Corner Radius" value={(properties.borderRadius as number) || 8} onChange={(v) => onChange({ borderRadius: v })} min={0} max={32} step={1} unit="px" theme={theme} />
       <ColorPicker label="Background" value={(properties.backgroundColor as string) || 'transparent'} onChange={(v) => onChange({ backgroundColor: v })} theme={theme} />
       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
           Cell Images ({cellCount} cells)
         </h4>
         <div className="space-y-3">
           {Array.from({ length: cellCount }, (_, i) => (
             <div key={i} className="flex items-center gap-2">
-              <span className={`text-xs font-['Inter'] w-8 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>#{i + 1}</span>
+              <span className={`text-xs font-['Fira_Code'] w-8 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>#{i + 1}</span>
               <div className="flex-1">
                 <input
                   type="text"
@@ -808,7 +808,7 @@ function GridProperties({ properties, onChange, theme }: ElementPropertiesProps)
                     newCells[i] = { ...newCells[i], imageSrc: e.target.value };
                     onChange({ cells: newCells });
                   }}
-                  className={`w-full px-2 py-1.5 border rounded text-xs font-['Inter'] ${
+                  className={`w-full px-2 py-1.5 border text-xs font-['Fira_Code'] ${
                     isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'
                   }`}
                 />
@@ -881,7 +881,7 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
     <>
       {/* IMAGE SECTION */}
       <div className={`mb-4 pb-4 border-b ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider flex items-center gap-2 ${
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider flex items-center gap-2 ${
           isDark ? 'text-zinc-400' : 'text-zinc-600'
         }`}>
           <Image className="w-3.5 h-3.5" />
@@ -894,13 +894,13 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
 
         {!!properties.src && (
           <>
-            <div className={`relative mb-3 rounded-lg overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
+            <div className={`relative mb-3 overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
               <img src={properties.src as string} alt={(properties.alt as string) || 'Preview'} className="w-full h-24 object-cover" />
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
               <button
                 onClick={handleReplaceImage}
-                className={`py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+                className={`py-2 text-xs font-['Fira_Code'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
                   isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-300'
                 }`}
               >
@@ -909,7 +909,7 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
               </button>
               <button
                 onClick={() => setShowImageEditor(true)}
-                className={`py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+                className={`py-2 text-xs font-['Fira_Code'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
                   isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-300'
                 }`}
               >
@@ -924,13 +924,13 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
 
         {/* Fit Mode */}
         <div className="mb-3">
-          <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Fit Mode</label>
+          <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Fit Mode</label>
           <div className="grid grid-cols-4 gap-1">
             {FIT_MODES.map((mode) => (
               <button
                 key={mode.value}
                 onClick={() => onChange({ objectFit: mode.value })}
-                className={`py-1.5 rounded text-[10px] font-['Inter'] transition-colors ${
+                className={`py-1.5 text-[10px] font-['Fira_Code'] transition-colors ${
                   properties.objectFit === mode.value ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                 }`}
               >
@@ -942,14 +942,14 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
 
         {/* Object Position Grid */}
         <div className="mb-3">
-          <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Position</label>
-          <div className={`inline-grid grid-cols-3 gap-0.5 p-1 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
+          <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Position</label>
+          <div className={`inline-grid grid-cols-3 gap-0.5 p-1 ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
             {OBJECT_POSITIONS.map((row) =>
               row.map((pos) => (
                 <button
                   key={pos}
                   onClick={() => onChange({ objectPosition: pos })}
-                  className={`w-6 h-6 rounded transition-colors ${
+                  className={`w-6 h-6 transition-colors ${
                     properties.objectPosition === pos ? 'editor-accent-bg' : isDark ? 'bg-zinc-700 hover:bg-zinc-600' : 'bg-zinc-200 hover:bg-zinc-300'
                   }`}
                   title={pos}
@@ -963,7 +963,7 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
         <div className="flex gap-2 mb-3">
           <button
             onClick={() => onChange({ flipHorizontal: !properties.flipHorizontal })}
-            className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 text-xs font-['Fira_Code'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
               properties.flipHorizontal ? 'editor-accent-active border editor-accent-border' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 border border-zinc-300'
             }`}
           >
@@ -972,7 +972,7 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
           </button>
           <button
             onClick={() => onChange({ flipVertical: !properties.flipVertical })}
-            className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 text-xs font-['Fira_Code'] font-medium transition-colors flex items-center justify-center gap-1.5 ${
               properties.flipVertical ? 'editor-accent-active border editor-accent-border' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 border border-zinc-300'
             }`}
           >
@@ -984,20 +984,20 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
 
       {/* STYLE SECTION */}
       <div className={`mb-4 pb-4 border-b ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
           <Paintbrush className="w-3.5 h-3.5" />
           Style
         </h4>
 
         {/* Shape */}
         <div className="mb-3">
-          <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Shape</label>
+          <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Shape</label>
           <div className="grid grid-cols-4 gap-2">
             {IMAGE_SHAPES.map((shape) => (
               <button
                 key={shape.value}
                 onClick={() => onChange({ shape: shape.value })}
-                className={`p-2 rounded-lg border-2 transition-colors flex flex-col items-center gap-1.5 ${
+                className={`p-2 border-2 transition-colors flex flex-col items-center gap-1.5 ${
                   properties.shape === shape.value ? 'editor-accent-border editor-accent-active' : isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-zinc-300 hover:border-zinc-400'
                 }`}
               >
@@ -1008,7 +1008,7 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
                     clipPath: shape.value === 'oval' ? 'ellipse(50% 40% at 50% 50%)' : undefined,
                   }}
                 />
-                <span className={`text-[10px] font-['Inter'] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{shape.label}</span>
+                <span className={`text-[10px] font-['Fira_Code'] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>{shape.label}</span>
               </button>
             ))}
           </div>
@@ -1020,13 +1020,13 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
 
         {/* Border */}
         <div className="mb-3">
-          <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Border</label>
+          <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Border</label>
           <div className="grid grid-cols-3 gap-2 mb-2">
             {BORDER_STYLES.map((style) => (
               <button
                 key={style.value}
                 onClick={() => onChange({ borderStyle: style.value })}
-                className={`py-1.5 rounded text-[10px] font-['Inter'] transition-colors ${
+                className={`py-1.5 text-[10px] font-['Fira_Code'] transition-colors ${
                   properties.borderStyle === style.value ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                 }`}
               >
@@ -1036,23 +1036,23 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Width</label>
+              <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Width</label>
               <input
                 type="number"
                 value={(properties.borderWidth as number) || 0}
                 onChange={(e) => onChange({ borderWidth: Number(e.target.value) })}
                 min={0}
                 max={20}
-                className={`w-full px-2 py-1.5 border rounded text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+                className={`w-full px-2 py-1.5 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
               />
             </div>
             <div>
-              <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Color</label>
+              <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Color</label>
               <input
                 type="color"
                 value={(properties.borderColor as string) || '#000000'}
                 onChange={(e) => onChange({ borderColor: e.target.value })}
-                className={`w-full h-[34px] rounded border cursor-pointer ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}
+                className={`w-full h-[34px] border cursor-pointer ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}
               />
             </div>
           </div>
@@ -1061,25 +1061,25 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
         {/* Shadow */}
         <ToggleSwitch label="Shadow" value={!!properties.shadowEnabled} onChange={(v) => onChange({ shadowEnabled: v })} theme={theme} />
         {!!properties.shadowEnabled && (
-          <div className={`mt-2 p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
+          <div className={`mt-2 p-3 ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
             <div className="grid grid-cols-2 gap-2 mb-2">
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>X Offset</label>
-                <input type="number" value={(properties.shadowX as number) || 0} onChange={(e) => onChange({ shadowX: Number(e.target.value) })} className={`w-full px-2 py-1 border rounded text-xs font-['Inter'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>X Offset</label>
+                <input type="number" value={(properties.shadowX as number) || 0} onChange={(e) => onChange({ shadowX: Number(e.target.value) })} className={`w-full px-2 py-1 border text-xs font-['Fira_Code'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
               </div>
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Y Offset</label>
-                <input type="number" value={(properties.shadowY as number) || 4} onChange={(e) => onChange({ shadowY: Number(e.target.value) })} className={`w-full px-2 py-1 border rounded text-xs font-['Inter'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Y Offset</label>
+                <input type="number" value={(properties.shadowY as number) || 4} onChange={(e) => onChange({ shadowY: Number(e.target.value) })} className={`w-full px-2 py-1 border text-xs font-['Fira_Code'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Blur</label>
-                <input type="number" value={(properties.shadowBlur as number) || 12} onChange={(e) => onChange({ shadowBlur: Number(e.target.value) })} min={0} className={`w-full px-2 py-1 border rounded text-xs font-['Inter'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Blur</label>
+                <input type="number" value={(properties.shadowBlur as number) || 12} onChange={(e) => onChange({ shadowBlur: Number(e.target.value) })} min={0} className={`w-full px-2 py-1 border text-xs font-['Fira_Code'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
               </div>
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Color</label>
-                <input type="color" value={(properties.shadowColor as string) || '#000000'} onChange={(e) => onChange({ shadowColor: e.target.value })} className={`w-full h-[26px] rounded border cursor-pointer ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Color</label>
+                <input type="color" value={(properties.shadowColor as string) || '#000000'} onChange={(e) => onChange({ shadowColor: e.target.value })} className={`w-full h-[26px] border cursor-pointer ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`} />
               </div>
             </div>
           </div>
@@ -1088,7 +1088,7 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
 
       {/* FILTERS */}
       <div>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider flex items-center gap-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
           <Contrast className="w-3.5 h-3.5" />
           Filters
         </h4>
@@ -1102,7 +1102,7 @@ function ImageProperties({ properties, onChange, theme, accentColor = '#E11D48' 
         </div>
         <button
           onClick={() => onChange({ brightness: 100, contrast: 100, saturation: 100, blur: 0, grayscale: false, sepia: false })}
-          className={`w-full mt-3 py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors ${
+          className={`w-full mt-3 py-2 text-xs font-['Fira_Code'] font-medium transition-colors ${
             isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 hover:text-zinc-800 border border-zinc-300'
           }`}
         >
@@ -1194,20 +1194,20 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
       <PropertyInput label="Form Title" value={properties.formTitle as string} onChange={(v) => onChange({ formTitle: v })} theme={theme} />
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <label className={`text-xs font-medium font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+          <label className={`text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
             Form Fields ({fields.length})
           </label>
           <button
             onClick={() => setShowAddField(!showAddField)}
-            className={`p-1.5 rounded-lg transition-colors ${showAddField ? 'editor-accent-bg text-white' : isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}
+            className={`p-1.5 transition-colors ${showAddField ? 'editor-accent-bg text-white' : isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'}`}
           >
             <Plus className="w-4 h-4" />
           </button>
         </div>
 
         {showAddField && (
-          <div className={`mb-3 p-2 rounded-lg border ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-50 border-zinc-200'}`}>
-            <p className={`text-xs font-['Inter'] mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Select field type:</p>
+          <div className={`mb-3 p-2 border ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-50 border-zinc-200'}`}>
+            <p className={`text-xs font-['Fira_Code'] mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Select field type:</p>
             <div className="grid grid-cols-2 gap-1">
               {FORM_FIELD_TYPES.map((fieldType) => {
                 const Icon = fieldType.icon;
@@ -1215,7 +1215,7 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
                   <button
                     key={fieldType.value}
                     onClick={() => handleAddField(fieldType.value)}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs font-['Inter'] transition-colors ${isDark ? 'hover:bg-zinc-700 text-zinc-300' : 'hover:bg-zinc-200 text-zinc-700'}`}
+                    className={`flex items-center gap-2 px-2 py-1.5 text-xs font-['Fira_Code'] transition-colors ${isDark ? 'hover:bg-zinc-700 text-zinc-300' : 'hover:bg-zinc-200 text-zinc-700'}`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                     {fieldType.label}
@@ -1227,9 +1227,9 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
         )}
 
         {fields.length === 0 ? (
-          <div className={`py-6 text-center border-2 border-dashed rounded-lg ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-zinc-300 text-zinc-400'}`}>
-            <p className="text-xs font-['Inter']">No fields yet</p>
-            <p className="text-xs font-['Inter'] mt-1">Click + to add a field</p>
+          <div className={`py-6 text-center border-2 border-dashed ${isDark ? 'border-zinc-700 text-zinc-500' : 'border-zinc-300 text-zinc-400'}`}>
+            <p className="text-xs font-['Fira_Code']">No fields yet</p>
+            <p className="text-xs font-['Fira_Code'] mt-1">Click + to add a field</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -1237,39 +1237,39 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
               const FieldIcon = FORM_FIELD_TYPES.find(f => f.value === field.type)?.icon || TypeIcon;
               const isExpanded = expandedField === field.id;
               return (
-                <div key={field.id} className={`rounded-lg border transition-colors ${isExpanded ? isDark ? 'editor-accent-border bg-zinc-800' : 'editor-accent-border bg-zinc-50' : isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-200 bg-white'}`}>
+                <div key={field.id} className={`border transition-colors ${isExpanded ? isDark ? 'editor-accent-border bg-zinc-800' : 'editor-accent-border bg-zinc-50' : isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-200 bg-white'}`}>
                   <div className="flex items-center gap-2 px-2 py-2 cursor-pointer" onClick={() => setExpandedField(isExpanded ? null : field.id)}>
                     <GripVertical className={`w-3.5 h-3.5 flex-shrink-0 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`} />
                     <FieldIcon className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500" />
-                    <span className={`flex-1 text-xs font-['Inter'] truncate ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{field.label}</span>
+                    <span className={`flex-1 text-xs font-['Fira_Code'] truncate ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{field.label}</span>
                     {field.required && <span className="text-red-500 text-xs">*</span>}
                     <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-90' : ''} ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
                   </div>
                   {isExpanded && (
                     <div className={`px-3 pb-3 pt-1 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`}>
                       <div className="mb-2">
-                        <label className={`block text-[10px] font-['Inter'] mb-1 text-zinc-500`}>Label</label>
-                        <input type="text" value={field.label} onChange={(e) => handleUpdateField(field.id, { label: e.target.value })} className={`w-full px-2 py-1.5 rounded text-xs font-['Inter'] border ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                        <label className={`block text-[10px] font-['Fira_Code'] mb-1 text-zinc-500`}>Label</label>
+                        <input type="text" value={field.label} onChange={(e) => handleUpdateField(field.id, { label: e.target.value })} className={`w-full px-2 py-1.5 text-xs font-['Fira_Code'] border ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
                       </div>
                       {field.type !== 'checkbox' && (
                         <div className="mb-2">
-                          <label className={`block text-[10px] font-['Inter'] mb-1 text-zinc-500`}>Placeholder</label>
-                          <input type="text" value={field.placeholder || ''} onChange={(e) => handleUpdateField(field.id, { placeholder: e.target.value })} className={`w-full px-2 py-1.5 rounded text-xs font-['Inter'] border ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                          <label className={`block text-[10px] font-['Fira_Code'] mb-1 text-zinc-500`}>Placeholder</label>
+                          <input type="text" value={field.placeholder || ''} onChange={(e) => handleUpdateField(field.id, { placeholder: e.target.value })} className={`w-full px-2 py-1.5 text-xs font-['Fira_Code'] border ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
                         </div>
                       )}
                       {field.type === 'dropdown' && (
                         <div className="mb-2">
-                          <label className={`block text-[10px] font-['Inter'] mb-1 text-zinc-500`}>Options (one per line)</label>
+                          <label className={`block text-[10px] font-['Fira_Code'] mb-1 text-zinc-500`}>Options (one per line)</label>
                           <textarea
                             value={(field.options || []).join('\n')}
                             onChange={(e) => { const options = e.target.value.split('\n').filter(opt => opt.trim()); handleUpdateField(field.id, { options }); }}
                             rows={3}
-                            className={`w-full px-2 py-1.5 rounded text-xs font-['Inter'] border resize-none ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+                            className={`w-full px-2 py-1.5 text-xs font-['Fira_Code'] border resize-none ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
                           />
                         </div>
                       )}
                       <div className="flex items-center justify-between mb-3">
-                        <span className={`text-[10px] font-['Inter'] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Required</span>
+                        <span className={`text-[10px] font-['Fira_Code'] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Required</span>
                         <button
                           onClick={() => handleUpdateField(field.id, { required: !field.required })}
                           className={`relative w-8 h-4 rounded-full transition-colors ${field.required ? 'editor-accent-bg' : isDark ? 'bg-zinc-700' : 'bg-zinc-300'}`}
@@ -1278,14 +1278,14 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
                         </button>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handleMoveField(index, 'up')} disabled={index === 0} className={`p-1 rounded transition-colors disabled:opacity-30 ${isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-600'}`} title="Move up">
+                        <button onClick={() => handleMoveField(index, 'up')} disabled={index === 0} className={`p-1 transition-colors disabled:opacity-30 ${isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-600'}`} title="Move up">
                           <ArrowUp className="w-3.5 h-3.5" />
                         </button>
-                        <button onClick={() => handleMoveField(index, 'down')} disabled={index === fields.length - 1} className={`p-1 rounded transition-colors disabled:opacity-30 ${isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-600'}`} title="Move down">
+                        <button onClick={() => handleMoveField(index, 'down')} disabled={index === fields.length - 1} className={`p-1 transition-colors disabled:opacity-30 ${isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-600'}`} title="Move down">
                           <ArrowDown className="w-3.5 h-3.5" />
                         </button>
                         <div className="flex-1" />
-                        <button onClick={() => handleDeleteField(field.id)} className={`p-1 rounded transition-colors ${isDark ? 'hover:bg-red-500/20 text-red-400' : 'hover:bg-red-50 text-red-500'}`} title="Delete field">
+                        <button onClick={() => handleDeleteField(field.id)} className={`p-1 transition-colors ${isDark ? 'hover:bg-red-500/20 text-red-400' : 'hover:bg-red-50 text-red-500'}`} title="Delete field">
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -1304,14 +1304,14 @@ function FormProperties({ properties, onChange, theme }: ElementPropertiesProps)
       </div>
 
       <div className={`pt-3 mt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Styling</h4>
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Styling</h4>
         <ColorPicker label="Background" value={properties.backgroundColor as string} onChange={(v) => onChange({ backgroundColor: v })} theme={theme} />
         <ColorPicker label="Border Color" value={properties.borderColor as string} onChange={(v) => onChange({ borderColor: v })} theme={theme} />
         <SliderInput label="Border Radius" value={(properties.borderRadius as number) || 12} onChange={(v) => onChange({ borderRadius: v })} min={0} max={32} theme={theme} />
       </div>
 
       <div className={`pt-3 mt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Submit Button</h4>
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Submit Button</h4>
         <ColorPicker label="Button Background" value={properties.buttonBackgroundColor as string} onChange={(v) => onChange({ buttonBackgroundColor: v })} theme={theme} />
         <ColorPicker label="Button Text Color" value={properties.buttonTextColor as string} onChange={(v) => onChange({ buttonTextColor: v })} theme={theme} />
         <SliderInput label="Button Radius" value={(properties.buttonBorderRadius as number) || 8} onChange={(v) => onChange({ buttonBorderRadius: v })} min={0} max={24} theme={theme} />
@@ -1349,11 +1349,11 @@ function HeaderProperties({ config, onChange, theme }: ConfigPropertiesProps) {
       <PropertyInput label="Business Name" value={config.storeName as string || ''} onChange={(v) => onChange({ storeName: v })} theme={theme} />
       <ColorPicker label="Name Color" value={(config.storeNameColor as string) || (isDark ? '#ffffff' : '#18181b')} onChange={(v) => onChange({ storeNameColor: v })} theme={theme} />
       <div className="mb-3">
-        <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Name Font</label>
+        <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Name Font</label>
         <select
           value={(config.storeNameFont as string) || 'Inter'}
           onChange={(e) => onChange({ storeNameFont: e.target.value })}
-          className={`w-full px-3 py-2 border rounded-lg text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+          className={`w-full px-3 py-2 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
         >
           <option value="Inter">Inter</option>
           <option value="Arial">Arial</option>
@@ -1362,8 +1362,8 @@ function HeaderProperties({ config, onChange, theme }: ConfigPropertiesProps) {
         </select>
       </div>
       <div className="mb-3">
-        <label className={`flex items-center gap-2 text-xs font-medium font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-          <input type="checkbox" checked={!!config.showLogo} onChange={(e) => onChange({ showLogo: e.target.checked })} className="rounded" />
+        <label className={`flex items-center gap-2 text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+          <input type="checkbox" checked={!!config.showLogo} onChange={(e) => onChange({ showLogo: e.target.checked })} className="accent-black" />
           Use Logo Instead
         </label>
       </div>
@@ -1387,11 +1387,11 @@ interface SocialIconToggleProps extends ThemeProps {
 function SocialIconToggle({ icon: Icon, label, enabled, url, onToggle, onUrlChange, theme }: SocialIconToggleProps) {
   const isDark = theme === 'dark';
   return (
-    <div className={`mb-3 p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
+    <div className={`mb-3 p-3 ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
       <div className="flex items-center gap-3 mb-2">
         <Icon className={`w-4 h-4 ${enabled ? 'editor-accent-text' : isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
-        <label className={`flex-1 flex items-center gap-2 text-xs font-medium font-['Inter'] ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-          <input type="checkbox" checked={enabled} onChange={(e) => onToggle(e.target.checked)} className="rounded editor-accent-text" />
+        <label className={`flex-1 flex items-center gap-2 text-xs font-medium font-['Fira_Code'] ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+          <input type="checkbox" checked={enabled} onChange={(e) => onToggle(e.target.checked)} className="accent-black" />
           {label}
         </label>
       </div>
@@ -1401,7 +1401,7 @@ function SocialIconToggle({ icon: Icon, label, enabled, url, onToggle, onUrlChan
           value={url || ''}
           onChange={(e) => onUrlChange(e.target.value)}
           placeholder={`${label} URL`}
-          className={`w-full px-3 py-2 rounded text-xs font-['Inter'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-300' : 'bg-white border-zinc-300 text-zinc-700'} border`}
+          className={`w-full px-3 py-2 text-xs font-['Fira_Code'] ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-300' : 'bg-white border-zinc-300 text-zinc-700'} border`}
         />
       )}
     </div>
@@ -1427,14 +1427,14 @@ function FooterProperties({ config, onChange, theme }: ConfigPropertiesProps) {
     <>
       <PropertyInput label="Business Name" value={(config.storeName as string) || ''} onChange={(v) => onChange({ storeName: v })} theme={theme} />
       <div className="mb-3">
-        <label className={`flex items-center gap-2 text-xs font-medium font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-          <input type="checkbox" checked={config.showStoreName !== false} onChange={(e) => onChange({ showStoreName: e.target.checked })} className="rounded" />
+        <label className={`flex items-center gap-2 text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+          <input type="checkbox" checked={config.showStoreName !== false} onChange={(e) => onChange({ showStoreName: e.target.checked })} className="accent-black" />
           Show Business Name
         </label>
       </div>
       <div className="mb-3">
-        <label className={`flex items-center gap-2 text-xs font-medium font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-          <input type="checkbox" checked={!!config.showLogo} onChange={(e) => onChange({ showLogo: e.target.checked })} className="rounded" />
+        <label className={`flex items-center gap-2 text-xs font-medium font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+          <input type="checkbox" checked={!!config.showLogo} onChange={(e) => onChange({ showLogo: e.target.checked })} className="accent-black" />
           Add Logo
         </label>
       </div>
@@ -1442,7 +1442,7 @@ function FooterProperties({ config, onChange, theme }: ConfigPropertiesProps) {
       <PropertyInput label="Tagline" value={(config.tagline as string) || ''} onChange={(v) => onChange({ tagline: v })} theme={theme} />
 
       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Social Links</h4>
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Social Links</h4>
         <SocialIconToggle icon={Instagram} label="Instagram" enabled={socialIcons.instagram?.enabled} url={socialIcons.instagram?.url} onToggle={(v) => updateSocialIcon('instagram', { enabled: v })} onUrlChange={(v) => updateSocialIcon('instagram', { url: v })} theme={theme} />
         <SocialIconToggle icon={Twitter} label="Twitter / X" enabled={socialIcons.twitter?.enabled} url={socialIcons.twitter?.url} onToggle={(v) => updateSocialIcon('twitter', { enabled: v })} onUrlChange={(v) => updateSocialIcon('twitter', { url: v })} theme={theme} />
         <SocialIconToggle icon={Youtube} label="YouTube" enabled={socialIcons.youtube?.enabled} url={socialIcons.youtube?.url} onToggle={(v) => updateSocialIcon('youtube', { enabled: v })} onUrlChange={(v) => updateSocialIcon('youtube', { url: v })} theme={theme} />
@@ -1450,7 +1450,7 @@ function FooterProperties({ config, onChange, theme }: ConfigPropertiesProps) {
       </div>
 
       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-300'}`}>
-        <h4 className={`text-xs font-semibold mb-3 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Colors</h4>
+        <h4 className={`text-xs font-semibold mb-3 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Colors</h4>
         <ColorPicker label="Background Color" value={(config.backgroundColor as string) || (isDark ? '#18181b' : '#ffffff')} onChange={(v) => onChange({ backgroundColor: v })} theme={theme} />
         <ColorPicker label="Text Color" value={(config.textColor as string) || (isDark ? '#ffffff' : '#18181b')} onChange={(v) => onChange({ textColor: v })} theme={theme} />
         <ColorPicker label="Link Text Color" value={(config.linkColor as string) || (isDark ? '#a1a1aa' : '#52525b')} onChange={(v) => onChange({ linkColor: v })} theme={theme} />
@@ -1477,11 +1477,11 @@ function CanvasProperties({ config, onChange, theme }: ConfigPropertiesProps) {
       <ImageDropZone label="Background Image" value={(config.backgroundImage as string) || ''} onChange={(v) => onChange({ backgroundImage: v })} theme={theme} />
       {config.backgroundImage && (
         <div className="mb-3">
-          <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Background Size</label>
+          <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Background Size</label>
           <select
             value={(config.backgroundSize as string) || 'cover'}
             onChange={(e) => onChange({ backgroundSize: e.target.value })}
-            className={`w-full px-3 py-2 border rounded-lg text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+            className={`w-full px-3 py-2 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
           >
             <option value="cover">Cover</option>
             <option value="contain">Contain</option>
@@ -1490,18 +1490,18 @@ function CanvasProperties({ config, onChange, theme }: ConfigPropertiesProps) {
         </div>
       )}
       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-        <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Page Transition</label>
+        <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Page Transition</label>
         <div className="grid grid-cols-2 gap-2">
           {PAGE_TRANSITIONS.map((transition) => (
             <button
               key={transition.id}
               onClick={() => onChange({ pageTransition: transition.id })}
-              className={`p-3 rounded-lg border-2 transition-colors text-left ${
+              className={`p-3 border-2 transition-colors text-left ${
                 (config.pageTransition || 'fade') === transition.id ? 'editor-accent-border editor-accent-active' : isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-zinc-300 hover:border-zinc-400'
               }`}
             >
-              <span className={`block text-xs font-medium font-['Inter'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{transition.name}</span>
-              <span className={`text-[10px] font-['Inter'] text-zinc-500`}>{transition.description}</span>
+              <span className={`block text-xs font-medium font-['Fira_Code'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{transition.name}</span>
+              <span className={`text-[10px] font-['Fira_Code'] text-zinc-500`}>{transition.description}</span>
             </button>
           ))}
         </div>
@@ -1553,29 +1553,29 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
       <CollapsibleSection title="Animation" icon={Sparkles} isOpen={isOpen} onToggle={onToggle} theme={theme}>
         {hasAnimation ? (
           <>
-            <div className={`p-3 rounded-lg mb-4 ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
+            <div className={`p-3 mb-4 ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 editor-accent-text" />
-                  <span className={`text-sm font-medium font-['Inter'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                  <span className={`text-sm font-medium font-['Fira_Code'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
                     {animationPreset?.name || animation.type}
                   </span>
                 </div>
-                <button onClick={() => setShowPicker(true)} className="text-xs font-['Inter'] editor-accent-text hover:opacity-80">
+                <button onClick={() => setShowPicker(true)} className="text-xs font-['Fira_Code'] editor-accent-text hover:opacity-80">
                   Change
                 </button>
               </div>
-              <p className={`text-xs font-['Inter'] text-zinc-500`}>{animationPreset?.description || 'Custom animation'}</p>
+              <p className={`text-xs font-['Fira_Code'] text-zinc-500`}>{animationPreset?.description || 'Custom animation'}</p>
             </div>
 
             <div className="mb-4">
-              <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Speed</label>
+              <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Speed</label>
               <div className="flex gap-1">
                 {ANIMATION_SPEEDS.map((speed) => (
                   <button
                     key={speed.value}
                     onClick={() => handleSpeedChange(speed.value)}
-                    className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors ${
+                    className={`flex-1 py-2 text-xs font-['Fira_Code'] transition-colors ${
                       animation.speed === speed.value ? 'editor-accent-bg text-white' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800 hover:bg-zinc-200'
                     }`}
                   >
@@ -1586,7 +1586,7 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
             </div>
 
             <div className="mb-4">
-              <label className={`block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Delay (seconds)</label>
+              <label className={`block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Delay (seconds)</label>
               <input
                 type="number"
                 value={animation.delay || 0}
@@ -1594,21 +1594,21 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
                 min={0}
                 max={10}
                 step={0.1}
-                className={`w-full px-3 py-2 rounded-lg text-sm font-['Inter'] border ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+                className={`w-full px-3 py-2 text-sm font-['Fira_Code'] border ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
               />
             </div>
 
             <div className="flex gap-2">
               <button
                 onClick={() => onPreview?.(animation)}
-                className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] font-medium transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
+                className={`flex-1 py-2 text-xs font-['Fira_Code'] font-medium transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
               >
                 <Play className="w-3.5 h-3.5" />
                 Preview
               </button>
               <button
                 onClick={() => onChange({ animation: null })}
-                className="flex-1 py-2 rounded-lg text-xs font-['Inter'] font-medium bg-red-600/20 text-red-400 hover:bg-red-600/30 transition-colors flex items-center justify-center gap-1.5"
+                className="flex-1 py-2 text-xs font-['Fira_Code'] font-medium bg-red-600/20 text-red-400 hover:bg-red-600/30 transition-colors flex items-center justify-center gap-1.5"
               >
                 <X className="w-3.5 h-3.5" />
                 Remove
@@ -1619,12 +1619,12 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
           <>
             <button
               onClick={() => setShowPicker(true)}
-              className={`w-full py-3 rounded-lg text-sm font-['Inter'] font-medium transition-colors flex items-center justify-center gap-2 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-300'}`}
+              className={`w-full py-3 text-sm font-['Fira_Code'] font-medium transition-colors flex items-center justify-center gap-2 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-300'}`}
             >
               <Sparkles className="w-4 h-4" />
               Add Animation
             </button>
-            <p className={`text-xs font-['Inter'] mt-3 text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+            <p className={`text-xs font-['Fira_Code'] mt-3 text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
               Make this element come alive with animations
             </p>
           </>
@@ -1640,6 +1640,48 @@ function AnimationSection({ element, onChange, onPreview, theme, isOpen, onToggl
         theme={theme}
         accentColor={accentColor}
       />
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Video Embed Properties
+// ---------------------------------------------------------------------------
+
+function VideoEmbedProperties({ properties, onChange, theme }: ElementPropertiesProps) {
+  const isDark = theme === 'dark';
+  return (
+    <>
+      <div className="mb-3">
+        <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+          Video URL
+        </label>
+        <input
+          type="text"
+          value={(properties.videoUrl as string) || ''}
+          onChange={(e) => onChange({ videoUrl: e.target.value })}
+          placeholder="https://youtube.com/watch?v=..."
+          className={`w-full px-3 py-2 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+        />
+        <p className={`text-[10px] mt-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+          YouTube or Vimeo link
+        </p>
+      </div>
+      <div className="mb-3">
+        <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+          Aspect Ratio
+        </label>
+        <select
+          value={(properties.aspectRatio as string) || '16:9'}
+          onChange={(e) => onChange({ aspectRatio: e.target.value })}
+          className={`w-full px-3 py-2 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+        >
+          <option value="16:9">16:9 (Widescreen)</option>
+          <option value="4:3">4:3 (Standard)</option>
+          <option value="1:1">1:1 (Square)</option>
+        </select>
+      </div>
+      <PropertyInput label="Border Radius" type="number" value={properties.borderRadius as number} onChange={(v) => onChange({ borderRadius: v })} min={0} max={24} theme={theme} />
     </>
   );
 }
@@ -1662,6 +1704,7 @@ function getPropertiesComponent(type: string): React.ComponentType<ElementProper
     case 'divider': return DividerProperties;
     case 'contactForm': return FormProperties;
     case 'customForm': return FormProperties;
+    case 'videoEmbed': return VideoEmbedProperties;
     default: return null;
   }
 }
@@ -1751,7 +1794,7 @@ export default function FreeFormPropertiesPanel({
     return (
       <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`}>
         <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-          <h2 className={`text-sm font-semibold font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Header Settings</h2>
+          <h2 className={`text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Header Settings</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
           <HeaderProperties config={headerConfig} onChange={onUpdateHeaderConfig!} theme={theme} />
@@ -1765,7 +1808,7 @@ export default function FreeFormPropertiesPanel({
     return (
       <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`}>
         <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-          <h2 className={`text-sm font-semibold font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Footer Settings</h2>
+          <h2 className={`text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Footer Settings</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
           <FooterProperties config={footerConfig} onChange={onUpdateFooterConfig!} theme={theme} />
@@ -1779,7 +1822,7 @@ export default function FreeFormPropertiesPanel({
     return (
       <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`}>
         <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-          <h2 className={`text-sm font-semibold font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Canvas Settings</h2>
+          <h2 className={`text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Canvas Settings</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
           <CanvasProperties config={canvasConfig} onChange={onUpdateCanvasConfig!} theme={theme} />
@@ -1810,24 +1853,24 @@ export default function FreeFormPropertiesPanel({
       <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`}>
         <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
           <div className="flex items-center justify-between">
-            <h2 className={`text-sm font-semibold font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Section</h2>
+            <h2 className={`text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Section</h2>
             {isLocked && <Lock className={`w-4 h-4 ${isDark ? 'text-yellow-500' : 'text-yellow-600'}`} />}
           </div>
         </div>
 
         <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800 bg-zinc-800/50' : 'border-zinc-200 bg-zinc-100'}`}>
-          <p className={`text-sm font-medium font-['Inter'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{getSectionName(sectionType)}</p>
-          <p className={`text-xs font-['Inter'] mt-1 text-zinc-500`}>{`Height: ${selectedSectionData.height || 400}px`}</p>
+          <p className={`text-sm font-medium font-['Fira_Code'] ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{getSectionName(sectionType)}</p>
+          <p className={`text-xs font-['Fira_Code'] mt-1 text-zinc-500`}>{`Height: ${selectedSectionData.height || 400}px`}</p>
         </div>
 
         {!isLocked && totalSections > 1 && (
           <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-            <h4 className={`text-[10px] font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Section Order</h4>
+            <h4 className={`text-[10px] font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Section Order</h4>
             <div className="flex gap-2">
               <button
                 onClick={() => onMoveSection?.(sectionIndex, sectionIndex - 1)}
                 disabled={sectionIndex === 0}
-                className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 text-xs font-['Fira_Code'] transition-colors flex items-center justify-center gap-1.5 ${
                   sectionIndex === 0 ? isDark ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' : 'bg-zinc-100/50 text-zinc-400 cursor-not-allowed' : isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
                 }`}
               >
@@ -1837,7 +1880,7 @@ export default function FreeFormPropertiesPanel({
               <button
                 onClick={() => onMoveSection?.(sectionIndex, sectionIndex + 1)}
                 disabled={sectionIndex >= totalSections - 1}
-                className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 text-xs font-['Fira_Code'] transition-colors flex items-center justify-center gap-1.5 ${
                   sectionIndex >= totalSections - 1 ? isDark ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' : 'bg-zinc-100/50 text-zinc-400 cursor-not-allowed' : isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
                 }`}
               >
@@ -1918,7 +1961,7 @@ export default function FreeFormPropertiesPanel({
             <div className={`px-4 py-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
               <button
                 onClick={() => onDeleteSection?.(selectedSectionData.id)}
-                className="w-full py-2 bg-red-600/20 text-red-400 rounded-lg text-xs font-['Inter'] hover:bg-red-600/30 transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2 bg-red-600/20 text-red-400 text-xs font-['Fira_Code'] hover:bg-red-600/30 transition-colors flex items-center justify-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Delete Section
@@ -1935,13 +1978,13 @@ export default function FreeFormPropertiesPanel({
     return (
       <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`}>
         <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-          <h2 className={`text-sm font-semibold font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Properties</h2>
+          <h2 className={`text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Properties</h2>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-6">
-          <div className={`w-12 h-12 mb-4 rounded-full flex items-center justify-center ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
-            <MousePointer className={`w-5 h-5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
+          <div className={`w-12 h-12 mb-4 rounded-full flex items-center justify-center ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}>
+            <MousePointer className={`w-5 h-5 ${isDark ? 'text-zinc-500' : 'text-gray-900'}`} />
           </div>
-          <p className={`text-sm font-['Inter'] text-center text-zinc-500`}>
+          <p className={`text-sm font-['Fira_Code'] text-center text-zinc-500`}>
             Select an element to edit its properties
           </p>
         </div>
@@ -1962,44 +2005,44 @@ export default function FreeFormPropertiesPanel({
     <aside className={`flex flex-col h-full border-l transition-colors ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-zinc-50 border-zinc-200'} ${className}`} style={accentCssVars}>
       <style dangerouslySetInnerHTML={{ __html: accentStyles }} />
       <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
-        <h2 className={`text-sm font-semibold font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Properties</h2>
+        <h2 className={`text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Properties</h2>
       </div>
 
       <div className={`px-4 py-3 border-b ${isDark ? 'border-zinc-800 bg-zinc-800/50' : 'border-zinc-200 bg-zinc-100'}`}>
         <div className="flex items-center justify-between">
-          <p className={`text-sm font-medium font-['Inter'] capitalize ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{selectedElement.type}</p>
+          <p className={`text-sm font-medium font-['Fira_Code'] capitalize ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{selectedElement.type}</p>
           {selectedElement.locked && <Lock className={`w-4 h-4 ${isDark ? 'text-yellow-500' : 'text-yellow-600'}`} />}
         </div>
-        <p className={`text-xs font-['Inter'] mt-1 text-zinc-500`}>{Math.round(selectedElement.width)} x {Math.round(selectedElement.height)} px</p>
+        <p className={`text-xs font-['Fira_Code'] mt-1 text-zinc-500`}>{Math.round(selectedElement.width)} x {Math.round(selectedElement.height)} px</p>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {/* LAYOUT */}
         <CollapsibleSection title="Layout" icon={Move} isOpen={openSections.layout} onToggle={() => toggleSection('layout')} theme={theme}>
           <div className="mb-4">
-            <h4 className={`text-[10px] font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Position</h4>
+            <h4 className={`text-[10px] font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Position</h4>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>X</label>
-                <input type="number" value={Math.round(selectedElement.x)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { x: Number(e.target.value) })} className={`w-full px-2 py-1.5 border rounded text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>X</label>
+                <input type="number" value={Math.round(selectedElement.x)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { x: Number(e.target.value) })} className={`w-full px-2 py-1.5 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
               </div>
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Y</label>
-                <input type="number" value={Math.round(selectedElement.y)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { y: Number(e.target.value) })} className={`w-full px-2 py-1.5 border rounded text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Y</label>
+                <input type="number" value={Math.round(selectedElement.y)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { y: Number(e.target.value) })} className={`w-full px-2 py-1.5 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
               </div>
             </div>
           </div>
 
           <div className="mb-4">
-            <h4 className={`text-[10px] font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Size</h4>
+            <h4 className={`text-[10px] font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Size</h4>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>W</label>
-                <input type="number" value={Math.round(selectedElement.width)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { width: Number(e.target.value) })} className={`w-full px-2 py-1.5 border rounded text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>W</label>
+                <input type="number" value={Math.round(selectedElement.width)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { width: Number(e.target.value) })} className={`w-full px-2 py-1.5 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
               </div>
               <div>
-                <label className={`block text-[10px] font-['Inter'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>H</label>
-                <input type="number" value={Math.round(selectedElement.height)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { height: Number(e.target.value) })} className={`w-full px-2 py-1.5 border rounded text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
+                <label className={`block text-[10px] font-['Fira_Code'] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>H</label>
+                <input type="number" value={Math.round(selectedElement.height)} onChange={(e) => onUpdateProperties(selectedElement.id, {}, { height: Number(e.target.value) })} className={`w-full px-2 py-1.5 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`} />
               </div>
             </div>
           </div>
@@ -2012,7 +2055,7 @@ export default function FreeFormPropertiesPanel({
           {PropertiesComponent ? (
             <PropertiesComponent properties={selectedElement.properties} onChange={handleChange} theme={theme} accentColor={accentColor} />
           ) : (
-            <p className={`text-sm font-['Inter'] text-zinc-500`}>No style properties</p>
+            <p className={`text-sm font-['Fira_Code'] text-zinc-500`}>No style properties</p>
           )}
 
           <div className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
@@ -2035,11 +2078,11 @@ export default function FreeFormPropertiesPanel({
             )}
             {selectedElement.properties.fontWeight !== undefined && (
               <div className="mb-3">
-                <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Font Weight</label>
+                <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Font Weight</label>
                 <select
                   value={selectedElement.properties.fontWeight as number}
                   onChange={(e) => handleChange({ fontWeight: Number(e.target.value) })}
-                  className={`w-full px-3 py-2 border rounded-lg text-sm font-['Inter'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
+                  className={`w-full px-3 py-2 border text-sm font-['Fira_Code'] ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200' : 'bg-white border-zinc-300 text-zinc-800'}`}
                 >
                   <option value={300}>Light</option>
                   <option value={400}>Regular</option>
@@ -2055,13 +2098,13 @@ export default function FreeFormPropertiesPanel({
             )}
             {selectedElement.properties.textAlign !== undefined && (
               <div className="mb-3">
-                <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Alignment</label>
+                <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Alignment</label>
                 <div className="flex gap-1">
                   {['left', 'center', 'right'].map((align) => (
                     <button
                       key={align}
                       onClick={() => handleChange({ textAlign: align })}
-                      className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] capitalize transition-colors ${
+                      className={`flex-1 py-2 text-xs font-['Fira_Code'] capitalize transition-colors ${
                         selectedElement.properties.textAlign === align ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                       }`}
                     >
@@ -2079,13 +2122,13 @@ export default function FreeFormPropertiesPanel({
             )}
             {selectedElement.properties.textTransform !== undefined && (
               <div className="mb-3">
-                <label className={`block text-xs font-medium mb-1 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Text Transform</label>
+                <label className={`block text-xs font-medium mb-1 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Text Transform</label>
                 <div className="flex gap-1">
                   {[{ value: 'none', label: 'Aa' }, { value: 'uppercase', label: 'AA' }, { value: 'lowercase', label: 'aa' }, { value: 'capitalize', label: 'Aa' }].map((transform) => (
                     <button
                       key={transform.value}
                       onClick={() => handleChange({ textTransform: transform.value })}
-                      className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors ${
+                      className={`flex-1 py-2 text-xs font-['Fira_Code'] transition-colors ${
                         selectedElement.properties.textTransform === transform.value ? 'editor-accent-active' : isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200' : 'bg-zinc-100 text-zinc-600 hover:text-zinc-800'
                       }`}
                       title={transform.value}
@@ -2113,18 +2156,18 @@ export default function FreeFormPropertiesPanel({
         {/* ACTIONS */}
         <CollapsibleSection title="Actions" icon={Layers} isOpen={openSections.actions} onToggle={() => toggleSection('actions')} theme={theme}>
           <div className="mb-4">
-            <h4 className={`text-[10px] font-medium mb-2 font-['Inter'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Layer Order</h4>
+            <h4 className={`text-[10px] font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Layer Order</h4>
             <div className="flex gap-2">
               <button
                 onClick={() => onBringToFront(selectedElement.id)}
-                className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
+                className={`flex-1 py-2 text-xs font-['Fira_Code'] transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
               >
                 <ArrowUp className="w-3.5 h-3.5" />
                 Front
               </button>
               <button
                 onClick={() => onSendToBack(selectedElement.id)}
-                className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
+                className={`flex-1 py-2 text-xs font-['Fira_Code'] transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
               >
                 <ArrowDown className="w-3.5 h-3.5" />
                 Back
@@ -2134,14 +2177,14 @@ export default function FreeFormPropertiesPanel({
           <div className="flex gap-2">
             <button
               onClick={() => onDuplicate(selectedElement.id)}
-              className={`flex-1 py-2 rounded-lg text-xs font-['Inter'] transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
+              className={`flex-1 py-2 text-xs font-['Fira_Code'] transition-colors flex items-center justify-center gap-1.5 ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'}`}
             >
               <Copy className="w-3.5 h-3.5" />
               Duplicate
             </button>
             <button
               onClick={() => onDelete(selectedElement.id)}
-              className="flex-1 py-2 bg-red-600/20 text-red-400 rounded-lg text-xs font-['Inter'] hover:bg-red-600/30 transition-colors flex items-center justify-center gap-1.5"
+              className="flex-1 py-2 bg-red-600/20 text-red-400 text-xs font-['Fira_Code'] hover:bg-red-600/30 transition-colors flex items-center justify-center gap-1.5"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Delete

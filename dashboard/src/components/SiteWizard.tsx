@@ -31,7 +31,7 @@ export default function SiteWizard({ isOpen, onClose, onProjectCreated, colors, 
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const cardBg = colors.cards || '#FFFFFF';
 
@@ -143,7 +143,7 @@ export default function SiteWizard({ isOpen, onClose, onProjectCreated, colors, 
         {STEPS.map((label, i) => (
           <div key={label} className="flex-1">
             <div
-              className="h-1 rounded-full transition-colors"
+              className="h-1 transition-colors"
               style={{ backgroundColor: i <= step ? buttonColor : borderColor }}
             />
           </div>
@@ -212,7 +212,7 @@ export default function SiteWizard({ isOpen, onClose, onProjectCreated, colors, 
               onChange={(e) => setProjectName(e.target.value)}
               placeholder={`e.g. ${businessName || 'My Business'} Website`}
               autoFocus
-              className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+              className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
               style={{ borderColor, color: textMain, outlineColor: buttonColor }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && projectName.trim()) handleNext();
@@ -228,7 +228,7 @@ export default function SiteWizard({ isOpen, onClose, onProjectCreated, colors, 
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe what you want on your website in a sentence or paragraph..."
               rows={3}
-              className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-none"
+              className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-none"
               style={{ borderColor, color: textMain, outlineColor: buttonColor }}
             />
             <p className="text-xs mt-1" style={{ color: textMuted }}>
@@ -267,7 +267,7 @@ export default function SiteWizard({ isOpen, onClose, onProjectCreated, colors, 
         <div className="flex items-center justify-between mt-6 pt-4 border-t" style={{ borderColor }}>
           <button
             onClick={step === 0 ? onClose : handleBack}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70"
             style={{ color: textMuted }}
           >
             {step === 0 ? 'Cancel' : 'Back'}
@@ -275,7 +275,7 @@ export default function SiteWizard({ isOpen, onClose, onProjectCreated, colors, 
           <button
             onClick={handleNext}
             disabled={!canAdvance}
-            className="px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             {step === 0 ? 'Continue' : 'Create Project'}
@@ -300,7 +300,7 @@ function TypeCard({ title, desc, icon, selected, onClick, textMain, textMuted, b
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center text-center p-5 rounded-xl border-2 transition-colors"
+      className="flex flex-col items-center text-center p-5 border-2 transition-colors"
       style={{
         borderColor: selected ? buttonColor : borderColor,
         backgroundColor: selected ? `${buttonColor}08` : 'transparent',

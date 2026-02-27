@@ -183,7 +183,7 @@ export default function CSVImport({
 
       {/* Modal */}
       <div
-        className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[640px] md:max-h-[80vh] z-50 rounded-2xl shadow-xl overflow-hidden flex flex-col"
+        className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[640px] md:max-h-[80vh] z-50 shadow-xl overflow-hidden flex flex-col"
         style={{ backgroundColor: cardBg }}
       >
         {/* Header */}
@@ -206,7 +206,7 @@ export default function CSVImport({
           {/* Step 1: Upload */}
           {step === 'upload' && (
             <div
-              className="border-2 border-dashed rounded-xl p-12 text-center cursor-pointer hover:opacity-80 transition-opacity"
+              className="border-2 border-dashed p-12 text-center cursor-pointer hover:opacity-80 transition-opacity"
               style={{ borderColor }}
               onDragOver={e => e.preventDefault()}
               onDrop={handleDrop}
@@ -272,12 +272,12 @@ export default function CSVImport({
               {mappedEntries.length > 0 && (
                 <div className="mt-4">
                   <h4 className="text-sm font-medium mb-2" style={{ color: headingColor }}>Preview (first 5 rows)</h4>
-                  <div className="overflow-auto rounded-lg border" style={{ borderColor }}>
+                  <div className="overflow-auto border" style={{ borderColor }}>
                     <table className="w-full text-xs">
                       <thead>
                         <tr style={{ backgroundColor: configColors.background || '#F9FAFB' }}>
                           {mappedEntries.map(([, target]) => (
-                            <th key={target} className="px-3 py-2 text-left font-medium" style={{ color: '#6B7280' }}>
+                            <th key={target} className="px-3 py-2 text-left font-medium" style={{ color: configColors.icons || '#6B7280' }}>
                               {target.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </th>
                           ))}
@@ -310,7 +310,7 @@ export default function CSVImport({
               <div className="mb-4">
                 <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: borderColor }}>
                   <div
-                    className="h-full rounded-full transition-all duration-300"
+                    className="h-full transition-all duration-300"
                     style={{
                       width: `${importProgress.total > 0 ? (importProgress.done / importProgress.total) * 100 : 0}%`,
                       backgroundColor: buttonBg,
@@ -335,7 +335,7 @@ export default function CSVImport({
         >
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm border transition-opacity hover:opacity-70"
             style={{ borderColor, color: textColor }}
           >
             Cancel
@@ -344,7 +344,7 @@ export default function CSVImport({
             <button
               onClick={handleImport}
               disabled={mappedEntries.length === 0}
-              className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               Import {csvData.length} Records

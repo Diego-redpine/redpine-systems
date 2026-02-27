@@ -28,7 +28,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const bgColor = colors.background || '#F5F5F5';
@@ -74,7 +74,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
     <>
       <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} />
       <div
-        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg overflow-hidden shadow-2xl flex flex-col"
         style={{ backgroundColor: cardBg }}
       >
         {/* Header */}
@@ -84,7 +84,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
               {[1, 2, 3].map(s => (
                 <div
                   key={s}
-                  className="w-8 h-1 rounded-full transition-colors"
+                  className="w-8 h-1 transition-colors"
                   style={{ backgroundColor: s <= step ? buttonColor : borderColor }}
                 />
               ))}
@@ -109,7 +109,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
             </p>
 
             {/* Gig summary */}
-            <div className="p-3 rounded-xl mb-4" style={{ backgroundColor: bgColor }}>
+            <div className="p-3 mb-4" style={{ backgroundColor: bgColor }}>
               <p className="text-sm font-medium" style={{ color: textMain }}>{gig.title}</p>
               <p className="text-xs mt-1" style={{ color: textMuted }}>
                 {pricingTier.name} — {formatPrice(totalCents)} — {pricingTier.delivery_days} day delivery
@@ -121,7 +121,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
               onChange={(e) => setRequirements(e.target.value)}
               placeholder="Describe your project requirements, goals, and any specific details the freelancer should know..."
               rows={5}
-              className="w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none focus:ring-2"
+              className="w-full px-4 py-3 border text-sm resize-none focus:outline-none focus:ring-2"
               style={{
                 borderColor,
                 color: textMain,
@@ -135,7 +135,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
               <button
                 onClick={() => setStep(2)}
                 disabled={!requirements.trim()}
-                className="px-6 py-2.5 text-sm font-medium rounded-xl transition-opacity hover:opacity-90 disabled:opacity-40"
+                className="px-6 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
                 style={{ backgroundColor: buttonColor, color: buttonText }}
               >
                 Continue
@@ -150,7 +150,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
             <h3 className="text-lg font-bold mb-4" style={{ color: textMain }}>Review your order</h3>
 
             {/* Order summary */}
-            <div className="rounded-xl border divide-y" style={{ borderColor }}>
+            <div className="border divide-y" style={{ borderColor }}>
               <div className="p-4">
                 <p className="text-sm font-medium" style={{ color: textMain }}>{gig.title}</p>
                 <p className="text-xs mt-1" style={{ color: textMuted }}>
@@ -186,13 +186,13 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
             </div>
 
             {/* Requirements preview */}
-            <div className="mt-4 p-3 rounded-xl" style={{ backgroundColor: bgColor }}>
+            <div className="mt-4 p-3" style={{ backgroundColor: bgColor }}>
               <p className="text-xs font-semibold mb-1" style={{ color: textMuted }}>YOUR REQUIREMENTS</p>
               <p className="text-sm" style={{ color: textMain }}>{requirements}</p>
             </div>
 
             {/* Payment note */}
-            <div className="mt-4 p-3 rounded-xl border" style={{ borderColor: '#FDE68A', backgroundColor: '#FFFBEB' }}>
+            <div className="mt-4 p-3 border" style={{ borderColor: '#FDE68A', backgroundColor: '#FFFBEB' }}>
               <p className="text-xs" style={{ color: '#92400E' }}>
                 Payment will be held in escrow until you approve the delivered work.
               </p>
@@ -201,7 +201,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
             <div className="flex gap-3 mt-4">
               <button
                 onClick={() => setStep(1)}
-                className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl border"
+                className="flex-1 px-4 py-2.5 text-sm font-medium border"
                 style={{ borderColor, color: textMain }}
               >
                 Back
@@ -209,7 +209,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
               <button
                 onClick={handleSubmitOrder}
                 disabled={isSubmitting}
-                className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="flex-1 px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ backgroundColor: buttonColor, color: buttonText }}
               >
                 {isSubmitting ? 'Processing...' : `Pay ${formatPrice(totalCents + platformFeeCents)}`}
@@ -221,7 +221,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
         {/* Step 3: Confirmation */}
         {step === 3 && (
           <div className="p-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-emerald-50 flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
@@ -236,7 +236,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
               </p>
             )}
 
-            <div className="p-3 rounded-xl mb-4" style={{ backgroundColor: bgColor }}>
+            <div className="p-3 mb-4" style={{ backgroundColor: bgColor }}>
               <p className="text-sm font-medium" style={{ color: textMain }}>{gig.title}</p>
               <p className="text-xs mt-1" style={{ color: textMuted }}>
                 {pricingTier.name} — {formatPrice(totalCents)} — Est. {pricingTier.delivery_days} days
@@ -249,7 +249,7 @@ export default function OrderFlowModal({ gig, tier, colors, onClose, onOrderCrea
 
             <button
               onClick={onClose}
-              className="w-full px-6 py-2.5 text-sm font-medium rounded-xl transition-opacity hover:opacity-90"
+              className="w-full px-6 py-2.5 text-sm font-medium transition-opacity hover:opacity-90"
               style={{ backgroundColor: buttonColor, color: buttonText }}
             >
               Done

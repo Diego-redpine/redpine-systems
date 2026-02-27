@@ -58,7 +58,7 @@ function ToggleSwitch({
       style={{ backgroundColor: checked ? accentColor : '#d1d5db' }}
     >
       <span
-        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${
+        className={`pointer-events-none inline-block h-5 w-5 transform bg-white shadow ring-0 transition duration-200 ${
           checked ? 'translate-x-5' : 'translate-x-0'
         }`}
       />
@@ -149,7 +149,7 @@ export function PortalNotificationsSection({
     <div className="space-y-6">
       {/* Pause All Card */}
       <div
-        className={`rounded-2xl p-6 shadow-sm border transition-colors ${
+        className={`p-6 shadow-sm border transition-colors ${
           prefs.pause_all
             ? 'bg-amber-50 border-amber-200'
             : 'bg-white border-gray-200'
@@ -173,7 +173,7 @@ export function PortalNotificationsSection({
       </div>
 
       {/* Channel Toggles */}
-      <div className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-200 transition-opacity ${prefs.pause_all ? 'opacity-50' : ''}`}>
+      <div className={`bg-white p-6 shadow-sm border border-gray-200 transition-opacity ${prefs.pause_all ? 'opacity-50' : ''}`}>
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Channels</h3>
         <div className="space-y-4">
           {CHANNELS.map(channel => (
@@ -198,7 +198,7 @@ export function PortalNotificationsSection({
       </div>
 
       {/* Category Matrix */}
-      <div className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-200 transition-opacity ${prefs.pause_all ? 'opacity-50' : ''}`}>
+      <div className={`bg-white p-6 shadow-sm border border-gray-200 transition-opacity ${prefs.pause_all ? 'opacity-50' : ''}`}>
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Categories</h3>
         <div className="space-y-4">
           {CATEGORIES.map(category => (
@@ -223,12 +223,12 @@ export function PortalNotificationsSection({
 
       {/* Promotion Frequency */}
       {prefs.promotions && !prefs.pause_all && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white p-6 shadow-sm border border-gray-200">
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Promotion Frequency</h3>
           <div className="flex gap-2">
             <button
               onClick={() => handleToggle('digest_promotions', false)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
+              className="flex-1 py-2.5 text-sm font-medium transition-colors"
               style={{
                 backgroundColor: !prefs.digest_promotions ? accentColor : '#f3f4f6',
                 color: !prefs.digest_promotions ? accentTextColor : '#6b7280',
@@ -238,7 +238,7 @@ export function PortalNotificationsSection({
             </button>
             <button
               onClick={() => handleToggle('digest_promotions', true)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
+              className="flex-1 py-2.5 text-sm font-medium transition-colors"
               style={{
                 backgroundColor: prefs.digest_promotions ? accentColor : '#f3f4f6',
                 color: prefs.digest_promotions ? accentTextColor : '#6b7280',
@@ -254,7 +254,7 @@ export function PortalNotificationsSection({
       <button
         onClick={handleSave}
         disabled={saving}
-        className="w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50"
+        className="w-full py-2.5 text-sm font-semibold transition-opacity disabled:opacity-50"
         style={{ backgroundColor: accentColor, color: accentTextColor }}
       >
         {saved ? 'Saved!' : saving ? 'Saving...' : 'Save Preferences'}

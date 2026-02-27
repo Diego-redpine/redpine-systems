@@ -58,7 +58,7 @@ const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   logoUrl: '',
   storeName: 'My Business',
   showStoreName: true,
-  tagline: 'Empowering your business',
+  tagline: '',
   backgroundColor: null,
   textColor: null,
   linkColor: null,
@@ -99,6 +99,10 @@ export default function PresetFooter({
   onClick,
 }: PresetFooterProps) {
   const footerConfig: FooterConfig = { ...DEFAULT_FOOTER_CONFIG, storeName: businessName, ...config };
+  // Default tagline uses business name if none provided
+  if (!footerConfig.tagline) {
+    footerConfig.tagline = `Welcome to ${footerConfig.storeName}`;
+  }
   const currentYear = new Date().getFullYear();
   const isDark = theme === 'dark';
   const isMobile = viewportMode === 'mobile' || viewportMode === 'tablet';

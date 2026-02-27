@@ -178,7 +178,7 @@ export function PortalBookingSection({
         </button>
 
         {/* Service Details */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white p-6 shadow-sm border border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">{selectedService.name}</h2>
           {selectedService.description && (
             <p className="text-sm text-gray-500 mt-2">{selectedService.description}</p>
@@ -188,14 +188,14 @@ export function PortalBookingSection({
             <span className="text-2xl font-bold text-gray-900">
               {formatCurrency(selectedService.price_cents)}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+            <span className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-600">
               {formatDuration(selectedService.duration_minutes)}
             </span>
           </div>
         </div>
 
         {/* Booking Form Placeholder */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white p-6 shadow-sm border border-gray-200">
           {bookingStep === 'details' && (
             <>
               <h3 className="text-sm font-semibold text-gray-900 mb-4">
@@ -211,7 +211,7 @@ export function PortalBookingSection({
                   <input
                     type="date"
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                    className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                     style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                   />
                 </div>
@@ -221,7 +221,7 @@ export function PortalBookingSection({
                     Preferred Time
                   </label>
                   <select
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white"
                     style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                   >
                     <option>9:00 AM</option>
@@ -238,13 +238,13 @@ export function PortalBookingSection({
 
                 {/* Saved Preferences Shortcut */}
                 {portalConfig.preferenceFields && portalConfig.preferenceFields.length > 0 && (
-                  <div className="bg-gray-50 rounded-xl p-3">
+                  <div className="bg-gray-50 p-3">
                     <p className="text-xs font-medium text-gray-500 mb-2">Your Preferences</p>
                     <div className="flex flex-wrap gap-1.5">
                       {portalConfig.preferenceFields.slice(0, 3).map(field => (
                         <span
                           key={field.key}
-                          className="px-2.5 py-1 rounded-lg text-xs font-medium"
+                          className="px-2.5 py-1 text-xs font-medium"
                           style={{ backgroundColor: `${accentColor}10`, color: accentColor }}
                         >
                           {field.label}
@@ -262,7 +262,7 @@ export function PortalBookingSection({
                     <textarea
                       rows={2}
                       placeholder="Any special requests..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none"
+                      className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none"
                       style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                     />
                   </div>
@@ -271,7 +271,7 @@ export function PortalBookingSection({
 
               <button
                 onClick={() => setBookingStep('confirm')}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold"
+                className="w-full py-2.5 text-sm font-semibold"
                 style={{ backgroundColor: accentColor, color: accentTextColor }}
               >
                 Continue to Confirm
@@ -283,7 +283,7 @@ export function PortalBookingSection({
             <>
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Confirm Booking</h3>
 
-              <div className="bg-gray-50 rounded-xl p-4 space-y-2 mb-6">
+              <div className="bg-gray-50 p-4 space-y-2 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Service</span>
                   <span className="font-medium text-gray-900">{selectedService.name}</span>
@@ -301,7 +301,7 @@ export function PortalBookingSection({
               </div>
 
               <button
-                className="w-full py-2.5 rounded-xl text-sm font-semibold"
+                className="w-full py-2.5 text-sm font-semibold"
                 style={{ backgroundColor: accentColor, color: accentTextColor }}
               >
                 Confirm & Pay
@@ -325,7 +325,7 @@ export function PortalBookingSection({
       {/* "Book Again" One-Tap Shortcut — Starbucks-style quick reorder */}
       {usualMatch && (
         <div
-          className="rounded-2xl p-5 shadow-sm border-2 relative overflow-hidden"
+          className="p-5 shadow-sm border-2 relative overflow-hidden"
           style={{ borderColor: accentColor, backgroundColor: `${accentColor}08` }}
         >
           {/* Decorative accent */}
@@ -352,7 +352,7 @@ export function PortalBookingSection({
             </div>
             <button
               onClick={() => handleSelectService(usualMatch)}
-              className="px-5 py-3 rounded-xl text-sm font-bold flex-shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+              className="px-5 py-3 text-sm font-bold flex-shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
               style={{ backgroundColor: accentColor, color: accentTextColor }}
             >
               {portalConfig.primaryActionLabel}
@@ -370,7 +370,7 @@ export function PortalBookingSection({
               <button
                 key={service.id}
                 onClick={() => handleSelectService(service)}
-                className="flex-shrink-0 bg-white rounded-xl border border-gray-200 p-4 text-left hover:border-gray-300 transition-colors min-w-[160px]"
+                className="flex-shrink-0 bg-white border border-gray-200 p-4 text-left hover:border-gray-300 transition-colors min-w-[160px]"
               >
                 <p className="text-sm font-medium text-gray-900 truncate">{service.name}</p>
                 <p className="text-xs text-gray-500 mt-1">{formatCurrency(service.price_cents)}</p>
@@ -390,14 +390,14 @@ export function PortalBookingSection({
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search services..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+          className="w-full pl-10 pr-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
           style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
         />
       </div>
 
       {/* Service List */}
       {filteredServices.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+        <div className="bg-white border border-gray-200 p-8 text-center">
           <p className="text-gray-500">{modeLabels.empty}</p>
         </div>
       ) : (
@@ -412,7 +412,7 @@ export function PortalBookingSection({
                   <button
                     key={service.id}
                     onClick={() => handleSelectService(service)}
-                    className="w-full bg-white rounded-2xl border border-gray-200 p-4 text-left hover:border-gray-300 transition-colors"
+                    className="w-full bg-white border border-gray-200 p-4 text-left hover:border-gray-300 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="min-w-0 flex-1">
@@ -432,7 +432,7 @@ export function PortalBookingSection({
                         </div>
                       </div>
                       <span
-                        className="px-3 py-1.5 rounded-xl text-xs font-semibold flex-shrink-0 ml-3"
+                        className="px-3 py-1.5 text-xs font-semibold flex-shrink-0 ml-3"
                         style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
                       >
                         {modeLabels.action}

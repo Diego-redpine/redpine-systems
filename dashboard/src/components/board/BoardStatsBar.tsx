@@ -35,7 +35,7 @@ export function BoardStatsBar({ items, accentColor = '#3B82F6', tvMode = false }
         return (
           <div
             key={card.label}
-            className="rounded-xl p-5 shadow-sm border"
+            className="p-5 shadow-sm border"
             style={{
               backgroundColor: cardBg,
               borderColor: tvMode ? 'rgba(255,255,255,0.1)' : isFeatured ? 'transparent' : '#E5E7EB',

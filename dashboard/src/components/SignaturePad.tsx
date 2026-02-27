@@ -158,7 +158,7 @@ export default function SignaturePad({
   return (
     <div className="flex flex-col gap-2">
       <div
-        className="relative border-2 border-dashed border-gray-300 rounded-xl overflow-hidden bg-white"
+        className="relative border-2 border-dashed border-gray-300 overflow-hidden bg-white"
         style={{ width, height }}
       >
         <canvas
@@ -179,7 +179,7 @@ export default function SignaturePad({
           <button
             type="button"
             onClick={clear}
-            className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+            className="px-3 py-1.5 text-sm border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
           >
             Clear
           </button>
@@ -188,7 +188,7 @@ export default function SignaturePad({
               type="button"
               onClick={save}
               disabled={!hasContent}
-              className="px-3 py-1.5 text-sm rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 text-sm bg-gray-900 text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               Save Signature
             </button>

@@ -124,7 +124,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
                 <button
                   key={p.value}
                   onClick={() => setPlatform(p.value)}
-                  className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                  className="px-3 py-1.5 text-xs font-semibold transition-all"
                   style={{
                     backgroundColor: selected ? p.color : 'transparent',
                     color: selected ? '#FFFFFF' : textColor,
@@ -146,7 +146,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
             value={postTitle}
             onChange={(e) => setPostTitle(e.target.value)}
             placeholder="Give this post a name (internal only)"
-            className="w-full px-3 py-2 rounded-lg text-sm"
+            className="w-full px-3 py-2 text-sm"
             style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, color: headingColor }}
           />
         </div>
@@ -164,7 +164,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write your post..."
             rows={5}
-            className="w-full px-3 py-2 rounded-lg text-sm resize-none"
+            className="w-full px-3 py-2 text-sm resize-none"
             style={{
               border: `1px solid ${isOverLimit ? '#EF4444' : borderColor}`,
               backgroundColor: cardBg,
@@ -180,7 +180,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
             {hashtags.map(tag => (
               <span
                 key={tag}
-                className="px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+                className="px-2 py-1 text-xs font-medium flex items-center gap-1"
                 style={{ backgroundColor: `${currentPlatform?.color || buttonBg}20`, color: currentPlatform?.color || buttonBg }}
               >
                 {tag}
@@ -195,7 +195,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
               onChange={(e) => setHashtagInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && hashtagInput.trim()) { e.preventDefault(); addHashtag(hashtagInput.trim()); } }}
               placeholder="Add a hashtag..."
-              className="flex-1 px-3 py-1.5 rounded-lg text-sm"
+              className="flex-1 px-3 py-1.5 text-sm"
               style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, color: headingColor }}
             />
           </div>
@@ -205,7 +205,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
                 <button
                   key={s}
                   onClick={() => addHashtag(s)}
-                  className="px-2 py-0.5 rounded-full text-xs transition-opacity hover:opacity-70"
+                  className="px-2 py-0.5 text-xs transition-opacity hover:opacity-70"
                   style={{ backgroundColor: `${borderColor}80`, color: textColor }}
                 >
                   {s}
@@ -221,7 +221,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
           <div className="flex gap-3 mb-3">
             <button
               onClick={() => setStatus('draft')}
-              className="px-4 py-2 rounded-lg text-sm font-medium flex-1"
+              className="px-4 py-2 text-sm font-medium flex-1"
               style={{
                 backgroundColor: status === 'draft' ? buttonBg : 'transparent',
                 color: status === 'draft' ? buttonText : textColor,
@@ -232,7 +232,7 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
             </button>
             <button
               onClick={() => setStatus('scheduled')}
-              className="px-4 py-2 rounded-lg text-sm font-medium flex-1"
+              className="px-4 py-2 text-sm font-medium flex-1"
               style={{
                 backgroundColor: status === 'scheduled' ? buttonBg : 'transparent',
                 color: status === 'scheduled' ? buttonText : textColor,
@@ -249,14 +249,14 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
                 type="date"
                 value={scheduledDate}
                 onChange={(e) => setScheduledDate(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-lg text-sm"
+                className="flex-1 px-3 py-2 text-sm"
                 style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, color: headingColor }}
               />
               <input
                 type="time"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
-                className="px-3 py-2 rounded-lg text-sm"
+                className="px-3 py-2 text-sm"
                 style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, color: headingColor }}
               />
             </div>
@@ -264,9 +264,9 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
         </div>
 
         {/* Preview */}
-        <div className="rounded-xl p-4" style={{ backgroundColor: `${currentPlatform?.color || buttonBg}08`, border: `1px solid ${borderColor}` }}>
+        <div className="p-4" style={{ backgroundColor: `${currentPlatform?.color || buttonBg}08`, border: `1px solid ${borderColor}` }}>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 rounded-full" style={{ backgroundColor: currentPlatform?.color || '#999' }} />
+            <div className="w-6 h-6 " style={{ backgroundColor: currentPlatform?.color || '#999' }} />
             <span className="text-xs font-semibold" style={{ color: headingColor }}>{currentPlatform?.label} Preview</span>
           </div>
           <p className="text-sm whitespace-pre-wrap" style={{ color: headingColor }}>
@@ -282,13 +282,13 @@ export default function SocialMediaComposer({ isOpen, onClose, onSave, configCol
 
       {/* Actions */}
       <div className="flex justify-between mt-6">
-        <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium" style={{ color: textColor }}>
+        <button onClick={onClose} className="px-4 py-2 text-sm font-medium" style={{ color: textColor }}>
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={!postTitle.trim() || isOverLimit || isSaving || (status === 'scheduled' && !scheduledDate)}
-          className="px-6 py-2 rounded-lg text-sm font-semibold disabled:opacity-40 transition-opacity"
+          className="px-6 py-2 text-sm font-semibold disabled:opacity-40 transition-opacity"
           style={{ backgroundColor: buttonBg, color: buttonText }}
         >
           {isSaving ? 'Saving...' : status === 'scheduled' ? 'Schedule Post' : 'Save Draft'}

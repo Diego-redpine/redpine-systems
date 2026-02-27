@@ -182,7 +182,7 @@ export function PortalReviewsSection({
     <div className="space-y-6">
       {/* Leave a Review Card */}
       {!hasRecentReview && !submitted && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white p-6 shadow-sm border border-gray-200">
           <h2 className="text-lg font-bold text-gray-900 mb-1">
             {portalConfig.reviewPrompt}
           </h2>
@@ -193,7 +193,7 @@ export function PortalReviewsSection({
           {/* Loyalty nudge */}
           {loyaltyActive && (
             <div
-              className="mb-4 p-3 rounded-xl text-sm font-medium"
+              className="mb-4 p-3 text-sm font-medium"
               style={{ backgroundColor: `${accentColor}10`, color: accentColor }}
             >
               Earn {loyaltyPointsForReview} points for leaving a review!
@@ -225,14 +225,14 @@ export function PortalReviewsSection({
             onChange={e => setComment(e.target.value)}
             placeholder="Tell us more about your experience (optional)..."
             rows={3}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none mb-4"
+            className="w-full px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none mb-4"
             style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
           />
 
           <button
             onClick={handleSubmitReview}
             disabled={rating === 0 || submitting}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50"
+            className="w-full py-2.5 text-sm font-semibold transition-opacity disabled:opacity-50"
             style={{ backgroundColor: accentColor, color: accentTextColor }}
           >
             {submitting ? 'Submitting...' : 'Submit Review'}
@@ -242,10 +242,10 @@ export function PortalReviewsSection({
 
       {/* Gate Result (after submission) */}
       {submitted && gateResult && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white p-6 shadow-sm border border-gray-200 text-center">
           {gateResult.meets_threshold ? (
             <>
-              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 bg-green-100 flex items-center justify-center mx-auto mb-4">
                 <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
@@ -263,7 +263,7 @@ export function PortalReviewsSection({
                     href={PLATFORM_LINKS[platform] || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-opacity"
+                    className="px-4 py-2.5 text-sm font-semibold transition-opacity"
                     style={{ backgroundColor: accentColor, color: accentTextColor }}
                   >
                     Leave a {platform.charAt(0).toUpperCase() + platform.slice(1)} Review
@@ -273,7 +273,7 @@ export function PortalReviewsSection({
             </>
           ) : (
             <>
-              <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 bg-blue-100 flex items-center justify-center mx-auto mb-4">
                 <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                 </svg>
@@ -291,8 +291,8 @@ export function PortalReviewsSection({
 
       {/* Submitted without gate */}
       {submitted && !gateResult && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 text-center">
-          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white p-6 shadow-sm border border-gray-200 text-center">
+          <div className="w-14 h-14 bg-green-100 flex items-center justify-center mx-auto mb-4">
             <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
             </svg>
@@ -314,7 +314,7 @@ export function PortalReviewsSection({
             {reviews.map(review => (
               <div
                 key={review.id}
-                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200"
+                className="bg-white p-5 shadow-sm border border-gray-200"
               >
                 <div className="flex items-center justify-between mb-2">
                   <StarPicker
@@ -361,7 +361,7 @@ export function PortalReviewsSection({
 
       {/* Empty state */}
       {reviews.length === 0 && !submitted && hasRecentReview && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+        <div className="bg-white border border-gray-200 p-8 text-center">
           <p className="text-gray-500">No reviews yet</p>
         </div>
       )}

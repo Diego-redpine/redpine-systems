@@ -56,7 +56,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const fetchConfig = useCallback(async () => {
     try {
@@ -172,7 +172,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
   if (loading) {
     return (
       <div
-        className="rounded-2xl p-12 text-center"
+        className="p-12 text-center"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <p style={{ color: textMuted }}>Loading gate settings...</p>
@@ -184,7 +184,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
     <div className="space-y-4">
       {/* Main gate card */}
       <div
-        className="rounded-2xl p-6"
+        className="p-6"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         {/* Header with toggle */}
@@ -201,13 +201,13 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
           {/* Toggle switch */}
           <button
             onClick={() => updateConfig({ enabled: !config.enabled })}
-            className="relative w-14 h-7 rounded-full transition-colors"
+            className="relative w-14 h-7 transition-colors"
             style={{
               backgroundColor: config.enabled ? buttonColor : '#D1D5DB',
             }}
           >
             <span
-              className="absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform"
+              className="absolute top-0.5 w-6 h-6 bg-white shadow transition-transform"
               style={{
                 left: config.enabled ? '30px' : '2px',
               }}
@@ -218,7 +218,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
         {/* Gate status description */}
         {!config.enabled ? (
           <div
-            className="rounded-xl p-4"
+            className="p-4"
             style={{
               backgroundColor: colors.background || '#F9FAFB',
               border: `1px solid ${borderColor}`,
@@ -231,7 +231,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
         ) : (
           <>
             <div
-              className="rounded-xl p-4 mb-4"
+              className="p-4 mb-4"
               style={{
                 backgroundColor: `${buttonColor}05`,
                 border: `1px solid ${buttonColor}15`,
@@ -274,7 +274,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
                   <label className="text-sm font-medium block mb-2" style={{ color: textMain }}>
                     Route to public review if rating is{' '}
                     <span
-                      className="inline-block px-2 py-0.5 rounded-md text-sm font-bold"
+                      className="inline-block px-2 py-0.5 text-sm font-bold"
                       style={{
                         backgroundColor: `${buttonColor}10`,
                         color: buttonColor,
@@ -369,7 +369,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
                             value={config.positive_platforms[key].url}
                             onChange={(e) => updatePlatformUrl(key, e.target.value)}
                             placeholder={`Your ${label} review page URL`}
-                            className="w-full ml-8 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                            className="w-full ml-8 px-3 py-2 text-sm focus:outline-none focus:ring-2"
                             style={{
                               width: 'calc(100% - 2rem)',
                               border: `1px solid ${borderColor}`,
@@ -397,7 +397,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
                       updateConfig({ negative_message: e.target.value })
                     }
                     rows={3}
-                    className="w-full rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2"
+                    className="w-full p-3 text-sm resize-none focus:outline-none focus:ring-2"
                     style={{
                       border: `1px solid ${borderColor}`,
                       color: textMain,
@@ -419,7 +419,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
                       onClick={() =>
                         updateConfig({ notify_team: !config.notify_team })
                       }
-                      className="relative w-11 h-6 rounded-full transition-colors"
+                      className="relative w-11 h-6 transition-colors"
                       style={{
                         backgroundColor: config.notify_team
                           ? buttonColor
@@ -427,7 +427,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
                       }}
                     >
                       <span
-                        className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+                        className="absolute top-0.5 w-5 h-5 bg-white shadow transition-transform"
                         style={{
                           left: config.notify_team ? '22px' : '2px',
                         }}
@@ -497,7 +497,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2.5 rounded-xl text-sm font-medium transition-opacity disabled:opacity-50"
+            className="px-5 py-2.5 text-sm font-medium transition-opacity disabled:opacity-50"
             style={{
               backgroundColor: buttonColor,
               color: buttonText,
@@ -515,7 +515,7 @@ export default function ReviewGate({ colors }: ReviewGateProps) {
 
       {/* Info card about gate activation */}
       <div
-        className="rounded-2xl p-5"
+        className="p-5"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h4 className="text-sm font-semibold mb-2" style={{ color: textMain }}>

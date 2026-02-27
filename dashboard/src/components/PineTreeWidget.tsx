@@ -206,7 +206,7 @@ export default function PineTreeWidget({ colors }: PineTreeWidgetProps) {
       {/* Expanded panel */}
       {isExpanded && (
         <div
-          className="fixed bottom-20 right-14 z-50 w-72 rounded-2xl shadow-xl overflow-hidden"
+          className="fixed bottom-20 right-14 z-50 w-72 shadow-xl overflow-hidden"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           {/* Header */}
@@ -226,7 +226,7 @@ export default function PineTreeWidget({ colors }: PineTreeWidgetProps) {
                 </div>
                 <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: `${borderColor}80` }}>
                   <div
-                    className="h-full rounded-full transition-all duration-500"
+                    className="h-full transition-all duration-500"
                     style={{ width: `${growth.progress_to_next}%`, backgroundColor: accentColor }}
                   />
                 </div>
@@ -266,7 +266,7 @@ export default function PineTreeWidget({ colors }: PineTreeWidgetProps) {
                   {growth.features_used.map(f => (
                     <span
                       key={f}
-                      className="px-2 py-0.5 rounded-full text-xs capitalize"
+                      className="px-2 py-0.5 text-xs capitalize"
                       style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
                     >
                       {f}

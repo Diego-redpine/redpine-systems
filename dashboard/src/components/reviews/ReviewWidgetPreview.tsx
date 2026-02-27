@@ -81,7 +81,7 @@ function ReviewCard({
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const initials = review.customer
     .split(' ')
@@ -92,7 +92,7 @@ function ReviewCard({
 
   return (
     <div
-      className={`rounded-xl ${compact ? 'p-3' : 'p-4'}`}
+      className={`${compact ? 'p-3' : 'p-4'}`}
       style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
     >
       <div className="flex items-start gap-3">
@@ -137,7 +137,7 @@ export default function ReviewWidgetPreview({
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   // Filter reviews based on config
   const allReviews = externalReviews || DEMO_REVIEWS;
@@ -170,7 +170,7 @@ export default function ReviewWidgetPreview({
   if (filteredReviews.length === 0) {
     return (
       <div
-        className="rounded-2xl p-8 text-center"
+        className="p-8 text-center"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <p className="text-sm" style={{ color: textMuted }}>
@@ -228,7 +228,7 @@ export default function ReviewWidgetPreview({
       <div>
         {aiSummary}
         <div
-          className="rounded-2xl p-6 text-center"
+          className="p-6 text-center"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           <div className="flex justify-center mb-3">
@@ -316,14 +316,14 @@ export default function ReviewWidgetPreview({
         {aiSummary}
         <div className="flex justify-center">
           <div
-            className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl shadow-sm"
+            className="inline-flex items-center gap-3 px-5 py-3 shadow-sm"
             style={{
               backgroundColor: cardBg,
               border: `1px solid ${borderColor}`,
             }}
           >
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              className="w-10 h-10 flex items-center justify-center"
               style={{ backgroundColor: `${buttonColor}10` }}
             >
               <svg

@@ -64,7 +64,7 @@ export default function FreelancerProfileModal({ isOpen, onClose, freelancer, co
   const [activeTab, setActiveTab] = useState<'portfolio' | 'reviews'>('portfolio');
 
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
@@ -113,7 +113,7 @@ export default function FreelancerProfileModal({ isOpen, onClose, freelancer, co
           { label: 'Response', value: `${freelancer.response_time_hours}h` },
           { label: 'Member Since', value: new Date(freelancer.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) },
         ].map(stat => (
-          <div key={stat.label} className="text-center px-2 py-3 rounded-xl" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
+          <div key={stat.label} className="text-center px-2 py-3" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
             <p className="text-base font-bold" style={{ color: textMain }}>{stat.value}</p>
             <p className="text-[10px] font-medium" style={{ color: textMuted }}>{stat.label}</p>
           </div>
@@ -126,7 +126,7 @@ export default function FreelancerProfileModal({ isOpen, onClose, freelancer, co
       {/* Skills */}
       <div className="flex flex-wrap gap-1.5 mb-5">
         {freelancer.skills.map(skill => (
-          <span key={skill} className="px-2.5 py-1 text-xs font-medium rounded-full" style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
+          <span key={skill} className="px-2.5 py-1 text-xs font-medium " style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
             {skill}
           </span>
         ))}
@@ -171,7 +171,7 @@ export default function FreelancerProfileModal({ isOpen, onClose, freelancer, co
         <div className="grid grid-cols-3 gap-2 mb-5">
           {portfolio.map((item, i) => (
             <div key={i} className="group relative">
-              <div className={`aspect-square rounded-xl bg-gradient-to-br ${getPortfolioColor(i)} flex items-center justify-center overflow-hidden`}>
+              <div className={`aspect-square bg-gradient-to-br ${getPortfolioColor(i)} flex items-center justify-center overflow-hidden`}>
                 {item.image_url ? (
                   <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
                 ) : (
@@ -191,7 +191,7 @@ export default function FreelancerProfileModal({ isOpen, onClose, freelancer, co
       {activeTab === 'reviews' && (
         <div className="space-y-3 mb-5">
           {DEMO_REVIEWS.map((review, i) => (
-            <div key={review.id} className="p-3 rounded-xl" style={{ backgroundColor: `${buttonColor}04`, border: `1px solid ${borderColor}` }}>
+            <div key={review.id} className="p-3" style={{ backgroundColor: `${buttonColor}04`, border: `1px solid ${borderColor}` }}>
               <div className="flex items-center gap-2 mb-1.5">
                 <FreelancerAvatar name={REVIEWER_NAMES[i]} size={24} />
                 <span className="text-xs font-medium" style={{ color: textMain }}>{REVIEWER_NAMES[i]}</span>
@@ -210,7 +210,7 @@ export default function FreelancerProfileModal({ isOpen, onClose, freelancer, co
       <div className="flex items-center gap-3 pt-4 border-t" style={{ borderColor }}>
         <button
           onClick={onClose}
-          className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl border transition-colors hover:bg-gray-50"
+          className="flex-1 px-4 py-2.5 text-sm font-medium border transition-colors hover:bg-gray-50"
           style={{ borderColor, color: textMain }}
         >
           Close
@@ -218,7 +218,7 @@ export default function FreelancerProfileModal({ isOpen, onClose, freelancer, co
         {onHire && (
           <button
             onClick={onHire}
-            className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition-opacity hover:opacity-90"
+            className="flex-1 px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             Hire Me

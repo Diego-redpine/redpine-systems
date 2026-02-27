@@ -114,7 +114,7 @@ function StepDots({
       {Array.from({ length: total }, (_, i) => (
         <div
           key={i}
-          className="w-2.5 h-2.5 rounded-full transition-colors"
+          className="w-2.5 h-2.5 transition-colors"
           style={{
             backgroundColor: i <= current ? buttonColor : '#D1D5DB',
           }}
@@ -326,7 +326,7 @@ export default function NotionImport({
           </p>
           <a
             href="/api/integrations/notion/connect"
-            className="px-5 py-2.5 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
+            className="px-5 py-2.5 text-sm font-medium transition-opacity hover:opacity-90"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             Connect Notion
@@ -362,7 +362,7 @@ export default function NotionImport({
           <button
             key={db.id}
             onClick={() => handleSelectDatabase(db)}
-            className="w-full text-left p-4 rounded-xl border transition-colors hover:shadow-sm"
+            className="w-full text-left p-4 border transition-colors hover:shadow-sm"
             style={{
               borderColor,
               backgroundColor: colors.cards || '#FFFFFF',
@@ -394,7 +394,7 @@ export default function NotionImport({
           {mappings.map((mapping, idx) => (
             <div
               key={mapping.notionProperty}
-              className="flex items-center gap-3 p-3 rounded-xl border"
+              className="flex items-center gap-3 p-3 border"
               style={{ borderColor }}
             >
               {/* Notion property name */}
@@ -433,7 +433,7 @@ export default function NotionImport({
               <select
                 value={mapping.entityField}
                 onChange={(e) => handleMappingChange(idx, e.target.value)}
-                className="flex-1 min-w-0 text-sm rounded-lg border px-2 py-1.5 bg-transparent"
+                className="flex-1 min-w-0 text-sm border px-2 py-1.5 bg-transparent"
                 style={{ borderColor, color: textColor }}
               >
                 <option value="skip">-- Skip --</option>
@@ -450,7 +450,7 @@ export default function NotionImport({
         <div className="flex items-center justify-between mt-4 pt-3 border-t" style={{ borderColor }}>
           <button
             onClick={() => setStep(0)}
-            className="text-sm px-4 py-2 rounded-lg"
+            className="text-sm px-4 py-2"
             style={{ color: textColor, opacity: 0.7 }}
           >
             Back
@@ -462,7 +462,7 @@ export default function NotionImport({
             <button
               onClick={handleFetchPreview}
               disabled={activeMappingCount === 0 || rowsLoading}
-              className="px-5 py-2 rounded-xl text-sm font-medium transition-opacity disabled:opacity-40"
+              className="px-5 py-2 text-sm font-medium transition-opacity disabled:opacity-40"
               style={{ backgroundColor: buttonColor, color: buttonText }}
             >
               {rowsLoading ? 'Loading...' : 'Next'}
@@ -483,7 +483,7 @@ export default function NotionImport({
           Preview of first {Math.min(5, previewRows.length)} rows ({notionRows.length} total):
         </p>
 
-        <div className="overflow-x-auto rounded-xl border" style={{ borderColor }}>
+        <div className="overflow-x-auto border" style={{ borderColor }}>
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderColor }}>
@@ -532,7 +532,7 @@ export default function NotionImport({
         <div className="flex items-center justify-between mt-4 pt-3 border-t" style={{ borderColor }}>
           <button
             onClick={() => setStep(1)}
-            className="text-sm px-4 py-2 rounded-lg"
+            className="text-sm px-4 py-2"
             style={{ color: textColor, opacity: 0.7 }}
           >
             Back
@@ -540,7 +540,7 @@ export default function NotionImport({
           <button
             onClick={handleImport}
             disabled={notionRows.length === 0}
-            className="px-5 py-2 rounded-xl text-sm font-medium transition-opacity disabled:opacity-40"
+            className="px-5 py-2 text-sm font-medium transition-opacity disabled:opacity-40"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             Import {notionRows.length} row{notionRows.length !== 1 ? 's' : ''}
@@ -592,7 +592,7 @@ export default function NotionImport({
           </div>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl text-sm font-medium transition-opacity hover:opacity-90"
+            className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             Done
@@ -625,7 +625,7 @@ export default function NotionImport({
           style={{ backgroundColor: `${buttonColor}20` }}
         >
           <div
-            className="h-full rounded-full transition-all duration-300"
+            className="h-full transition-all duration-300"
             style={{
               width: `${percent}%`,
               backgroundColor: buttonColor,
@@ -657,7 +657,7 @@ export default function NotionImport({
       <StepDots current={step} total={4} buttonColor={buttonColor} />
 
       {error && (
-        <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200">
           <p className="text-xs text-red-600">{error}</p>
         </div>
       )}

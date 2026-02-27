@@ -164,7 +164,7 @@ export default function LinkedRecords({
           {links.map(link => (
             <span
               key={link.id}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium "
               style={{
                 backgroundColor: configColors.background || '#F3F4F6',
                 color: textColor,
@@ -177,7 +177,7 @@ export default function LinkedRecords({
               <button
                 onClick={() => handleUnlink(link.id)}
                 className="ml-0.5 hover:opacity-70"
-                style={{ color: '#9CA3AF' }}
+                style={{ color: configColors.icons || '#9CA3AF' }}
               >
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -189,7 +189,7 @@ export default function LinkedRecords({
       )}
 
       {links.length === 0 && !isAdding && (
-        <p className="text-xs" style={{ color: '#9CA3AF' }}>
+        <p className="text-xs" style={{ color: configColors.icons || '#9CA3AF' }}>
           No linked records yet
         </p>
       )}
@@ -197,7 +197,7 @@ export default function LinkedRecords({
       {/* Add link form */}
       {isAdding && (
         <div
-          className="p-3 rounded-lg border space-y-3"
+          className="p-3 border space-y-3"
           style={{ borderColor }}
         >
           {/* Entity type selector */}
@@ -208,7 +208,7 @@ export default function LinkedRecords({
               setSearchQuery('');
               setSearchResults([]);
             }}
-            className="w-full px-3 py-2 text-sm rounded-lg border"
+            className="w-full px-3 py-2 text-sm border"
             style={{
               borderColor,
               backgroundColor: configColors.background || '#F9FAFB',
@@ -230,7 +230,7 @@ export default function LinkedRecords({
               placeholder={`Search ${selectedEntity}...`}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border"
+              className="w-full px-3 py-2 text-sm border"
               style={{
                 borderColor,
                 backgroundColor: configColors.background || '#F9FAFB',
@@ -247,7 +247,7 @@ export default function LinkedRecords({
                 <button
                   key={String(result.id)}
                   onClick={() => handleLink(result)}
-                  className="w-full text-left px-3 py-2 text-sm rounded-lg hover:opacity-80 transition-opacity"
+                  className="w-full text-left px-3 py-2 text-sm hover:opacity-80 transition-opacity"
                   style={{
                     backgroundColor: configColors.background || '#F9FAFB',
                     color: textColor,
@@ -260,7 +260,7 @@ export default function LinkedRecords({
           )}
 
           {isSearching && (
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>Searching...</p>
+            <p className="text-xs" style={{ color: configColors.icons || '#9CA3AF' }}>Searching...</p>
           )}
 
           <button
@@ -270,7 +270,7 @@ export default function LinkedRecords({
               setSearchQuery('');
             }}
             className="text-xs hover:opacity-70 transition-opacity"
-            style={{ color: '#9CA3AF' }}
+            style={{ color: configColors.icons || '#9CA3AF' }}
           >
             Cancel
           </button>

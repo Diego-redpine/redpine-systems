@@ -178,7 +178,7 @@ export default function QuoteBuilder({
       configColors={configColors}
       headerRight={
         <span
-          className="px-3 py-1 rounded-full text-xs font-medium"
+          className="px-3 py-1 text-xs font-medium"
           style={{
             backgroundColor: statusConfig.color,
             color: getContrastText(statusConfig.color),
@@ -230,7 +230,7 @@ export default function QuoteBuilder({
                     placeholder="Item description"
                     value={item.description}
                     onChange={(e) => updateLineItem(index, 'description', e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1"
+                    className="w-full px-3 py-2 border text-sm focus:outline-none focus:ring-1"
                     style={{
                       ...inputStyle,
                       // @ts-expect-error ring color via style
@@ -244,7 +244,7 @@ export default function QuoteBuilder({
                     min={1}
                     value={item.quantity}
                     onChange={(e) => updateLineItem(index, 'quantity', e.target.value)}
-                    className="w-full px-2 py-2 rounded-lg border text-sm text-center focus:outline-none focus:ring-1"
+                    className="w-full px-2 py-2 border text-sm text-center focus:outline-none focus:ring-1"
                     style={inputStyle}
                   />
 
@@ -263,7 +263,7 @@ export default function QuoteBuilder({
                       placeholder="0.00"
                       value={item.unit_price_cents > 0 ? centsToDollars(item.unit_price_cents) : ''}
                       onChange={(e) => updateLineItem(index, 'unit_price_cents', e.target.value)}
-                      className="w-full pl-6 pr-2 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1"
+                      className="w-full pl-6 pr-2 py-2 border text-sm focus:outline-none focus:ring-1"
                       style={inputStyle}
                     />
                   </div>
@@ -281,7 +281,7 @@ export default function QuoteBuilder({
                     type="button"
                     onClick={() => removeLineItem(index)}
                     disabled={lineItems.length <= 1}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:opacity-70 disabled:opacity-20"
+                    className="w-7 h-7 flex items-center justify-center transition-colors hover:opacity-70 disabled:opacity-20"
                     style={{ color: textColor }}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -297,7 +297,7 @@ export default function QuoteBuilder({
           <button
             type="button"
             onClick={addLineItem}
-            className="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors hover:opacity-80"
+            className="mt-3 flex items-center gap-1.5 px-3 py-1.5 border text-sm font-medium transition-colors hover:opacity-80"
             style={{
               borderColor: borderColor,
               color: buttonBg,
@@ -313,7 +313,7 @@ export default function QuoteBuilder({
 
         {/* Totals Section */}
         <div
-          className="rounded-xl p-4 space-y-2"
+          className="p-4 space-y-2"
           style={{ backgroundColor: bgColor, border: `1px solid ${borderColor}` }}
         >
           {/* Subtotal */}
@@ -340,7 +340,7 @@ export default function QuoteBuilder({
                   placeholder="0"
                   value={taxPercent}
                   onChange={(e) => setTaxPercent(e.target.value)}
-                  className="w-full pl-2 pr-6 py-1 rounded-md border text-xs text-right focus:outline-none focus:ring-1"
+                  className="w-full pl-2 pr-6 py-1 border text-xs text-right focus:outline-none focus:ring-1"
                   style={inputStyle}
                 />
                 <span
@@ -382,7 +382,7 @@ export default function QuoteBuilder({
             type="date"
             value={validUntil}
             onChange={(e) => setValidUntil(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1"
+            className="w-full px-3 py-2 border text-sm focus:outline-none focus:ring-1"
             style={inputStyle}
           />
         </div>
@@ -400,7 +400,7 @@ export default function QuoteBuilder({
             placeholder="Additional notes, terms, or conditions..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border text-sm resize-none focus:outline-none focus:ring-1"
+            className="w-full px-3 py-2 border text-sm resize-none focus:outline-none focus:ring-1"
             style={inputStyle}
           />
         </div>
@@ -416,7 +416,7 @@ export default function QuoteBuilder({
               <button
                 type="button"
                 onClick={handleConvertToInvoice}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-medium transition-colors hover:opacity-80"
+                className="flex items-center gap-1.5 px-4 py-2 border text-sm font-medium transition-colors hover:opacity-80"
                 style={{
                   borderColor: borderColor,
                   color: textColor,
@@ -437,7 +437,7 @@ export default function QuoteBuilder({
             <button
               type="button"
               disabled
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-medium transition-colors opacity-50 cursor-not-allowed"
+              className="flex items-center gap-1.5 px-4 py-2 border text-sm font-medium transition-colors opacity-50 cursor-not-allowed"
               style={{
                 borderColor: borderColor,
                 color: textColor,
@@ -456,7 +456,7 @@ export default function QuoteBuilder({
               type="button"
               onClick={handleSave}
               disabled={isSaving || !hasValidItems}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium transition-colors hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: buttonBg,
                 color: buttonText,

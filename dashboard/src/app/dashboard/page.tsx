@@ -16,6 +16,7 @@ import { DataModeProvider } from '@/providers/DataModeProvider';
 import { useDataMode } from '@/hooks/useDataMode';
 import { getContrastText } from '@/lib/view-colors';
 import { useUserRole } from '@/hooks/useUserRole';
+import { FONT_OPTIONS, loadExtraFonts } from '@/lib/fonts';
 
 // Convert color object to ColorItem array
 function colorsObjectToArray(colors: DashboardColors): ColorItem[] {
@@ -90,6 +91,7 @@ function DashboardPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [toolbarSide, setToolbarSide] = useState<'left' | 'right'>('left');
+  const [logo, setLogo] = useState<string | null>(null);
 
   // Onboarding tour state
   const [showWebsitePreview, setShowWebsitePreview] = useState(false);
@@ -177,6 +179,25 @@ function DashboardPageContent() {
             applyColorsToDocument(mergedColors);
           }
         }
+        // Fetch primary logo from Brand Kit gallery album
+        try {
+          const albumsRes = await fetch('/api/gallery/albums');
+          if (albumsRes.ok) {
+            const { albums } = await albumsRes.json();
+            const brandAlbum = albums?.find((a: { name: string }) => a.name === 'Brand Kit');
+            if (brandAlbum) {
+              const imagesRes = await fetch(`/api/gallery?album_id=${brandAlbum.id}`);
+              if (imagesRes.ok) {
+                const { images } = await imagesRes.json();
+                if (images && images.length > 0) {
+                  setLogo(images[0].image_url);
+                }
+              }
+            }
+          }
+        } catch {
+          // Logo fetch is non-critical
+        }
       } catch (error) {
         console.error('Failed to fetch data:', error);
       }
@@ -223,6 +244,18 @@ function DashboardPageContent() {
     return (config?.tabs || []).map(t => ({ id: t.id, label: t.label }));
   }, [config?.tabs]);
 
+  // Resolve heading font name → CSS font-family
+  const headingFontFamily = useMemo(() => {
+    if (!config?.headingFont) return undefined;
+    const match = FONT_OPTIONS.find(f => f.name === config.headingFont);
+    return match?.family;
+  }, [config?.headingFont]);
+
+  // Preload extra Google Fonts on mount so they're ready when config arrives
+  useEffect(() => {
+    loadExtraFonts();
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-white">
@@ -234,7 +267,7 @@ function DashboardPageContent() {
             className="mx-auto mb-8"
             style={{ height: '10rem', animation: 'heartbeat 1.2s ease-in-out infinite' }}
           />
-          <p className="text-xl font-semibold text-gray-900">Loading<span className="loading-dots" /></p>
+          <p className="text-xl font-semibold text-gray-900" style={{ fontFamily: "'Fira Code', monospace" }}>Loading<span className="loading-dots" /></p>
           <style>{`
             @keyframes heartbeat {
               0% { transform: scale(1); }
@@ -275,7 +308,11 @@ function DashboardPageContent() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           colors={colors}
+          logo={logo}
+          onLogoChange={setLogo}
           businessName={config?.businessName}
+          configId={configId}
+          headingFont={headingFontFamily}
         />
 
         <DashboardContent
@@ -290,6 +327,8 @@ function DashboardPageContent() {
           onColorsChange={handleColorsChange}
           tabs={config?.tabs}
           onTabsReorder={handleTabsChange}
+          configHeadingFont={config?.headingFont}
+          configBodyFont={config?.bodyFont}
         />
 
         <ToolsStrip

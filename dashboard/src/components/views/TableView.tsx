@@ -164,7 +164,7 @@ export default function TableView({
 
   if (columns.length === 0 && data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full rounded-2xl shadow-sm p-12" style={{ backgroundColor: cardBg, color: textColor }}>
+      <div className="flex items-center justify-center h-full shadow-sm p-12" style={{ backgroundColor: cardBg, color: textColor }}>
         No data to display
       </div>
     );
@@ -172,7 +172,7 @@ export default function TableView({
 
   return (
     <div className="relative h-full">
-      <div className="h-full overflow-auto rounded-2xl shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="h-full overflow-auto shadow-sm" style={{ backgroundColor: cardBg }}>
         <table className="w-full min-w-max">
           <thead className="sticky top-0" style={{ backgroundColor: cardBg }}>
             <tr className="border-b" style={{ borderColor }}>
@@ -183,7 +183,7 @@ export default function TableView({
                     type="checkbox"
                     checked={allSelected}
                     onChange={handleSelectAll}
-                    className="w-4 h-4 rounded cursor-pointer"
+                    className="w-4 h-4 cursor-pointer"
                     style={{ accentColor: buttonColor }}
                   />
                 </th>
@@ -193,7 +193,7 @@ export default function TableView({
                 <th
                   key={column}
                   className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wide cursor-pointer select-none transition-colors hover:bg-black/[0.02]"
-                  style={{ color: '#6B7280' }}
+                  style={{ color: configColors.icons || '#6B7280' }}
                   onClick={() => handleSort(column)}
                 >
                   <div className="flex items-center gap-1.5">
@@ -236,7 +236,7 @@ export default function TableView({
                         checked={isSelected}
                         onClick={(e) => handleSelectRow(e, recordId)}
                         onChange={() => {}} // Controlled by onClick
-                        className="w-4 h-4 rounded cursor-pointer"
+                        className="w-4 h-4 cursor-pointer"
                         style={{ accentColor: buttonColor }}
                       />
                     </td>
@@ -268,7 +268,7 @@ export default function TableView({
                       return (
                         <td key={column} className="px-4 py-4">
                           <span
-                            className="inline-flex px-3 py-1 text-xs font-medium rounded-full capitalize"
+                            className="inline-flex px-3 py-1 text-xs font-medium capitalize"
                             style={{ backgroundColor: badge.bg, color: badge.text }}
                           >
                             {rawValue}
@@ -288,7 +288,7 @@ export default function TableView({
                             onChange={(e) => setEditValue(e.target.value)}
                             onBlur={handleEditSave}
                             onKeyDown={handleEditKeyDown}
-                            className="w-full px-2 py-1 text-sm rounded border outline-none"
+                            className="w-full px-2 py-1 text-sm border outline-none"
                             style={{
                               borderColor: buttonColor,
                               color: textColor,
@@ -317,7 +317,7 @@ export default function TableView({
         </table>
 
         {data.length === 0 && (
-          <div className="flex items-center justify-center py-16" style={{ color: '#6B7280' }}>
+          <div className="flex items-center justify-center py-16" style={{ color: configColors.icons || '#6B7280' }}>
             No data to display
           </div>
         )}
@@ -326,7 +326,7 @@ export default function TableView({
       {/* Bulk actions floating bar */}
       {selectedIds.size > 0 && (
         <div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg border"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 px-5 py-3 shadow-lg border"
           style={{
             backgroundColor: cardBg,
             borderColor,
@@ -337,14 +337,14 @@ export default function TableView({
           </span>
           <button
             onClick={handleBulkDelete}
-            className="px-3 py-1.5 text-sm font-medium rounded-lg transition-opacity hover:opacity-90"
+            className="px-3 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
             style={{ backgroundColor: '#DC2626', color: '#FFFFFF' }}
           >
             Delete
           </button>
           <button
             onClick={() => setSelectedIds(new Set())}
-            className="px-3 py-1.5 text-sm rounded-lg border transition-opacity hover:opacity-70"
+            className="px-3 py-1.5 text-sm border transition-opacity hover:opacity-70"
             style={{ borderColor, color: textColor }}
           >
             Clear

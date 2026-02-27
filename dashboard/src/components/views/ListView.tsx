@@ -77,14 +77,14 @@ export default function ListView({
 
   if (!fields && data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full rounded-2xl shadow-sm p-12" style={{ backgroundColor: cardBg, color: '#6B7280' }}>
+      <div className="flex items-center justify-center h-full shadow-sm p-12" style={{ backgroundColor: cardBg, color: configColors.icons || '#6B7280' }}>
         No items to display
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto rounded-2xl shadow-sm" style={{ backgroundColor: cardBg }}>
+    <div className="flex flex-col h-full overflow-y-auto shadow-sm" style={{ backgroundColor: cardBg }}>
       {data.map((record) => {
         const recordId = String(record.id);
         const isBold = shouldBeBold(record);
@@ -107,7 +107,7 @@ export default function ListView({
                   handleCheckboxChange(record, e.target.checked);
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-5 h-5 rounded-md cursor-pointer border-2 border-gray-300 checked:bg-gray-900 checked:border-gray-900"
+                className="w-5 h-5 cursor-pointer border-2 border-gray-300 checked:bg-gray-900 checked:border-gray-900"
                 style={{ accentColor: configColors.buttons || '#1A1A1A' }}
               />
             )}
@@ -124,7 +124,7 @@ export default function ListView({
             {secondaryField && (
               <div
                 className={`text-sm truncate max-w-[200px] ${completed ? 'line-through opacity-50' : ''}`}
-                style={{ color: '#6B7280' }}
+                style={{ color: configColors.icons || '#6B7280' }}
               >
                 {formatValue(record[secondaryField])}
               </div>
@@ -137,7 +137,7 @@ export default function ListView({
                 const badge = getStatusBadgeStyle(record[trailingField] as string);
                 return (
                   <span
-                    className="inline-flex px-3 py-1 text-xs font-medium rounded-full capitalize flex-shrink-0"
+                    className="inline-flex px-3 py-1 text-xs font-medium capitalize flex-shrink-0"
                     style={{ backgroundColor: badge.bg, color: badge.text }}
                   >
                     {record[trailingField] as string}
@@ -147,7 +147,7 @@ export default function ListView({
               return (
                 <div
                   className={`text-sm text-right flex-shrink-0 ${completed ? 'opacity-50' : ''}`}
-                  style={{ color: '#9CA3AF' }}
+                  style={{ color: configColors.icons || '#9CA3AF' }}
                 >
                   {val}
                 </div>
@@ -158,7 +158,7 @@ export default function ListView({
       })}
 
       {data.length === 0 && (
-        <div className="flex items-center justify-center py-16" style={{ color: '#6B7280' }}>
+        <div className="flex items-center justify-center py-16" style={{ color: configColors.icons || '#6B7280' }}>
           No items to display
         </div>
       )}

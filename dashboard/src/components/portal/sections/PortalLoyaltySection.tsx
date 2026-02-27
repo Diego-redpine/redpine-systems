@@ -105,7 +105,7 @@ export function PortalLoyaltySection({
 
   if (notActive || !loyalty) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
+      <div className="bg-white border border-gray-200 p-8 text-center">
         <svg className="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
         </svg>
@@ -136,7 +136,7 @@ export function PortalLoyaltySection({
     <div className="space-y-6">
       {/* Starbucks-Style Tier Card */}
       <div
-        className="rounded-2xl p-6 text-center shadow-lg relative overflow-hidden"
+        className="p-6 text-center shadow-lg relative overflow-hidden"
         style={{ background: tierStyle.gradient, color: tierStyle.text }}
       >
         {/* Decorative circles */}
@@ -163,10 +163,10 @@ export function PortalLoyaltySection({
       </div>
 
       {/* Progress to Next Reward — Starbucks-style segmented */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+      <div className="bg-white p-6 shadow-sm border border-gray-200">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-gray-900">Next Reward</h3>
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+          <span className="text-xs font-medium px-2.5 py-1 bg-gray-100 text-gray-600">
             {loyalty.points % loyalty.reward_threshold} / {loyalty.reward_threshold} pts
           </span>
         </div>
@@ -178,7 +178,7 @@ export function PortalLoyaltySection({
             return (
               <div
                 key={i}
-                className="flex-1 h-3 rounded-full transition-all duration-300"
+                className="flex-1 h-3 transition-all duration-300"
                 style={{
                   backgroundColor: segmentFilled ? accentColor : '#E5E7EB',
                 }}
@@ -192,7 +192,7 @@ export function PortalLoyaltySection({
             <button
               onClick={handleRedeem}
               disabled={redeeming}
-              className="w-full py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+              className="w-full py-3 text-sm font-bold transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
               style={{ backgroundColor: accentColor, color: accentTextColor }}
             >
               {redeeming ? 'Redeeming...' : `Redeem ${formatCurrency(loyalty.reward_value_cents)} Reward`}
@@ -207,13 +207,13 @@ export function PortalLoyaltySection({
 
       {/* Tier Progress (if next tier exists) */}
       {loyalty.next_tier && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white p-6 shadow-sm border border-gray-200">
           <h3 className="text-sm font-semibold text-gray-900 mb-3">
             Path to {loyalty.next_tier.name}
           </h3>
           <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
             <div
-              className="h-full rounded-full transition-all duration-500"
+              className="h-full transition-all duration-500"
               style={{ width: `${tierProgressPercent}%`, backgroundColor: accentColor }}
             />
           </div>
@@ -225,24 +225,24 @@ export function PortalLoyaltySection({
 
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white p-4 shadow-sm border border-gray-200 text-center">
           <p className="text-2xl font-bold text-gray-900">
             {(loyalty.lifetime_points || loyalty.points).toLocaleString()}
           </p>
           <p className="text-xs text-gray-500 mt-1">Lifetime Points</p>
         </div>
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white p-4 shadow-sm border border-gray-200 text-center">
           <p className="text-2xl font-bold text-gray-900">{loyalty.total_orders}</p>
           <p className="text-xs text-gray-500 mt-1">Total Visits</p>
         </div>
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white p-4 shadow-sm border border-gray-200 text-center">
           <p className="text-2xl font-bold text-gray-900">{loyalty.rewards_redeemed ?? rewardsEarned}</p>
           <p className="text-xs text-gray-500 mt-1">Rewards Used</p>
         </div>
       </div>
 
       {/* Points Activity */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white shadow-sm border border-gray-200 overflow-hidden">
         <button
           onClick={() => setShowHistory(!showHistory)}
           className="w-full p-5 flex items-center justify-between text-left"
@@ -292,7 +292,7 @@ export function PortalLoyaltySection({
       </div>
 
       {/* How It Works */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+      <div className="bg-white p-6 shadow-sm border border-gray-200">
         <h3 className="text-sm font-semibold text-gray-900 mb-3">How It Works</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-3 text-sm text-gray-600">

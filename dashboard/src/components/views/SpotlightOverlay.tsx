@@ -195,7 +195,7 @@ export default function SpotlightOverlay({
       {Array.from({ length: totalSteps }).map((_, i) => (
         <div
           key={i}
-          className="h-1.5 rounded-full transition-all duration-300"
+          className="h-1.5 transition-all duration-300"
           style={{
             width: i === step ? 24 : 8,
             backgroundColor: i <= step ? buttonBg : `${borderColor}`,
@@ -212,7 +212,7 @@ export default function SpotlightOverlay({
         {showBack && (
           <button
             onClick={onBack}
-            className="px-4 py-2 rounded-lg text-sm font-medium border transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm font-medium border transition-opacity hover:opacity-70"
             style={{ borderColor, color: textColor }}
           >
             Back
@@ -221,7 +221,7 @@ export default function SpotlightOverlay({
       </div>
       <button
         onClick={isLastStep ? onNext : onNext}
-        className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+        className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
         style={{ backgroundColor: buttonBg, color: buttonText }}
       >
         {isLastStep ? 'Get Started' : 'Next'}
@@ -236,7 +236,7 @@ export default function SpotlightOverlay({
         return (
           <div className="flex flex-col items-center text-center py-4">
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+              className="w-16 h-16 flex items-center justify-center mb-5"
               style={{ backgroundColor: `${buttonBg}15` }}
             >
               <svg className="w-8 h-8" style={{ color: buttonBg }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -259,7 +259,7 @@ export default function SpotlightOverlay({
             {DATA_IMPORT_OPTIONS.map((opt, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-4 rounded-xl border"
+                className="flex items-center justify-between p-4 border"
                 style={{ borderColor }}
               >
                 <div>
@@ -271,14 +271,14 @@ export default function SpotlightOverlay({
                     href={opt.connectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
+                    className="px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
                   >
                     Connect
                   </a>
                 ) : (
                   <span
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium border flex-shrink-0"
+                    className="px-3 py-1.5 text-xs font-medium border flex-shrink-0"
                     style={{ borderColor, color: mutedColor }}
                   >
                     Built-in
@@ -293,7 +293,7 @@ export default function SpotlightOverlay({
         return (
           <div className="space-y-4">
             <p className="text-sm" style={{ color: mutedColor }}>{description}</p>
-            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ borderColor }}>
+            <div className="flex items-center justify-between p-4 border" style={{ borderColor }}>
               <div>
                 <p className="text-sm font-semibold" style={{ color: textColor }}>Outlook Calendar</p>
                 <p className="text-xs mt-0.5" style={{ color: mutedColor }}>Sync events from your Outlook calendar</p>
@@ -302,7 +302,7 @@ export default function SpotlightOverlay({
                 href="/api/integrations/outlook/connect"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
+                className="px-4 py-2 text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
                 style={{ backgroundColor: buttonBg, color: buttonText }}
               >
                 Connect Outlook
@@ -319,7 +319,7 @@ export default function SpotlightOverlay({
           <div className="space-y-4">
             <p className="text-sm" style={{ color: mutedColor }}>{description}</p>
             {paymentConnected && (
-              <div className="flex items-center gap-2 p-3 rounded-xl" style={{ backgroundColor: '#ECFDF5' }}>
+              <div className="flex items-center gap-2 p-3" style={{ backgroundColor: '#ECFDF5' }}>
                 <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -327,13 +327,13 @@ export default function SpotlightOverlay({
               </div>
             )}
             {PAYMENT_PROVIDERS.map((provider, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl border" style={{ borderColor }}>
+              <div key={i} className="flex items-center justify-between p-4 border" style={{ borderColor }}>
                 <div>
                   <p className="text-sm font-semibold" style={{ color: textColor }}>{provider.label}</p>
                   <p className="text-xs mt-0.5" style={{ color: mutedColor }}>{provider.description}</p>
                 </div>
                 {paymentConnected ? (
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 flex-shrink-0">
+                  <span className="px-3 py-1 text-xs font-medium bg-emerald-50 text-emerald-700 flex-shrink-0">
                     Connected
                   </span>
                 ) : (
@@ -341,7 +341,7 @@ export default function SpotlightOverlay({
                     href={provider.connectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 rounded-lg text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
+                    className="px-4 py-2 text-xs font-medium transition-opacity hover:opacity-90 flex-shrink-0"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
                   >
                     Connect
@@ -358,7 +358,7 @@ export default function SpotlightOverlay({
             <p className="text-sm" style={{ color: mutedColor }}>{description}</p>
             <div className="space-y-2">
               {tourContent.checklist.map((item, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 rounded-xl border" style={{ borderColor }}>
+                <div key={i} className="flex items-start gap-3 p-3 border" style={{ borderColor }}>
                   <div
                     className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border-2"
                     style={{ borderColor: buttonBg }}
@@ -382,7 +382,7 @@ export default function SpotlightOverlay({
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
         <div
-          className="relative w-full max-w-xl mx-4 rounded-2xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-xl mx-4 shadow-2xl overflow-hidden"
           style={{ backgroundColor: cardBg }}
         >
           <div className="px-6 pt-5">
@@ -405,7 +405,7 @@ export default function SpotlightOverlay({
     // Target not found — show as card fallback
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
-        <div className="relative w-full max-w-md mx-4 rounded-2xl shadow-2xl p-6" style={{ backgroundColor: cardBg }}>
+        <div className="relative w-full max-w-md mx-4 shadow-2xl p-6" style={{ backgroundColor: cardBg }}>
           {progressDots}
           <h2 className="text-lg font-bold mb-2" style={{ color: textColor }}>{title}</h2>
           <p className="text-sm leading-relaxed" style={{ color: mutedColor }}>{description}</p>
@@ -438,7 +438,7 @@ export default function SpotlightOverlay({
 
         {/* Cutout — allows clicking the highlighted element through */}
         <div
-          className="absolute rounded-xl"
+          className="absolute"
           style={{
             top: cutout.top,
             left: cutout.left,
@@ -452,7 +452,7 @@ export default function SpotlightOverlay({
 
         {/* Pulsing ring around spotlight */}
         <div
-          className="absolute rounded-xl"
+          className="absolute"
           style={{
             top: cutout.top - 3,
             left: cutout.left - 3,
@@ -470,7 +470,7 @@ export default function SpotlightOverlay({
       {/* Tooltip */}
       {tooltipPos && (
         <div
-          className="fixed z-[102] rounded-2xl shadow-2xl p-5"
+          className="fixed z-[102] shadow-2xl p-5"
           style={{
             top: tooltipPos.top,
             left: tooltipPos.left,

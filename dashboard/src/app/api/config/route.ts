@@ -50,8 +50,17 @@ function toAppConfig(dbConfig: any): DashboardConfig & { websiteData?: any } {
     platformTabs: ['site', 'analytics', 'settings'],
     colors: dbConfig.colors || {},
   };
-  if (dbConfig.heading_font) result.headingFont = dbConfig.heading_font;
-  if (dbConfig.body_font) result.bodyFont = dbConfig.body_font;
+  // Font fields: try DB columns first, then fall back to colors JSONB
+  if (dbConfig.heading_font) {
+    result.headingFont = dbConfig.heading_font;
+  } else if (dbConfig.colors?._headingFont) {
+    result.headingFont = dbConfig.colors._headingFont;
+  }
+  if (dbConfig.body_font) {
+    result.bodyFont = dbConfig.body_font;
+  } else if (dbConfig.colors?._bodyFont) {
+    result.bodyFont = dbConfig.colors._bodyFont;
+  }
   if (dbConfig.website_data) {
     result.websiteData = dbConfig.website_data;
   }
@@ -271,8 +280,13 @@ export async function PUT(request: NextRequest) {
     }
     if (businessName !== undefined) updates.business_name = businessName;
     if (businessType !== undefined) updates.business_type = businessType;
-    if (headingFont !== undefined) updates.heading_font = headingFont;
-    if (bodyFont !== undefined) updates.body_font = bodyFont;
+    // Store fonts in colors JSONB (DB columns may not exist yet)
+    if (headingFont !== undefined || bodyFont !== undefined) {
+      const existingColors = updates.colors || currentConfig?.colors || {};
+      if (headingFont !== undefined) existingColors._headingFont = headingFont;
+      if (bodyFont !== undefined) existingColors._bodyFont = bodyFont;
+      updates.colors = existingColors;
+    }
 
     const { data, error } = await supabase
       .from('configs')

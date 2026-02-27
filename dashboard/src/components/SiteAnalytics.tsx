@@ -44,7 +44,7 @@ const SOURCES = [
 
 export default function SiteAnalytics({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -61,7 +61,7 @@ export default function SiteAnalytics({ colors }: { colors: DashboardColors }) {
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(s => (
-          <div key={s.label} className="rounded-2xl p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+          <div key={s.label} className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
             <p className="text-xs font-medium mb-1" style={{ color: textMuted }}>{s.label}</p>
             <p className="text-2xl font-bold" style={{ color: textMain }}>{s.value}</p>
             <p className={`text-xs font-medium mt-1 ${s.change.startsWith('+') ? 'text-emerald-600' : s.change.startsWith('-') ? 'text-red-500' : ''}`}>
@@ -74,7 +74,7 @@ export default function SiteAnalytics({ colors }: { colors: DashboardColors }) {
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Weekly traffic */}
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-sm font-semibold mb-4" style={{ color: textMain }}>Weekly Traffic</h3>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={TRAFFIC_DATA}>
@@ -87,7 +87,7 @@ export default function SiteAnalytics({ colors }: { colors: DashboardColors }) {
         </div>
 
         {/* Visitor growth */}
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
           <h3 className="text-sm font-semibold mb-4" style={{ color: textMain }}>Visitor Growth</h3>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={VISITORS_DATA}>
@@ -103,7 +103,7 @@ export default function SiteAnalytics({ colors }: { colors: DashboardColors }) {
       {/* Tables row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top pages */}
-        <div className="rounded-2xl shadow-sm overflow-hidden" style={{ backgroundColor: cardBg }}>
+        <div className="shadow-sm overflow-hidden" style={{ backgroundColor: cardBg }}>
           <div className="px-6 py-4 border-b" style={{ borderColor }}>
             <h3 className="text-sm font-semibold" style={{ color: textMain }}>Top Pages</h3>
           </div>
@@ -128,7 +128,7 @@ export default function SiteAnalytics({ colors }: { colors: DashboardColors }) {
         </div>
 
         {/* Traffic sources */}
-        <div className="rounded-2xl shadow-sm overflow-hidden" style={{ backgroundColor: cardBg }}>
+        <div className="shadow-sm overflow-hidden" style={{ backgroundColor: cardBg }}>
           <div className="px-6 py-4 border-b" style={{ borderColor }}>
             <h3 className="text-sm font-semibold" style={{ color: textMain }}>Traffic Sources</h3>
           </div>
@@ -138,7 +138,7 @@ export default function SiteAnalytics({ colors }: { colors: DashboardColors }) {
                 <span className="text-sm font-medium w-20" style={{ color: textMain }}>{s.source}</span>
                 <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: borderColor }}>
                   <div
-                    className="h-full rounded-full"
+                    className="h-full "
                     style={{ width: s.pct, backgroundColor: buttonColor }}
                   />
                 </div>

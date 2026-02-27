@@ -84,6 +84,7 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
           width: '100%', height: '100%', padding: 48,
           backgroundColor: '#F9FAFB', textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          flex: 1,
         }}>
           <div style={{
             width: 56, height: 56, borderRadius: 12,
@@ -125,7 +126,7 @@ export const ReviewCarousel: React.FC<ReviewCarouselProps> = ({
   if (inBuilder && localLinkedId) {
     return (
       <div {...blockProps} className={styles || 'w-full'}>
-        <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 16px', textAlign: 'center' }}>
+        <div style={{ padding: '40px 24px', textAlign: 'center', flex: 1 }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             marginBottom: 24, padding: '12px 16px', borderRadius: 10,

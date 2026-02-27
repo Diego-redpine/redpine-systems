@@ -258,7 +258,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
     const config = CHANNEL_COLORS[channel];
     return (
       <span
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium"
         style={{ backgroundColor: `${config.color}15`, color: config.color }}
       >
         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
@@ -283,7 +283,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
   };
 
   return (
-    <div className="flex rounded-2xl overflow-hidden h-full" style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, minHeight: '500px' }}>
+    <div className="flex overflow-hidden h-full" style={{ border: `1px solid ${borderColor}`, backgroundColor: cardBg, minHeight: '500px' }}>
       {/* ── Left Panel: Conversation List ─────────────────────────── */}
       <div
         className={`w-80 flex flex-col border-r flex-shrink-0 ${isMobileThreadView ? 'hidden md:flex' : 'flex'}`}
@@ -300,7 +300,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search conversations..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs"
+              className="w-full pl-8 pr-3 py-1.5 text-xs"
               style={{ backgroundColor: bgColor, color: headingColor, border: `1px solid ${borderColor}` }}
             />
           </div>
@@ -308,7 +308,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
           <div className="flex gap-1 flex-wrap">
             <button
               onClick={() => setChannelFilter('all')}
-              className="px-2 py-1 rounded-full text-xs"
+              className="px-2 py-1 text-xs"
               style={{
                 backgroundColor: channelFilter === 'all' ? buttonBg : 'transparent',
                 color: channelFilter === 'all' ? buttonText : textColor,
@@ -381,12 +381,12 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                     {formatTime(conv.updated_at)}
                   </span>
                   {conv.unread_count > 0 ? (
-                    <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center"
+                    <span className="w-5 h-5 text-xs font-bold flex items-center justify-center"
                       style={{ backgroundColor: CHANNEL_COLORS[conv.channel].color, color: '#FFFFFF' }}>
                       {conv.unread_count}
                     </span>
                   ) : (
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColors[conv.status].color }} title={conv.status} />
+                    <span className="w-2 h-2 " style={{ backgroundColor: statusColors[conv.status].color }} title={conv.status} />
                   )}
                 </div>
               </div>
@@ -415,7 +415,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 {/* Mobile back button */}
                 <button
                   onClick={handleMobileBack}
-                  className="md:hidden p-1 rounded-lg"
+                  className="md:hidden p-1"
                   style={{ color: headingColor }}
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -437,10 +437,10 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColors[selectedConv.status].color }} title={selectedConv.status} />
+                <span className="w-2 h-2 " style={{ backgroundColor: statusColors[selectedConv.status].color }} title={selectedConv.status} />
                 <button
                   onClick={() => setShowContactDrawer(!showContactDrawer)}
-                  className="p-1.5 rounded-lg transition-opacity hover:opacity-70 hidden md:block"
+                  className="p-1.5 transition-opacity hover:opacity-70 hidden md:block"
                   style={{ backgroundColor: showContactDrawer ? hoverBg : 'transparent', color: textColor }}
                   title="Contact info"
                 >
@@ -451,7 +451,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 {selectedConv.status === 'active' && (
                   <button
                     onClick={() => handleEndConversation(selectedConv.id)}
-                    className="p-1.5 rounded-lg transition-opacity hover:opacity-70"
+                    className="p-1.5 transition-opacity hover:opacity-70"
                     style={{ color: '#EF4444' }}
                     title="End conversation"
                   >
@@ -469,7 +469,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 if (msg.sender_type === 'system') {
                   return (
                     <div key={msg.id} className="text-center">
-                      <span className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: `${borderColor}80`, color: textColor }}>
+                      <span className="text-xs px-3 py-1 " style={{ backgroundColor: `${borderColor}80`, color: textColor }}>
                         {msg.content} · {formatTime(msg.created_at)}
                       </span>
                     </div>
@@ -481,7 +481,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                   <div key={msg.id} className={`flex ${isStaff ? 'justify-end' : 'justify-start'}`}>
                     <div className="max-w-[70%]">
                       <div
-                        className="px-3 py-2 rounded-xl text-sm"
+                        className="px-3 py-2 text-sm"
                         style={{
                           backgroundColor: isStaff ? buttonBg : `${borderColor}60`,
                           color: isStaff ? buttonText : headingColor,
@@ -506,7 +506,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
             {selectedConv.status === 'active' && (
               <div className="px-4 py-3" style={{ borderTop: `1px solid ${borderColor}` }}>
                 {showCanned && (
-                  <div className="mb-2 rounded-lg overflow-hidden" style={{ border: `1px solid ${borderColor}` }}>
+                  <div className="mb-2 overflow-hidden" style={{ border: `1px solid ${borderColor}` }}>
                     {DEFAULT_CANNED.map(cr => (
                       <button
                         key={cr.id}
@@ -529,7 +529,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowCanned(!showCanned)}
-                    className="px-2 py-2 rounded-lg transition-opacity hover:opacity-70 flex-shrink-0"
+                    className="px-2 py-2 transition-opacity hover:opacity-70 flex-shrink-0"
                     style={{ border: `1px solid ${borderColor}`, color: showCanned ? buttonBg : textColor }}
                     title="Canned responses"
                   >
@@ -543,11 +543,11 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                     onChange={(e) => setReplyText(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendReply(); } }}
                     placeholder="Type a reply..."
-                    className="flex-1 px-3 py-2 rounded-lg text-sm"
+                    className="flex-1 px-3 py-2 text-sm"
                     style={{ border: `1px solid ${borderColor}`, backgroundColor: bgColor, color: headingColor }}
                   />
                   <button
-                    className="px-2 py-2 rounded-lg transition-opacity hover:opacity-70 flex-shrink-0"
+                    className="px-2 py-2 transition-opacity hover:opacity-70 flex-shrink-0"
                     style={{ border: `1px solid ${borderColor}`, color: textColor }}
                     title="Attach file"
                   >
@@ -558,7 +558,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                   <button
                     onClick={handleSendReply}
                     disabled={!replyText.trim() || isSending}
-                    className="p-2 rounded-lg disabled:opacity-40 transition-opacity"
+                    className="p-2 disabled:opacity-40 transition-opacity"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
                     title="Send"
                   >
@@ -572,7 +572,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
 
             {selectedConv.status !== 'active' && (
               <div className="px-4 py-3 flex items-center justify-center gap-2" style={{ borderTop: `1px solid ${borderColor}` }}>
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: statusColors[selectedConv.status].color }} />
+                <span className="w-2 h-2 " style={{ backgroundColor: statusColors[selectedConv.status].color }} />
                 <p className="text-xs" style={{ color: textColor }}>
                   {selectedConv.status === 'ended' ? 'Conversation ended' : 'Missed'}
                 </p>
@@ -590,7 +590,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
             <div className="flex justify-end">
               <button
                 onClick={() => setShowContactDrawer(false)}
-                className="p-1 rounded-lg hover:opacity-70"
+                className="p-1 hover:opacity-70"
                 style={{ color: textColor }}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -610,7 +610,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
             </div>
 
             {/* Contact details */}
-            <div className="space-y-3 rounded-xl p-3" style={{ backgroundColor: bgColor }}>
+            <div className="space-y-3 p-3" style={{ backgroundColor: bgColor }}>
               {selectedConv.visitor_email && (
                 <div className="flex items-center gap-2.5">
                   <svg className="w-4 h-4 flex-shrink-0" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -656,7 +656,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
             {/* Quick actions */}
             <div className="space-y-1.5">
               <button
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:opacity-80"
                 style={{ color: headingColor }}
               >
                 <svg className="w-4 h-4" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -665,7 +665,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 View profile
               </button>
               <button
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:opacity-80"
                 style={{ color: headingColor }}
               >
                 <svg className="w-4 h-4" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -674,7 +674,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
                 Book appointment
               </button>
               <button
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors hover:opacity-80"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:opacity-80"
                 style={{ color: headingColor }}
               >
                 <svg className="w-4 h-4" style={{ color: textColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

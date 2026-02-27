@@ -211,7 +211,7 @@ export default function LiveBoard({ colors, businessName, businessType }: LiveBo
           <BoardClock />
           <button
             onClick={() => setShowTVMode(true)}
-            className="px-4 py-2 text-sm font-medium text-white rounded-xl transition-opacity hover:opacity-90"
+            className="px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: accentColor }}
           >
             TV Mode

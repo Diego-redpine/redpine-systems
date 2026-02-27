@@ -90,7 +90,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const fetchWidgets = useCallback(async () => {
     try {
@@ -179,7 +179,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
   if (loading) {
     return (
       <div
-        className="rounded-2xl p-12 text-center"
+        className="p-12 text-center"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <p style={{ color: textMuted }}>Loading widget builder...</p>
@@ -192,7 +192,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
       {/* Left panel: Settings */}
       <div className="space-y-4">
         <div
-          className="rounded-2xl p-6"
+          className="p-6"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           <h3 className="text-lg font-bold mb-5" style={{ color: textMain }}>
@@ -211,7 +211,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
               type="text"
               value={widget.name}
               onChange={(e) => updateWidget({ name: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2"
+              className="w-full px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
               style={{
                 border: `1px solid ${borderColor}`,
                 color: textMain,
@@ -235,14 +235,14 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
                   <button
                     key={option.type}
                     onClick={() => updateWidget({ layout_type: option.type })}
-                    className="flex items-center gap-3 p-3 rounded-xl text-left transition-colors"
+                    className="flex items-center gap-3 p-3 text-left transition-colors"
                     style={{
                       backgroundColor: isActive ? `${buttonColor}08` : 'transparent',
                       border: `1px solid ${isActive ? buttonColor : borderColor}`,
                     }}
                   >
                     <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                      className="w-9 h-9 flex items-center justify-center flex-shrink-0"
                       style={{
                         backgroundColor: isActive ? `${buttonColor}12` : '#F3F4F6',
                       }}
@@ -299,7 +299,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
                   onChange={(e) =>
                     updateWidget({ min_rating: parseInt(e.target.value) })
                   }
-                  className="px-3 py-1.5 rounded-lg text-sm"
+                  className="px-3 py-1.5 text-sm"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textMain,
@@ -324,7 +324,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
                   onChange={(e) =>
                     updateWidget({ max_reviews: parseInt(e.target.value) })
                   }
-                  className="px-3 py-1.5 rounded-lg text-sm"
+                  className="px-3 py-1.5 text-sm"
                   style={{
                     border: `1px solid ${borderColor}`,
                     color: textMain,
@@ -351,7 +351,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
                       <button
                         key={platform.value}
                         onClick={() => togglePlatform(platform.value)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors"
                         style={{
                           backgroundColor: isActive ? `${buttonColor}10` : 'transparent',
                           border: `1px solid ${isActive ? buttonColor : borderColor}`,
@@ -405,13 +405,13 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
               onClick={() =>
                 updateWidget({ show_ai_summary: !widget.show_ai_summary })
               }
-              className="relative w-11 h-6 rounded-full transition-colors"
+              className="relative w-11 h-6 transition-colors"
               style={{
                 backgroundColor: widget.show_ai_summary ? buttonColor : '#D1D5DB',
               }}
             >
               <span
-                className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+                className="absolute top-0.5 w-5 h-5 bg-white shadow transition-transform"
                 style={{
                   left: widget.show_ai_summary ? '22px' : '2px',
                 }}
@@ -424,7 +424,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium transition-opacity disabled:opacity-50"
+              className="px-5 py-2.5 text-sm font-medium transition-opacity disabled:opacity-50"
               style={{ backgroundColor: buttonColor, color: buttonText }}
             >
               {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Widget'}
@@ -439,7 +439,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
 
         {/* Info note */}
         <div
-          className="rounded-xl p-4 text-center"
+          className="p-4 text-center"
           style={{
             backgroundColor: `${buttonColor}05`,
             border: `1px solid ${buttonColor}15`,
@@ -454,7 +454,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
       {/* Right panel: Live preview */}
       <div>
         <div
-          className="rounded-2xl p-6 sticky top-4"
+          className="p-6 sticky top-4"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
         >
           <div className="flex items-center justify-between mb-4">
@@ -462,7 +462,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
               Live Preview
             </h3>
             <span
-              className="px-2.5 py-0.5 rounded-full text-xs font-medium"
+              className="px-2.5 py-0.5 text-xs font-medium"
               style={{
                 backgroundColor: `${buttonColor}10`,
                 color: buttonColor,
@@ -473,7 +473,7 @@ export default function ReviewWidgetBuilder({ colors }: ReviewWidgetBuilderProps
           </div>
 
           <div
-            className="rounded-xl p-4"
+            className="p-4"
             style={{
               backgroundColor: colors.background || '#F9FAFB',
               border: `1px solid ${borderColor}`,

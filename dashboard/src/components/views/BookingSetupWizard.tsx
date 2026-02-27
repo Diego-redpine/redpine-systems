@@ -279,7 +279,7 @@ export default function BookingSetupWizard({
           {step === 1 && (
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
                   <svg className="w-6 h-6" fill="none" stroke={buttonBg} viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -300,7 +300,7 @@ export default function BookingSetupWizard({
                           ...prev,
                           availability: { ...prev.availability, [day]: { ...dayData, enabled: !dayData.enabled } },
                         }))}
-                        className="w-14 text-xs font-semibold py-1.5 rounded-lg transition-colors"
+                        className="w-14 text-xs font-semibold py-1.5 transition-colors"
                         style={{
                           backgroundColor: dayData.enabled ? buttonBg : 'transparent',
                           color: dayData.enabled ? buttonText : textColor,
@@ -318,7 +318,7 @@ export default function BookingSetupWizard({
                               ...prev,
                               availability: { ...prev.availability, [day]: { ...dayData, start: e.target.value } },
                             }))}
-                            className="px-2.5 py-1.5 rounded-lg text-sm"
+                            className="px-2.5 py-1.5 text-sm"
                             style={inputStyle}
                           />
                           <span className="text-xs" style={{ color: mutedColor }}>to</span>
@@ -329,7 +329,7 @@ export default function BookingSetupWizard({
                               ...prev,
                               availability: { ...prev.availability, [day]: { ...dayData, end: e.target.value } },
                             }))}
-                            className="px-2.5 py-1.5 rounded-lg text-sm"
+                            className="px-2.5 py-1.5 text-sm"
                             style={inputStyle}
                           />
                         </div>
@@ -347,7 +347,7 @@ export default function BookingSetupWizard({
           {step === 2 && (
             <div className="space-y-5">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
                   <svg className="w-6 h-6" fill="none" stroke={buttonBg} viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -398,14 +398,14 @@ export default function BookingSetupWizard({
                     style={{ backgroundColor: data.deposit_percent > 0 ? buttonBg : borderColor }}
                   >
                     <div
-                      className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                      className="absolute top-0.5 w-4 h-4 bg-white shadow-sm transition-transform"
                       style={{ transform: data.deposit_percent > 0 ? 'translateX(22px)' : 'translateX(2px)' }}
                     />
                   </button>
                 </div>
 
                 {data.deposit_percent > 0 && (
-                  <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
+                  <div className="p-4 space-y-3" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium" style={{ color: mutedColor }}>Deposit percentage</span>
                       <span className="text-sm font-bold" style={{ color: headingColor }}>{data.deposit_percent}%</span>
@@ -448,14 +448,14 @@ export default function BookingSetupWizard({
                     style={{ backgroundColor: data.no_show_policy !== 'none' ? buttonBg : borderColor }}
                   >
                     <div
-                      className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+                      className="absolute top-0.5 w-4 h-4 bg-white shadow-sm transition-transform"
                       style={{ transform: data.no_show_policy !== 'none' ? 'translateX(22px)' : 'translateX(2px)' }}
                     />
                   </button>
                 </div>
 
                 {data.no_show_policy !== 'none' && (
-                  <div className="rounded-xl p-4 space-y-2" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
+                  <div className="p-4 space-y-2" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
                     {([
                       { value: 'charge_deposit' as const, label: 'Charge deposit amount', disabled: data.deposit_percent === 0 },
                       { value: 'charge_full' as const, label: 'Charge full service price', disabled: false },
@@ -464,7 +464,7 @@ export default function BookingSetupWizard({
                       <button
                         key={opt.value}
                         onClick={() => !opt.disabled && setData(prev => ({ ...prev, no_show_policy: opt.value }))}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-left ${opt.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                        className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-left ${opt.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
                         style={{
                           backgroundColor: data.no_show_policy === opt.value ? `${buttonBg}15` : 'transparent',
                           border: `1px solid ${data.no_show_policy === opt.value ? buttonBg : 'transparent'}`,
@@ -475,7 +475,7 @@ export default function BookingSetupWizard({
                           style={{ borderColor: data.no_show_policy === opt.value ? buttonBg : borderColor }}
                         >
                           {data.no_show_policy === opt.value && (
-                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: buttonBg }} />
+                            <div className="w-2 h-2 " style={{ backgroundColor: buttonBg }} />
                           )}
                         </div>
                         <span style={{ color: headingColor }}>{opt.label}</span>
@@ -491,7 +491,7 @@ export default function BookingSetupWizard({
                           value={data.no_show_fee_cents ? (data.no_show_fee_cents / 100).toFixed(2) : ''}
                           onChange={e => setData(prev => ({ ...prev, no_show_fee_cents: Math.round(parseFloat(e.target.value || '0') * 100) }))}
                           placeholder="25"
-                          className="w-24 px-3 py-1.5 rounded-lg text-sm"
+                          className="w-24 px-3 py-1.5 text-sm"
                           style={inputStyle}
                         />
                       </div>
@@ -519,7 +519,7 @@ export default function BookingSetupWizard({
                     onChange={e => setData(prev => ({ ...prev, max_per_day: e.target.value ? parseInt(e.target.value, 10) : null }))}
                     placeholder="No limit"
                     min={1}
-                    className="w-full px-3 py-2 rounded-lg text-sm"
+                    className="w-full px-3 py-2 text-sm"
                     style={inputStyle}
                   />
                 </div>
@@ -531,7 +531,7 @@ export default function BookingSetupWizard({
           {step === 3 && (
             <div className="space-y-5">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
                   <svg className="w-6 h-6" fill="none" stroke={buttonBg} viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                   </svg>
@@ -550,8 +550,8 @@ export default function BookingSetupWizard({
                 </div>
               ) : staffList.length === 0 ? (
                 /* No staff — solo mode */
-                <div className="p-4 rounded-xl border-2 text-center" style={{ borderColor: buttonBg, backgroundColor: `${buttonBg}08` }}>
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: `${buttonBg}15` }}>
+                <div className="p-4 border-2 text-center" style={{ borderColor: buttonBg, backgroundColor: `${buttonBg}08` }}>
+                  <div className="w-10 h-10 flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: `${buttonBg}15` }}>
                     <svg className="w-5 h-5" fill="none" stroke={buttonBg} viewBox="0 0 24 24" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                     </svg>
@@ -602,13 +602,13 @@ export default function BookingSetupWizard({
                         <button
                           key={opt.value}
                           onClick={() => setData(prev => ({ ...prev, assignment_mode: opt.value }))}
-                          className="w-full p-3 rounded-xl text-left flex items-center gap-3 transition-colors"
+                          className="w-full p-3 text-left flex items-center gap-3 transition-colors"
                           style={{
                             border: `2px solid ${selected ? buttonBg : borderColor}`,
                             backgroundColor: selected ? `${buttonBg}08` : 'transparent',
                           }}
                         >
-                          <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${buttonBg}15` }}>
+                          <div className="w-10 h-10 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${buttonBg}15` }}>
                             <div style={{ color: buttonBg }}>{opt.icon}</div>
                           </div>
                           <div className="flex-1">
@@ -619,7 +619,7 @@ export default function BookingSetupWizard({
                             className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
                             style={{ borderColor: selected ? buttonBg : borderColor }}
                           >
-                            {selected && <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: buttonBg }} />}
+                            {selected && <div className="w-2.5 h-2.5 " style={{ backgroundColor: buttonBg }} />}
                           </div>
                         </button>
                       );
@@ -639,14 +639,14 @@ export default function BookingSetupWizard({
                             <button
                               key={s.id}
                               onClick={() => toggleStaff(s.id)}
-                              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
+                              className="w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors"
                               style={{
                                 backgroundColor: isSelected ? `${buttonBg}15` : 'transparent',
                                 border: `1px solid ${isSelected ? buttonBg : borderColor}`,
                               }}
                             >
                               <div
-                                className="w-5 h-5 rounded border flex items-center justify-center flex-shrink-0"
+                                className="w-5 h-5 border flex items-center justify-center flex-shrink-0"
                                 style={{
                                   backgroundColor: isSelected ? buttonBg : 'transparent',
                                   borderColor: isSelected ? buttonBg : borderColor,
@@ -675,7 +675,7 @@ export default function BookingSetupWizard({
           {step === 4 && (
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
                   <svg className="w-6 h-6" fill="none" stroke={buttonBg} viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -686,7 +686,7 @@ export default function BookingSetupWizard({
                 </div>
               </div>
 
-              <div className="rounded-xl p-5 space-y-3" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
+              <div className="p-5 space-y-3" style={{ backgroundColor: `${buttonBg}06`, border: `1px solid ${borderColor}` }}>
                 <div className="flex justify-between items-center">
                   <span className="text-sm" style={{ color: textColor }}>Open Days</span>
                   <span className="text-sm font-semibold" style={{ color: headingColor }}>
@@ -747,7 +747,7 @@ export default function BookingSetupWizard({
                 {data.no_show_policy !== 'none' && (
                   <div className="flex justify-between items-center">
                     <span className="text-sm" style={{ color: textColor }}>No-Show Fee</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: `${buttonBg}15`, color: buttonBg }}>
+                    <span className="px-2.5 py-0.5 text-xs font-medium" style={{ backgroundColor: `${buttonBg}15`, color: buttonBg }}>
                       {data.no_show_policy === 'charge_deposit' ? 'Deposit amount'
                         : data.no_show_policy === 'charge_full' ? 'Full price'
                         : `$${(data.no_show_fee_cents / 100).toFixed(2)}`}
@@ -757,7 +757,7 @@ export default function BookingSetupWizard({
 
                 <div className="flex justify-between items-center pt-2 border-t" style={{ borderColor }}>
                   <span className="text-sm" style={{ color: textColor }}>Assignment</span>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: `${buttonBg}15`, color: buttonBg }}>
+                  <span className="px-2.5 py-0.5 text-xs font-medium" style={{ backgroundColor: `${buttonBg}15`, color: buttonBg }}>
                     {data.assignment_mode === 'manual' ? 'Solo' : data.assignment_mode === 'round_robin' ? 'Round Robin' : 'Customer Picks'}
                   </span>
                 </div>
@@ -785,7 +785,7 @@ export default function BookingSetupWizard({
           <button
             onClick={step === 1 ? onClose : () => setStep(step - 1)}
             disabled={isSaving}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-70 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70 disabled:opacity-50"
             style={{ color: textColor }}
           >
             {step === 1 ? 'Cancel' : 'Back'}
@@ -794,7 +794,7 @@ export default function BookingSetupWizard({
             <button
               onClick={() => setStep(step + 1)}
               disabled={!canProceed()}
-              className="px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               Next
@@ -803,7 +803,7 @@ export default function BookingSetupWizard({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+              className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               {isSaving && (

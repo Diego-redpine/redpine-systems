@@ -670,12 +670,12 @@ export default function StatCards({ entityType, data, configColors, dataMode }: 
         const isFeatured = stat.featured;
         const bg = isFeatured ? buttonColor : (configColors.cards || '#FFFFFF');
         const textMain = isFeatured ? getContrastText(buttonColor) : (configColors.headings || '#1A1A1A');
-        const textSub = isFeatured ? `${getContrastText(buttonColor)}B3` : '#6B7280';
+        const textSub = isFeatured ? `${getContrastText(buttonColor)}B3` : (configColors.icons || '#6B7280');
 
         return (
           <div
             key={index}
-            className="rounded-2xl p-6 shadow-sm"
+            className="p-6 shadow-sm"
             style={{ backgroundColor: bg }}
           >
             <p className="text-xs font-medium uppercase tracking-wide mb-3 min-h-[2rem] leading-4" style={{ color: textSub }}>

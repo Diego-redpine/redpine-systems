@@ -38,7 +38,7 @@ export default function ReviewsTab({ colors, activeSubTab }: ReviewsTabProps) {
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const fetchStats = useCallback(async () => {
     try {
@@ -133,7 +133,7 @@ export default function ReviewsTab({ colors, activeSubTab }: ReviewsTabProps) {
         {statCards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl p-5 shadow-sm"
+            className="p-5 shadow-sm"
             style={{
               backgroundColor: card.highlight ? buttonColor : cardBg,
               border: card.highlight ? 'none' : `1px solid ${borderColor}`,

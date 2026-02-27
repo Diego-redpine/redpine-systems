@@ -257,6 +257,7 @@ export const BookingWidget: React.FC<BookingWidgetProps> = ({
           width: '100%', height: '100%', padding: 48,
           backgroundColor: '#F9FAFB', textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          flex: 1,
         }}>
           <div style={{
             width: 56, height: 56, borderRadius: 12,
@@ -298,7 +299,7 @@ export const BookingWidget: React.FC<BookingWidgetProps> = ({
   if (inBuilder && localLinkedId) {
     return (
       <div {...blockProps} className={styles || 'w-full'}>
-        <div style={{ maxWidth: 480, margin: '0 auto', padding: 32, borderRadius: 16, border: '1px solid #E5E7EB', backgroundColor: '#fff' }}>
+        <div style={{ padding: 32, borderRadius: 16, border: '1px solid #E5E7EB', backgroundColor: '#fff', flex: 1 }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             marginBottom: 20, padding: '12px 16px', borderRadius: 10,

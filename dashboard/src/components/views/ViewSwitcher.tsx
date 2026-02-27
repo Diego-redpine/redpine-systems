@@ -83,7 +83,7 @@ export default function ViewSwitcher({
     <div ref={dropdownRef} className="relative inline-block">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90"
+        className="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
         style={{ backgroundColor: buttonBg, color: buttonText }}
       >
         <ViewIcon viewType={currentView} color={buttonText} />
@@ -95,7 +95,7 @@ export default function ViewSwitcher({
 
       {isOpen && (
         <div
-          className="absolute top-full left-0 mt-2 min-w-[160px] rounded-xl shadow-lg border z-50 py-1 overflow-hidden"
+          className="absolute top-full left-0 mt-2 min-w-[160px] shadow-lg border z-50 py-1 overflow-hidden"
           style={{ backgroundColor: dropdownBg, borderColor }}
         >
           {availableViews.map((viewType) => (

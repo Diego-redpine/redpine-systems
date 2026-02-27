@@ -155,7 +155,7 @@ export default function FormBuilder({
               value={formName}
               onChange={(e) => setFormName(e.target.value)}
               placeholder="e.g. Client Intake Form"
-              className="w-full px-3 py-2 rounded-md border text-sm"
+              className="w-full px-3 py-2 border text-sm"
               style={{ backgroundColor: bgColor, borderColor, color: textColor }}
             />
           </div>
@@ -166,7 +166,7 @@ export default function FormBuilder({
             <select
               value={formType}
               onChange={(e) => setFormType(e.target.value as FormType)}
-              className="w-full px-3 py-2 rounded-md border text-sm"
+              className="w-full px-3 py-2 border text-sm"
               style={{ backgroundColor: bgColor, borderColor, color: textColor }}
             >
               {FORM_TYPES.map(t => (
@@ -184,7 +184,7 @@ export default function FormBuilder({
             value={formDescription}
             onChange={(e) => setFormDescription(e.target.value)}
             placeholder="Brief description shown at top of form"
-            className="w-full px-3 py-2 rounded-md border text-sm"
+            className="w-full px-3 py-2 border text-sm"
             style={{ backgroundColor: bgColor, borderColor, color: textColor }}
           />
         </div>
@@ -193,7 +193,7 @@ export default function FormBuilder({
         <div className="flex gap-3" style={{ minHeight: 320 }}>
           {/* Field palette */}
           <div
-            className="w-36 shrink-0 rounded-lg border p-2 space-y-1 overflow-y-auto"
+            className="w-36 shrink-0 border p-2 space-y-1 overflow-y-auto"
             style={{ borderColor, maxHeight: 400 }}
           >
             <p className="text-xs font-medium mb-2" style={{ color: headingColor }}>Add Field</p>
@@ -201,10 +201,10 @@ export default function FormBuilder({
               <button
                 key={ft.type}
                 onClick={() => addField(ft.type)}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs hover:opacity-80 transition-opacity text-left"
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-xs hover:opacity-80 transition-opacity text-left"
                 style={{ backgroundColor: bgColor, color: textColor }}
               >
-                <span className="w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold"
+                <span className="w-5 h-5 flex items-center justify-center text-[10px] font-bold"
                   style={{ backgroundColor: buttonBg, color: buttonText }}
                 >
                   {ft.icon}
@@ -216,7 +216,7 @@ export default function FormBuilder({
 
           {/* Form canvas */}
           <div
-            className="flex-1 rounded-lg border p-3 overflow-y-auto space-y-2"
+            className="flex-1 border p-3 overflow-y-auto space-y-2"
             style={{ borderColor, maxHeight: 400 }}
           >
             {fields.length === 0 ? (
@@ -239,7 +239,7 @@ export default function FormBuilder({
                   }}
                   onDragEnd={() => setDragIndex(null)}
                   onClick={() => setEditingFieldId(field.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all ${
+                  className={`flex items-center gap-2 px-3 py-2 border cursor-pointer transition-all ${
                     editingFieldId === field.id ? 'ring-2' : ''
                   } ${dragIndex === index ? 'opacity-50' : ''}`}
                   style={{
@@ -286,7 +286,7 @@ export default function FormBuilder({
           {/* Field editor sidebar */}
           {editingField && (
             <div
-              className="w-52 shrink-0 rounded-lg border p-3 overflow-y-auto space-y-3"
+              className="w-52 shrink-0 border p-3 overflow-y-auto space-y-3"
               style={{ borderColor, maxHeight: 400 }}
             >
               <p className="text-xs font-medium" style={{ color: headingColor }}>Field Settings</p>
@@ -297,7 +297,7 @@ export default function FormBuilder({
                   type="text"
                   value={editingField.label}
                   onChange={(e) => updateField(editingField.id, { label: e.target.value })}
-                  className="w-full px-2 py-1 rounded border text-sm"
+                  className="w-full px-2 py-1 border text-sm"
                   style={{ borderColor, color: textColor, backgroundColor: bgColor }}
                 />
               </div>
@@ -310,7 +310,7 @@ export default function FormBuilder({
                       type="text"
                       value={editingField.placeholder || ''}
                       onChange={(e) => updateField(editingField.id, { placeholder: e.target.value })}
-                      className="w-full px-2 py-1 rounded border text-sm"
+                      className="w-full px-2 py-1 border text-sm"
                       style={{ borderColor, color: textColor, backgroundColor: bgColor }}
                     />
                   </div>
@@ -340,7 +340,7 @@ export default function FormBuilder({
                           newOpts[i] = e.target.value;
                           updateField(editingField.id, { options: newOpts });
                         }}
-                        className="flex-1 px-2 py-1 rounded border text-xs"
+                        className="flex-1 px-2 py-1 border text-xs"
                         style={{ borderColor, color: textColor, backgroundColor: bgColor }}
                       />
                       <button
@@ -372,7 +372,7 @@ export default function FormBuilder({
                   type="text"
                   value={editingField.description || ''}
                   onChange={(e) => updateField(editingField.id, { description: e.target.value })}
-                  className="w-full px-2 py-1 rounded border text-xs"
+                  className="w-full px-2 py-1 border text-xs"
                   placeholder="Optional help text"
                   style={{ borderColor, color: textColor, backgroundColor: bgColor }}
                 />
@@ -389,7 +389,7 @@ export default function FormBuilder({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-md text-sm border transition-opacity hover:opacity-80"
+              className="px-4 py-2 text-sm border transition-opacity hover:opacity-80"
               style={{ borderColor, color: textColor }}
             >
               Cancel
@@ -397,7 +397,7 @@ export default function FormBuilder({
             <button
               onClick={handleSave}
               disabled={!formName.trim() || isSaving}
-              className="px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               {isSaving ? 'Saving...' : existingForm?.id ? 'Save Form' : 'Create Form'}

@@ -95,7 +95,7 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1.5 text-sm rounded-md border transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-black/5"
+          className="px-3 py-1.5 text-sm border transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-black/5"
           style={{
             borderColor: borderColor,
             color: textColor,
@@ -124,7 +124,7 @@ export default function Pagination({
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className="w-8 h-8 text-sm rounded-md transition-colors"
+                className="w-8 h-8 text-sm transition-colors"
                 style={{
                   backgroundColor: isActive ? buttonColor : 'transparent',
                   color: isActive ? getContrastText(buttonColor) : textColor,
@@ -141,7 +141,7 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1.5 text-sm rounded-md border transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-black/5"
+          className="px-3 py-1.5 text-sm border transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-black/5"
           style={{
             borderColor: borderColor,
             color: textColor,

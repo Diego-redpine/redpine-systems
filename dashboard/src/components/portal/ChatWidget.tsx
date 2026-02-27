@@ -343,7 +343,7 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
 
           {/* Tooltip for authenticated users */}
           {widgetState === 'authenticated' && portalSession && (
-            <span className="absolute bottom-full right-0 mb-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-gray-900 text-white whitespace-nowrap shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="absolute bottom-full right-0 mb-2 px-3 py-1.5 text-xs font-medium bg-gray-900 text-white whitespace-nowrap shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
               {greeting}
             </span>
           )}
@@ -352,7 +352,7 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[350px] h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4">
+        <div className="fixed bottom-6 right-6 z-50 w-[350px] h-[500px] bg-white shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4">
           {/* Header */}
           <div
             className="px-4 py-3 flex items-center justify-between flex-shrink-0"
@@ -368,7 +368,7 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+              className="p-1 hover:bg-white/10 transition-colors"
               aria-label="Close chat"
             >
               <svg className="w-5 h-5" fill="none" stroke={accentTextColor} viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -406,7 +406,7 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
                     onChange={e => setVisitorName(e.target.value)}
                     placeholder="Your name"
                     required
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                    className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                     style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                   />
                 </div>
@@ -417,14 +417,14 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
                     onChange={e => setVisitorEmail(e.target.value)}
                     placeholder="Your email"
                     required
-                    className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                    className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                     style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl text-sm font-semibold"
+                  className="w-full py-2.5 text-sm font-semibold"
                   style={{ backgroundColor: accentColor, color: accentTextColor }}
                 >
                   Start Chat
@@ -468,7 +468,7 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
                       className={`flex ${isVisitor ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[80%] rounded-2xl px-3.5 py-2 ${
+                        className={`max-w-[80%] px-3.5 py-2 ${
                           isVisitor ? '' : 'bg-gray-100'
                         }`}
                         style={isVisitor ? { backgroundColor: accentColor, color: accentTextColor } : undefined}
@@ -501,13 +501,13 @@ export function ChatWidget({ businessConfig, portalSession }: ChatWidgetProps) {
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                   placeholder="Type a message..."
-                  className="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                  className="flex-1 px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                   style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim() || sending}
-                  className="p-2 rounded-xl transition-opacity disabled:opacity-50 flex-shrink-0"
+                  className="p-2 transition-opacity disabled:opacity-50 flex-shrink-0"
                   style={{ backgroundColor: accentColor, color: accentTextColor }}
                   aria-label="Send message"
                 >

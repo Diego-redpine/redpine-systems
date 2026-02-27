@@ -23,7 +23,7 @@ export default function ReviewModal({ orderId, freelancerName, gigTitle, colors,
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
 
@@ -62,7 +62,7 @@ export default function ReviewModal({ orderId, freelancerName, gigTitle, colors,
     <>
       <div className="fixed inset-0 z-[60] bg-black/40" onClick={onClose} />
       <div
-        className="fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl"
+        className="fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md overflow-hidden shadow-2xl"
         style={{ backgroundColor: cardBg }}
       >
         {/* Header */}
@@ -118,7 +118,7 @@ export default function ReviewModal({ orderId, freelancerName, gigTitle, colors,
             onChange={(e) => setReview(e.target.value)}
             placeholder="Share your experience working with this freelancer... (optional)"
             rows={4}
-            className="w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none focus:ring-2"
+            className="w-full px-4 py-3 border text-sm resize-none focus:outline-none focus:ring-2"
             style={{ borderColor, color: textMain, backgroundColor: cardBg }}
           />
 
@@ -126,7 +126,7 @@ export default function ReviewModal({ orderId, freelancerName, gigTitle, colors,
           <div className="flex gap-3 mt-4">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl border"
+              className="flex-1 px-4 py-2.5 text-sm font-medium border"
               style={{ borderColor, color: textMain }}
             >
               Skip
@@ -134,7 +134,7 @@ export default function ReviewModal({ orderId, freelancerName, gigTitle, colors,
             <button
               onClick={handleSubmit}
               disabled={rating === 0 || isSubmitting}
-              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="flex-1 px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: buttonColor, color: buttonText }}
             >
               {isSubmitting ? 'Submitting...' : 'Submit Review'}

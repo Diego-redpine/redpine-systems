@@ -96,7 +96,7 @@ function ChatPanel({
               className={`flex ${isVisitor ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                className={`max-w-[75%] px-4 py-2.5 ${
                   isVisitor ? '' : 'bg-gray-100'
                 }`}
                 style={isVisitor ? { backgroundColor: accentColor, color: accentTextColor } : undefined}
@@ -131,13 +131,13 @@ function ChatPanel({
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+          className="flex-1 px-4 py-2.5 border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
           style={{ '--tw-ring-color': accentColor } as React.CSSProperties}
         />
         <button
           type="submit"
           disabled={!input.trim() || sending}
-          className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50 flex-shrink-0"
+          className="px-4 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-50 flex-shrink-0"
           style={{ backgroundColor: accentColor, color: accentTextColor }}
         >
           {sending ? '...' : 'Send'}
@@ -161,14 +161,14 @@ function AnnouncementsList({ announcements }: { announcements: Announcement[] })
       {announcements.map(ann => (
         <div
           key={ann.id}
-          className={`rounded-xl p-4 ${
+          className={`p-4 ${
             ann.pinned ? 'bg-amber-50 border border-amber-200' : 'bg-gray-50'
           }`}
         >
           <div className="flex items-start justify-between gap-2">
             <h4 className="text-sm font-semibold text-gray-900">{ann.title}</h4>
             {ann.pinned && (
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-200 text-amber-800 flex-shrink-0">
+              <span className="text-[10px] font-medium px-2 py-0.5 bg-amber-200 text-amber-800 flex-shrink-0">
                 Pinned
               </span>
             )}
@@ -298,7 +298,7 @@ export function PortalMessagesSection({
       <div className="flex gap-2">
         <button
           onClick={() => setActiveTab('chat')}
-          className="px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+          className="px-4 py-2 text-sm font-medium transition-colors"
           style={{
             backgroundColor: activeTab === 'chat' ? accentColor : '#f3f4f6',
             color: activeTab === 'chat' ? accentTextColor : '#6b7280',
@@ -308,7 +308,7 @@ export function PortalMessagesSection({
         </button>
         <button
           onClick={() => setActiveTab('announcements')}
-          className="px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+          className="px-4 py-2 text-sm font-medium transition-colors"
           style={{
             backgroundColor: activeTab === 'announcements' ? accentColor : '#f3f4f6',
             color: activeTab === 'announcements' ? accentTextColor : '#6b7280',
@@ -324,7 +324,7 @@ export function PortalMessagesSection({
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 shadow-sm overflow-hidden">
         {activeTab === 'chat' ? (
           <ChatPanel
             messages={messages}

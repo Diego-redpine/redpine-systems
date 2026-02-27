@@ -148,7 +148,7 @@ export default function DocumentEditor({
 
       {/* Full-page editor */}
       <div
-        className="fixed inset-4 z-50 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        className="fixed inset-4 z-50 shadow-2xl flex flex-col overflow-hidden"
         style={{ backgroundColor: configColors.cards || '#FFFFFF' }}
       >
         {/* Header */}
@@ -159,7 +159,7 @@ export default function DocumentEditor({
           <div className="flex items-center gap-4 flex-1">
             <button
               onClick={onClose}
-              className="p-2 rounded-md hover:opacity-70 transition-opacity"
+              className="p-2 hover:opacity-70 transition-opacity"
               style={{ color: configColors.text || '#6B7280' }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@ export default function DocumentEditor({
             )}
             <button
               onClick={handleDownloadPDF}
-              className="px-3 py-1.5 rounded-md text-sm border transition-opacity hover:opacity-80"
+              className="px-3 py-1.5 text-sm border transition-opacity hover:opacity-80"
               style={{
                 borderColor: configColors.borders || '#E5E7EB',
                 color: configColors.text || '#374151',
@@ -194,7 +194,7 @@ export default function DocumentEditor({
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-1.5 rounded-md text-sm font-medium transition-opacity hover:opacity-90"
+              className="px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90"
               style={{
                 backgroundColor: configColors.buttons || '#3B82F6',
                 color: '#FFFFFF',
@@ -257,7 +257,7 @@ export default function DocumentEditor({
               </button>
               {showLinkInput && (
                 <div
-                  className="absolute top-full left-0 mt-1 z-10 flex items-center gap-1 p-1.5 rounded-lg shadow-lg border"
+                  className="absolute top-full left-0 mt-1 z-10 flex items-center gap-1 p-1.5 shadow-lg border"
                   style={{ backgroundColor: configColors.cards || '#FFFFFF', borderColor: configColors.borders || '#E5E7EB' }}
                 >
                   <input
@@ -325,7 +325,7 @@ export default function DocumentEditor({
                 <button
                   key={t.name}
                   onClick={() => applyTemplate(t)}
-                  className="px-3 py-1.5 rounded-md text-sm border transition-opacity hover:opacity-80"
+                  className="px-3 py-1.5 text-sm border transition-opacity hover:opacity-80"
                   style={{
                     borderColor: configColors.borders || '#E5E7EB',
                     color: configColors.text || '#374151',
@@ -336,7 +336,7 @@ export default function DocumentEditor({
               ))}
               <button
                 onClick={() => setShowTemplates(false)}
-                className="px-3 py-1.5 rounded-md text-sm transition-opacity hover:opacity-80"
+                className="px-3 py-1.5 text-sm transition-opacity hover:opacity-80"
                 style={{ color: configColors.text || '#9CA3AF' }}
               >
                 Blank

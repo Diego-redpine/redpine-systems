@@ -166,7 +166,7 @@ export const EventsWidget: React.FC<EventsWidgetProps> = ({
       <div {...blockProps} className={styles || 'w-full'} style={{ height: '100%' }}>
         <div style={{
           fontFamily: FONT_STACK, width: '100%', boxSizing: 'border-box',
-          opacity: 0.85, pointerEvents: 'none',
+          opacity: 0.85, pointerEvents: 'none', flex: 1,
         }}>
           {heading && (
             <h3 style={{ fontSize: 22, fontWeight: 700, textAlign: 'center', marginBottom: 16, color: '#1A1A1A' }}>

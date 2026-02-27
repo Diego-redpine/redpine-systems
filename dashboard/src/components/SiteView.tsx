@@ -82,7 +82,7 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
   const buttonText = getContrastText(buttonColor);
   const textColor = colors.text || '#374151';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const cardBg = colors.cards || '#FFFFFF';
 
@@ -260,7 +260,7 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
       </div>
 
       {/* Tab content */}
-      {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} businessName={businessName} websiteData={websiteData} />}
+      {activeSubTab === 'pages' && <SiteContent colors={colors} isDemoMode={isDemoMode} businessName={businessName} businessType={businessType} websiteData={websiteData} />}
       {activeSubTab === 'blog' && <BlogListLazy colors={colors} />}
       {activeSubTab === 'templates' && <TemplateMarketplace colors={colors} />}
       {activeSubTab === 'gallery' && <GalleryManager configColors={colors} entityType="galleries" />}
@@ -334,7 +334,7 @@ function SiteSettings({ colors, siteTitle, setSiteTitle, customDomain, onOpenDom
   onOpenDomainModal: () => void;
 }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -364,8 +364,8 @@ function SiteSettings({ colors, siteTitle, setSiteTitle, customDomain, onOpenDom
           className="flex items-center gap-3 px-4 py-3 border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]"
           style={{ borderColor }}
         >
-          <div className="w-10 h-10 bg-gray-100 flex items-center justify-center">
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <div className="w-10 h-10 flex items-center justify-center" style={{ backgroundColor: `${buttonColor}10` }}>
+            <svg className="w-5 h-5" fill="none" stroke={textMuted} viewBox="0 0 24 24" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
             </svg>
           </div>
@@ -409,7 +409,7 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
   onSave: (domain: string) => void;
 }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
@@ -428,12 +428,12 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
         <label className="text-xs font-semibold uppercase tracking-wide block mb-1.5" style={{ color: textMuted }}>
           Default Domain
         </label>
-        <div className="flex items-center gap-2 px-3 py-2.5 border" style={{ borderColor, backgroundColor: '#F9FAFB' }}>
-          <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <div className="flex items-center gap-2 px-3 py-2.5 border" style={{ borderColor, backgroundColor: colors.cards || '#F9FAFB' }}>
+          <svg className="w-4 h-4 flex-shrink-0" fill="#10B981" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>
           <span className="text-sm font-medium" style={{ color: textMain }}>{subdomain}.redpine.systems</span>
-          <span className="ml-auto px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700">Active</span>
+          <span className="ml-auto px-2 py-0.5 text-xs font-medium" style={{ backgroundColor: '#10B98120', color: '#10B981' }}>Active</span>
         </div>
       </div>
 
@@ -453,7 +453,7 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
       </div>
 
       {/* DNS Instructions */}
-      <div className="p-4 mb-5" style={{ backgroundColor: '#F9FAFB', border: `1px solid ${borderColor}` }}>
+      <div className="p-4 mb-5" style={{ backgroundColor: colors.cards || '#F9FAFB', border: `1px solid ${borderColor}` }}>
         <h4 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: textMuted }}>DNS Configuration</h4>
         <div className="space-y-3">
           <DnsRow label="Step 1" type="CNAME" name="www" value={`${subdomain}.redpine.systems`} textMain={textMain} textMuted={textMuted} borderColor={borderColor} />

@@ -33,7 +33,7 @@ export default function CommunicationsTab({ colors, activeSubTab }: Communicatio
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   const fetchStats = useCallback(async () => {
     try {
@@ -80,7 +80,7 @@ export default function CommunicationsTab({ colors, activeSubTab }: Communicatio
             <button
               key={tab}
               onClick={() => setCurrentTab(tab)}
-              className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+              className="px-4 py-2 text-sm font-medium transition-colors"
               style={{
                 backgroundColor: isActive ? buttonColor : 'transparent',
                 color: isActive ? buttonText : textMuted,
@@ -98,7 +98,7 @@ export default function CommunicationsTab({ colors, activeSubTab }: Communicatio
         {statCards.map(card => (
           <div
             key={card.label}
-            className="rounded-2xl p-5 shadow-sm"
+            className="p-5 shadow-sm"
             style={{
               backgroundColor: card.highlight ? buttonColor : cardBg,
               border: card.highlight ? 'none' : `1px solid ${borderColor}`,
@@ -118,7 +118,7 @@ export default function CommunicationsTab({ colors, activeSubTab }: Communicatio
 
       {/* Content */}
       {currentTab === 'COO' && (
-        <div className="flex flex-col items-center justify-center py-20 rounded-2xl"
+        <div className="flex flex-col items-center justify-center py-20"
           style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}>
           <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
             style={{ backgroundColor: `${buttonColor}10` }}>

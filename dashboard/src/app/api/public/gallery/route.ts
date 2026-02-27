@@ -30,11 +30,12 @@ export async function GET(request: NextRequest) {
     .eq('user_id', config.user_id)
     .order('display_order', { ascending: true });
 
-  // Fetch all images
+  // Fetch images marked for gallery display
   const { data: images } = await supabase
     .from('gallery_images')
     .select('id, image_url, thumbnail_url, caption, album_id, display_order')
     .eq('user_id', config.user_id)
+    .eq('include_in_gallery', true)
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: false });
 

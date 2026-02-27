@@ -200,7 +200,7 @@ export default function DetailPanel({
         {/* Color Fields Section */}
         {(editedRecord.color_primary !== undefined || showSecondaryColor) && (
           <div
-            className="p-4 rounded-lg border"
+            className="p-4 border"
             style={{ borderColor: configColors.borders || '#E5E7EB' }}
           >
             <label
@@ -213,7 +213,7 @@ export default function DetailPanel({
             {/* Dual color preview */}
             {dualColorStyle && (
               <div
-                className="h-8 rounded-md mb-3"
+                className="h-8 mb-3"
                 style={dualColorStyle}
               />
             )}
@@ -231,7 +231,7 @@ export default function DetailPanel({
                   type="color"
                   value={(editedRecord.color_primary as string) || '#DC2626'}
                   onChange={(e) => handleFieldChange('color_primary', e.target.value)}
-                  className="w-full h-10 rounded cursor-pointer border"
+                  className="w-full h-10 cursor-pointer border"
                   style={{ borderColor: configColors.borders || '#E5E7EB' }}
                 />
               </div>
@@ -249,7 +249,7 @@ export default function DetailPanel({
                     type="color"
                     value={(editedRecord.color_secondary as string) || '#3B82F6'}
                     onChange={(e) => handleFieldChange('color_secondary', e.target.value)}
-                    className="w-full h-10 rounded cursor-pointer border"
+                    className="w-full h-10 cursor-pointer border"
                     style={{ borderColor: configColors.borders || '#E5E7EB' }}
                   />
                 </div>
@@ -348,7 +348,7 @@ export default function DetailPanel({
                     value={formatInputValue(value, inputType)}
                     onChange={(e) => handleFieldChange(key, e.target.value)}
                     rows={3}
-                    className="detail-panel-input w-full px-3 py-2 rounded-md border text-sm"
+                    className="detail-panel-input w-full px-3 py-2 border text-sm"
                     style={{
                       backgroundColor: configColors.background || '#F9FAFB',
                       borderColor: configColors.borders || '#E5E7EB',
@@ -361,7 +361,7 @@ export default function DetailPanel({
                   type={inputType}
                   value={formatInputValue(value, inputType)}
                   onChange={(e) => handleFieldChange(key, parseInputValue(e.target.value, value, inputType))}
-                  className="detail-panel-input w-full px-3 py-2 rounded-md border text-sm"
+                  className="detail-panel-input w-full px-3 py-2 border text-sm"
                   style={{
                     backgroundColor: configColors.background || '#F9FAFB',
                     borderColor: configColors.borders || '#E5E7EB',
@@ -443,7 +443,7 @@ export default function DetailPanel({
                       value={String(cfValue || '')}
                       onChange={e => handleCustomFieldChange(e.target.value)}
                       rows={2}
-                      className="detail-panel-input w-full px-3 py-2 rounded-md border text-sm"
+                      className="detail-panel-input w-full px-3 py-2 border text-sm"
                       style={{
                         backgroundColor: configColors.background || '#F9FAFB',
                         borderColor: configColors.borders || '#E5E7EB',
@@ -471,7 +471,7 @@ export default function DetailPanel({
                         : e.target.value
                     )}
                     step={cf.field_type === 'currency' ? '0.01' : undefined}
-                    className="detail-panel-input w-full px-3 py-2 rounded-md border text-sm"
+                    className="detail-panel-input w-full px-3 py-2 border text-sm"
                     style={{
                       backgroundColor: configColors.background || '#F9FAFB',
                       borderColor: configColors.borders || '#E5E7EB',
@@ -529,7 +529,7 @@ export default function DetailPanel({
               generateInvoicePDF(editedRecord);
               toast.success('PDF downloaded');
             }}
-            className="px-3 py-2 rounded-md text-sm border transition-opacity hover:opacity-80"
+            className="px-3 py-2 text-sm border transition-opacity hover:opacity-80"
             style={{
               borderColor: configColors.borders || '#E5E7EB',
               color: configColors.text || '#374151',
@@ -544,7 +544,7 @@ export default function DetailPanel({
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
             style={{
               backgroundColor: showDeleteConfirm ? '#DC2626' : 'transparent',
               color: showDeleteConfirm ? '#FFFFFF' : '#DC2626',
@@ -557,7 +557,7 @@ export default function DetailPanel({
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex-1 px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
           style={{
             backgroundColor: buttonBg,
             color: buttonText,

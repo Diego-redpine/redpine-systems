@@ -91,14 +91,14 @@ function ToolButton({ icon: Icon, label, active, onClick, theme = 'light', disab
       onClick={onClick}
       disabled={disabled}
       title={label}
-      className={`p-2 rounded-lg transition-colors ${
+      className={`p-2 transition-colors ${
         disabled
           ? 'opacity-30 cursor-not-allowed'
           : active
             ? ''
             : 'text-gray-600 hover:bg-gray-200 hover:text-gray-800'
       }`}
-      style={active && !disabled ? { backgroundColor: `${accentColor}20`, color: accentColor } : undefined}
+      style={active && !disabled ? { backgroundColor: '#F3F4F6', color: '#1A1A1A' } : undefined}
     >
       <Icon className="w-4 h-4" />
     </button>
@@ -171,7 +171,7 @@ export default function ImageEditorModal({
 
       {/* Modal */}
       <div
-        className="relative w-[90vw] max-w-4xl h-[85vh] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-[90vw] max-w-4xl h-[85vh] shadow-2xl flex flex-col overflow-hidden"
         style={{ backgroundColor: '#ffffff' }}
       >
         {/* Header */}
@@ -180,14 +180,14 @@ export default function ImageEditorModal({
           style={{ borderColor: '#E5E7EB' }}
         >
           <h2
-            className="text-sm font-semibold font-['Inter'] uppercase tracking-wider"
+            className="text-sm font-semibold font-['Fira_Code'] uppercase tracking-wider"
             style={{ color: '#1A1A1A' }}
           >
             Image Editor
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors hover:bg-gray-100"
+            className="p-1.5 transition-colors hover:bg-gray-100"
             style={{ color: '#6B7280' }}
           >
             <X className="w-5 h-5" />
@@ -263,7 +263,7 @@ export default function ImageEditorModal({
               accentColor={accentColor}
             />
             <span
-              className="px-2 text-xs font-['Inter']"
+              className="px-2 text-xs font-['Fira_Code']"
               style={{ color: '#6B7280' }}
             >
               {rotation}&deg;
@@ -283,7 +283,7 @@ export default function ImageEditorModal({
               disabled={zoom <= 25}
             />
             <span
-              className="w-12 text-center text-xs font-['Inter']"
+              className="w-12 text-center text-xs font-['Fira_Code']"
               style={{ color: '#6B7280' }}
             >
               {zoom}%
@@ -303,7 +303,7 @@ export default function ImageEditorModal({
           {/* Reset button */}
           <button
             onClick={handleReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-['Inter'] transition-colors hover:bg-gray-100"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-['Fira_Code'] transition-colors hover:bg-gray-100"
             style={{ color: '#6B7280' }}
           >
             <Undo2 className="w-3.5 h-3.5" />
@@ -387,7 +387,7 @@ export default function ImageEditorModal({
               style={{ borderColor: '#E5E7EB', backgroundColor: '#ffffff' }}
             >
               <h3
-                className="text-xs font-semibold font-['Inter'] uppercase tracking-wider mb-3"
+                className="text-xs font-semibold font-['Fira_Code'] uppercase tracking-wider mb-3"
                 style={{ color: '#6B7280' }}
               >
                 Aspect Ratio
@@ -397,12 +397,12 @@ export default function ImageEditorModal({
                   <button
                     key={preset.id}
                     onClick={() => setCropPreset(preset.id)}
-                    className={`w-full px-3 py-2 rounded-lg text-xs font-['Inter'] text-left transition-colors ${
+                    className={`w-full px-3 py-2 text-xs font-['Fira_Code'] text-left transition-colors ${
                       cropPreset === preset.id
                         ? ''
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
                     }`}
-                    style={cropPreset === preset.id ? { backgroundColor: `${accentColor}20`, color: accentColor } : undefined}
+                    style={cropPreset === preset.id ? { backgroundColor: '#F3F4F6', color: '#1A1A1A' } : undefined}
                   >
                     {preset.label}
                   </button>
@@ -419,15 +419,15 @@ export default function ImageEditorModal({
         >
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-['Inter'] transition-colors hover:bg-gray-100"
+            className="px-4 py-2 text-sm font-['Fira_Code'] transition-colors hover:bg-gray-100"
             style={{ color: '#6B7280' }}
           >
             Cancel
           </button>
           <button
             onClick={handleApply}
-            className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-['Inter'] transition-colors hover:opacity-90"
-            style={{ backgroundColor: accentColor }}
+            className="flex items-center gap-2 px-4 py-2 text-white text-sm font-['Fira_Code'] transition-colors hover:opacity-90"
+            style={{ backgroundColor: '#1A1A1A' }}
           >
             <Check className="w-4 h-4" />
             Apply Changes

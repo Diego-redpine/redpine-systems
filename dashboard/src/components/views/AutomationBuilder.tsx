@@ -138,7 +138,7 @@ export default function AutomationBuilder({
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="e.g., Welcome new clients"
-          className="w-full px-3 py-2 rounded-lg border text-sm"
+          className="w-full px-3 py-2 border text-sm"
           style={{ borderColor, color: textColor, backgroundColor: cardBg }}
         />
       </div>
@@ -149,7 +149,7 @@ export default function AutomationBuilder({
           onChange={e => setDescription(e.target.value)}
           placeholder="What does this automation do?"
           rows={2}
-          className="w-full px-3 py-2 rounded-lg border text-sm"
+          className="w-full px-3 py-2 border text-sm"
           style={{ borderColor, color: textColor, backgroundColor: cardBg }}
         />
       </div>
@@ -173,7 +173,7 @@ export default function AutomationBuilder({
           <button
             key={trigger.type}
             onClick={() => setTriggerType(trigger.type)}
-            className="p-3 rounded-xl border text-left transition-all"
+            className="p-3 border text-left transition-all"
             style={{
               borderColor: triggerType === trigger.type ? buttonBg : borderColor,
               backgroundColor: triggerType === trigger.type ? `${buttonBg}10` : cardBg,
@@ -194,7 +194,7 @@ export default function AutomationBuilder({
           <select
             value={String(triggerConfig.entity || 'clients')}
             onChange={e => setTriggerConfig(prev => ({ ...prev, entity: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border text-sm"
+            className="w-full px-3 py-2 border text-sm"
             style={{ borderColor, color: textColor, backgroundColor: cardBg }}
           >
             {ENTITY_OPTIONS.map(e => (
@@ -212,7 +212,7 @@ export default function AutomationBuilder({
             value={String(triggerConfig.to_status || '')}
             onChange={e => setTriggerConfig(prev => ({ ...prev, to_status: e.target.value }))}
             placeholder="e.g., completed, overdue"
-            className="w-full px-3 py-2 rounded-lg border text-sm"
+            className="w-full px-3 py-2 border text-sm"
             style={{ borderColor, color: textColor, backgroundColor: cardBg }}
           />
         </div>
@@ -224,7 +224,7 @@ export default function AutomationBuilder({
           <select
             value={String(triggerConfig.frequency || 'daily')}
             onChange={e => setTriggerConfig(prev => ({ ...prev, frequency: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border text-sm"
+            className="w-full px-3 py-2 border text-sm"
             style={{ borderColor, color: textColor, backgroundColor: cardBg }}
           >
             {SCHEDULE_OPTIONS.map(o => (
@@ -248,7 +248,7 @@ export default function AutomationBuilder({
             return (
               <div
                 key={action.id}
-                className="p-3 rounded-xl border"
+                className="p-3 border"
                 style={{ borderColor, backgroundColor: cardBg }}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -273,7 +273,7 @@ export default function AutomationBuilder({
                       value={String(action.config.to || '')}
                       onChange={e => updateActionConfig(action.id, 'to', e.target.value)}
                       placeholder="Recipient (e.g., {{record.email}})"
-                      className="w-full px-2 py-1.5 rounded-lg border text-xs"
+                      className="w-full px-2 py-1.5 border text-xs"
                       style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                     />
                     <input
@@ -281,7 +281,7 @@ export default function AutomationBuilder({
                       value={String(action.config.subject || '')}
                       onChange={e => updateActionConfig(action.id, 'subject', e.target.value)}
                       placeholder="Subject line"
-                      className="w-full px-2 py-1.5 rounded-lg border text-xs"
+                      className="w-full px-2 py-1.5 border text-xs"
                       style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                     />
                   </div>
@@ -293,7 +293,7 @@ export default function AutomationBuilder({
                     value={String(action.config.to || '')}
                     onChange={e => updateActionConfig(action.id, 'to', e.target.value)}
                     placeholder="Phone (e.g., {{record.phone}})"
-                    className="w-full px-2 py-1.5 rounded-lg border text-xs"
+                    className="w-full px-2 py-1.5 border text-xs"
                     style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                   />
                 )}
@@ -304,7 +304,7 @@ export default function AutomationBuilder({
                     value={String(action.config.title || '')}
                     onChange={e => updateActionConfig(action.id, 'title', e.target.value)}
                     placeholder="Task title (e.g., Follow up with {{record.name}})"
-                    className="w-full px-2 py-1.5 rounded-lg border text-xs"
+                    className="w-full px-2 py-1.5 border text-xs"
                     style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                   />
                 )}
@@ -313,7 +313,7 @@ export default function AutomationBuilder({
                   <select
                     value={String(action.config.entity || '')}
                     onChange={e => updateActionConfig(action.id, 'entity', e.target.value)}
-                    className="w-full px-2 py-1.5 rounded-lg border text-xs"
+                    className="w-full px-2 py-1.5 border text-xs"
                     style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                   >
                     <option value="">Select entity...</option>
@@ -329,7 +329,7 @@ export default function AutomationBuilder({
                     value={String(action.config.url || '')}
                     onChange={e => updateActionConfig(action.id, 'url', e.target.value)}
                     placeholder="https://..."
-                    className="w-full px-2 py-1.5 rounded-lg border text-xs"
+                    className="w-full px-2 py-1.5 border text-xs"
                     style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                   />
                 )}
@@ -341,13 +341,13 @@ export default function AutomationBuilder({
                       value={String(action.config.duration || '')}
                       onChange={e => updateActionConfig(action.id, 'duration', parseInt(e.target.value) || 0)}
                       placeholder="Duration"
-                      className="w-20 px-2 py-1.5 rounded-lg border text-xs"
+                      className="w-20 px-2 py-1.5 border text-xs"
                       style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                     />
                     <select
                       value={String(action.config.unit || 'minutes')}
                       onChange={e => updateActionConfig(action.id, 'unit', e.target.value)}
-                      className="px-2 py-1.5 rounded-lg border text-xs"
+                      className="px-2 py-1.5 border text-xs"
                       style={{ borderColor, color: textColor, backgroundColor: cardBg }}
                     >
                       <option value="minutes">Minutes</option>
@@ -370,7 +370,7 @@ export default function AutomationBuilder({
             <button
               key={action.type}
               onClick={() => addAction(action.type)}
-              className="px-2.5 py-1.5 rounded-lg border text-xs transition-colors hover:opacity-80"
+              className="px-2.5 py-1.5 border text-xs transition-colors hover:opacity-80"
               style={{ borderColor, color: textColor, backgroundColor: cardBg }}
             >
               {action.icon} {action.label}
@@ -385,7 +385,7 @@ export default function AutomationBuilder({
     const triggerDef = TRIGGER_TYPES.find(t => t.type === triggerType);
     return (
       <div className="space-y-4">
-        <div className="p-4 rounded-xl border" style={{ borderColor, backgroundColor: `${buttonBg}05` }}>
+        <div className="p-4 border" style={{ borderColor, backgroundColor: `${buttonBg}05` }}>
           <h3 className="text-sm font-bold mb-2" style={{ color: headingColor }}>{name || '(Untitled)'}</h3>
           {description && <p className="text-xs opacity-60 mb-3" style={{ color: textColor }}>{description}</p>}
 
@@ -416,7 +416,7 @@ export default function AutomationBuilder({
 
         <div className="flex items-center gap-2">
           <div
-            className="w-2 h-2 rounded-full"
+            className="w-2 h-2 "
             style={{ backgroundColor: enabled ? '#10B981' : '#9CA3AF' }}
           />
           <span className="text-sm" style={{ color: textColor }}>
@@ -446,7 +446,7 @@ export default function AutomationBuilder({
             <button
               key={i}
               onClick={() => i <= step && setStep(i)}
-              className="flex-1 text-center py-1.5 text-xs font-medium rounded-lg transition-colors"
+              className="flex-1 text-center py-1.5 text-xs font-medium transition-colors"
               style={{
                 backgroundColor: i === step ? buttonBg : i < step ? `${buttonBg}20` : `${borderColor}`,
                 color: i === step ? buttonText : textColor,
@@ -467,7 +467,7 @@ export default function AutomationBuilder({
         <div className="flex justify-between mt-5 pt-4 border-t" style={{ borderColor }}>
           <button
             onClick={() => step > 0 ? setStep(step - 1) : onClose()}
-            className="px-4 py-2 rounded-lg border text-sm"
+            className="px-4 py-2 border text-sm"
             style={{ borderColor, color: textColor }}
           >
             {step === 0 ? 'Cancel' : 'Back'}
@@ -477,7 +477,7 @@ export default function AutomationBuilder({
             <button
               onClick={() => setStep(step + 1)}
               disabled={step === 0 && !name}
-              className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               Next
@@ -486,7 +486,7 @@ export default function AutomationBuilder({
             <button
               onClick={handleSave}
               disabled={isSaving || !name}
-              className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               {isSaving ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Automation'}

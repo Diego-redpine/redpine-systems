@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
   const file = formData.get('file') as File | null;
   const albumId = formData.get('album_id') as string | null;
   const caption = formData.get('caption') as string | null;
+  const includeInGalleryRaw = formData.get('include_in_gallery');
+  const includeInGallery = includeInGalleryRaw === null ? true : includeInGalleryRaw !== 'false';
 
   if (!file) {
     return NextResponse.json({ error: 'file is required' }, { status: 400 });
@@ -96,6 +98,7 @@ export async function POST(request: NextRequest) {
       file_size: file.size,
       file_type: file.type,
       original_name: file.name,
+      include_in_gallery: includeInGallery,
     })
     .select()
     .single();

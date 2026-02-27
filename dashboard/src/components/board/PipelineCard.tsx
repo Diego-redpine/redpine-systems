@@ -19,7 +19,7 @@ export function PipelineCard({ stages, accentColor = '#3B82F6', tvMode = false }
   const maxCount = Math.max(...stages.map((s) => s.count), 1);
 
   return (
-    <div className="rounded-2xl p-5" style={{ backgroundColor: bg }}>
+    <div className="p-5" style={{ backgroundColor: bg }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className={`font-semibold ${tvMode ? 'text-xl' : 'text-lg'}`} style={{ color: textPrimary }}>
@@ -42,7 +42,7 @@ export function PipelineCard({ stages, accentColor = '#3B82F6', tvMode = false }
             <div key={i} className={`flex items-center gap-3 ${fontSize}`}>
               {/* Color dot */}
               <span
-                className="shrink-0 rounded-full"
+                className="shrink-0 "
                 style={{
                   width: 12,
                   height: 12,
@@ -63,7 +63,7 @@ export function PipelineCard({ stages, accentColor = '#3B82F6', tvMode = false }
               {/* Mini bar */}
               <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: barBg }}>
                 <div
-                  className="h-full rounded-full transition-all"
+                  className="h-full transition-all"
                   style={{
                     width: `${barWidthPct}%`,
                     backgroundColor: stage.color,

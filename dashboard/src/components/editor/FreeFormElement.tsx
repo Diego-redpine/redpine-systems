@@ -350,6 +350,44 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
       );
     }
 
+    case 'videoEmbed': {
+      const videoUrl = (properties.videoUrl as string) || '';
+      const borderRadius = (properties.borderRadius as number) || 8;
+      // Convert YouTube/Vimeo URLs to embed format
+      let embedUrl = '';
+      if (videoUrl) {
+        const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
+        const vimeoMatch = videoUrl.match(/(?:vimeo\.com\/)(\d+)/);
+        if (ytMatch) {
+          embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+        } else if (vimeoMatch) {
+          embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+        }
+      }
+      if (!embedUrl) {
+        return (
+          <div
+            className="w-full h-full flex flex-col items-center justify-center bg-zinc-100 border border-zinc-200 text-zinc-400"
+            style={{ borderRadius }}
+          >
+            <svg className="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z" />
+            </svg>
+            <span className="text-xs font-medium">Paste YouTube or Vimeo URL</span>
+          </div>
+        );
+      }
+      return (
+        <iframe
+          src={embedUrl}
+          className="w-full h-full"
+          style={{ borderRadius, border: 'none' }}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      );
+    }
+
     case 'button':
       return (
         <button
@@ -565,7 +603,7 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
           case 'checkbox':
             return (
               <label key={field.id} className="flex items-center gap-2" style={{ color: labelColor, fontFamily }}>
-                <input type="checkbox" className="w-4 h-4 rounded" disabled />
+                <input type="checkbox" className="w-4 h-4 accent-black" disabled />
                 <span className="text-sm">{field.label}</span>
               </label>
             );
@@ -645,61 +683,375 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
     }
 
     case 'frame': {
-      // Frame element - shape masks for images (circle, square, rounded, oval only)
+      // Frame element - shape masks for images (all 15 frame types)
       const frameType = properties.frameType || 'circle';
       const imageSrc = properties.imageSrc || '';
       const frameBorderWidth = properties.borderWidth || 0;
       const frameBorderColor = properties.borderColor || '#e5e7eb';
+      const frameObjectFit = (properties.objectFit as CSSProperties['objectFit']) || 'cover';
 
       // Shadow styles
       const frameShadowStyle = properties.shadowEnabled
         ? `${properties.shadowX || 0}px ${properties.shadowY || 4}px ${properties.shadowBlur || 12}px ${properties.shadowColor || '#000'}`
         : 'none';
 
-      // Frame clip paths for supported shapes
-      const frameClipPaths: Record<string, string> = {
+      // Reusable placeholder for empty frames
+      const framePlaceholder = (
+        <div className={`w-full h-full flex items-center justify-center ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
+          <div className={`text-center ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+            <svg className="w-8 h-8 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-[10px] font-['Inter']">Drop image</span>
+          </div>
+        </div>
+      );
+
+      // Reusable image element
+      const frameImage = imageSrc ? (
+        <img
+          src={imageSrc}
+          alt={properties.imageAlt}
+          className="w-full h-full"
+          style={{ objectFit: frameObjectFit }}
+        />
+      ) : null;
+
+      // Common border style for user-configured border
+      const frameUserBorder = frameBorderWidth > 0 ? `${frameBorderWidth}px solid ${frameBorderColor}` : 'none';
+
+      // ── Geometric clip-path shapes ──────────────────────────────────────
+      const clipPathFrames: Record<string, string> = {
         circle: 'circle(50% at 50% 50%)',
-        square: 'none',
-        rounded: 'none',
         oval: 'ellipse(50% 40% at 50% 50%)',
+        triangle: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+        hexagon: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
       };
 
-      const frameBorderRadiusMap: Record<string, number> = {
-        square: 0,
-        rounded: 16,
-      };
+      if (clipPathFrames[frameType]) {
+        return (
+          <div
+            className="w-full h-full overflow-hidden flex items-center justify-center"
+            style={{
+              clipPath: clipPathFrames[frameType],
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {frameImage || framePlaceholder}
+          </div>
+        );
+      }
 
-      // Standard shape frames (circle, square, rounded, oval)
-      const clipPath = frameClipPaths[frameType] || 'none';
-      const radius = frameBorderRadiusMap[frameType] || 0;
+      // ── Simple border-radius shapes ─────────────────────────────────────
+      if (frameType === 'square') {
+        return (
+          <div
+            className="w-full h-full overflow-hidden flex items-center justify-center"
+            style={{
+              borderRadius: 0,
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {frameImage || framePlaceholder}
+          </div>
+        );
+      }
 
+      if (frameType === 'rounded') {
+        return (
+          <div
+            className="w-full h-full overflow-hidden flex items-center justify-center"
+            style={{
+              borderRadius: 16,
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {frameImage || framePlaceholder}
+          </div>
+        );
+      }
+
+      // ── Blob (organic shape) ────────────────────────────────────────────
+      if (frameType === 'blob') {
+        return (
+          <div
+            className="w-full h-full overflow-hidden flex items-center justify-center"
+            style={{
+              borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {frameImage || framePlaceholder}
+          </div>
+        );
+      }
+
+      // ── Torn paper (irregular edges) ────────────────────────────────────
+      if (frameType === 'torn') {
+        return (
+          <div
+            className="w-full h-full overflow-hidden flex items-center justify-center"
+            style={{
+              borderRadius: '2% 98% 97% 3% / 98% 2% 98% 2%',
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {frameImage || framePlaceholder}
+          </div>
+        );
+      }
+
+      // ── Device frames ───────────────────────────────────────────────────
+
+      // Phone frame
+      if (frameType === 'phone') {
+        return (
+          <div
+            className="w-full h-full flex flex-col"
+            style={{
+              backgroundColor: '#1a1a1a',
+              borderRadius: 24,
+              padding: '28px 8px 12px 8px',
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+              position: 'relative',
+            }}
+          >
+            {/* Notch indicator */}
+            <div style={{
+              position: 'absolute',
+              top: 10,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 40,
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: '#333',
+            }} />
+            {/* Screen area */}
+            <div style={{ flex: 1, borderRadius: 16, overflow: 'hidden', position: 'relative' }}>
+              {frameImage || framePlaceholder}
+            </div>
+          </div>
+        );
+      }
+
+      // Laptop frame
+      if (frameType === 'laptop') {
+        return (
+          <div
+            className="w-full h-full flex flex-col"
+            style={{
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {/* Screen bezel */}
+            <div style={{
+              flex: 1,
+              backgroundColor: '#1a1a1a',
+              borderRadius: '8px 8px 0 0',
+              padding: '8px 6px 4px 6px',
+              display: 'flex',
+            }}>
+              <div style={{ flex: 1, borderRadius: 4, overflow: 'hidden' }}>
+                {frameImage || framePlaceholder}
+              </div>
+            </div>
+            {/* Keyboard base */}
+            <div style={{
+              height: 20,
+              backgroundColor: '#1a1a1a',
+              borderRadius: '0 0 8px 8px',
+              borderTop: '1px solid #333',
+            }} />
+          </div>
+        );
+      }
+
+      // Tablet frame
+      if (frameType === 'tablet') {
+        return (
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundColor: '#1a1a1a',
+              borderRadius: 12,
+              padding: 6,
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            <div style={{ width: '100%', height: '100%', borderRadius: 6, overflow: 'hidden' }}>
+              {frameImage || framePlaceholder}
+            </div>
+          </div>
+        );
+      }
+
+      // Monitor frame
+      if (frameType === 'monitor') {
+        return (
+          <div
+            className="w-full h-full flex flex-col"
+            style={{
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {/* Screen bezel */}
+            <div style={{
+              flex: 1,
+              backgroundColor: '#1a1a1a',
+              borderRadius: '4px 4px 0 0',
+              padding: '6px 6px 8px 6px',
+              display: 'flex',
+            }}>
+              <div style={{ flex: 1, borderRadius: 2, overflow: 'hidden' }}>
+                {frameImage || framePlaceholder}
+              </div>
+            </div>
+            {/* Stand neck */}
+            <div style={{
+              width: 2,
+              height: 8,
+              backgroundColor: '#1a1a1a',
+              margin: '0 auto',
+            }} />
+            {/* Stand base */}
+            <div style={{
+              width: '40%',
+              height: 6,
+              backgroundColor: '#1a1a1a',
+              borderRadius: '0 0 3px 3px',
+              margin: '0 auto',
+            }} />
+          </div>
+        );
+      }
+
+      // ── Photo frames ────────────────────────────────────────────────────
+
+      // Polaroid frame
+      if (frameType === 'polaroid') {
+        return (
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundColor: '#ffffff',
+              padding: '8px 8px 40px 8px',
+              boxShadow: frameShadowStyle !== 'none' ? frameShadowStyle : '0 2px 8px rgba(0,0,0,0.12)',
+              border: frameUserBorder,
+            }}
+          >
+            <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+              {frameImage || framePlaceholder}
+            </div>
+          </div>
+        );
+      }
+
+      // Filmstrip frame
+      if (frameType === 'filmstrip') {
+        const sprocketHole = (key: string) => (
+          <div
+            key={key}
+            style={{
+              width: 6,
+              height: 6,
+              backgroundColor: 'rgba(255,255,255,0.3)',
+              borderRadius: 1,
+            }}
+          />
+        );
+
+        return (
+          <div
+            className="w-full h-full flex flex-col"
+            style={{
+              backgroundColor: '#1a1a1a',
+              boxShadow: frameShadowStyle,
+              border: frameUserBorder,
+            }}
+          >
+            {/* Top strip with sprocket holes */}
+            <div style={{
+              height: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              flexShrink: 0,
+            }}>
+              {sprocketHole('t1')}{sprocketHole('t2')}{sprocketHole('t3')}{sprocketHole('t4')}
+            </div>
+            {/* Image area */}
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              {frameImage || framePlaceholder}
+            </div>
+            {/* Bottom strip with sprocket holes */}
+            <div style={{
+              height: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              flexShrink: 0,
+            }}>
+              {sprocketHole('b1')}{sprocketHole('b2')}{sprocketHole('b3')}{sprocketHole('b4')}
+            </div>
+          </div>
+        );
+      }
+
+      // Vintage frame
+      if (frameType === 'vintage') {
+        return (
+          <div
+            className="w-full h-full"
+            style={{
+              border: `3px solid #8B7355`,
+              borderRadius: 4,
+              padding: 4,
+              boxShadow: frameShadowStyle,
+            }}
+          >
+            <div style={{
+              width: '100%',
+              height: '100%',
+              border: '2px solid #a08b6a',
+              borderRadius: 2,
+              overflow: 'hidden',
+            }}>
+              {imageSrc ? (
+                <img
+                  src={imageSrc}
+                  alt={properties.imageAlt}
+                  className="w-full h-full"
+                  style={{
+                    objectFit: frameObjectFit,
+                    filter: 'sepia(0.15)',
+                  }}
+                />
+              ) : framePlaceholder}
+            </div>
+          </div>
+        );
+      }
+
+      // ── Fallback: render as plain rectangle for any unknown frame type ──
       return (
         <div
           className="w-full h-full overflow-hidden flex items-center justify-center"
           style={{
-            clipPath: clipPath !== 'none' ? clipPath : undefined,
-            borderRadius: radius,
             boxShadow: frameShadowStyle,
-            border: frameBorderWidth > 0 ? `${frameBorderWidth}px solid ${frameBorderColor}` : 'none',
+            border: frameUserBorder,
           }}
         >
-          {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={properties.imageAlt}
-              className="w-full h-full"
-              style={{ objectFit: (properties.objectFit as CSSProperties['objectFit']) || 'cover' }}
-            />
-          ) : (
-            <div className={`w-full h-full flex items-center justify-center ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
-              <div className={`text-center ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                <svg className="w-8 h-8 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="text-[10px] font-['Inter']">Drop image</span>
-              </div>
-            </div>
-          )}
+          {frameImage || framePlaceholder}
         </div>
       );
     }

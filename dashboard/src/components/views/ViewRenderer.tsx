@@ -807,7 +807,7 @@ export default function ViewRenderer({
       <div className="flex items-center gap-2 mb-4">
         {/* View toggle */}
         {availableViews.length > 1 && (
-          <div data-tour-id="view-toggle" className="flex items-center gap-1 mr-auto bg-gray-100 rounded-lg p-1">
+          <div data-tour-id="view-toggle" className="flex items-center gap-1 mr-auto p-1" style={{ backgroundColor: configColors.cards || '#F3F4F6' }}>
             {availableViews.map((vt) => {
               const isActive = currentView === vt;
               const btnColor = configColors.buttons || '#1A1A1A';
@@ -815,11 +815,11 @@ export default function ViewRenderer({
                 <button
                   key={vt}
                   onClick={() => handleViewChange(vt)}
-                  className="w-8 h-8 rounded-md flex items-center justify-center transition-colors"
+                  className="w-8 h-8 flex items-center justify-center transition-colors"
                   title={`${vt.charAt(0).toUpperCase() + vt.slice(1)} view`}
                   style={{
                     backgroundColor: isActive ? btnColor : 'transparent',
-                    color: isActive ? getContrastText(btnColor) : '#6B7280',
+                    color: isActive ? getContrastText(btnColor) : (configColors.icons || '#6B7280'),
                   }}
                 >
                   <ViewIcon type={vt} />
@@ -834,7 +834,7 @@ export default function ViewRenderer({
           <button
             data-tour-id="edit-stages-btn"
             onClick={() => setIsStageManagerOpen(true)}
-            className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70"
+            className="px-3 py-2 text-sm border transition-opacity hover:opacity-70"
             style={{
               borderColor: configColors.borders || '#E5E7EB',
               color: textColor,
@@ -846,7 +846,7 @@ export default function ViewRenderer({
         {currentView === 'table' && (
           <button
             onClick={() => setIsImportOpen(true)}
-            className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70"
+            className="px-3 py-2 text-sm border transition-opacity hover:opacity-70"
             style={{
               borderColor: configColors.borders || '#E5E7EB',
               color: textColor,
@@ -858,7 +858,7 @@ export default function ViewRenderer({
         {currentView === 'table' && data.length > 0 && (
           <button
             onClick={handleExport}
-            className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70"
+            className="px-3 py-2 text-sm border transition-opacity hover:opacity-70"
             style={{
               borderColor: configColors.borders || '#E5E7EB',
               color: textColor,
@@ -871,7 +871,7 @@ export default function ViewRenderer({
           <>
             <button
               onClick={() => setIsBookingSetupOpen(true)}
-              className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70 flex items-center gap-1.5"
+              className="px-3 py-2 text-sm border transition-opacity hover:opacity-70 flex items-center gap-1.5"
               style={{
                 borderColor: configColors.borders || '#E5E7EB',
                 color: textColor,
@@ -886,7 +886,7 @@ export default function ViewRenderer({
             </button>
             <button
               onClick={() => setIsBlockTimeOpen(true)}
-              className="px-3 py-2 text-sm rounded-lg border transition-opacity hover:opacity-70 flex items-center gap-1.5"
+              className="px-3 py-2 text-sm border transition-opacity hover:opacity-70 flex items-center gap-1.5"
               style={{
                 borderColor: configColors.borders || '#E5E7EB',
                 color: textColor,

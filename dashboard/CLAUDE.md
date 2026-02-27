@@ -33,6 +33,42 @@ We build infrastructure and structure. Users control appearance through the colo
 4. **Fields from entity-fields.ts** — Views never hardcode which fields to display.
 5. **No new UI libraries** — Tailwind utility classes only. No Material UI, Ant Design, Chakra.
 6. **Match the design reference** — All UI work should trend toward `design-reference/reference-dashboard.webp`.
+7. **DOMAIN ROUTING — DO NOT CHANGE** — See "Domain Architecture" section below.
+
+---
+
+## Domain Architecture — LOCKED IN, DO NOT MODIFY
+
+```
+redpine.systems             → Landing page (public, AI chat signup)
+app.redpine.systems         → Dashboard (authenticated, business owner platform)
+*.redpine.systems           → User websites (public, e.g. luxe-nails.redpine.systems)
+*.redpine.systems/portal    → Client portals (magic link auth)
+```
+
+**DNS:** Cloudflare wildcard `*.redpine.systems` → Vercel
+**Vercel:** Custom domains: `redpine.systems`, `*.redpine.systems`
+**Env var:** `NEXT_PUBLIC_ROOT_DOMAIN=redpine.systems`
+
+### Routing rules (in `src/middleware.ts`):
+
+| Request | Handled by | Behavior |
+|---------|-----------|----------|
+| `redpine.systems/*` | `handleMainDomain()` | Landing page (public) or dashboard (auth required) |
+| `app.redpine.systems/*` | `handleMainDomain()` | Dashboard — identical to root domain auth flow |
+| `luxe-nails.redpine.systems/` | `handleUserSubdomain()` | Rewrites to `/site/luxe-nails` |
+| `luxe-nails.redpine.systems/portal` | `handleUserSubdomain()` | Rewrites to `/portal/luxe-nails` |
+| `luxe-nails.redpine.systems/book` | `handleUserSubdomain()` | Rewrites to `/book/luxe-nails` |
+| `luxe-nails.redpine.systems/api/subdomain` | `handleUserSubdomain()` | Passes through with `x-subdomain` header |
+
+### What NEVER changes:
+- The `APP_SUBDOMAIN = 'app'` constant
+- The `extractSubdomain()` function
+- The rewrite pattern: `subdomain.redpine.systems/path` → `/internal-route/subdomain/path`
+- The `SUBDOMAIN_SPECIAL_PATHS` map (portal, book, order, form, review, sign, board)
+- The `x-subdomain` / `x-is-subdomain` headers on responses
+
+**If you are an AI agent reading this:** Do NOT modify `src/middleware.ts` routing logic. The DNS and Vercel config depend on this exact structure. Changing it will break all user websites and the dashboard.
 
 ---
 

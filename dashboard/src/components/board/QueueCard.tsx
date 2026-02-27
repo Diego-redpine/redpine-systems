@@ -16,7 +16,7 @@ export function QueueCard({ queue, accentColor = '#3B82F6', tvMode = false }: Qu
 
   if (queue.currentNumber === 0) {
     return (
-      <div className="rounded-2xl p-6 flex flex-col items-center justify-center min-h-[200px]" style={{ backgroundColor: bg }}>
+      <div className="p-6 flex flex-col items-center justify-center min-h-[200px]" style={{ backgroundColor: bg }}>
         <p className={`${tvMode ? 'text-xl' : 'text-lg'} font-medium`} style={{ color: textSecondary }}>
           No active queue
         </p>
@@ -27,7 +27,7 @@ export function QueueCard({ queue, accentColor = '#3B82F6', tvMode = false }: Qu
   const nextThree = queue.waiting.slice(0, 3);
 
   return (
-    <div className="rounded-2xl p-6 flex flex-col items-center text-center" style={{ backgroundColor: bg }}>
+    <div className="p-6 flex flex-col items-center text-center" style={{ backgroundColor: bg }}>
       {/* NOW SERVING label */}
       <span
         className="text-sm font-semibold uppercase tracking-widest mb-2"

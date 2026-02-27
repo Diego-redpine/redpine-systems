@@ -218,7 +218,7 @@ export default function AddEventModal({
           {[1, 2].map((s) => (
             <div
               key={s}
-              className="h-1.5 rounded-full transition-all"
+              className="h-1.5 transition-all"
               style={{
                 width: s === step ? 32 : 16,
                 backgroundColor: s <= step ? buttonBg : borderColor,
@@ -243,14 +243,14 @@ export default function AddEventModal({
                     <button
                       key={opt.value}
                       onClick={() => setData(d => ({ ...d, event_type: opt.value }))}
-                      className="flex flex-col items-center gap-3 p-5 rounded-xl border-2 text-center transition-all hover:shadow-md"
+                      className="flex flex-col items-center gap-3 p-5 border-2 text-center transition-all hover:shadow-md"
                       style={{
                         borderColor: selected ? buttonBg : borderColor,
                         backgroundColor: selected ? `${buttonBg}08` : cardBg,
                         boxShadow: selected ? `0 0 0 1px ${buttonBg}` : undefined,
                       }}
                     >
-                      <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
+                      <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: `${buttonBg}15` }}>
                         <div style={{ color: buttonBg }}>
                           {opt.icon}
                         </div>
@@ -283,7 +283,7 @@ export default function AddEventModal({
                       value={data.title}
                       onChange={e => setData(d => ({ ...d, title: e.target.value }))}
                       placeholder="e.g. Haircut, Consultation, Checkup"
-                      className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-opacity-30"
+                      className="w-full px-3 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-opacity-30"
                       style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                       autoFocus
                     />
@@ -296,7 +296,7 @@ export default function AddEventModal({
                         value={data.client}
                         onChange={e => setData(d => ({ ...d, client: e.target.value }))}
                         placeholder="Client name"
-                        className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                        className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                         style={inputStyle}
                       />
                     </div>
@@ -307,7 +307,7 @@ export default function AddEventModal({
                         value={data.staff_member}
                         onChange={e => setData(d => ({ ...d, staff_member: e.target.value }))}
                         placeholder="Assigned staff"
-                        className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                        className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                         style={inputStyle}
                       />
                     </div>
@@ -324,7 +324,7 @@ export default function AddEventModal({
                       value={data.title}
                       onChange={e => setData(d => ({ ...d, title: e.target.value }))}
                       placeholder="e.g. Beginner Yoga, HIIT Training, Sparring"
-                      className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-opacity-30"
+                      className="w-full px-3 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-opacity-30"
                       style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                       autoFocus
                     />
@@ -337,7 +337,7 @@ export default function AddEventModal({
                         value={data.instructor}
                         onChange={e => setData(d => ({ ...d, instructor: e.target.value }))}
                         placeholder="Instructor name"
-                        className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                        className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                         style={inputStyle}
                       />
                     </div>
@@ -349,7 +349,7 @@ export default function AddEventModal({
                         onChange={e => setData(d => ({ ...d, max_capacity: e.target.value }))}
                         placeholder="e.g. 20"
                         min="1"
-                        className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                        className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                         style={inputStyle}
                       />
                     </div>
@@ -367,7 +367,7 @@ export default function AddEventModal({
                         value={data.employee}
                         onChange={e => setData(d => ({ ...d, employee: e.target.value }))}
                         placeholder="Employee name"
-                        className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-opacity-30"
+                        className="w-full px-3 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-opacity-30"
                         style={{ ...inputStyle, '--tw-ring-color': buttonBg } as React.CSSProperties}
                         autoFocus
                       />
@@ -379,7 +379,7 @@ export default function AddEventModal({
                         value={data.role}
                         onChange={e => setData(d => ({ ...d, role: e.target.value }))}
                         placeholder="e.g. Front Desk, Manager"
-                        className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                        className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                         style={inputStyle}
                       />
                     </div>
@@ -395,7 +395,7 @@ export default function AddEventModal({
                     type="date"
                     value={data.date}
                     onChange={e => setData(d => ({ ...d, date: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                    className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                     style={inputStyle}
                   />
                 </div>
@@ -405,7 +405,7 @@ export default function AddEventModal({
                     type="time"
                     value={data.start_time}
                     onChange={e => setData(d => ({ ...d, start_time: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                    className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                     style={inputStyle}
                   />
                 </div>
@@ -415,7 +415,7 @@ export default function AddEventModal({
                     type="time"
                     value={data.end_time}
                     onChange={e => setData(d => ({ ...d, end_time: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none"
+                    className="w-full px-3 py-2.5 border text-sm focus:outline-none"
                     style={inputStyle}
                   />
                 </div>
@@ -441,7 +441,7 @@ export default function AddEventModal({
                   onChange={e => setData(d => ({ ...d, notes: e.target.value }))}
                   placeholder="Optional notes..."
                   rows={2}
-                  className="w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none resize-none"
+                  className="w-full px-3 py-2.5 border text-sm focus:outline-none resize-none"
                   style={inputStyle}
                 />
               </div>
@@ -456,7 +456,7 @@ export default function AddEventModal({
         >
           <button
             onClick={step === 1 ? handleClose : () => setStep(1)}
-            className="px-4 py-2 rounded-lg text-sm font-medium border transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm font-medium border transition-opacity hover:opacity-70"
             style={{ borderColor, color: textColor }}
           >
             {step === 1 ? 'Cancel' : 'Back'}
@@ -466,7 +466,7 @@ export default function AddEventModal({
             <button
               onClick={handleSave}
               disabled={!isStepValid() || isSaving}
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               {isSaving ? 'Adding...' : 'Add Event'}
@@ -475,7 +475,7 @@ export default function AddEventModal({
             <button
               onClick={() => setStep(2)}
               disabled={!isStepValid()}
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: buttonBg, color: buttonText }}
             >
               Next

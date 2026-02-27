@@ -24,7 +24,7 @@ export default function SaveLaunchPopup({
   if (!isOpen) return null;
 
   const handleSaveDesign = () => {
-    router.push(configId ? `/signup?config_id=${configId}` : '/signup');
+    router.push('/');
   };
 
   const handleLaunchNow = async () => {

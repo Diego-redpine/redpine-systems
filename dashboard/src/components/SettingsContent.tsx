@@ -24,7 +24,7 @@ interface Profile {
 
 export default function SettingsContent({ colors, defaultTab }: { colors: DashboardColors; defaultTab?: 'profile' | 'settings' | 'activity' }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -267,7 +267,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
     );
   }
 
-  const inputClass = 'w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20';
+  const inputClass = 'w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-primary/20';
 
   const businessFields = [
     { key: 'business_name', label: 'Business Name' },
@@ -285,7 +285,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
           <button
             key={tab}
             onClick={() => setActiveSubTab(tab)}
-            className="px-4 py-2 text-sm font-medium rounded-full transition-colors"
+            className="px-4 py-2 text-sm font-medium transition-colors"
             style={{
               backgroundColor: activeSubTab === tab ? buttonColor : 'transparent',
               color: activeSubTab === tab ? buttonTextColor : textMuted,
@@ -302,13 +302,13 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       {activeSubTab === 'profile' && <>
       {/* Save confirmation */}
       {saveMessage && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-lg animate-fadeIn">
+        <div className="fixed top-4 right-4 z-50 px-4 py-2 bg-emerald-500 text-white text-sm font-medium shadow-lg animate-fadeIn">
           {saveMessage}
         </div>
       )}
 
       {/* 1. Business Info */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Business Info</h3>
         <div className="space-y-1">
           {businessFields.map((field, i) => {
@@ -340,14 +340,14 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
                     <button
                       onClick={() => saveField(field.key, editValue)}
                       disabled={isSaving}
-                      className="px-3 py-1.5 text-xs font-medium rounded-lg text-white"
+                      className="px-3 py-1.5 text-xs font-medium text-white"
                       style={{ backgroundColor: buttonColor }}
                     >
                       {isSaving ? '...' : 'Save'}
                     </button>
                     <button
                       onClick={() => setEditField(null)}
-                      className="px-3 py-1.5 text-xs font-medium rounded-lg border"
+                      className="px-3 py-1.5 text-xs font-medium border"
                       style={{ borderColor, color: textMuted }}
                     >
                       Cancel
@@ -361,7 +361,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
                     {!field.readOnly && (
                       <button
                         onClick={() => { setEditField(field.key); setEditValue(String(value)); }}
-                        className="text-xs px-2 py-1 rounded-md transition-colors hover:bg-gray-100"
+                        className="text-xs px-2 py-1 transition-colors hover:bg-gray-100"
                         style={{ color: textMuted }}
                       >
                         Edit
@@ -376,13 +376,13 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       </div>
 
       {/* 2. Account */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-4" style={{ color: textMain }}>Account</h3>
 
         {showPasswordForm ? (
           <div className="space-y-3">
             {passwordError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
                 {passwordError}
               </div>
             )}
@@ -411,14 +411,14 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
             <div className="flex gap-2">
               <button
                 onClick={handlePasswordChange}
-                className="px-4 py-2 text-sm font-medium rounded-lg text-white"
+                className="px-4 py-2 text-sm font-medium text-white"
                 style={{ backgroundColor: buttonColor }}
               >
                 Update Password
               </button>
               <button
                 onClick={() => { setShowPasswordForm(false); setPasswordError(''); }}
-                className="px-4 py-2 text-sm font-medium rounded-lg border"
+                className="px-4 py-2 text-sm font-medium border"
                 style={{ borderColor, color: textMuted }}
               >
                 Cancel
@@ -428,7 +428,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
         ) : (
           <button
             onClick={() => setShowPasswordForm(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium border transition-colors hover:bg-gray-50"
             style={{ borderColor, color: textMain }}
           >
             Change Password
@@ -437,7 +437,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       </div>
 
       {/* 3. Billing */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-2" style={{ color: textMain }}>Billing</h3>
         <div className="flex items-center gap-3 mb-4">
           <span className="text-sm" style={{ color: textMuted }}>Current plan:</span>
@@ -449,7 +449,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
         </div>
         <button
           onClick={handleManageBilling}
-          className="px-4 py-2 text-sm font-medium rounded-lg text-white"
+          className="px-4 py-2 text-sm font-medium text-white"
           style={{ backgroundColor: buttonColor }}
         >
           Manage Billing
@@ -457,7 +457,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       </div>
 
       {/* 4. Notifications */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-6" style={{ color: textMain }}>Notifications</h3>
         <div className="space-y-4">
           {[
@@ -474,11 +474,11 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
                 </div>
                 <button
                   onClick={() => handleToggleNotification(item.key, enabled)}
-                  className="relative inline-flex h-6 w-11 rounded-full transition-colors"
+                  className="relative inline-flex h-6 w-11 transition-colors"
                   style={{ backgroundColor: enabled ? buttonColor : '#D1D5DB' }}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform mt-0.5 ${
+                    className={`inline-block h-5 w-5 transform bg-white shadow transition-transform mt-0.5 ${
                       enabled ? 'translate-x-5' : 'translate-x-0.5'
                     }`}
                   />
@@ -490,7 +490,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       </div>
 
       {/* 9. Danger Zone */}
-      <div className="rounded-2xl p-6 shadow-sm border-2 border-red-200" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm border-2 border-red-200" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-2 text-red-600">Danger Zone</h3>
         <p className="text-sm mb-4" style={{ color: textMuted }}>
           Permanently delete your account and all associated data. This action cannot be undone.
@@ -512,13 +512,13 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleteConfirmText !== 'DELETE'}
-                className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium bg-red-600 text-white disabled:opacity-50"
               >
                 Delete My Account
               </button>
               <button
                 onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }}
-                className="px-4 py-2 text-sm font-medium rounded-lg border"
+                className="px-4 py-2 text-sm font-medium border"
                 style={{ borderColor, color: textMuted }}
               >
                 Cancel
@@ -528,7 +528,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
         ) : (
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border-2 border-red-300 text-red-600 hover:bg-red-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium border-2 border-red-300 text-red-600 hover:bg-red-50 transition-colors"
           >
             Delete Account
           </button>
@@ -539,13 +539,13 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       {activeSubTab === 'settings' && <>
       {/* Save confirmation */}
       {saveMessage && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-lg animate-fadeIn">
+        <div className="fixed top-4 right-4 z-50 px-4 py-2 bg-emerald-500 text-white text-sm font-medium shadow-lg animate-fadeIn">
           {saveMessage}
         </div>
       )}
 
       {/* 5. Payment Integrations */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-2" style={{ color: textMain }}>Payment Integrations</h3>
         <p className="text-sm mb-4" style={{ color: textMuted }}>
           Connect a payment processor to accept payments from your customers.
@@ -559,7 +559,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
             return (
               <div
                 key={provider.key}
-                className="flex items-center justify-between p-4 rounded-xl border"
+                className="flex items-center justify-between p-4 border"
                 style={{ borderColor }}
               >
                 <div>
@@ -569,13 +569,13 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
                   </p>
                 </div>
                 {conn ? (
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700">
+                  <span className="px-3 py-1 text-xs font-medium bg-emerald-50 text-emerald-700">
                     Connected
                   </span>
                 ) : (
                   <a
                     href={provider.connectUrl}
-                    className="px-4 py-2 text-xs font-medium rounded-lg text-white transition-opacity hover:opacity-90"
+                    className="px-4 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
                     style={{ backgroundColor: buttonColor }}
                   >
                     Connect
@@ -588,7 +588,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       </div>
 
       {/* 5b. Data Integrations */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-2" style={{ color: textMain }}>Data Integrations</h3>
         <p className="text-sm mb-4" style={{ color: textMuted }}>
           Import data from external services or sync your calendar.
@@ -603,7 +603,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
             return (
               <div
                 key={provider.key}
-                className="flex items-center justify-between p-4 rounded-xl border"
+                className="flex items-center justify-between p-4 border"
                 style={{ borderColor }}
               >
                 <div>
@@ -615,13 +615,13 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
                   </p>
                 </div>
                 {conn ? (
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700">
+                  <span className="px-3 py-1 text-xs font-medium bg-emerald-50 text-emerald-700">
                     Connected
                   </span>
                 ) : (
                   <a
                     href={provider.connectUrl}
-                    className="px-4 py-2 text-xs font-medium rounded-lg text-white transition-opacity hover:opacity-90"
+                    className="px-4 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
                     style={{ backgroundColor: buttonColor }}
                   >
                     Connect
@@ -634,7 +634,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       </div>
 
       {/* 6. QuickBooks Integration */}
-      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-6 shadow-sm" style={{ backgroundColor: cardBg }}>
         <h3 className="text-base font-semibold mb-2" style={{ color: textMain }}>QuickBooks Online</h3>
         <p className="text-sm mb-4" style={{ color: textMuted }}>
           Sync your customers and invoices with QuickBooks Online.
@@ -643,7 +643,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
         {qbStatus?.connected && qbStatus.connection?.is_active ? (
           <div className="space-y-4">
             {/* Connection info */}
-            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ borderColor }}>
+            <div className="flex items-center justify-between p-4 border" style={{ borderColor }}>
               <div>
                 <p className="text-sm font-medium" style={{ color: textMain }}>{qbStatus.connection.company_name}</p>
                 <p className="text-xs" style={{ color: textMuted }}>
@@ -667,18 +667,18 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
 
             {/* Sync error */}
             {qbStatus.connection.sync_error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
                 {qbStatus.connection.sync_error}
               </div>
             )}
 
             {/* Entity counts */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl border text-center" style={{ borderColor }}>
+              <div className="p-3 border text-center" style={{ borderColor }}>
                 <p className="text-lg font-bold" style={{ color: textMain }}>{qbStatus.entity_counts?.customers || 0}</p>
                 <p className="text-xs" style={{ color: textMuted }}>Synced Customers</p>
               </div>
-              <div className="p-3 rounded-xl border text-center" style={{ borderColor }}>
+              <div className="p-3 border text-center" style={{ borderColor }}>
                 <p className="text-lg font-bold" style={{ color: textMain }}>{qbStatus.entity_counts?.invoices || 0}</p>
                 <p className="text-xs" style={{ color: textMuted }}>Synced Invoices</p>
               </div>
@@ -689,7 +689,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
               <button
                 onClick={() => handleQbSync('sync_all')}
                 disabled={qbSyncing}
-                className="px-4 py-2 text-xs font-medium rounded-lg text-white disabled:opacity-50"
+                className="px-4 py-2 text-xs font-medium text-white disabled:opacity-50"
                 style={{ backgroundColor: buttonColor }}
               >
                 {qbSyncing ? 'Syncing...' : 'Sync All'}
@@ -697,7 +697,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
               <button
                 onClick={() => handleQbSync('sync_customers')}
                 disabled={qbSyncing}
-                className="px-4 py-2 text-xs font-medium rounded-lg border disabled:opacity-50"
+                className="px-4 py-2 text-xs font-medium border disabled:opacity-50"
                 style={{ borderColor, color: textMain }}
               >
                 Sync Customers
@@ -705,7 +705,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
               <button
                 onClick={() => handleQbSync('sync_invoices')}
                 disabled={qbSyncing}
-                className="px-4 py-2 text-xs font-medium rounded-lg border disabled:opacity-50"
+                className="px-4 py-2 text-xs font-medium border disabled:opacity-50"
                 style={{ borderColor, color: textMain }}
               >
                 Sync Invoices
@@ -713,7 +713,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
               <button
                 onClick={() => handleQbSync('disconnect')}
                 disabled={qbSyncing}
-                className="px-4 py-2 text-xs font-medium rounded-lg border border-red-300 text-red-600 hover:bg-red-50 disabled:opacity-50"
+                className="px-4 py-2 text-xs font-medium border border-red-300 text-red-600 hover:bg-red-50 disabled:opacity-50"
               >
                 Disconnect
               </button>
@@ -725,7 +725,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
                 <p className="text-xs font-medium mb-2" style={{ color: textMuted }}>Recent Sync Activity</p>
                 <div className="space-y-1">
                   {qbStatus.sync_logs.slice(0, 5).map(log => (
-                    <div key={log.id} className="flex items-center justify-between py-2 px-3 rounded-lg text-xs" style={{ backgroundColor: `${borderColor}40` }}>
+                    <div key={log.id} className="flex items-center justify-between py-2 px-3 text-xs" style={{ backgroundColor: `${borderColor}40` }}>
                       <span style={{ color: textMain }}>
                         {log.entity_type} ({log.direction})
                       </span>
@@ -748,7 +748,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
         ) : (
           <a
             href="/api/integrations/quickbooks/connect"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg text-white transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: '#2CA01C' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -764,7 +764,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       <QRCodeGenerator subdomain={profile?.subdomain || 'my-business'} colors={colors} />
 
       {/* 8. Custom Fields */}
-      <div className="rounded-2xl p-6 shadow-sm border" style={{ backgroundColor: cardBg, borderColor }}>
+      <div className="p-6 shadow-sm border" style={{ backgroundColor: cardBg, borderColor }}>
         <h3 className="text-base font-semibold mb-1" style={{ color: textMain }}>Custom Fields</h3>
         <p className="text-sm mb-4" style={{ color: textMuted }}>
           Add custom fields to any entity. These fields appear in record detail panels.
@@ -788,10 +788,10 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
         {customFields.length > 0 && (
           <div className="space-y-2 mb-4">
             {customFields.map(cf => (
-              <div key={cf.id} className="flex items-center justify-between p-3 rounded-xl border" style={{ borderColor }}>
+              <div key={cf.id} className="flex items-center justify-between p-3 border" style={{ borderColor }}>
                 <div>
                   <span className="text-sm font-medium" style={{ color: textMain }}>{cf.field_label}</span>
-                  <span className="text-xs ml-2 px-2 py-0.5 rounded-full" style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
+                  <span className="text-xs ml-2 px-2 py-0.5 " style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
                     {cf.field_type}
                   </span>
                   {cf.field_type === 'dropdown' && cf.options?.length > 0 && (
@@ -825,7 +825,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
               value={cfNewLabel}
               onChange={e => setCfNewLabel(e.target.value)}
               placeholder="Field name (e.g., Hair Type)"
-              className="flex-1 px-3 py-2 rounded-lg border text-sm"
+              className="flex-1 px-3 py-2 border text-sm"
               style={{ borderColor, color: textMain, backgroundColor: colors.background || '#F9FAFB' }}
             />
             <CustomSelect
@@ -854,14 +854,14 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
               value={cfNewOptions}
               onChange={e => setCfNewOptions(e.target.value)}
               placeholder="Options (comma-separated, e.g., Curly, Straight, Wavy)"
-              className="w-full px-3 py-2 rounded-lg border text-sm"
+              className="w-full px-3 py-2 border text-sm"
               style={{ borderColor, color: textMain, backgroundColor: colors.background || '#F9FAFB' }}
             />
           )}
           <button
             onClick={addCustomField}
             disabled={cfAdding || !cfNewLabel.trim()}
-            className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors"
             style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}
           >
             {cfAdding ? 'Adding...' : 'Add Field'}
@@ -870,7 +870,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
       </div>
 
       {/* 9. Restart Onboarding Tour */}
-      <div className="rounded-2xl p-6 shadow-sm border" style={{ backgroundColor: cardBg, borderColor }}>
+      <div className="p-6 shadow-sm border" style={{ backgroundColor: cardBg, borderColor }}>
         <h3 className="text-base font-semibold mb-1" style={{ color: textMain }}>Onboarding Tour</h3>
         <p className="text-sm mb-4" style={{ color: textMuted }}>
           Replay the onboarding tour to review your dashboard setup and integration options.
@@ -881,7 +881,7 @@ export default function SettingsContent({ colors, defaultTab }: { colors: Dashbo
             localStorage.removeItem('redpine_first_visit_shown');
             window.location.reload();
           }}
-          className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors hover:opacity-80"
+          className="px-4 py-2 text-sm font-medium border transition-colors hover:opacity-80"
           style={{ borderColor, color: textMain }}
         >
           Restart Onboarding Tour

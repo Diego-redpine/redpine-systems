@@ -18,6 +18,7 @@ interface TopBarProps {
   onLogoChange?: (logo: string) => void;
   businessName?: string;
   configId?: string | null;
+  headingFont?: string;
 }
 
 export default function TopBar({
@@ -29,6 +30,7 @@ export default function TopBar({
   onLogoChange,
   businessName,
   configId,
+  headingFont,
 }: TopBarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -38,7 +40,7 @@ export default function TopBar({
   const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
   const { balance: creditBalance, refetch: refetchCredits } = useCreditBalance();
 
-  const headerBg = colors.cards || '#FFFFFF';
+  const headerBg = colors.background || colors.header_bg || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const headingColor = colors.headings || '#1A1A1A';
   const textColor = colors.text || '#6B7280';
@@ -114,8 +116,8 @@ export default function TopBar({
     <>
       {/* Desktop top bar */}
       <header
-        className="shrink-0 hidden lg:flex items-center h-14 px-6 border-b"
-        style={{ backgroundColor: headerBg, borderColor }}
+        className="shrink-0 hidden lg:flex items-center h-14 px-6 border-b-2"
+        style={{ backgroundColor: headerBg, borderColor, fontFamily: headingFont || "'Fira Code', monospace" }}
       >
         {/* Logo + business name — left */}
         <div className="flex items-center gap-2 shrink-0">
@@ -134,22 +136,12 @@ export default function TopBar({
               onClick={() => fileInputRef.current?.click()}
             />
           ) : (
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
-              style={{ backgroundColor: buttonColor }}
+            <span
+              className="font-semibold text-sm max-w-[200px] truncate cursor-pointer"
+              style={{ color: headingColor }}
               onClick={() => fileInputRef.current?.click()}
             >
-              <span className="text-xs font-bold" style={{ color: getContrastText(buttonColor) }}>
-                {businessName ? businessName.charAt(0).toUpperCase() : 'R'}
-              </span>
-            </div>
-          )}
-          {businessName && (
-            <span
-              className="font-semibold text-sm hidden xl:block max-w-[160px] truncate"
-              style={{ color: headingColor }}
-            >
-              {businessName}
+              {businessName || 'My Business'}
             </span>
           )}
         </div>
@@ -163,7 +155,7 @@ export default function TopBar({
                 key={tab.id}
                 data-tour-id={`topbar-tab-${tab.id}`}
                 onClick={() => onTabChange(tab.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors"
                 style={{
                   backgroundColor: isActive ? buttonColor : 'transparent',
                   color: isActive ? getContrastText(buttonColor) : textColor,
@@ -188,7 +180,7 @@ export default function TopBar({
           <div ref={desktopMoreRef} className="relative shrink-0">
             <button
               onClick={() => setIsDesktopMoreOpen(!isDesktopMoreOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors"
               style={{
                 backgroundColor: desktopOverflowTabs.some(t => t.id === activeTab) ? buttonColor : 'transparent',
                 color: desktopOverflowTabs.some(t => t.id === activeTab) ? getContrastText(buttonColor) : textColor,
@@ -201,7 +193,7 @@ export default function TopBar({
             </button>
             {isDesktopMoreOpen && (
               <div
-                className="absolute top-full right-0 mt-1 min-w-[180px] rounded-xl border shadow-lg py-1 z-50"
+                className="absolute top-full right-0 mt-1 min-w-[180px] border-2 shadow-lg py-1 z-50"
                 style={{ backgroundColor: headerBg, borderColor }}
               >
                 {desktopOverflowTabs.map(tab => {
@@ -213,7 +205,7 @@ export default function TopBar({
                         onTabChange(tab.id);
                         setIsDesktopMoreOpen(false);
                       }}
-                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-gray-50"
                       style={{
                         backgroundColor: isActive ? buttonColor : 'transparent',
                         color: isActive ? getContrastText(buttonColor) : textColor,
@@ -242,7 +234,7 @@ export default function TopBar({
           <div className="relative">
             <button
               onClick={() => { setIsNotificationsOpen(!isNotificationsOpen); }}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
+              className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70"
               title="Notifications"
               style={{ color: textColor }}
             >
@@ -268,7 +260,7 @@ export default function TopBar({
           <div className="relative">
             <button
               onClick={() => { onTabChange('comms'); setIsNotificationsOpen(false); }}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
+              className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70"
               title="Messages"
               style={{ color: activeTab === 'comms' ? buttonColor : textColor }}
             >
@@ -285,13 +277,11 @@ export default function TopBar({
               )}
             </button>
           </div>
-          {/* Credits badge */}
-          <CreditBadge onClick={() => setIsCreditModalOpen(true)} />
           {/* Profile dropdown */}
           <div ref={profileRef} className="relative ml-1">
             <button
               onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotificationsOpen(false); }}
-              className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:ring-2 hover:ring-gray-200"
+              className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70"
               style={{ backgroundColor: (activeTab === 'settings' || activeTab === 'profile') ? buttonColor : '#F3F4F6' }}
             >
               <svg className="w-4 h-4" style={{ color: (activeTab === 'settings' || activeTab === 'profile') ? getContrastText(buttonColor) : '#6B7280' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -300,12 +290,12 @@ export default function TopBar({
             </button>
             {isProfileOpen && (
               <div
-                className="absolute top-full right-0 mt-1 min-w-[180px] rounded-xl border shadow-lg py-1 z-50"
+                className="absolute top-full right-0 mt-1 min-w-[180px] border-2 shadow-lg py-1 z-50"
                 style={{ backgroundColor: headerBg, borderColor }}
               >
                 <button
                   onClick={() => { onTabChange('profile'); setIsProfileOpen(false); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-gray-50"
                   style={{
                     backgroundColor: activeTab === 'profile' ? buttonColor : 'transparent',
                     color: activeTab === 'profile' ? getContrastText(buttonColor) : textColor,
@@ -318,7 +308,7 @@ export default function TopBar({
                 </button>
                 <button
                   onClick={() => { onTabChange('settings'); setIsProfileOpen(false); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-gray-50"
                   style={{
                     backgroundColor: activeTab === 'settings' ? buttonColor : 'transparent',
                     color: activeTab === 'settings' ? getContrastText(buttonColor) : textColor,
@@ -330,6 +320,20 @@ export default function TopBar({
                   </svg>
                   Settings
                 </button>
+                <div className="my-1 border-t" style={{ borderColor }} />
+                <button
+                  onClick={() => { setIsCreditModalOpen(true); setIsProfileOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-gray-50"
+                  style={{ color: textColor }}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                  </svg>
+                  AI Credits
+                  {creditBalance && (
+                    <span className="ml-auto text-xs opacity-60">{creditBalance.total}</span>
+                  )}
+                </button>
               </div>
             )}
           </div>
@@ -338,33 +342,23 @@ export default function TopBar({
 
       {/* Mobile: slim header with logo only */}
       <header
-        className="shrink-0 flex lg:hidden items-center h-12 px-3 border-b"
-        style={{ backgroundColor: headerBg, borderColor }}
+        className="shrink-0 flex lg:hidden items-center h-12 px-3 border-b-2"
+        style={{ backgroundColor: headerBg, borderColor, fontFamily: headingFont || "'Fira Code', monospace" }}
       >
         <div className="flex items-center gap-2 flex-1">
           {logo ? (
             <img src={logo} alt="Logo" className="h-7 w-auto object-contain" />
           ) : (
-            <div
-              className="w-7 h-7 rounded-md flex items-center justify-center"
-              style={{ backgroundColor: buttonColor }}
-            >
-              <span className="text-xs font-bold" style={{ color: getContrastText(buttonColor) }}>
-                {businessName ? businessName.charAt(0).toUpperCase() : 'R'}
-              </span>
-            </div>
-          )}
-          {businessName && (
             <span className="font-semibold text-sm truncate max-w-[200px]" style={{ color: headingColor }}>
-              {businessName}
+              {businessName || 'My Business'}
             </span>
           )}
         </div>
         <div
-          className="w-7 h-7 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: '#F3F4F6' }}
+          className="w-7 h-7 flex items-center justify-center"
+          style={{ backgroundColor: buttonColor }}
         >
-          <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} style={{ color: getContrastText(buttonColor) }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
           </svg>
         </div>
@@ -425,11 +419,12 @@ function MobileBottomBar({
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 lg:hidden flex items-stretch border-t z-30"
+        className="fixed bottom-0 left-0 right-0 lg:hidden flex items-stretch border-t-2 z-30"
         style={{
           backgroundColor: headerBg,
           borderColor,
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          fontFamily: "'Fira Code', monospace",
         }}
       >
         {tabs.map(tab => {
@@ -481,7 +476,7 @@ function MobileBottomBar({
           />
           {/* Sheet */}
           <div
-            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden rounded-t-2xl animate-scaleIn"
+            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t-2 animate-scaleIn"
             style={{
               backgroundColor: headerBg,
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -502,7 +497,7 @@ function MobileBottomBar({
                       onTabChange(tab.id);
                       setIsMoreOpen(false);
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 transition-colors"
                     style={{
                       backgroundColor: isActive ? buttonColor : 'transparent',
                       color: isActive ? getContrastText(buttonColor) : textColor,

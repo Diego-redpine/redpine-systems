@@ -87,7 +87,7 @@ function ResetPasswordForm() {
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
+        <div className="bg-white shadow-xl max-w-md w-full p-8 text-center">
           <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -113,7 +113,7 @@ function ResetPasswordForm() {
   if (!isRecoveryMode) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
+        <div className="bg-white shadow-xl max-w-md w-full p-8 text-center">
           <Brand size="lg" showTagline linkToHome={false} />
           <p className="text-muted mt-4 mb-6">Verifying your reset link...</p>
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
@@ -124,14 +124,14 @@ function ResetPasswordForm() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8">
+      <div className="bg-white shadow-xl max-w-md w-full p-8">
         <div className="flex flex-col items-center mb-8">
           <Brand size="lg" showTagline linkToHome={false} />
           <p className="text-muted mt-2">Create a new password</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
             {error}
           </div>
         )}
@@ -148,7 +148,7 @@ function ResetPasswordForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-2 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               placeholder="At least 6 characters"
             />
           </div>
@@ -164,7 +164,7 @@ function ResetPasswordForm() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-2 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               placeholder="Confirm your password"
             />
           </div>
@@ -172,7 +172,7 @@ function ResetPasswordForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-6 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="w-full py-3 px-6 bg-primary text-white font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
             {isLoading ? 'Updating...' : 'Reset Password'}
           </button>

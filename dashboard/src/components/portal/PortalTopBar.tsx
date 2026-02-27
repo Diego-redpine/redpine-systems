@@ -40,11 +40,11 @@ export function PortalTopBar({
             <img
               src={businessLogo}
               alt={businessName}
-              className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+              className="w-8 h-8 object-cover flex-shrink-0"
             />
           ) : (
             <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold"
+              className="w-8 h-8 flex items-center justify-center flex-shrink-0 text-xs font-bold"
               style={{ backgroundColor: accentColor, color: accentTextColor }}
             >
               {businessName.charAt(0).toUpperCase()}
@@ -60,7 +60,7 @@ export function PortalTopBar({
           {/* Notification Bell */}
           <button
             onClick={onNotificationClick}
-            className="relative p-2 rounded-xl hover:bg-gray-100 transition-colors"
+            className="relative p-2 hover:bg-gray-100 transition-colors"
             aria-label="Notifications"
           >
             <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>

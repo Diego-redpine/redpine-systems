@@ -83,7 +83,7 @@ export default function TipSelector({
             key={pct}
             type="button"
             onClick={() => handlePresetSelect(pct)}
-            className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+            className="px-4 py-2 text-sm font-medium border transition-colors"
             style={isPresetSelected(pct) ? selectedStyle : unselectedStyle}
           >
             {pct}%
@@ -93,7 +93,7 @@ export default function TipSelector({
         <button
           type="button"
           onClick={handleCustomSelect}
-          className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+          className="px-4 py-2 text-sm font-medium border transition-colors"
           style={isCustomSelected ? selectedStyle : unselectedStyle}
         >
           Custom
@@ -102,7 +102,7 @@ export default function TipSelector({
         <button
           type="button"
           onClick={handleNoTip}
-          className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors ml-2"
+          className="px-4 py-2 text-sm font-medium border transition-colors ml-2"
           style={isNoneSelected ? selectedStyle : unselectedStyle}
         >
           No tip
@@ -119,7 +119,7 @@ export default function TipSelector({
             placeholder="0.00"
             value={customAmount}
             onChange={(e) => handleCustomChange(e.target.value)}
-            className="w-28 px-3 py-2 rounded-lg border text-sm outline-none"
+            className="w-28 px-3 py-2 border text-sm outline-none"
             style={{
               backgroundColor: bgColor,
               borderColor: bordersColor,

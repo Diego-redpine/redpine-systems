@@ -48,7 +48,7 @@ export default function PipelineView({
   if (!pipelineConfig || !pipelineConfig.stages || pipelineConfig.stages.length === 0) {
     return (
       <div
-        className="flex flex-col items-center justify-center h-64 rounded-lg border-2 border-dashed"
+        className="flex flex-col items-center justify-center h-64 border-2 border-dashed"
         style={{
           borderColor: configColors.borders || '#E5E7EB',
           backgroundColor: configColors.cards || '#FFFFFF',
@@ -167,7 +167,7 @@ export default function PipelineView({
         <DragOverlay>
           {activeRecord ? (
             <div
-              className="px-4 py-3 rounded-xl shadow-lg border-2"
+              className="px-4 py-3 shadow-lg border-2"
               style={{
                 backgroundColor: configColors.cards || '#FFFFFF',
                 borderColor: configColors.buttons || '#DC2626',
@@ -183,7 +183,7 @@ export default function PipelineView({
                   : String(activeRecord.name || activeRecord.title || '')}
               </p>
               {fields?.subtitle && (
-                <p className="text-xs truncate mt-1" style={{ color: '#6B7280' }}>
+                <p className="text-xs truncate mt-1" style={{ color: configColors.icons || '#6B7280' }}>
                   {String(activeRecord[fields.subtitle] || activeRecord.subtitle || '')}
                 </p>
               )}

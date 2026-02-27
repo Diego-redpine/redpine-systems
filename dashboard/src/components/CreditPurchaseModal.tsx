@@ -79,7 +79,7 @@ function PurchaseForm({
       <button
         onClick={handleSubmit}
         disabled={!stripe || isProcessing}
-        className="w-full py-3 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50"
+        className="w-full py-3 text-sm font-semibold transition-opacity disabled:opacity-50"
         style={{ backgroundColor: buttonColor, color: buttonText }}
       >
         {isProcessing ? 'Processing...' : `Purchase ${selectedTier.credits} credits for ${selectedTier.priceDisplay}`}
@@ -104,7 +104,7 @@ export default function CreditPurchaseModal({
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const headingColor = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
 
   // Create PaymentIntent when tier is selected
   useEffect(() => {
@@ -160,11 +160,11 @@ export default function CreditPurchaseModal({
         {/* Balance breakdown */}
         {balance && (
           <div className="flex gap-4 text-center">
-            <div className="flex-1 rounded-xl p-3" style={{ backgroundColor: `${borderColor}40` }}>
+            <div className="flex-1 p-3" style={{ backgroundColor: `${borderColor}40` }}>
               <p className="text-lg font-bold" style={{ color: headingColor }}>{balance.free_balance}</p>
               <p className="text-xs" style={{ color: textMuted }}>Free</p>
             </div>
-            <div className="flex-1 rounded-xl p-3" style={{ backgroundColor: `${borderColor}40` }}>
+            <div className="flex-1 p-3" style={{ backgroundColor: `${borderColor}40` }}>
               <p className="text-lg font-bold" style={{ color: headingColor }}>{balance.purchased_balance}</p>
               <p className="text-xs" style={{ color: textMuted }}>Purchased</p>
             </div>
@@ -179,7 +179,7 @@ export default function CreditPurchaseModal({
               <button
                 key={tier.id}
                 onClick={() => setSelectedTier(tier)}
-                className="relative rounded-xl p-4 text-center transition-all"
+                className="relative p-4 text-center transition-all"
                 style={{
                   backgroundColor: isSelected ? buttonColor : cardBg,
                   color: isSelected ? buttonText : headingColor,

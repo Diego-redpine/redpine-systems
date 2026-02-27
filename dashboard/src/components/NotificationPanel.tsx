@@ -80,7 +80,7 @@ export default function NotificationPanel({ isOpen, onClose, colors }: Notificat
 
   const cardBg = colors.cards || '#FFFFFF';
   const headingColor = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const buttonColor = colors.buttons || '#1A1A1A';
   const borderColor = colors.borders || '#E5E7EB';
 
@@ -112,7 +112,7 @@ export default function NotificationPanel({ isOpen, onClose, colors }: Notificat
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         ref={panelRef}
-        className="absolute top-full right-0 mt-2 w-96 max-h-[520px] rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50"
+        className="absolute top-full right-0 mt-2 w-96 max-h-[520px] shadow-xl border overflow-hidden flex flex-col z-50"
         style={{ backgroundColor: cardBg, borderColor }}
       >
       {/* Header */}
@@ -120,7 +120,7 @@ export default function NotificationPanel({ isOpen, onClose, colors }: Notificat
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold" style={{ color: headingColor }}>Notifications</h3>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full" style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}>
+            <span className="px-2 py-0.5 text-xs font-medium " style={{ backgroundColor: buttonColor, color: getContrastText(buttonColor) }}>
               {unreadCount}
             </span>
           )}
@@ -157,7 +157,7 @@ export default function NotificationPanel({ isOpen, onClose, colors }: Notificat
               >
                 {/* Icon */}
                 <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                  className="w-8 h-8 flex items-center justify-center shrink-0 mt-0.5"
                   style={{ backgroundColor: typeStyle.bg }}
                 >
                   {typeStyle.icon}
@@ -173,7 +173,7 @@ export default function NotificationPanel({ isOpen, onClose, colors }: Notificat
                     )}
                   </div>
                   <p className="text-xs mt-0.5 line-clamp-2" style={{ color: textMuted }}>{n.body}</p>
-                  <p className="text-[11px] mt-1" style={{ color: '#9CA3AF' }}>{n.time}</p>
+                  <p className="text-[11px] mt-1" style={{ color: textMuted }}>{n.time}</p>
                 </div>
               </button>
             );

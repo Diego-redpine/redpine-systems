@@ -50,7 +50,7 @@ export default function BlogEditor({ colors, post, onSave, onCancel }: BlogEdito
   const buttonText = getContrastText(buttonBg);
   const cardBg = colors.cards || '#FFFFFF';
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
   const bgColor = colors.background || '#F5F5F5';
 

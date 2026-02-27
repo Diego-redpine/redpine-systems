@@ -154,7 +154,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50"
+          className="px-5 py-2.5 text-sm font-semibold transition-opacity disabled:opacity-50"
           style={{ backgroundColor: buttonColor, color: buttonText }}
         >
           {saved ? 'Saved!' : saving ? 'Saving...' : 'Save Changes'}
@@ -163,7 +163,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
 
       {/* Active Toggle */}
       <div
-        className="rounded-2xl p-5 shadow-sm flex items-center justify-between"
+        className="p-5 shadow-sm flex items-center justify-between"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <div>
@@ -174,13 +174,13 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
         </div>
         <button
           onClick={() => updateConfig({ is_active: !config.is_active })}
-          className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+          className={`relative inline-flex h-7 w-12 items-center transition-colors ${
             config.is_active ? '' : 'bg-gray-200'
           }`}
           style={config.is_active ? { backgroundColor: buttonColor } : undefined}
         >
           <span
-            className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${
+            className={`inline-block h-5 w-5 bg-white shadow transition-transform ${
               config.is_active ? 'translate-x-6' : 'translate-x-1'
             }`}
           />
@@ -189,7 +189,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
 
       {/* Program Name + Earning Rules */}
       <div
-        className="rounded-2xl p-6 shadow-sm space-y-5"
+        className="p-6 shadow-sm space-y-5"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h3 className="font-semibold text-gray-900">Earning Rules</h3>
@@ -201,7 +201,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
             value={config.program_name}
             onChange={e => updateConfig({ program_name: e.target.value })}
             placeholder="Rewards"
-            className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+            className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
             style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
           />
         </div>
@@ -217,7 +217,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
               max={100}
               value={config.points_per_dollar}
               onChange={e => updateConfig({ points_per_dollar: parseInt(e.target.value) || 1 })}
-              className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
             />
           </div>
@@ -230,14 +230,14 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
               min={10}
               value={config.reward_threshold}
               onChange={e => updateConfig({ reward_threshold: parseInt(e.target.value) || 100 })}
-              className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
             />
           </div>
         </div>
 
         {/* Preview Math */}
-        <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
+        <div className="bg-gray-50 p-4 text-sm text-gray-600">
           <p>
             Customer spends <strong>$100</strong> → earns <strong>{config.points_per_dollar * 100} points</strong>
           </p>
@@ -252,7 +252,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
 
       {/* Reward Setup */}
       <div
-        className="rounded-2xl p-6 shadow-sm space-y-5"
+        className="p-6 shadow-sm space-y-5"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h3 className="font-semibold text-gray-900">Reward</h3>
@@ -264,7 +264,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
               <button
                 key={key}
                 onClick={() => updateConfig({ reward_type: key as LoyaltyConfig['reward_type'] })}
-                className={`px-3 py-2.5 rounded-xl text-xs font-medium border transition-colors ${
+                className={`px-3 py-2.5 text-xs font-medium border transition-colors ${
                   config.reward_type === key ? 'border-2' : 'border-gray-200 bg-white text-gray-600'
                 }`}
                 style={
@@ -289,7 +289,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
               min={1}
               value={config.reward_value_cents}
               onChange={e => updateConfig({ reward_value_cents: parseInt(e.target.value) || 500 })}
-              className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
             />
             <p className="text-xs text-gray-400 mt-1">
@@ -305,7 +305,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
               value={config.reward_description}
               onChange={e => updateConfig({ reward_description: e.target.value })}
               placeholder="$5 off your next visit"
-              className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+              className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
               style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
             />
           </div>
@@ -314,7 +314,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
 
       {/* Bonus Points */}
       <div
-        className="rounded-2xl p-6 shadow-sm space-y-5"
+        className="p-6 shadow-sm space-y-5"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h3 className="font-semibold text-gray-900">Bonus Points</h3>
@@ -330,7 +330,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
                 min={0}
                 value={config.welcome_bonus}
                 onChange={e => updateConfig({ welcome_bonus: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                 style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">pts</span>
@@ -347,7 +347,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
                 min={0}
                 value={config.birthday_bonus}
                 onChange={e => updateConfig({ birthday_bonus: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                 style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">pts</span>
@@ -364,7 +364,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
                 min={0}
                 value={config.referral_bonus}
                 onChange={e => updateConfig({ referral_bonus: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+                className="w-full px-4 py-2.5 border text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
                 style={{ borderColor, '--tw-ring-color': buttonColor } as React.CSSProperties}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">pts</span>
@@ -376,7 +376,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
 
       {/* Tiers */}
       <div
-        className="rounded-2xl p-6 shadow-sm space-y-5"
+        className="p-6 shadow-sm space-y-5"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <div className="flex items-center justify-between">
@@ -395,7 +395,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
           {config.tiers.map((tier, i) => (
             <div
               key={i}
-              className="rounded-xl p-4 text-center"
+              className="p-4 text-center"
               style={{
                 backgroundColor: tier.color,
                 color: getContrastText(tier.color),
@@ -412,26 +412,26 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
         {showTierEditor && (
           <div className="space-y-4 pt-2">
             {config.tiers.map((tier, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+              <div key={i} className="flex items-center gap-3 p-3 bg-gray-50">
                 <input
                   type="color"
                   value={tier.color}
                   onChange={e => updateTier(i, { color: e.target.value })}
-                  className="w-8 h-8 rounded-lg border-0 cursor-pointer flex-shrink-0"
+                  className="w-8 h-8 border-0 cursor-pointer flex-shrink-0"
                 />
                 <input
                   type="text"
                   value={tier.name}
                   onChange={e => updateTier(i, { name: e.target.value })}
                   placeholder="Tier name"
-                  className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-200 text-sm"
                 />
                 <input
                   type="number"
                   value={tier.threshold}
                   onChange={e => updateTier(i, { threshold: parseInt(e.target.value) || 0 })}
                   placeholder="Points"
-                  className="w-20 px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-20 px-3 py-2 border border-gray-200 text-sm"
                 />
                 <input
                   type="number"
@@ -439,7 +439,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
                   onChange={e => updateTier(i, { multiplier: parseFloat(e.target.value) || 1 })}
                   step={0.25}
                   min={1}
-                  className="w-16 px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                  className="w-16 px-3 py-2 border border-gray-200 text-sm"
                 />
                 <span className="text-xs text-gray-400 flex-shrink-0">x</span>
               </div>
@@ -450,14 +450,14 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
 
       {/* Starbucks-Style Preview */}
       <div
-        className="rounded-2xl p-6 shadow-sm"
+        className="p-6 shadow-sm"
         style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
       >
         <h3 className="font-semibold text-gray-900 mb-4">Customer Preview</h3>
-        <div className="bg-gray-50 rounded-xl p-5 space-y-4">
+        <div className="bg-gray-50 p-5 space-y-4">
           {/* Simulated Tier Card */}
           <div
-            className="rounded-xl p-4 text-center"
+            className="p-4 text-center"
             style={{ backgroundColor: config.tiers[1]?.color || '#C0C0C0', color: getContrastText(config.tiers[1]?.color || '#C0C0C0') }}
           >
             <p className="text-xs font-medium opacity-80">Your Tier</p>
@@ -473,7 +473,7 @@ export default function LoyaltyConfigPanel({ colors }: LoyaltyConfigPanelProps) 
             </div>
             <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full"
+                className="h-full "
                 style={{
                   width: `${Math.min(100, (50 / config.reward_threshold) * 100)}%`,
                   backgroundColor: buttonColor,

@@ -141,7 +141,7 @@ export default function RouteView({ data, configColors }: RouteViewProps) {
             setIsCreating(true);
             setIsDetailOpen(true);
           }}
-          className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed py-3 text-sm font-medium transition-colors hover:opacity-80"
+          className="flex items-center justify-center gap-2 border-2 border-dashed py-3 text-sm font-medium transition-colors hover:opacity-80"
           style={{ borderColor: buttonColor, color: buttonColor }}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -162,7 +162,7 @@ export default function RouteView({ data, configColors }: RouteViewProps) {
           return (
             <div
               key={route.id as string}
-              className="rounded-2xl shadow-sm cursor-pointer transition-all"
+              className="shadow-sm cursor-pointer transition-all"
               style={{
                 background: cardBg,
                 borderLeft: `4px solid ${routeColor}`,
@@ -181,7 +181,7 @@ export default function RouteView({ data, configColors }: RouteViewProps) {
                     {route.name as string}
                   </h3>
                   <span
-                    className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                    className="px-2.5 py-0.5 text-xs font-medium capitalize"
                     style={{ background: statusStyle.bg, color: statusStyle.text }}
                   >
                     {status}
@@ -218,7 +218,7 @@ export default function RouteView({ data, configColors }: RouteViewProps) {
                     {stops.slice(0, 4).map((stop, i) => (
                       <span
                         key={stop.id}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs"
                         style={{ background: `${routeColor}15`, color: routeColor }}
                       >
                         <span className="font-bold">{i + 1}</span>
@@ -249,7 +249,7 @@ export default function RouteView({ data, configColors }: RouteViewProps) {
       </div>
 
       {/* Right: Territory Map (60%) */}
-      <div className="w-[60%] rounded-2xl overflow-hidden shadow-sm" style={{ border: `1px solid ${borderColor}` }}>
+      <div className="w-[60%] overflow-hidden shadow-sm" style={{ border: `1px solid ${borderColor}` }}>
         <LeafletMap
           center={[businessLocation.lat, businessLocation.lon]}
           zoom={12}

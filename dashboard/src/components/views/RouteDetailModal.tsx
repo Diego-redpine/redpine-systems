@@ -60,7 +60,7 @@ function SortableStopCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-start gap-3 p-3 rounded-xl bg-white border border-gray-100 shadow-sm"
+      className="flex items-start gap-3 p-3 bg-white border border-gray-100 shadow-sm"
     >
       {/* Drag handle */}
       <button
@@ -96,7 +96,7 @@ function SortableStopCard({
         </p>
         <div className="flex items-center gap-3 mt-1">
           {stop.service_type && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100" style={{ color: textColor, opacity: 0.7 }}>
+            <span className="text-xs px-2 py-0.5 bg-gray-100" style={{ color: textColor, opacity: 0.7 }}>
               {stop.service_type}
             </span>
           )}
@@ -268,7 +268,7 @@ export default function RouteDetailModal({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search customers..."
-                    className="flex-1 text-sm px-3 py-2 rounded-lg border outline-none focus:ring-2"
+                    className="flex-1 text-sm px-3 py-2 border outline-none focus:ring-2"
                     style={{ borderColor, color: textColor }}
                     autoFocus
                   />
@@ -285,7 +285,7 @@ export default function RouteDetailModal({
                       <button
                         key={c.id}
                         onClick={() => handleAddCustomer(c)}
-                        className="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors"
                         style={{ color: textColor }}
                       >
                         <span className="font-medium">{c.name}</span>
@@ -302,7 +302,7 @@ export default function RouteDetailModal({
             ) : (
               <button
                 onClick={() => setIsSearching(true)}
-                className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border-2 border-dashed text-sm font-medium transition-colors hover:opacity-80"
+                className="w-full flex items-center justify-center gap-2 py-2 border-2 border-dashed text-sm font-medium transition-colors hover:opacity-80"
                 style={{ borderColor: routeColor, color: routeColor }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

@@ -84,40 +84,40 @@ function AnimationPreview({ animation, isSelected, onClick, theme, accentColor =
     <button
       onClick={onClick}
       className={`
-        relative p-3 rounded-xl border-2 transition-all duration-200 text-left
+        relative p-3 border-2 transition-all duration-200 text-left
         ${isSelected
           ? ''
           : 'border-gray-200 hover:border-gray-300 bg-white'
         }
       `}
-      style={isSelected ? { borderColor: accentColor, backgroundColor: `${accentColor}15` } : undefined}
+      style={isSelected ? { borderColor: '#1A1A1A', backgroundColor: '#F3F4F6' } : undefined}
     >
       {/* Selected checkmark */}
       {isSelected && (
-        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: accentColor }}>
+        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: '#1A1A1A' }}>
           <Check className="w-3 h-3 text-white" />
         </div>
       )}
 
       {/* Animation preview area */}
       <div
-        className="w-full h-16 rounded-lg mb-2 flex items-center justify-center overflow-hidden"
+        className="w-full h-16 mb-2 flex items-center justify-center overflow-hidden"
         style={{ backgroundColor: '#f5f5f5' }}
       >
         <style>{keyframeStyle}</style>
         <div
           key={key}
           ref={previewRef}
-          className="w-10 h-10 rounded-lg"
-          style={{ ...animationStyle, background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}
+          className="w-10 h-10"
+          style={{ ...animationStyle, background: 'linear-gradient(135deg, #374151, #6B7280)' }}
         />
       </div>
 
       {/* Animation name and description */}
-      <p className="text-sm font-medium font-['Inter']" style={{ color: '#1A1A1A' }}>
+      <p className="text-sm font-medium font-['Fira_Code']" style={{ color: '#1A1A1A' }}>
         {animation.name}
       </p>
-      <p className="text-xs font-['Inter']" style={{ color: '#6B7280' }}>
+      <p className="text-xs font-['Fira_Code']" style={{ color: '#6B7280' }}>
         {animation.description}
       </p>
     </button>
@@ -133,7 +133,7 @@ function SpeedSelector({ value, onChange, theme, accentColor = '#E11D48' }: Spee
   return (
     <div className="mb-4">
       <label
-        className="block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider"
+        className="block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider"
         style={{ color: '#6B7280' }}
       >
         Animation Speed
@@ -143,12 +143,12 @@ function SpeedSelector({ value, onChange, theme, accentColor = '#E11D48' }: Spee
           <button
             key={speed.value}
             onClick={() => onChange(speed.value)}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-['Inter'] transition-colors ${
+            className={`flex-1 py-2 px-3 text-xs font-['Fira_Code'] transition-colors ${
               value === speed.value
                 ? 'text-white'
                 : 'bg-gray-100 text-gray-600 hover:text-gray-800 hover:bg-gray-200'
             }`}
-            style={value === speed.value ? { backgroundColor: accentColor } : undefined}
+            style={value === speed.value ? { backgroundColor: '#1A1A1A' } : undefined}
           >
             {speed.value}x
           </button>
@@ -167,7 +167,7 @@ function DelayInput({ value, onChange, theme }: DelayInputProps) {
   return (
     <div className="mb-4">
       <label
-        className="block text-xs font-medium mb-2 font-['Inter'] uppercase tracking-wider"
+        className="block text-xs font-medium mb-2 font-['Fira_Code'] uppercase tracking-wider"
         style={{ color: '#6B7280' }}
       >
         Delay (seconds)
@@ -179,7 +179,7 @@ function DelayInput({ value, onChange, theme }: DelayInputProps) {
         min={0}
         max={10}
         step={0.1}
-        className="w-full px-3 py-2 rounded-lg text-sm font-['Inter'] border"
+        className="w-full px-3 py-2 text-sm font-['Fira_Code'] border"
         style={{
           backgroundColor: '#ffffff',
           borderColor: '#E5E7EB',
@@ -234,12 +234,12 @@ function AnimationPreviewLive({ animationId, speed, delay, theme, accentColor = 
       <style>{keyframeStyle}</style>
       <div
         key={key}
-        className="w-14 h-14 rounded-lg"
-        style={{ ...animationStyle, background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}
+        className="w-14 h-14"
+        style={{ ...animationStyle, background: 'linear-gradient(135deg, #374151, #6B7280)' }}
       />
       <button
         onClick={handleRestart}
-        className="absolute -bottom-8 left-1/2 -translate-x-1/2 p-1 rounded"
+        className="absolute -bottom-8 left-1/2 -translate-x-1/2 p-1"
         style={{ color: '#6B7280' }}
         title="Replay"
       >
@@ -314,7 +314,7 @@ export default function AnimationPickerModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
-        className="w-full max-w-2xl max-h-[90vh] mx-4 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-2xl max-h-[90vh] mx-4 shadow-2xl flex flex-col overflow-hidden"
         style={{ backgroundColor: '#ffffff' }}
       >
         {/* Header */}
@@ -323,24 +323,24 @@ export default function AnimationPickerModal({
           style={{ borderColor: '#E5E7EB' }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}>
+            <div className="w-10 h-10 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #374151, #6B7280)' }}>
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
               <h2
-                className="text-lg font-semibold font-['Inter']"
+                className="text-lg font-semibold font-['Fira_Code']"
                 style={{ color: '#1A1A1A' }}
               >
                 Add Animation
               </h2>
-              <p className="text-xs font-['Inter']" style={{ color: '#6B7280' }}>
+              <p className="text-xs font-['Fira_Code']" style={{ color: '#6B7280' }}>
                 Select an animation effect for this element
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg transition-colors hover:bg-gray-100"
+            className="p-2 transition-colors hover:bg-gray-100"
             style={{ color: '#6B7280' }}
           >
             <X className="w-5 h-5" />
@@ -356,12 +356,12 @@ export default function AnimationPickerModal({
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-lg text-xs font-['Inter'] font-medium capitalize transition-colors ${
+              className={`px-4 py-2 text-xs font-['Fira_Code'] font-medium capitalize transition-colors ${
                 activeCategory === category
                   ? 'text-white'
                   : 'bg-gray-100 text-gray-600 hover:text-gray-800'
               }`}
-              style={activeCategory === category ? { backgroundColor: accentColor } : undefined}
+              style={activeCategory === category ? { backgroundColor: '#1A1A1A' } : undefined}
             >
               {category === 'all' ? 'All Animations' : category}
             </button>
@@ -394,9 +394,9 @@ export default function AnimationPickerModal({
               {/* Selected animation info */}
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
-                  <Zap className="w-4 h-4" style={{ color: accentColor }} />
+                  <Zap className="w-4 h-4" style={{ color: '#1A1A1A' }} />
                   <span
-                    className="text-sm font-medium font-['Inter']"
+                    className="text-sm font-medium font-['Fira_Code']"
                     style={{ color: '#1A1A1A' }}
                   >
                     {getAnimationById(selectedAnimation)?.name}
@@ -408,7 +408,7 @@ export default function AnimationPickerModal({
 
               {/* Preview area */}
               <div
-                className="w-32 h-32 rounded-xl flex items-center justify-center"
+                className="w-32 h-32 flex items-center justify-center"
                 style={{ backgroundColor: '#f5f5f5' }}
               >
                 <AnimationPreviewLive
@@ -432,7 +432,7 @@ export default function AnimationPickerModal({
             {currentAnimation && (
               <button
                 onClick={handleRemove}
-                className="px-4 py-2 rounded-lg text-sm font-['Inter'] font-medium transition-colors bg-gray-100 text-red-600 hover:bg-gray-200"
+                className="px-4 py-2 text-sm font-['Fira_Code'] font-medium transition-colors bg-gray-100 text-red-600 hover:bg-gray-200"
               >
                 Remove Animation
               </button>
@@ -442,22 +442,22 @@ export default function AnimationPickerModal({
             <button
               onClick={handlePreview}
               disabled={!selectedAnimation}
-              className="px-4 py-2 rounded-lg text-sm font-['Inter'] font-medium transition-colors flex items-center gap-2 disabled:opacity-50 bg-gray-100 text-gray-700 hover:bg-gray-200"
+              className="px-4 py-2 text-sm font-['Fira_Code'] font-medium transition-colors flex items-center gap-2 disabled:opacity-50 bg-gray-100 text-gray-700 hover:bg-gray-200"
             >
               <Play className="w-4 h-4" />
               Preview
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm font-['Inter'] font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
+              className="px-4 py-2 text-sm font-['Fira_Code'] font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!selectedAnimation}
-              className="px-6 py-2 rounded-lg text-sm font-['Inter'] font-medium text-white transition-colors disabled:opacity-50 flex items-center gap-2 hover:opacity-90"
-              style={{ backgroundColor: accentColor }}
+              className="px-6 py-2 text-sm font-['Fira_Code'] font-medium text-white transition-colors disabled:opacity-50 flex items-center gap-2 hover:opacity-90"
+              style={{ backgroundColor: '#1A1A1A' }}
             >
               Apply Animation
               <ArrowRight className="w-4 h-4" />

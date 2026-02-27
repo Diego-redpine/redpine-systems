@@ -19,12 +19,12 @@ export default function ComingSoonCard({ title, description, icon, colors }: Com
 
   return (
     <div
-      className="rounded-2xl p-8 flex flex-col items-center justify-center text-center"
+      className="p-8 flex flex-col items-center justify-center text-center"
       style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}`, minHeight: 320 }}
     >
       {/* Icon */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+        className="w-16 h-16 flex items-center justify-center mb-5"
         style={{ backgroundColor: `${buttonColor}10` }}
       >
         {icon || (
@@ -46,7 +46,7 @@ export default function ComingSoonCard({ title, description, icon, colors }: Com
 
       {/* Badge */}
       <span
-        className="mt-5 px-4 py-1.5 rounded-full text-xs font-semibold"
+        className="mt-5 px-4 py-1.5 text-xs font-semibold"
         style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}
       >
         Coming Soon

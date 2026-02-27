@@ -77,7 +77,7 @@ export default function RichTextEditor({
 
   return (
     <div
-      className="rounded-md border overflow-hidden"
+      className="border overflow-hidden"
       style={{
         borderColor: configColors.borders || '#E5E7EB',
         backgroundColor: configColors.background || '#F9FAFB',
@@ -180,7 +180,7 @@ export default function RichTextEditor({
           </ToolbarButton>
           {showLinkInput && (
             <div
-              className="absolute top-full left-0 mt-1 z-10 flex items-center gap-1 p-1.5 rounded-lg shadow-lg border"
+              className="absolute top-full left-0 mt-1 z-10 flex items-center gap-1 p-1.5 shadow-lg border"
               style={{ backgroundColor: configColors.cards || '#FFFFFF', borderColor: configColors.borders || '#E5E7EB' }}
             >
               <input

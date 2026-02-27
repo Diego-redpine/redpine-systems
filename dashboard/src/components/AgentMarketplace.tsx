@@ -100,7 +100,7 @@ function AgentIcon({ icon, size = 24, color }: { icon: string; size?: number; co
   );
 }
 
-function StarRating({ rating, count }: { rating: number; count: number }) {
+function StarRating({ rating, count, mutedColor }: { rating: number; count: number; mutedColor?: string }) {
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map(star => (
@@ -108,14 +108,14 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
       ))}
-      <span className="text-xs text-gray-500 ml-1">({count})</span>
+      <span className="text-xs ml-1" style={{ color: mutedColor || '#6B7280' }}>({count})</span>
     </div>
   );
 }
 
 export default function AgentMarketplace({ colors }: { colors: DashboardColors }) {
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const cardBg = colors.cards || '#FFFFFF';
   const borderColor = colors.borders || '#E5E7EB';
   const buttonColor = colors.buttons || '#1A1A1A';
@@ -221,18 +221,18 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
               return (
                 <div
                   key={sub.agent_id}
-                  className="flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-shadow hover:shadow-md"
+                  className="flex items-center gap-3 p-4 border-2 cursor-pointer transition-shadow hover:shadow-md"
                   style={{ backgroundColor: cardBg, borderColor: `${buttonColor}40` }}
                   onClick={() => setSelectedAgent(agent)}
                 >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${buttonColor}15` }}>
+                  <div className="w-10 h-10 flex items-center justify-center" style={{ backgroundColor: `${buttonColor}15` }}>
                     <AgentIcon icon={agent.icon} size={20} color={buttonColor} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate" style={{ color: textMain }}>{agent.name}</p>
                     <p className="text-xs" style={{ color: textMuted }}>Active since {new Date(sub.started_at).toLocaleDateString()}</p>
                   </div>
-                  <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700">Active</span>
+                  <span className="px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700">Active</span>
                 </div>
               );
             })}
@@ -243,7 +243,7 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
       {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: textMuted }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
           </svg>
           <input
@@ -251,7 +251,7 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search agents..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm"
+            className="w-full pl-10 pr-4 py-2.5 border text-sm"
             style={{ borderColor, color: textMain, backgroundColor: cardBg }}
           />
         </div>
@@ -263,7 +263,7 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
           <button
             key={key}
             onClick={() => setCategory(key)}
-            className="px-4 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+            className="px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
             style={{
               backgroundColor: category === key ? buttonColor : 'transparent',
               color: category === key ? getContrastText(buttonColor) : textMain,
@@ -284,16 +284,16 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
               <button
                 key={agent.id}
                 onClick={() => setSelectedAgent(agent)}
-                className="text-left rounded-2xl p-5 transition-shadow hover:shadow-md"
+                className="text-left p-5 transition-shadow hover:shadow-md"
                 style={{ backgroundColor: cardBg, border: `2px solid ${buttonColor}30` }}
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${buttonColor}15` }}>
+                  <div className="w-12 h-12 flex items-center justify-center shrink-0" style={{ backgroundColor: `${buttonColor}15` }}>
                     <AgentIcon icon={agent.icon} size={24} color={buttonColor} />
                   </div>
                   <div className="min-w-0">
                     <h4 className="font-semibold text-sm truncate" style={{ color: textMain }}>{agent.name}</h4>
-                    <StarRating rating={agent.rating_avg} count={agent.rating_count} />
+                    <StarRating rating={agent.rating_avg} count={agent.rating_count} mutedColor={textMuted} />
                   </div>
                 </div>
                 <p className="text-xs mb-3 line-clamp-2" style={{ color: textMuted }}>{agent.description}</p>
@@ -316,16 +316,16 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
               <button
                 key={agent.id}
                 onClick={() => setSelectedAgent(agent)}
-                className="text-left rounded-2xl p-5 transition-shadow hover:shadow-md"
+                className="text-left p-5 transition-shadow hover:shadow-md"
                 style={{ backgroundColor: cardBg, border: `1px solid ${borderColor}` }}
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${buttonColor}10` }}>
+                  <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ backgroundColor: `${buttonColor}10` }}>
                     <AgentIcon icon={agent.icon} size={20} color={buttonColor} />
                   </div>
                   <div className="min-w-0">
                     <h4 className="font-semibold text-sm truncate" style={{ color: textMain }}>{agent.name}</h4>
-                    <StarRating rating={agent.rating_avg} count={agent.rating_count} />
+                    <StarRating rating={agent.rating_avg} count={agent.rating_count} mutedColor={textMuted} />
                   </div>
                 </div>
                 <p className="text-xs mb-3 line-clamp-2" style={{ color: textMuted }}>{agent.description}</p>
@@ -350,29 +350,29 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
         <>
           <div className="fixed inset-0 z-50 bg-black/40" onClick={() => setSelectedAgent(null)} />
           <div
-            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
+            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
             style={{ backgroundColor: cardBg }}
           >
             {/* Header with icon */}
             <div className="p-6 pb-0">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${buttonColor}15` }}>
+                <div className="w-14 h-14 flex items-center justify-center shrink-0" style={{ backgroundColor: `${buttonColor}15` }}>
                   <AgentIcon icon={selectedAgent.icon} size={28} color={buttonColor} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-bold" style={{ color: textMain }}>{selectedAgent.name}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <StarRating rating={selectedAgent.rating_avg} count={selectedAgent.rating_count} />
+                    <StarRating rating={selectedAgent.rating_avg} count={selectedAgent.rating_count} mutedColor={textMuted} />
                     <span className="text-xs" style={{ color: textMuted }}>{selectedAgent.install_count} active users</span>
                   </div>
                 </div>
-                <button onClick={() => setSelectedAgent(null)} className="text-gray-400 hover:text-gray-600 p-1">
+                <button onClick={() => setSelectedAgent(null)} className="p-1" style={{ color: textMuted }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
               </div>
 
               {/* Price */}
-              <div className="flex items-center gap-3 mb-4 p-3 rounded-xl" style={{ backgroundColor: bgColor }}>
+              <div className="flex items-center gap-3 mb-4 p-3" style={{ backgroundColor: bgColor }}>
                 <span className="text-2xl font-bold" style={{ color: buttonColor }}>
                   {formatPrice(selectedAgent.monthly_price_cents)}
                 </span>
@@ -405,7 +405,7 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
               {/* Tags */}
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {selectedAgent.tags.map(tag => (
-                  <span key={tag} className="px-2.5 py-0.5 text-xs rounded-full" style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
+                  <span key={tag} className="px-2.5 py-0.5 text-xs " style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}>
                     {tag}
                   </span>
                 ))}
@@ -414,7 +414,7 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
               {/* Category */}
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-xs" style={{ color: textMuted }}>Category:</span>
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: `${borderColor}60`, color: textMain }}>
+                <span className="text-xs font-medium px-2 py-0.5 " style={{ backgroundColor: `${borderColor}60`, color: textMain }}>
                   {CATEGORY_LABELS[selectedAgent.category] || selectedAgent.category}
                 </span>
               </div>
@@ -424,7 +424,7 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
             <div className="p-4 border-t flex gap-3" style={{ borderColor }}>
               <button
                 onClick={() => setSelectedAgent(null)}
-                className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl border"
+                className="flex-1 px-4 py-2.5 text-sm font-medium border"
                 style={{ borderColor, color: textMain }}
               >
                 Close
@@ -432,14 +432,14 @@ export default function AgentMarketplace({ colors }: { colors: DashboardColors }
               {isSubscribed(selectedAgent.id) ? (
                 <button
                   onClick={() => { handleUnsubscribe(selectedAgent); setSelectedAgent(null); }}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl border border-red-300 text-red-600 hover:bg-red-50"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium border border-red-300 text-red-600 hover:bg-red-50"
                 >
                   Unsubscribe
                 </button>
               ) : (
                 <button
                   onClick={() => { handleSubscribe(selectedAgent); setSelectedAgent(null); }}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl text-white transition-opacity hover:opacity-90"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
                   style={{ backgroundColor: buttonColor }}
                 >
                   Subscribe — {formatPrice(selectedAgent.monthly_price_cents)}

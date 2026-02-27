@@ -56,7 +56,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
   const textMain = colors.headings || '#1A1A1A';
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
 
   const toggleSkill = (skill: string) => {
@@ -106,7 +106,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
       <div className="flex items-center gap-1 mb-6">
         {STEPS.map((label, i) => (
           <div key={label} className="flex-1 flex flex-col items-center gap-1">
-            <div className="h-1 w-full rounded-full transition-colors" style={{ backgroundColor: i <= step ? buttonColor : borderColor }} />
+            <div className="h-1 w-full transition-colors" style={{ backgroundColor: i <= step ? buttonColor : borderColor }} />
             <span className="text-[10px] font-medium" style={{ color: i <= step ? buttonColor : textMuted }}>{label}</span>
           </div>
         ))}
@@ -123,7 +123,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="How clients will see you"
               autoFocus
-              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+              className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
               style={{ borderColor, color: textMain }}
             />
           </div>
@@ -134,7 +134,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
               onChange={(e) => setBio(e.target.value)}
               placeholder="Describe your experience, what you offer, and what makes you unique..."
               rows={4}
-              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-none"
+              className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-none"
               style={{ borderColor, color: textMain }}
             />
             <p className="text-xs mt-1" style={{ color: textMuted }}>{bio.length}/500</p>
@@ -146,7 +146,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="e.g. Austin, TX"
-              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+              className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
               style={{ borderColor, color: textMain }}
             />
           </div>
@@ -154,10 +154,10 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
           <div>
             <label className="text-xs font-medium block mb-1.5" style={{ color: textMuted }}>Profile Photo</label>
             <div
-              className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]"
+              className="flex items-center gap-3 px-4 py-3 border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]"
               style={{ borderColor }}
             >
-              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+              <div className="w-12 h-12 bg-gray-100 flex items-center justify-center">
                 <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
@@ -181,7 +181,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
                 <button
                   key={cat.value}
                   onClick={() => setCategory(cat.value)}
-                  className="px-3 py-2 text-xs font-medium rounded-lg transition-colors text-center"
+                  className="px-3 py-2 text-xs font-medium transition-colors text-center"
                   style={{
                     backgroundColor: category === cat.value ? `${buttonColor}10` : 'transparent',
                     color: category === cat.value ? buttonColor : textMain,
@@ -204,7 +204,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
                   <button
                     key={skill}
                     onClick={() => toggleSkill(skill)}
-                    className="px-2.5 py-1 text-xs font-medium rounded-full transition-colors"
+                    className="px-2.5 py-1 text-xs font-medium transition-colors"
                     style={{
                       backgroundColor: selected ? buttonColor : 'transparent',
                       color: selected ? buttonText : textMain,
@@ -221,7 +221,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
           <div>
             <label className="text-xs font-medium block mb-1.5" style={{ color: textMuted }}>Portfolio Images (optional)</label>
             <div
-              className="flex items-center justify-center px-4 py-6 rounded-xl border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]"
+              className="flex items-center justify-center px-4 py-6 border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]"
               style={{ borderColor }}
             >
               <div className="text-center">
@@ -247,7 +247,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
               onChange={(e) => setGigTitle(e.target.value)}
               placeholder="I will..."
               autoFocus
-              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+              className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
               style={{ borderColor, color: textMain }}
             />
           </div>
@@ -258,7 +258,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
               onChange={(e) => setGigDescription(e.target.value)}
               placeholder="Describe what you'll deliver, your process, and what clients can expect..."
               rows={3}
-              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-none"
+              className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-none"
               style={{ borderColor, color: textMain }}
             />
           </div>
@@ -279,7 +279,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
                       value={tier.value}
                       onChange={(e) => tier.onChange(e.target.value)}
                       placeholder="0"
-                      className="w-full pl-7 pr-2 py-2 text-sm border rounded-lg focus:outline-none"
+                      className="w-full pl-7 pr-2 py-2 text-sm border focus:outline-none"
                       style={{ borderColor, color: textMain }}
                     />
                   </div>
@@ -293,7 +293,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
               type="number"
               value={deliveryDays}
               onChange={(e) => setDeliveryDays(e.target.value)}
-              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none"
+              className="w-full px-3 py-2.5 text-sm border focus:outline-none"
               style={{ borderColor, color: textMain }}
             />
           </div>
@@ -311,23 +311,23 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
           ) : (
             <>
               {/* Summary cards */}
-              <div className="rounded-xl p-4" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
+              <div className="p-4" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
                 <p className="text-xs font-semibold uppercase mb-2" style={{ color: textMuted }}>Profile</p>
                 <p className="text-sm font-bold" style={{ color: textMain }}>{displayName}</p>
                 <p className="text-xs" style={{ color: textMuted }}>{location}</p>
                 <p className="text-xs mt-1 line-clamp-2" style={{ color: textMain }}>{bio}</p>
               </div>
 
-              <div className="rounded-xl p-4" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
+              <div className="p-4" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
                 <p className="text-xs font-semibold uppercase mb-2" style={{ color: textMuted }}>Skills</p>
                 <div className="flex flex-wrap gap-1">
                   {selectedSkills.map(s => (
-                    <span key={s} className="px-2 py-0.5 text-xs rounded-full" style={{ backgroundColor: `${buttonColor}15`, color: buttonColor }}>{s}</span>
+                    <span key={s} className="px-2 py-0.5 text-xs " style={{ backgroundColor: `${buttonColor}15`, color: buttonColor }}>{s}</span>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-xl p-4" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
+              <div className="p-4" style={{ backgroundColor: `${buttonColor}06`, border: `1px solid ${borderColor}` }}>
                 <p className="text-xs font-semibold uppercase mb-2" style={{ color: textMuted }}>First Gig</p>
                 <p className="text-sm font-bold" style={{ color: textMain }}>{gigTitle || 'Untitled'}</p>
                 <div className="flex items-center gap-3 mt-1">
@@ -346,7 +346,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
         <div className="flex items-center justify-between mt-6 pt-4 border-t" style={{ borderColor }}>
           <button
             onClick={step === 0 ? onClose : handleBack}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-70"
+            className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70"
             style={{ color: textMuted }}
           >
             {step === 0 ? 'Cancel' : 'Back'}
@@ -354,7 +354,7 @@ export default function FreelancerWizard({ isOpen, onClose, colors, onComplete }
           <button
             onClick={step === 3 ? handleSubmit : handleNext}
             disabled={!canAdvance()}
-            className="px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
             style={{ backgroundColor: buttonColor, color: buttonText }}
           >
             {step === 3 ? 'Go Live' : 'Continue'}

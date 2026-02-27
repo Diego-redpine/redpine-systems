@@ -67,9 +67,12 @@ import {
   Star,
   Send,
   ArrowUp,
+  HelpCircle,
+  Play,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { BASE_ELEMENT_SIZES } from '@/hooks/useFreeFormEditor';
+import { getTemplateKey } from '@/lib/onboarding/website-sections';
 import BrandBoardEditor from '@/components/BrandBoardEditor';
 import type { ColorItem } from '@/components/editors/ColorsEditor';
 
@@ -165,7 +168,6 @@ interface SiteSettingsData {
 const NAV_ITEMS: NavItem[] = [
   { id: 'ai', label: 'AI', icon: Sparkles },
   { id: 'elements', label: 'Elements', icon: LayoutGrid },
-  { id: 'text', label: 'Text', icon: Type },
   { id: 'brand', label: 'Brand', icon: Palette },
   { id: 'projects', label: 'Project', icon: FolderOpen },
 ];
@@ -182,15 +184,32 @@ const PREBUILT_SECTION_ITEMS: SectionItem[] = [
   { type: 'classesWidget', label: 'Class Schedule', icon: ClipboardList, description: 'Weekly class schedule with enrollment' },
   { type: 'reviewCarousel', label: 'Reviews', icon: Star, description: 'Client testimonials carousel' },
   { type: 'blogWidget', label: 'Blog', icon: FileText, description: 'Blog posts feed section' },
+  { type: 'faqWidget', label: 'FAQ', icon: HelpCircle, description: 'Frequently asked questions' },
 ];
+
+// Industry-specific section filtering — only show relevant prebuilt sections
+const UNIVERSAL_SECTION_TYPES = ['galleryWidget', 'reviewCarousel', 'blogWidget', 'faqWidget'];
+
+const INDUSTRY_SECTION_TYPES: Record<string, string[]> = {
+  appointment_based: ['serviceWidget', ...UNIVERSAL_SECTION_TYPES],
+  fitness: ['serviceWidget', 'classesWidget', 'eventsWidget', ...UNIVERSAL_SECTION_TYPES],
+  retail: ['productWidget', 'menuWidget', ...UNIVERSAL_SECTION_TYPES],
+  professional: ['serviceWidget', 'eventsWidget', ...UNIVERSAL_SECTION_TYPES],
+  creative: ['serviceWidget', 'eventsWidget', ...UNIVERSAL_SECTION_TYPES],
+  home_services: ['serviceWidget', ...UNIVERSAL_SECTION_TYPES],
+};
+
+function getIndustrySections(businessType?: string): string[] | null {
+  if (!businessType) return null; // Show all when no business type
+  const templateKey = getTemplateKey(businessType);
+  return INDUSTRY_SECTION_TYPES[templateKey] || null;
+}
 
 const SECTION_ITEMS: SectionItem[] = [BLANK_SECTION_ITEM, ...PREBUILT_SECTION_ITEMS];
 
 // Portable widgets that can be added to blank sections
-const PORTABLE_WIDGET_ITEMS: PortableWidgetItem[] = [
-  { type: 'customForm', label: 'Custom Form', icon: FormInput, description: 'Build your own form' },
-  { type: 'button', label: 'Button', icon: MousePointerClick, description: 'Call-to-action button' },
-];
+// (customForm and button moved to Forms & Buttons category to avoid duplicates)
+const PORTABLE_WIDGET_ITEMS: PortableWidgetItem[] = [];
 // Media elements (image removed — now in Images category with frames)
 const MEDIA_ITEMS: MediaItem[] = [
   { type: 'divider', label: 'Divider', icon: Minus, description: 'Horizontal line' },
@@ -241,19 +260,22 @@ const FRAME_CATEGORIES: FrameCategory[] = [
 ];
 
 
-// Text elements
+// Text elements (button moved to Forms & Buttons category)
 const TEXT_ITEMS: TextItemData[] = [
   { type: 'heading', label: 'Add a heading', icon: Heading, description: 'Large title text', size: 'large' },
   { type: 'subheading', label: 'Add a subheading', icon: CaseSensitive, description: 'Medium subtitle text', size: 'medium' },
   { type: 'text', label: 'Add body text', icon: Type, description: 'Paragraph text', size: 'body' },
   { type: 'caption', label: 'Add a caption', icon: Text, description: 'Small caption text', size: 'small' },
   { type: 'quote', label: 'Add a quote', icon: MessageSquareQuote, description: 'Styled quotation', size: 'quote' },
-  { type: 'button', label: 'Add a button', icon: MousePointerClick, description: 'Clickable button', size: 'button' },
 ];
 
-// Form elements
+// Form & Button elements
 const FORM_ITEMS: FormItem[] = [
   { type: 'customForm', label: 'Custom Form', icon: FormInput, description: 'Start blank, add fields' },
+  { type: 'button-rect', label: 'Button — Rectangle', icon: MousePointerClick, description: 'Sharp corners' },
+  { type: 'button-rounded', label: 'Button — Rounded', icon: MousePointerClick, description: 'Soft corners' },
+  { type: 'button-pill', label: 'Button — Pill', icon: MousePointerClick, description: 'Fully rounded' },
+  { type: 'button-circle', label: 'Button — Circle', icon: MousePointerClick, description: 'Icon button' },
 ];
 
 // Default pages
@@ -504,13 +526,14 @@ interface ElementsPanelProps {
   theme: string;
   searchQuery: string;
   isPageLocked?: boolean;
+  businessType?: string;
   onAddSection?: (type: string) => string | void;
   onAddElement: (type: string, options?: Record<string, unknown>) => void;
   onDragStart: (type: string) => void;
   accentColor?: string;
 }
 
-function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection, onAddElement, onDragStart, accentColor = '#E11D48' }: ElementsPanelProps) {
+function ElementsPanel({ theme, searchQuery, isPageLocked = false, businessType, onAddSection, onAddElement, onDragStart, accentColor = '#E11D48' }: ElementsPanelProps) {
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({
     sections: false, // Canvas Sections — open by default
     prebuilt: true,
@@ -518,6 +541,7 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
     media: true,
     images: true,
     forms: true,
+    text: true,
   });
   const isDark = theme === 'dark';
 
@@ -540,10 +564,14 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
 
   // Filter sections by search query
   const showBlankSection = !searchQuery || BLANK_SECTION_ITEM.label.toLowerCase().includes(searchQuery.toLowerCase()) || BLANK_SECTION_ITEM.description.toLowerCase().includes(searchQuery.toLowerCase());
-  const filteredPrebuiltSections = PREBUILT_SECTION_ITEMS.filter(item =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const industrySections = getIndustrySections(businessType);
+  const filteredPrebuiltSections = PREBUILT_SECTION_ITEMS.filter(item => {
+    // Industry filter: only show relevant sections
+    if (industrySections && !industrySections.includes(item.type)) return false;
+    // Search filter
+    return item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase());
+  });
   // Keep combined for backward compat
   const filteredSections = SECTION_ITEMS.filter(item =>
     item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -574,6 +602,11 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
   const filteredForms = FORM_ITEMS.filter(item =>
     item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filter text items
+  const filteredTextItems = TEXT_ITEMS.filter(item =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Handler for adding frames with frameType
@@ -747,53 +780,18 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
         </div>
       )}
 
-      {/* Images — consolidated frames + gallery section */}
+      {/* Images — gallery section + flattened frames */}
       {(filteredFrameCategories.length > 0 || !searchQuery) && (
         <div>
           <CategoryHeader
-            label="Images"
+            label="Images & Videos"
             theme={theme}
             collapsed={collapsedCategories.images}
             onToggle={() => toggleCategory('images')}
           />
           {!collapsedCategories.images && (
             <div className="space-y-4">
-              {/* All frame types in a flat 3-column grid */}
-              {filteredFrameCategories.map((category) => (
-                <div key={`frame-${category.id}`}>
-                  <p className={`text-[10px] font-['Fira_Code'] uppercase tracking-wider mb-2 px-1 ${
-                    isDark ? 'text-zinc-500' : 'text-zinc-400'
-                  }`}>{category.label}</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {category.frames.map((frame) => {
-                      const Icon = frame.icon;
-                      return (
-                        <button
-                          key={frame.frameType}
-                          draggable
-                          onDragStart={(e) => {
-                            e.dataTransfer.setData('elementType', 'frame');
-                            e.dataTransfer.setData('frameType', frame.frameType);
-                            e.dataTransfer.effectAllowed = 'copy';
-                            onDragStart?.('frame');
-                          }}
-                          onClick={() => handleAddFrame(frame.frameType)}
-                          className={`p-3 border transition-all ${
-                            isDark
-                              ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-zinc-200'
-                              : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-500 hover:text-zinc-700'
-                          }`}
-                        >
-                          <Icon className="w-6 h-6 mx-auto mb-1" />
-                          <span className="text-[10px] font-['Fira_Code'] block truncate">{frame.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-
-              {/* Gallery Section button */}
+              {/* Gallery Section button — first, prominent */}
               {!isPageLocked && (
                 <button
                   onClick={() => onAddSection?.('galleryWidget')}
@@ -814,6 +812,67 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
                   </div>
                 </button>
               )}
+
+              {/* Video Embed */}
+              <button
+                onClick={() => onAddElement('videoEmbed')}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('elementType', 'videoEmbed');
+                  e.dataTransfer.effectAllowed = 'copy';
+                  onDragStart?.('videoEmbed');
+                }}
+                className={`w-full flex items-center gap-3 p-3 border transition-all ${
+                  isDark
+                    ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700 text-zinc-300'
+                    : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-700'
+                }`}
+              >
+                <Play className={`w-5 h-5 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`} />
+                <div className="text-left">
+                  <span className={`text-xs font-['Fira_Code'] font-medium block ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                    Video Embed
+                  </span>
+                  <span className={`text-[10px] font-['Fira_Code'] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                    YouTube or Vimeo video
+                  </span>
+                </div>
+              </button>
+
+              {/* Frames — single flat list */}
+              {filteredFrameCategories.length > 0 && (
+                <div>
+                  <p className={`text-[10px] font-['Fira_Code'] uppercase tracking-wider mb-2 px-1 ${
+                    isDark ? 'text-zinc-500' : 'text-zinc-400'
+                  }`}>Frames</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {filteredFrameCategories.flatMap((category) => category.frames).map((frame) => {
+                      const Icon = frame.icon;
+                      return (
+                        <button
+                          key={frame.frameType}
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('elementType', 'frame');
+                            e.dataTransfer.setData('frameType', frame.frameType);
+                            e.dataTransfer.effectAllowed = 'copy';
+                            onDragStart?.('frame');
+                          }}
+                          onClick={() => handleAddFrame(frame.frameType)}
+                          className={`p-3 border transition-all ${
+                            isDark
+                              ? 'bg-zinc-800/50 hover:bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-zinc-200'
+                              : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-500 hover:text-zinc-700'
+                          }`}
+                        >
+                          <Icon className="w-6 h-6 mx-auto mb-1" />
+                          <span className="text-[10px] font-['Fira_Code'] block">{frame.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -823,7 +882,7 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
       {filteredForms.length > 0 && (
         <div>
           <CategoryHeader
-            label="Forms"
+            label="Forms & Buttons"
             theme={theme}
             collapsed={collapsedCategories.forms}
             onToggle={() => toggleCategory('forms')}
@@ -832,6 +891,31 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, onAddSection,
             <div className="space-y-2">
               {filteredForms.map((item) => (
                 <ElementItem
+                  key={item.type}
+                  item={item}
+                  theme={theme}
+                  onClick={onAddElement}
+                  onDragStart={onDragStart}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Text */}
+      {filteredTextItems.length > 0 && (
+        <div>
+          <CategoryHeader
+            label="Click text to add to page"
+            theme={theme}
+            collapsed={collapsedCategories.text}
+            onToggle={() => toggleCategory('text')}
+          />
+          {!collapsedCategories.text && (
+            <div className="space-y-2">
+              {filteredTextItems.map((item) => (
+                <TextItem
                   key={item.type}
                   item={item}
                   theme={theme}
@@ -1525,6 +1609,7 @@ export interface FreeFormSidebarProps {
   brandBodyFont?: string;
   onBrandFontChange?: (heading: string, body: string) => void;
   accentColor?: string;
+  businessType?: string;
   /** @deprecated No longer used — kept for backward compat */
   onActivePanelChange?: (panel: string | null) => void;
   className?: string;
@@ -1573,6 +1658,7 @@ export default function FreeFormSidebar({
   brandBodyFont = 'Inter, system-ui, sans-serif',
   onBrandFontChange,
   accentColor = '#E11D48',
+  businessType,
   onActivePanelChange,
   className = '',
   // AI editor
@@ -1587,7 +1673,7 @@ export default function FreeFormSidebar({
   onClose,
   onElementAdded,
 }: FreeFormSidebarProps) {
-  const [activePanel, setActivePanel] = useState<string | null>(null);
+  const [activePanel, setActivePanel] = useState<string | null>('ai');
   const [searchQuery, setSearchQuery] = useState('');
   const isDark = theme === 'dark';
 
@@ -1595,7 +1681,24 @@ export default function FreeFormSidebar({
   const handleAddElement = useCallback((type: string, optionsOrShapeType?: string | Record<string, unknown>) => {
     if (!onAddElement) return;
 
-    const baseSize = BASE_ELEMENT_SIZES[type] || { width: 200, height: 100 };
+    // Normalize button variants → 'button' type with borderRadius
+    let actualType = type;
+    let extraOptions: Record<string, unknown> = {};
+    if (type === 'button-rect') {
+      actualType = 'button';
+      extraOptions = { borderRadius: 0 };
+    } else if (type === 'button-rounded') {
+      actualType = 'button';
+      extraOptions = { borderRadius: 8 };
+    } else if (type === 'button-pill') {
+      actualType = 'button';
+      extraOptions = { borderRadius: 9999 };
+    } else if (type === 'button-circle') {
+      actualType = 'button';
+      extraOptions = { borderRadius: 9999, content: '→' };
+    }
+
+    const baseSize = BASE_ELEMENT_SIZES[actualType] || { width: 200, height: 100 };
     const padding = 20;
 
     let scaledWidth = baseSize.width;
@@ -1650,7 +1753,10 @@ export default function FreeFormSidebar({
       if (colorMap.background) options.brandBackgroundColor = colorMap.background;
     }
 
-    onAddElement(type, centerX, yPos, viewportMode, viewportWidth, canvasHeight, Object.keys(options).length > 0 ? options : undefined);
+    // Merge button variant options
+    Object.assign(options, extraOptions);
+
+    onAddElement(actualType, centerX, yPos, viewportMode, viewportWidth, canvasHeight, Object.keys(options).length > 0 ? options : undefined);
     onElementAdded?.();
   }, [onAddElement, viewportWidth, viewportMode, canvasHeight, brandBoardColors, sections, elements, onElementAdded]);
 
@@ -1852,7 +1958,6 @@ export default function FreeFormSidebar({
       case 'brand': return 'Brand & Design';
       case 'projects': return 'Project & Pages';
       case 'elements': return 'Elements';
-      case 'text': return 'Text';
       default: return 'Tools';
     }
   };
@@ -2016,16 +2121,21 @@ export default function FreeFormSidebar({
         );
       case 'brand':
         return (
-          <BrandBoardEditor
-            configId={null}
-            colors={brandBoardColors}
-            onColorsChange={onBrandBoardColorsChange || (() => {})}
-            headingFont={brandHeadingFont}
-            bodyFont={brandBodyFont}
-            onFontChange={onBrandFontChange || (() => {})}
-            buttonColor={accentColor}
-            mode="sidebar"
-          />
+          <div className="flex flex-col h-full">
+            <p className={`text-[10px] font-['Fira_Code'] px-4 pt-3 pb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+              These settings only affect your website, not your dashboard.
+            </p>
+            <BrandBoardEditor
+              configId={null}
+              colors={brandBoardColors}
+              onColorsChange={onBrandBoardColorsChange || (() => {})}
+              headingFont={brandHeadingFont}
+              bodyFont={brandBodyFont}
+              onFontChange={onBrandFontChange || (() => {})}
+              buttonColor={accentColor}
+              mode="sidebar"
+            />
+          </div>
         );
       case 'projects':
         return (
@@ -2056,21 +2166,12 @@ export default function FreeFormSidebar({
               theme={theme}
               searchQuery={searchQuery}
               isPageLocked={isPageLocked}
+              businessType={businessType}
               onAddSection={(type: string) => { onAddSection?.(type); onElementAdded?.(); }}
               onAddElement={handleAddElement}
               onDragStart={() => {}}
               accentColor={accentColor}
             />
-
-            {/* Text panel inline */}
-            {!searchQuery && (
-              <TextPanel
-                theme={theme}
-                searchQuery=""
-                onAddElement={handleAddElement}
-                onDragStart={() => {}}
-              />
-            )}
 
             {/* Navigation to sub-panels */}
             {!searchQuery && (
@@ -2137,7 +2238,7 @@ export default function FreeFormSidebar({
         </div>
 
         {/* Search */}
-        {(!activePanel || activePanel === 'elements' || activePanel === 'text') && (
+        {(!activePanel || activePanel === 'elements') && (
           <div className="px-4 py-3 flex-shrink-0">
             <SearchInput
               placeholder="Search tools..."

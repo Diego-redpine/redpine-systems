@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { DashboardColors, DashboardTab } from '@/types/config';
 import { ColorItem } from './editors/ColorsEditor';
-import ColorsEditor from './editors/ColorsEditor';
 import BrandBoardEditor from './BrandBoardEditor';
 import { getContrastText } from '@/lib/view-colors';
 import { FONT_OPTIONS, CORE_FONTS, loadExtraFonts } from '@/lib/fonts';
@@ -19,12 +18,18 @@ function SectionsEditor({
   tabs,
   components,
   onTabsReorder,
+  colors,
 }: {
   tabs?: DashboardTab[];
   components: TabComponent[];
   onTabsReorder?: (tabs: DashboardTab[]) => void;
+  colors?: DashboardColors;
 }) {
   const items = tabs || [{ id: '_current', label: 'Current Tab', icon: '', components }];
+  const cardBg = colors?.cards || '#FFFFFF';
+  const borderColor = colors?.borders || '#E5E7EB';
+  const textColor = colors?.text || '#1A1A1A';
+  const mutedColor = colors?.icons || '#6B7280';
 
   const moveTabUp = (idx: number) => {
     if (idx <= 0 || !tabs) return;
@@ -42,19 +47,21 @@ function SectionsEditor({
 
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-4">Reorder your dashboard tabs with the arrows.</p>
+      <p className="text-sm mb-4" style={{ color: mutedColor }}>Reorder your dashboard tabs with the arrows.</p>
       <div className="space-y-3">
         {items.map((tab, tabIdx) => (
           <div
             key={tab.id}
-            className="rounded-xl border border-gray-200 overflow-hidden"
+            className="overflow-hidden"
+            style={{ border: `1px solid ${borderColor}` }}
           >
-            <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2 px-4 py-3" style={{ backgroundColor: cardBg, borderBottom: `1px solid ${borderColor}` }}>
               <div className="flex flex-col gap-0.5 shrink-0">
                 <button
                   onClick={() => moveTabUp(tabIdx)}
                   disabled={tabIdx === 0 || !tabs}
-                  className="w-6 h-5 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="w-6 h-5 flex items-center justify-center rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  style={{ color: mutedColor }}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
@@ -63,28 +70,30 @@ function SectionsEditor({
                 <button
                   onClick={() => moveTabDown(tabIdx)}
                   disabled={!tabs || tabIdx >= items.length - 1}
-                  className="w-6 h-5 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="w-6 h-5 flex items-center justify-center rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  style={{ color: mutedColor }}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
               </div>
-              <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide flex-1">{tab.label}</span>
-              <span className="text-xs text-gray-400">{tab.components.length} items</span>
+              <span className="text-sm font-semibold uppercase tracking-wide flex-1" style={{ color: textColor }}>{tab.label}</span>
+              <span className="text-xs" style={{ color: mutedColor }}>{tab.components.length} items</span>
             </div>
-            <div className="divide-y divide-gray-50">
+            <div style={{ backgroundColor: cardBg }}>
               {tab.components.map((comp, compIdx) => (
                 <div
                   key={comp.id}
-                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 transition-colors"
+                  style={{ borderBottom: `1px solid ${borderColor}20` }}
                 >
-                  <span className="w-6 h-6 flex items-center justify-center text-xs text-gray-400 font-mono bg-gray-100 rounded">{compIdx + 1}</span>
-                  <span className="text-sm text-gray-600 flex-1">{comp.label}</span>
+                  <span className="w-6 h-6 flex items-center justify-center text-xs font-mono rounded" style={{ backgroundColor: `${borderColor}40`, color: mutedColor }}>{compIdx + 1}</span>
+                  <span className="text-sm flex-1" style={{ color: textColor, opacity: 0.8 }}>{comp.label}</span>
                 </div>
               ))}
               {tab.components.length === 0 && (
-                <div className="px-4 py-5 text-center text-sm text-gray-400">No sections</div>
+                <div className="px-4 py-5 text-center text-sm" style={{ color: mutedColor }}>No sections</div>
               )}
             </div>
           </div>
@@ -105,9 +114,11 @@ interface BrandBoardViewProps {
   onTabsReorder?: (tabs: DashboardTab[]) => void;
   businessType?: string;
   businessName?: string;
+  configHeadingFont?: string;
+  configBodyFont?: string;
 }
 
-type SubTab = 'brand_kit' | 'colors' | 'sections';
+type SubTab = 'brand_kit' | 'sections';
 
 export default function BrandBoardView({
   colors,
@@ -118,17 +129,21 @@ export default function BrandBoardView({
   onTabsReorder,
   businessType,
   businessName,
+  configHeadingFont,
+  configBodyFont,
 }: BrandBoardViewProps) {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('brand_kit');
 
-  // Font state
+  // Font state — prefer config (DB) over localStorage
   const [selectedHeadingFont, setSelectedHeadingFont] = useState(() => {
+    if (configHeadingFont) return configHeadingFont;
     if (typeof window !== 'undefined') {
       return localStorage.getItem('redpine-heading-font') || localStorage.getItem('redpine-font') || 'Inter';
     }
     return 'Inter';
   });
   const [selectedBodyFont, setSelectedBodyFont] = useState(() => {
+    if (configBodyFont) return configBodyFont;
     if (typeof window !== 'undefined') {
       return localStorage.getItem('redpine-body-font') || localStorage.getItem('redpine-font') || 'Inter';
     }
@@ -165,6 +180,12 @@ export default function BrandBoardView({
     localStorage.setItem('redpine-heading-font', headingName);
     localStorage.setItem('redpine-body-font', bodyName);
     localStorage.setItem('redpine-font', bodyName);
+    // Persist to config API so fonts survive page refresh
+    fetch('/api/config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ headingFont: headingName, bodyFont: bodyName }),
+    }).catch(() => { /* non-critical */ });
   };
 
   const headingFontFamily = FONT_OPTIONS.find(f => f.name === selectedHeadingFont)?.family || selectedHeadingFont;
@@ -172,12 +193,11 @@ export default function BrandBoardView({
 
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
 
   const subTabs: { id: SubTab; label: string }[] = [
     { id: 'brand_kit', label: 'Brand Kit' },
-    { id: 'colors', label: 'Colors' },
     { id: 'sections', label: 'Sections' },
   ];
 
@@ -189,7 +209,7 @@ export default function BrandBoardView({
           <button
             key={tab.id}
             onClick={() => setActiveSubTab(tab.id)}
-            className="px-4 py-2 text-sm font-medium rounded-full transition-colors whitespace-nowrap"
+            className="px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap"
             style={{
               backgroundColor: activeSubTab === tab.id ? buttonColor : 'transparent',
               color: activeSubTab === tab.id ? buttonText : textMuted,
@@ -218,18 +238,8 @@ export default function BrandBoardView({
           businessName={businessName}
           buttonColor={buttonColor}
           mode="editor"
+          themeColors={colors}
         />
-      )}
-
-      {activeSubTab === 'colors' && (
-        <div className="max-w-4xl mx-auto">
-          <div className="rounded-2xl border border-gray-200 overflow-hidden" style={{ height: 'calc(100vh - 220px)' }}>
-            <ColorsEditor
-              colors={editorColors}
-              onColorsChange={onColorsChange}
-            />
-          </div>
-        </div>
       )}
 
       {activeSubTab === 'sections' && (
@@ -238,6 +248,7 @@ export default function BrandBoardView({
             tabs={tabs}
             components={components}
             onTabsReorder={onTabsReorder}
+            colors={colors}
           />
         </div>
       )}

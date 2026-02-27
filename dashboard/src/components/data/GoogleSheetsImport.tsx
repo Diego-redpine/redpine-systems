@@ -440,7 +440,7 @@ export default function GoogleSheetsImport({
           {[1, 2, 3, 4].map((s) => (
             <div
               key={s}
-              className="h-1.5 rounded-full transition-all"
+              className="h-1.5 transition-all"
               style={{
                 width: s === step ? 32 : 16,
                 backgroundColor: s <= step ? buttonBg : borderColor,
@@ -458,7 +458,7 @@ export default function GoogleSheetsImport({
               {!isConnected && !isLoadingSheets && (
                 <div className="text-center py-8 space-y-4">
                   <div
-                    className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center"
+                    className="w-14 h-14 mx-auto flex items-center justify-center"
                     style={{ backgroundColor: `${buttonBg}15` }}
                   >
                     <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke={buttonBg} strokeWidth={1.5}>
@@ -475,7 +475,7 @@ export default function GoogleSheetsImport({
                   </div>
                   <a
                     href="/api/integrations/google/connect"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -502,7 +502,7 @@ export default function GoogleSheetsImport({
               )}
 
               {loadError && (
-                <div className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: '#FCA5A5', backgroundColor: '#FEF2F2', color: '#DC2626' }}>
+                <div className="border px-4 py-3 text-sm" style={{ borderColor: '#FCA5A5', backgroundColor: '#FEF2F2', color: '#DC2626' }}>
                   {loadError}
                 </div>
               )}
@@ -526,14 +526,14 @@ export default function GoogleSheetsImport({
                         key={sheet.id}
                         onClick={() => selectSpreadsheet(sheet.id, sheet.name)}
                         disabled={isLoadingData}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all hover:shadow-sm disabled:opacity-50"
+                        className="w-full flex items-center gap-3 px-4 py-3 border text-left transition-all hover:shadow-sm disabled:opacity-50"
                         style={{
                           borderColor,
                           backgroundColor: selectedSheetId === sheet.id ? `${buttonBg}08` : cardBg,
                         }}
                       >
                         <div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                          className="w-9 h-9 flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: '#E8F5E9' }}
                         >
                           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#0F9D58">
@@ -588,7 +588,7 @@ export default function GoogleSheetsImport({
                       key={name}
                       onClick={() => switchTab(name)}
                       disabled={isLoadingData}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                      className="px-3 py-1.5 text-xs font-medium transition-all"
                       style={{
                         backgroundColor: name === selectedTab ? buttonBg : `${buttonBg}10`,
                         color: name === selectedTab ? buttonText : buttonBg,
@@ -612,7 +612,7 @@ export default function GoogleSheetsImport({
                   {mappings.map((mapping, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl border"
+                      className="flex items-center gap-3 px-3 py-2.5 border"
                       style={{ borderColor, backgroundColor: mapping.entityField !== 'skip' ? `${buttonBg}04` : 'transparent' }}
                     >
                       {/* Sheet header name */}
@@ -636,7 +636,7 @@ export default function GoogleSheetsImport({
                       <select
                         value={mapping.entityField}
                         onChange={(e) => updateMapping(i, e.target.value)}
-                        className="w-44 px-3 py-2 rounded-lg border text-sm outline-none appearance-none cursor-pointer"
+                        className="w-44 px-3 py-2 border text-sm outline-none appearance-none cursor-pointer"
                         style={{
                           borderColor,
                           backgroundColor: pageBg,
@@ -669,7 +669,7 @@ export default function GoogleSheetsImport({
                 </p>
               </div>
 
-              <div className="overflow-x-auto rounded-xl border" style={{ borderColor }}>
+              <div className="overflow-x-auto border" style={{ borderColor }}>
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ backgroundColor: pageBg }}>
@@ -743,7 +743,7 @@ export default function GoogleSheetsImport({
               {!isImporting && !importComplete && (
                 <div className="text-center py-6 space-y-4">
                   <div
-                    className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center"
+                    className="w-14 h-14 mx-auto flex items-center justify-center"
                     style={{ backgroundColor: `${buttonBg}15` }}
                   >
                     <svg className="w-7 h-7" fill="none" stroke={buttonBg} viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -760,7 +760,7 @@ export default function GoogleSheetsImport({
                   </div>
                   <button
                     onClick={runImport}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
                   >
                     Start Import
@@ -785,7 +785,7 @@ export default function GoogleSheetsImport({
                     style={{ backgroundColor: `${buttonBg}20` }}
                   >
                     <div
-                      className="h-full rounded-full transition-all duration-300"
+                      className="h-full transition-all duration-300"
                       style={{
                         width: importTotal > 0 ? `${(importProgress / importTotal) * 100}%` : '0%',
                         backgroundColor: buttonBg,
@@ -798,7 +798,7 @@ export default function GoogleSheetsImport({
               {importComplete && (
                 <div className="text-center py-6 space-y-4">
                   <div
-                    className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center"
+                    className="w-14 h-14 mx-auto flex items-center justify-center"
                     style={{ backgroundColor: '#ECFDF5' }}
                   >
                     <svg className="w-7 h-7" fill="none" stroke="#10B981" viewBox="0 0 24 24" strokeWidth={2}>
@@ -816,7 +816,7 @@ export default function GoogleSheetsImport({
 
                   {importError && (
                     <div
-                      className="rounded-xl border px-4 py-3 text-sm text-left"
+                      className="border px-4 py-3 text-sm text-left"
                       style={{ borderColor: '#FCA5A5', backgroundColor: '#FEF2F2', color: '#DC2626' }}
                     >
                       {importError}
@@ -825,7 +825,7 @@ export default function GoogleSheetsImport({
 
                   <button
                     onClick={handleClose}
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                    className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
                     style={{ backgroundColor: buttonBg, color: buttonText }}
                   >
                     Done
@@ -844,7 +844,7 @@ export default function GoogleSheetsImport({
           >
             <button
               onClick={step > 1 ? () => setStep(step - 1) : handleClose}
-              className="px-4 py-2 rounded-lg text-sm font-medium border transition-opacity hover:opacity-70"
+              className="px-4 py-2 text-sm font-medium border transition-opacity hover:opacity-70"
               style={{ borderColor, color: textColor }}
             >
               {step > 1 ? 'Back' : 'Cancel'}
@@ -854,7 +854,7 @@ export default function GoogleSheetsImport({
               <button
                 onClick={() => setStep(3)}
                 disabled={mappedFieldCount === 0}
-                className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+                className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
                 style={{ backgroundColor: buttonBg, color: buttonText }}
               >
                 Next
@@ -864,7 +864,7 @@ export default function GoogleSheetsImport({
             {step === 3 && (
               <button
                 onClick={() => setStep(4)}
-                className="px-5 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                className="px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{ backgroundColor: buttonBg, color: buttonText }}
               >
                 Next

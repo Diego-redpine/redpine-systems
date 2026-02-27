@@ -178,14 +178,14 @@ export default function FreeFormCanvas({
     <div className={`flex flex-col h-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-300'} ${className}`}>
       {/* Preview Mode Banner */}
       {isPreviewMode && (
-        <div className="flex-shrink-0 px-4 py-2 flex items-center justify-center gap-3" style={{ backgroundColor: accentColor || '#E11D48' }}>
+        <div className="flex-shrink-0 px-4 py-2 flex items-center justify-center gap-3" style={{ backgroundColor: '#1A1A1A' }}>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-            <span className="text-white text-sm font-['Inter'] font-medium">
+            <span className="text-white text-sm font-['Fira_Code'] font-medium">
               Preview Mode - Animations Playing
             </span>
           </div>
-          <span className="text-white/70 text-xs font-['Inter']">
+          <span className="text-white/70 text-xs font-['Fira_Code']">
             Click the Eye icon to exit
           </span>
         </div>
@@ -210,7 +210,7 @@ export default function FreeFormCanvas({
           >
             {/* Page preview container - fixed width */}
             <div
-              className={`rounded-lg shadow-2xl overflow-visible flex flex-col ${
+              className={`shadow-2xl overflow-visible flex flex-col ${
                 isDark ? 'bg-zinc-950' : 'bg-white'
               }`}
               style={{
@@ -320,16 +320,16 @@ export default function FreeFormCanvas({
                 >
                   <div className="text-center">
                     <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                      isDark ? 'bg-zinc-800' : 'bg-zinc-200'
+                      isDark ? 'bg-zinc-800' : 'bg-gray-200'
                     }`}>
-                      <svg className={`w-8 h-8 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className={`w-8 h-8 ${isDark ? 'text-zinc-500' : 'text-gray-900'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                       </svg>
                     </div>
-                    <h3 className={`text-lg font-medium mb-2 font-['Inter'] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                    <h3 className={`text-lg font-medium mb-2 font-['Fira_Code'] ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
                       Add a Section
                     </h3>
-                    <p className={`text-sm font-['Inter'] max-w-xs ${isDark ? 'text-zinc-600' : 'text-zinc-500'}`}>
+                    <p className={`text-sm font-['Fira_Code'] max-w-xs ${isDark ? 'text-zinc-600' : 'text-zinc-500'}`}>
                       Select a section type from the Elements panel to get started
                     </p>
                   </div>

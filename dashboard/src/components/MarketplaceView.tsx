@@ -17,7 +17,7 @@ export default function MarketplaceView({ colors }: MarketplaceViewProps) {
 
   const buttonColor = colors.buttons || '#1A1A1A';
   const buttonText = getContrastText(buttonColor);
-  const textMuted = '#6B7280';
+  const textMuted = colors.icons || '#6B7280';
   const borderColor = colors.borders || '#E5E7EB';
 
   const subTabs: { id: SubTab; label: string }[] = [
@@ -33,7 +33,7 @@ export default function MarketplaceView({ colors }: MarketplaceViewProps) {
           <button
             key={tab.id}
             onClick={() => setActiveSubTab(tab.id)}
-            className="px-4 py-2 text-sm font-medium rounded-full transition-colors whitespace-nowrap"
+            className="px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap"
             style={{
               backgroundColor: activeSubTab === tab.id ? buttonColor : 'transparent',
               color: activeSubTab === tab.id ? buttonText : textMuted,
