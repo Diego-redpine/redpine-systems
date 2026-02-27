@@ -531,9 +531,10 @@ interface ElementsPanelProps {
   onAddElement: (type: string, options?: Record<string, unknown>) => void;
   onDragStart: (type: string) => void;
   accentColor?: string;
+  onNavigatePanel?: (panel: string) => void;
 }
 
-function ElementsPanel({ theme, searchQuery, isPageLocked = false, businessType, onAddSection, onAddElement, onDragStart, accentColor = '#E11D48' }: ElementsPanelProps) {
+function ElementsPanel({ theme, searchQuery, isPageLocked = false, businessType, onAddSection, onAddElement, onDragStart, accentColor = '#E11D48', onNavigatePanel }: ElementsPanelProps) {
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({
     sections: false, // Canvas Sections — open by default
     prebuilt: true,
@@ -628,6 +629,17 @@ function ElementsPanel({ theme, searchQuery, isPageLocked = false, businessType,
             This page has a locked section. You can edit properties but cannot add or remove sections.
           </span>
         </div>
+      )}
+
+      {/* AI Assistant — always at top */}
+      {!searchQuery && (
+        <button
+          onClick={() => onNavigatePanel?.('ai')}
+          className="w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider py-1 text-zinc-500 hover:text-zinc-600 transition-colors"
+        >
+          <span className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5" /> AI Assistant</span>
+          <ChevronLeft className="w-3 h-3 -rotate-90" />
+        </button>
       )}
 
       {/* Blank Section */}
@@ -1955,7 +1967,7 @@ export default function FreeFormSidebar({
   const getPanelTitle = (): string => {
     switch (activePanel) {
       case 'ai': return 'AI Assistant';
-      case 'brand': return 'Brand & Design';
+      case 'brand': return 'Brand Board';
       case 'projects': return 'Project & Pages';
       case 'elements': return 'Elements';
       default: return 'Tools';
@@ -2171,31 +2183,25 @@ export default function FreeFormSidebar({
               onAddElement={handleAddElement}
               onDragStart={() => {}}
               accentColor={accentColor}
+              onNavigatePanel={(panel: string) => setActivePanel(panel)}
             />
 
             {/* Navigation to sub-panels */}
             {!searchQuery && (
-              <div className="mt-2 space-y-1 px-2 pb-4">
+              <div className="mt-2 space-y-1 pb-4">
                 <button
                   onClick={() => setActivePanel('brand')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-100 text-gray-700"
+                  className="w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider py-1 text-zinc-500 hover:text-zinc-600 transition-colors"
                 >
-                  <Palette className="w-4 h-4 text-gray-400" />
-                  <span className="text-xs font-['Fira_Code'] font-medium">Brand & Design</span>
-                </button>
-                <button
-                  onClick={() => setActivePanel('ai')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-100 text-gray-700"
-                >
-                  <Sparkles className="w-4 h-4 text-gray-400" />
-                  <span className="text-xs font-['Fira_Code'] font-medium">AI Assistant</span>
+                  <span className="flex items-center gap-2"><Palette className="w-3.5 h-3.5" /> Brand Board</span>
+                  <ChevronLeft className="w-3 h-3 -rotate-90" />
                 </button>
                 <button
                   onClick={() => setActivePanel('projects')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-gray-100 text-gray-700"
+                  className="w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider py-1 text-zinc-500 hover:text-zinc-600 transition-colors"
                 >
-                  <FolderOpen className="w-4 h-4 text-gray-400" />
-                  <span className="text-xs font-['Fira_Code'] font-medium">Project & Pages</span>
+                  <span className="flex items-center gap-2"><FolderOpen className="w-3.5 h-3.5" /> Project & Pages</span>
+                  <ChevronLeft className="w-3 h-3 -rotate-90" />
                 </button>
               </div>
             )}
