@@ -31,7 +31,6 @@ interface SiteViewProps {
 
 const BASE_SUB_TABS = [
   { id: 'pages', label: 'Pages' },
-  { id: 'blog', label: 'Blog' },
   { id: 'templates', label: 'Templates' },
   { id: 'gallery', label: 'Gallery' },
   { id: 'portal', label: 'Portal' },
@@ -39,6 +38,20 @@ const BASE_SUB_TABS = [
   { id: 'seo', label: 'SEO' },
   { id: 'settings', label: 'Settings' },
 ];
+
+function hasBlogSection(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const raw = localStorage.getItem('redpine-editor-autosave');
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    return data.pages?.some((p: { sections?: { type: string }[] }) =>
+      p.sections?.some((s) => s.type === 'blogWidget')
+    ) ?? false;
+  } catch {
+    return false;
+  }
+}
 
 export default function SiteView({ colors, businessName, businessType, websiteData }: SiteViewProps) {
   const [activeSubTab, setActiveSubTab] = useState('pages');
@@ -49,6 +62,19 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
   const [siteTitle, setSiteTitle] = useState(businessName || '');
   const [customDomain, setCustomDomain] = useState('');
   const [domainInput, setDomainInput] = useState('');
+
+  const [showBlog, setShowBlog] = useState(false);
+
+  useEffect(() => {
+    setShowBlog(hasBlogSection());
+    const onFocus = () => setShowBlog(hasBlogSection());
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('storage', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('storage', onFocus);
+    };
+  }, []);
 
   const subdomain = (businessName || 'mysite').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -61,9 +87,16 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
   const cardBg = colors.cards || '#FFFFFF';
 
   const showPortal = shouldHavePortal(businessType);
-  const SUB_TABS = showPortal
-    ? BASE_SUB_TABS
-    : BASE_SUB_TABS.filter(t => t.id !== 'portal');
+  const SUB_TABS = (() => {
+    let tabs = [...BASE_SUB_TABS];
+    if (showBlog) {
+      tabs.splice(1, 0, { id: 'blog', label: 'Blog' });
+    }
+    if (!showPortal) {
+      tabs = tabs.filter(t => t.id !== 'portal');
+    }
+    return tabs;
+  })();
 
   const ensureRan = useRef(false);
 
@@ -184,7 +217,7 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
             <button
               key={sub.id}
               onClick={() => setActiveSubTab(sub.id)}
-              className="px-4 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors"
+              className="px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
               style={{
                 backgroundColor: isActive ? buttonColor : 'transparent',
                 color: isActive ? getContrastText(buttonColor) : textColor,
@@ -199,13 +232,13 @@ export default function SiteView({ colors, businessName, businessType, websiteDa
 
       {/* Domain box with "Your Site" label */}
       <div
-        className="rounded-2xl p-5 shadow-sm cursor-pointer transition-colors hover:bg-black/[0.02]"
+        className="p-5 shadow-sm cursor-pointer transition-colors hover:bg-black/[0.02]"
         style={{ backgroundColor: cardBg }}
         onClick={() => setShowDomainModal(true)}
       >
         <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: textMuted }}>Your Site</p>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${buttonColor}10` }}>
+          <div className="w-8 h-8 flex items-center justify-center" style={{ backgroundColor: `${buttonColor}10` }}>
             <svg className="w-4 h-4" fill="none" stroke={buttonColor} viewBox="0 0 24 24" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
             </svg>
@@ -267,7 +300,7 @@ function SiteSEO({ cardBg, textMain, textMuted, borderColor, buttonColor }: {
   cardBg: string; textMain: string; textMuted: string; borderColor: string; buttonColor: string;
 }) {
   return (
-    <div className="rounded-2xl p-8 shadow-sm text-center" style={{ backgroundColor: cardBg }}>
+    <div className="p-8 shadow-sm text-center" style={{ backgroundColor: cardBg }}>
       <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: `${buttonColor}10` }}>
         <svg className="w-7 h-7" fill="none" stroke={buttonColor} viewBox="0 0 24 24" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -281,7 +314,7 @@ function SiteSEO({ cardBg, textMain, textMuted, borderColor, buttonColor }: {
         {['Meta Tags', 'Sitemap', 'Open Graph', 'Analytics'].map(tag => (
           <span
             key={tag}
-            className="px-3 py-1 text-xs font-medium rounded-full"
+            className="px-3 py-1 text-xs font-medium "
             style={{ backgroundColor: `${buttonColor}08`, color: buttonColor, border: `1px solid ${borderColor}` }}
           >
             {tag}
@@ -309,14 +342,14 @@ function SiteSettings({ colors, siteTitle, setSiteTitle, customDomain, onOpenDom
   return (
     <div className="space-y-4">
       {/* Site Title */}
-      <div className="rounded-2xl p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
         <label className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: textMuted }}>Site Title</label>
         <input
           type="text"
           value={siteTitle}
           onChange={(e) => setSiteTitle(e.target.value)}
           placeholder="Your site name"
-          className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+          className="w-full px-3 py-2 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
           style={{ borderColor, color: textMain }}
         />
         <p className="text-xs mt-1.5" style={{ color: textMuted }}>
@@ -325,13 +358,13 @@ function SiteSettings({ colors, siteTitle, setSiteTitle, customDomain, onOpenDom
       </div>
 
       {/* Favicon */}
-      <div className="rounded-2xl p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
         <label className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: textMuted }}>Favicon</label>
         <div
-          className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]"
+          className="flex items-center gap-3 px-4 py-3 border-2 border-dashed cursor-pointer transition-colors hover:bg-black/[0.02]"
           style={{ borderColor }}
         >
-          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+          <div className="w-10 h-10 bg-gray-100 flex items-center justify-center">
             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
             </svg>
@@ -344,7 +377,7 @@ function SiteSettings({ colors, siteTitle, setSiteTitle, customDomain, onOpenDom
       </div>
 
       {/* Custom Domain */}
-      <div className="rounded-2xl p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
+      <div className="p-5 shadow-sm" style={{ backgroundColor: cardBg }}>
         <label className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: textMuted }}>Custom Domain</label>
         <div className="flex items-center justify-between">
           <p className="text-sm" style={{ color: textMain }}>
@@ -352,7 +385,7 @@ function SiteSettings({ colors, siteTitle, setSiteTitle, customDomain, onOpenDom
           </p>
           <button
             onClick={onOpenDomainModal}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors hover:opacity-80"
+            className="px-3 py-1.5 text-xs font-medium transition-colors hover:opacity-80"
             style={{ backgroundColor: `${buttonColor}10`, color: buttonColor }}
           >
             {customDomain ? 'Change' : 'Connect Domain'}
@@ -395,12 +428,12 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
         <label className="text-xs font-semibold uppercase tracking-wide block mb-1.5" style={{ color: textMuted }}>
           Default Domain
         </label>
-        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border" style={{ borderColor, backgroundColor: '#F9FAFB' }}>
+        <div className="flex items-center gap-2 px-3 py-2.5 border" style={{ borderColor, backgroundColor: '#F9FAFB' }}>
           <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>
           <span className="text-sm font-medium" style={{ color: textMain }}>{subdomain}.redpine.systems</span>
-          <span className="ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700">Active</span>
+          <span className="ml-auto px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700">Active</span>
         </div>
       </div>
 
@@ -414,13 +447,13 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
           value={domainInput}
           onChange={(e) => setDomainInput(e.target.value)}
           placeholder="www.yourdomain.com"
-          className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-20"
+          className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-opacity-20"
           style={{ borderColor, color: textMain }}
         />
       </div>
 
       {/* DNS Instructions */}
-      <div className="rounded-xl p-4 mb-5" style={{ backgroundColor: '#F9FAFB', border: `1px solid ${borderColor}` }}>
+      <div className="p-4 mb-5" style={{ backgroundColor: '#F9FAFB', border: `1px solid ${borderColor}` }}>
         <h4 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: textMuted }}>DNS Configuration</h4>
         <div className="space-y-3">
           <DnsRow label="Step 1" type="CNAME" name="www" value={`${subdomain}.redpine.systems`} textMain={textMain} textMuted={textMuted} borderColor={borderColor} />
@@ -432,8 +465,8 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
       </div>
 
       {/* Verification status */}
-      <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border mb-5" style={{ borderColor }}>
-        <div className="w-2 h-2 rounded-full bg-amber-400" />
+      <div className="flex items-center gap-2 px-3 py-2.5 border mb-5" style={{ borderColor }}>
+        <div className="w-2 h-2 bg-amber-400" />
         <span className="text-xs font-medium" style={{ color: textMuted }}>Verification pending — DNS not yet detected</span>
       </div>
 
@@ -441,7 +474,7 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
       <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor }}>
         <button
           onClick={onClose}
-          className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-70"
+          className="px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70"
           style={{ color: textMuted }}
         >
           Cancel
@@ -449,7 +482,7 @@ function DomainEditModal({ isOpen, onClose, colors, subdomain, customDomain, dom
         <button
           onClick={() => onSave(domainInput.trim())}
           disabled={!domainInput.trim()}
-          className="px-5 py-2 text-sm font-medium rounded-lg transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
           style={{ backgroundColor: buttonColor, color: buttonText }}
         >
           Save Domain
@@ -467,15 +500,15 @@ function DnsRow({ label, type, name, value, textMain, textMuted, borderColor }: 
     <div>
       <p className="text-xs font-medium mb-1" style={{ color: textMuted }}>{label}</p>
       <div className="grid grid-cols-3 gap-2 text-xs">
-        <div className="px-2 py-1.5 rounded-md border" style={{ borderColor }}>
+        <div className="px-2 py-1.5 border" style={{ borderColor }}>
           <span style={{ color: textMuted }}>Type: </span>
           <span className="font-mono font-medium" style={{ color: textMain }}>{type}</span>
         </div>
-        <div className="px-2 py-1.5 rounded-md border" style={{ borderColor }}>
+        <div className="px-2 py-1.5 border" style={{ borderColor }}>
           <span style={{ color: textMuted }}>Name: </span>
           <span className="font-mono font-medium" style={{ color: textMain }}>{name}</span>
         </div>
-        <div className="px-2 py-1.5 rounded-md border" style={{ borderColor }}>
+        <div className="px-2 py-1.5 border" style={{ borderColor }}>
           <span style={{ color: textMuted }}>Value: </span>
           <span className="font-mono font-medium text-[10px]" style={{ color: textMain }}>{value}</span>
         </div>
