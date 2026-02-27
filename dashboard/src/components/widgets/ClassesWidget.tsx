@@ -313,7 +313,7 @@ export function ClassesWidget({
           {/* Weekly grid preview */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: (sectionHeight != null && Number(sectionHeight) > 550) ? '1fr' : viewportWidth < 480 ? '1fr' : viewportWidth < 768 ? 'repeat(4, 1fr)' : 'repeat(7, 1fr)',
+            gridTemplateColumns: viewportWidth < 480 ? '1fr' : viewportWidth < 768 ? 'repeat(4, 1fr)' : 'repeat(7, 1fr)',
             gap: 4, padding: '0 8px',
           }}>
             {(viewportWidth < 480 ? DAYS.slice(0, 3) : viewportWidth < 768 ? DAYS.slice(0, 4) : DAYS).map(day => (

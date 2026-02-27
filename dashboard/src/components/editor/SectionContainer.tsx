@@ -111,8 +111,8 @@ export default function SectionContainer({
     productGrid: 700,
     productWidget: 700,
     menuWidget: 700,
-    eventsWidget: 700,
-    classesWidget: 600,
+    eventsWidget: 600,
+    classesWidget: 800,
     reviewCarousel: 500,
     bookingWidget: 600,
   };
