@@ -32,6 +32,7 @@ interface ClassesWidgetProps {
   heading?: string;
   accentColor?: string;
   viewportWidth?: number;
+  sectionHeight?: number;
   [key: string]: unknown;
 }
 
@@ -149,6 +150,7 @@ export function ClassesWidget({
   heading = 'Weekly Class Schedule',
   accentColor = '#1A1A1A',
   viewportWidth = 1200,
+  sectionHeight,
 }: ClassesWidgetProps) {
   const [classes, setClasses] = useState<ClassInfo[]>(DEMO_CLASSES);
   const [loading, setLoading] = useState(false);
@@ -285,7 +287,7 @@ export function ClassesWidget({
       <div {...blockProps} className={styles || 'w-full'}>
         <div style={{
           fontFamily: FONT_STACK, width: '100%', boxSizing: 'border-box',
-          opacity: 0.5, pointerEvents: 'none', position: 'relative',
+          opacity: 0.5, pointerEvents: 'none', position: 'relative', flex: 1,
         }}>
           {heading && (
             <h3 style={{ fontSize: 22, fontWeight: 700, textAlign: 'center', marginBottom: 12, color: '#1A1A1A' }}>
@@ -311,7 +313,7 @@ export function ClassesWidget({
           {/* Weekly grid preview */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: viewportWidth < 480 ? '1fr' : viewportWidth < 768 ? 'repeat(4, 1fr)' : 'repeat(7, 1fr)',
+            gridTemplateColumns: (sectionHeight != null && Number(sectionHeight) > 550) ? '1fr' : viewportWidth < 480 ? '1fr' : viewportWidth < 768 ? 'repeat(4, 1fr)' : 'repeat(7, 1fr)',
             gap: 4, padding: '0 8px',
           }}>
             {(viewportWidth < 480 ? DAYS.slice(0, 3) : viewportWidth < 768 ? DAYS.slice(0, 4) : DAYS).map(day => (

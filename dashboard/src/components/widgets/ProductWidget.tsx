@@ -15,6 +15,7 @@ interface ProductWidgetProps {
   showDescription?: boolean;
   accentColor?: string;
   viewportWidth?: number;
+  sectionHeight?: number;
   [key: string]: unknown;
 }
 
@@ -76,6 +77,7 @@ export const ProductWidget: React.FC<ProductWidgetProps> = ({
   showDescription = true,
   accentColor = '#1A1A1A',
   viewportWidth = 1200,
+  sectionHeight,
 }) => {
   const [products, setProducts] = useState<ProductInfo[]>(DEMO_PRODUCTS);
   const [loading, setLoading] = useState(false);
@@ -155,7 +157,7 @@ export const ProductWidget: React.FC<ProductWidgetProps> = ({
       <div {...blockProps} className={styles || 'w-full'}>
         <div style={{
           fontFamily: FONT_STACK, width: '100%', height: '100%', boxSizing: 'border-box',
-          opacity: 0.85, pointerEvents: 'none',
+          opacity: 0.85, pointerEvents: 'none', flex: 1,
         }}>
           {heading && (
             <h3 style={{ fontSize: 22, fontWeight: 700, textAlign: 'center', marginBottom: 16, color: '#1A1A1A' }}>
@@ -181,7 +183,7 @@ export const ProductWidget: React.FC<ProductWidgetProps> = ({
           {/* Product grid */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${viewportWidth < 480 ? 1 : viewportWidth < 768 ? 2 : Math.min(columns, 4)}, 1fr)`,
+            gridTemplateColumns: (sectionHeight != null && sectionHeight > 600) ? '1fr' : `repeat(${viewportWidth < 480 ? 1 : viewportWidth < 768 ? 2 : Math.min(columns, 4)}, 1fr)`,
             gap: 14, padding: '0 16px',
           }}>
             {filteredProducts.slice(0, columns * 2).map(product => (

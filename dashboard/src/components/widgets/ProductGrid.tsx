@@ -13,6 +13,7 @@ interface ProductGridProps {
   accentColor?: string;
   linkedProductId?: string;
   linkedProductName?: string;
+  sectionHeight?: number;
   [key: string]: unknown;
 }
 
@@ -47,6 +48,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   accentColor = '#1A1A1A',
   linkedProductId = '',
   linkedProductName = '',
+  sectionHeight,
 }) => {
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [localLinkedId, setLocalLinkedId] = useState(linkedProductId);
@@ -73,6 +75,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           width: '100%', height: '100%', padding: 48,
           backgroundColor: '#F9FAFB', textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          flex: 1,
         }}>
           <div style={{
             width: 56, height: 56, borderRadius: 12,
@@ -115,7 +118,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
     const products = getProducts();
     return (
       <div {...blockProps} className={styles || 'w-full'}>
-        <div style={{ maxWidth: 960, margin: '0 auto', padding: '32px 16px' }}>
+        <div style={{ padding: '32px 20px', flex: 1 }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             marginBottom: 20, padding: '12px 16px', borderRadius: 10,
@@ -151,7 +154,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           {heading && (
             <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, textAlign: 'center' }}>{heading}</h3>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(columns, 4)}, 1fr)`, gap: 16, opacity: 0.7, pointerEvents: 'none' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: (sectionHeight != null && sectionHeight > 600) ? '1fr' : `repeat(${Math.min(columns, 4)}, 1fr)`, gap: 16, opacity: 0.7, pointerEvents: 'none' }}>
             {products.slice(0, columns * 2).map(product => (
               <div key={product.id} style={{ borderRadius: 16, border: '1px solid #E5E7EB', overflow: 'hidden', backgroundColor: '#fff' }}>
                 <div style={{ height: 120, backgroundColor: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -106,10 +106,18 @@ export default function SectionContainer({
   // Per-type max heights to prevent dead space on prebuilt sections
   const SECTION_MAX_HEIGHTS: Record<string, number> = {
     blogWidget: 900,
+    serviceWidget: 700,
+    galleryWidget: 800,
+    productGrid: 700,
+    productWidget: 700,
+    menuWidget: 700,
+    eventsWidget: 700,
+    classesWidget: 600,
     reviewCarousel: 500,
     bookingWidget: 600,
   };
   const maxHeight = SECTION_MAX_HEIGHTS[section.type] || 1200;
+  const isAtMax = section.height >= maxHeight - 2; // 2px tolerance
 
   // Handle height resize
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -280,15 +288,26 @@ export default function SectionContainer({
         {children}
       </div>
 
-      {/* Resize handle for blank sections */}
+      {/* Red bottom border when section is at max height */}
+      {isAtMax && section.type !== 'blank' && (
+        <div
+          className="absolute bottom-0 left-0 right-0 h-0.5"
+          style={{ backgroundColor: '#CE0707' }}
+        />
+      )}
+
+      {/* Resize handle */}
       {isSelected && (
         <div
           className={cn(
             'absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize group',
           )}
-          style={isResizing ? { backgroundColor: `${accentColor}30` } : undefined}
+          style={isResizing
+            ? { backgroundColor: isAtMax ? '#CE070730' : `${accentColor}30` }
+            : undefined
+          }
           onMouseDown={handleResizeStart}
-          onMouseEnter={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = `${accentColor}20`; }}
+          onMouseEnter={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = isAtMax ? '#CE070720' : `${accentColor}20`; }}
           onMouseLeave={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = ''; }}
         >
           <div
@@ -296,8 +315,13 @@ export default function SectionContainer({
               'absolute left-1/2 -translate-x-1/2 bottom-1 w-16 h-1 rounded-full transition-colors',
               isResizing ? '' : isDark ? 'bg-gray-500' : 'bg-gray-400',
             )}
-            style={isResizing ? { backgroundColor: accentColor } : undefined}
-            onMouseEnter={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = accentColor; }}
+            style={isResizing
+              ? { backgroundColor: isAtMax ? '#CE0707' : accentColor }
+              : isAtMax && section.type !== 'blank'
+                ? { backgroundColor: '#CE0707' }
+                : undefined
+            }
+            onMouseEnter={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = isAtMax ? '#CE0707' : accentColor; }}
             onMouseLeave={(e) => { if (!isResizing) e.currentTarget.style.backgroundColor = ''; }}
           />
         </div>

@@ -26,6 +26,7 @@ interface ServiceWidgetProps {
   showDurations?: boolean;
   accentColor?: string;
   viewportWidth?: number;
+  sectionHeight?: number;
   [key: string]: unknown;
 }
 
@@ -81,6 +82,7 @@ export const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   showDurations = true,
   accentColor = '#1A1A1A',
   viewportWidth = 1200,
+  sectionHeight,
 }) => {
   // ─── State ──────────────────────────────────────────────────
   const [step, setStep] = useState<BookingStep>(1);
@@ -323,10 +325,11 @@ export const ServiceWidget: React.FC<ServiceWidgetProps> = ({
 
   const containerStyle: React.CSSProperties = {
     fontFamily: FONT_STACK,
-    maxWidth: 560,
-    margin: '0 auto',
-    padding: 0,
+    maxWidth: inBuilder ? undefined : 560,
+    margin: inBuilder ? undefined : '0 auto',
+    padding: inBuilder ? '20px' : 0,
     boxSizing: 'border-box',
+    ...(inBuilder ? { flex: 1 } : {}),
     height: '100%',
   };
 
@@ -443,7 +446,7 @@ export const ServiceWidget: React.FC<ServiceWidgetProps> = ({
               )}
 
               {/* Service cards grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: viewportWidth < 480 ? '1fr' : 'repeat(2, 1fr)', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: (viewportWidth < 480 || (sectionHeight != null && sectionHeight > 600)) ? '1fr' : 'repeat(2, 1fr)', gap: 12 }}>
                 {previewServices.map(svc => (
                   <div key={svc.id} style={{
                     backgroundColor: '#FFFFFF',

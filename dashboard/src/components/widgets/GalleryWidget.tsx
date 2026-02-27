@@ -18,6 +18,7 @@ interface GalleryWidgetProps {
   accentColor?: string;
   linkedGalleryId?: string;
   linkedGalleryName?: string;
+  sectionHeight?: number;
   [key: string]: unknown;
 }
 
@@ -64,6 +65,7 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
   accentColor = '#1A1A1A',
   linkedGalleryId,
   linkedGalleryName,
+  sectionHeight,
 }) => {
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [localLinkedId, setLocalLinkedId] = useState(linkedGalleryId);
@@ -118,8 +120,9 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
       <div {...blockProps} className={styles || 'w-full'}>
         <div style={{
           width: '100%', height: '100%', padding: 48,
-          backgroundColor: '#F9FAFB', textAlign: 'center',
+          backgroundColor: 'transparent', textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          flex: 1,
         }}>
           <div style={{
             width: 56, height: 56, borderRadius: 12,
@@ -133,7 +136,7 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
           </div>
           <p style={{ fontSize: 15, fontWeight: 600, color: '#374151', marginBottom: 4 }}>No gallery connected</p>
           <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 20 }}>
-            Connect a gallery from your dashboard to display here
+            Connect photos from your dashboard to display here
           </p>
           <button
             onClick={() => setSelectorOpen(true)}
@@ -148,7 +151,7 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
               cursor: 'pointer',
             }}
           >
-            Select Gallery
+            Select Photos
           </button>
         </div>
         <DataSelector
@@ -166,7 +169,7 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
   if (inBuilder && localLinkedId) {
     return (
       <div {...blockProps} className={styles || 'w-full'}>
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: 16, overflow: 'hidden', border: '1px solid #E5E7EB' }}>
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: 16, overflow: 'hidden', border: '1px solid #E5E7EB', flex: 1 }}>
           {/* Header badge */}
           <div style={{
             padding: '10px 16px',
@@ -211,7 +214,7 @@ export const GalleryWidget: React.FC<GalleryWidgetProps> = ({
           {/* Dimmed preview grid */}
           <div style={{ padding: 16, opacity: 0.5, pointerEvents: 'none' }}>
             <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12 }}>{heading}</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(columns, 3)}, 1fr)`, gap: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: (sectionHeight != null && sectionHeight > 600) ? '1fr' : `repeat(${Math.min(columns, 3)}, 1fr)`, gap: 8 }}>
               {[0, 1, 2, 3, 4, 5].map(i => (
                 <div key={i} style={{
                   aspectRatio: '1',

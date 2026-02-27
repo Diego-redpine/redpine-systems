@@ -48,6 +48,7 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
             showDurations={(props.showDurations as boolean) ?? true}
             accentColor={widgetAccent}
             viewportWidth={viewportWidth}
+            sectionHeight={section.height}
           />
         </div>
       );
@@ -79,6 +80,7 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
             lightbox={(props.lightbox as boolean) ?? true}
             maxPhotos={(props.maxPhotos as number) || 9}
             accentColor={widgetAccent}
+            sectionHeight={section.height}
           />
         </div>
       );
@@ -93,6 +95,7 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
             columns={isMobile ? 1 : (props.columns as number) || 3}
             showPrice={(props.showPrice as boolean) ?? true}
             accentColor={widgetAccent}
+            sectionHeight={section.height}
           />
         </div>
       );
@@ -109,6 +112,7 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
             showDescription={(props.showDescription as boolean) ?? true}
             accentColor={widgetAccent}
             viewportWidth={viewportWidth}
+            sectionHeight={section.height}
           />
         </div>
       );
@@ -153,6 +157,7 @@ export function SectionRenderer({ section, viewportWidth, theme = 'dark', accent
             showPrice={(props.showPrice as boolean) ?? true}
             accentColor={widgetAccent}
             viewportWidth={viewportWidth}
+            sectionHeight={section.height}
           />
         </div>
       );
