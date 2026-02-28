@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   const clientId = getClientId(request);
-  const rl = rateLimit(`onboarding-check:${clientId}`, 20);
+  const rl = await rateLimit(`onboarding-check:${clientId}`, 20);
   if (!rl.success) {
     return NextResponse.json(
       { success: false, error: 'Too many requests' },

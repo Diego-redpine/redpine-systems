@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   // Rate limit: 5 per minute per IP
   const clientId = getClientId(request);
-  const limit = rateLimit(`booking:${clientId}`, 5, 60_000);
+  const limit = await rateLimit(`booking:${clientId}`, 5, 60_000);
   if (!limit.success) {
     return NextResponse.json(
       { error: 'Too many booking requests. Please try again later.' },

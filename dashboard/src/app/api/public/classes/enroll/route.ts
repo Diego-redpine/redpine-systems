@@ -21,7 +21,7 @@ function getSupabaseAdmin() {
 export async function POST(request: NextRequest) {
   // Rate limit: 10 per minute per IP
   const clientId = getClientId(request);
-  const limit = rateLimit(`class-enroll:${clientId}`, 10, 60_000);
+  const limit = await rateLimit(`class-enroll:${clientId}`, 10, 60_000);
   if (!limit.success) {
     return NextResponse.json(
       { error: 'Too many enrollment requests. Please try again later.' },

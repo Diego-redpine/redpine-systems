@@ -105,7 +105,7 @@ function getDefaultConfig(configId?: string): DashboardConfig {
 export async function GET(request: NextRequest) {
   // Rate limit: 30 requests per minute per IP
   const clientId = getClientId(request);
-  const rateLimitResult = rateLimit(`config-get:${clientId}`, 30);
+  const rateLimitResult = await rateLimit(`config-get:${clientId}`, 30);
   if (!rateLimitResult.success) {
     return NextResponse.json(
       { success: false, error: 'Too many requests' },
@@ -195,7 +195,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    let { id, tabs, colors, businessName, businessType, headingFont, bodyFont } = body;
+    let { id, tabs, colors, businessName, businessType, headingFont, bodyFont, websiteData } = body;
 
     // If no ID or invalid UUID, find the user's active config
     if (!id || !isValidUUID(id)) {
@@ -280,6 +280,7 @@ export async function PUT(request: NextRequest) {
     }
     if (businessName !== undefined) updates.business_name = businessName;
     if (businessType !== undefined) updates.business_type = businessType;
+    if (websiteData !== undefined) updates.website_data = websiteData;
     // Store fonts in colors JSONB (DB columns may not exist yet)
     if (headingFont !== undefined || bodyFont !== undefined) {
       const existingColors = updates.colors || currentConfig?.colors || {};
@@ -324,7 +325,7 @@ export async function PUT(request: NextRequest) {
 export async function POST(request: NextRequest) {
   // Rate limit: 10 requests per minute per IP
   const clientId = getClientId(request);
-  const rateLimitResult = rateLimit(`config-post:${clientId}`, 10);
+  const rateLimitResult = await rateLimit(`config-post:${clientId}`, 10);
   if (!rateLimitResult.success) {
     return NextResponse.json(
       { success: false, error: 'Too many requests. Please wait a moment.' },

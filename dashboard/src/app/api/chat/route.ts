@@ -154,7 +154,7 @@ function formatViewRegistryForPrompt(): string {
 export async function POST(request: NextRequest) {
   // Rate limit: 20 requests per minute per IP
   const clientId = getClientId(request);
-  const rateLimitResult = rateLimit(`chat:${clientId}`, 20);
+  const rateLimitResult = await rateLimit(`chat:${clientId}`, 20);
   if (!rateLimitResult.success) {
     return NextResponse.json(
       { success: false, error: 'Too many requests. Please wait a moment.' },

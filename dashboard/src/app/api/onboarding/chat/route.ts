@@ -43,7 +43,7 @@ Examples:
 export async function POST(request: NextRequest) {
   // Rate limit: 30 requests per minute per IP
   const clientId = getClientId(request);
-  const rl = rateLimit(`onboarding-chat:${clientId}`, 30);
+  const rl = await rateLimit(`onboarding-chat:${clientId}`, 30);
   if (!rl.success) {
     return NextResponse.json(
       { success: false, error: 'Too many requests. Please wait a moment.' },

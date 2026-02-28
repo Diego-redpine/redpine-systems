@@ -19,7 +19,7 @@ function getSupabase() {
 export async function POST(request: NextRequest) {
   // Rate limit: 5 requests per minute (config generation is expensive)
   const clientId = getClientId(request);
-  const rl = rateLimit(`onboarding-configure:${clientId}`, 5);
+  const rl = await rateLimit(`onboarding-configure:${clientId}`, 5);
   if (!rl.success) {
     return NextResponse.json(
       { success: false, error: 'Too many requests. Please wait a moment.' },

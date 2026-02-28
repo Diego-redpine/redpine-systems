@@ -17,7 +17,7 @@ function getSupabaseAdmin() {
 
 export async function POST(request: NextRequest) {
   const clientIp = getClientId(request);
-  const limit = rateLimit(`portal-login:${clientIp}`, 5, 60_000);
+  const limit = await rateLimit(`portal-login:${clientIp}`, 5, 60_000);
   if (!limit.success) {
     return NextResponse.json({ error: 'Too many login attempts. Try again later.' }, { status: 429 });
   }
