@@ -1,12 +1,12 @@
 // Gallery Albums API — list, create, delete albums
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
+import { getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
 
 export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const supabase = getSupabaseUser(request);
+  const supabase = getSupabaseAdmin();
 
   // Fetch albums
   const { data: albums, error } = await supabase
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Album name is required' }, { status: 400 });
   }
 
-  const supabase = getSupabaseUser(request);
+  const supabase = getSupabaseAdmin();
 
   // Get next display_order
   const { count } = await supabase
@@ -106,7 +106,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'id required' }, { status: 400 });
   }
 
-  const supabase = getSupabaseUser(request);
+  const supabase = getSupabaseAdmin();
 
   // Verify ownership
   const { data: album } = await supabase

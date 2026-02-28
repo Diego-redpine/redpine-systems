@@ -1,6 +1,7 @@
 // Gallery Images API — list and upload photos
+// Uses admin client for storage + DB operations (RLS policies may not be applied yet)
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser, getSupabaseUser, getSupabaseAdmin } from '@/lib/crud';
+import { getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
 
 const BUCKET_NAME = 'gallery';
 let bucketEnsured = false;
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const albumId = searchParams.get('album_id');
 
-  const supabase = getSupabaseUser(request);
+  const supabase = getSupabaseAdmin();
 
   let query = supabase
     .from('gallery_images')
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'File too large (max 20MB)' }, { status: 400 });
   }
 
-  const supabase = getSupabaseUser(request);
+  const supabase = getSupabaseAdmin();
 
   // Ensure storage bucket exists (creates on first upload)
   await ensureBucket();
