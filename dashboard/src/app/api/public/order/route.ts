@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/crud';
 import { findOrCreateClient } from '@/lib/silent-client';
+import { checkLowStock } from '@/lib/stock-alerts';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -247,6 +248,13 @@ export async function POST(request: NextRequest) {
       // Non-critical: log but don't fail the order
       console.error('Inventory deduction error:', invErr);
     }
+
+    // Fire-and-forget low stock check (non-blocking)
+    checkLowStock(ownerId, supabase).then(lowItems => {
+      if (lowItems.length > 0) {
+        console.warn(`[LOW STOCK] User ${ownerId}: ${lowItems.map(i => `${i.name} (${i.quantity})`).join(', ')}`);
+      }
+    }).catch(() => {});
 
     // Create Stripe Checkout Session (one-time payment)
     if (process.env.STRIPE_SECRET_KEY) {

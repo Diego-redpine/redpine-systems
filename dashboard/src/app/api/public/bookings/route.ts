@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  const { subdomain, name, email, phone, date, time, notes, service_ids: rawServiceIds, coupon_code } = body;
+  const { subdomain, name, email, phone, date, time, notes, service_ids: rawServiceIds, coupon_code, tip_amount_cents } = body;
 
   // Validate required fields
   if (!subdomain || !name || !email || !date || !time) {
@@ -76,16 +76,18 @@ export async function POST(request: NextRequest) {
   let totalBufferMin = 0;
   const serviceNames: string[] = [];
   const resolvedServiceIds: string[] = [];
+  let loadedServices: { id: string; duration_minutes: number; buffer_minutes: number; name: string; price_cents: number; staff_pricing: Record<string, number> | null }[] = [];
 
   if (serviceIds.length > 0) {
     const { data: services } = await supabase
       .from('packages')
-      .select('id, duration_minutes, buffer_minutes, name, price_cents')
+      .select('id, duration_minutes, buffer_minutes, name, price_cents, staff_pricing')
       .in('id', serviceIds)
       .eq('user_id', userId)
       .eq('is_active', true);
 
     if (services && services.length > 0) {
+      loadedServices = services as typeof loadedServices;
       for (const svc of services) {
         totalDurationMin += svc.duration_minutes || defaultDuration;
         totalPriceCents += svc.price_cents || 0;
@@ -226,6 +228,34 @@ export async function POST(request: NextRequest) {
     assignedStaffId = body.staff_id;
   }
 
+  // Per-staff pricing recalculation (after staff assignment)
+  if (assignedStaffId && loadedServices.length > 0) {
+    let adjustedPriceCents = 0;
+    for (const svc of loadedServices) {
+      const staffPricing = svc.staff_pricing as Record<string, number> | null;
+      const staffPrice = staffPricing?.[assignedStaffId];
+      adjustedPriceCents += staffPrice ?? svc.price_cents ?? 0;
+    }
+    if (adjustedPriceCents !== totalPriceCents + discountCents) {
+      // totalPriceCents was already reduced by discountCents, so compare against the pre-discount base
+      // Reset to new base price, then re-apply coupon discount
+      const newBasePriceCents = adjustedPriceCents;
+      // Re-apply coupon discount on new base price
+      if (couponId && discountCents > 0) {
+        // Recalculate discount based on coupon type using the new base price
+        // We need to re-fetch the coupon — but we can infer from the existing discount ratio
+        // Simpler: re-derive discount. If it was a percent coupon, discountCents was a percentage of the old base.
+        // We stored coupon_code but not the coupon object. Recompute from ratio.
+        const oldBasePriceCents = totalPriceCents + discountCents;
+        if (oldBasePriceCents > 0) {
+          const discountRatio = discountCents / oldBasePriceCents;
+          discountCents = Math.min(Math.round(newBasePriceCents * discountRatio), newBasePriceCents);
+        }
+      }
+      totalPriceCents = Math.max(0, newBasePriceCents - discountCents);
+    }
+  }
+
   // Find or create client + portal session (silent account creation)
   const clientResult = await findOrCreateClient({
     userId,
@@ -271,6 +301,7 @@ export async function POST(request: NextRequest) {
       deposit_payment_intent_id: null,
       coupon_id: couponId,
       discount_cents: discountCents,
+      tip_amount_cents: typeof tip_amount_cents === 'number' ? tip_amount_cents : 0,
     })
     .select('id')
     .single();
