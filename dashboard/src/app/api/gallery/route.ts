@@ -1,6 +1,20 @@
 // Gallery Images API — list and upload photos
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
+import { getAuthenticatedUser, getSupabaseUser, getSupabaseAdmin } from '@/lib/crud';
+
+const BUCKET_NAME = 'gallery';
+let bucketEnsured = false;
+
+/** Create the storage bucket if it doesn't exist (admin-only, runs once per cold start) */
+async function ensureBucket() {
+  if (bucketEnsured) return;
+  const admin = getSupabaseAdmin();
+  const { data } = await admin.storage.getBucket(BUCKET_NAME);
+  if (!data) {
+    await admin.storage.createBucket(BUCKET_NAME, { public: true, fileSizeLimit: 20 * 1024 * 1024 });
+  }
+  bucketEnsured = true;
+}
 
 export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
@@ -57,6 +71,9 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = getSupabaseUser(request);
+
+  // Ensure storage bucket exists (creates on first upload)
+  await ensureBucket();
 
   // Upload to Supabase Storage
   const fileExt = file.name.split('.').pop();

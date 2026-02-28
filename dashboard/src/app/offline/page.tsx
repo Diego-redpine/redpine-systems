@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Offline Page
  * Displayed when the user has no internet connection (via service worker cache).
