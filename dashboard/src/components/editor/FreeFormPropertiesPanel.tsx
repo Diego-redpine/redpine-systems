@@ -825,6 +825,7 @@ function ButtonProperties({ properties, onChange, theme }: ElementPropertiesProp
   return (
     <>
       <PropertyInput label="Button Text" value={properties.content as string} onChange={(v) => onChange({ content: v })} theme={theme} />
+      <PropertyInput label="Link URL" value={properties.linkUrl as string} onChange={(v) => onChange({ linkUrl: v })} theme={theme} />
       <ColorPicker label="Background" value={properties.backgroundColor as string} onChange={(v) => onChange({ backgroundColor: v })} theme={theme} />
       <ColorPicker label="Text Color" value={properties.color as string} onChange={(v) => onChange({ color: v })} theme={theme} />
       <PropertyInput label="Border Radius" type="number" value={properties.borderRadius as number} onChange={(v) => onChange({ borderRadius: v })} min={0} max={50} theme={theme} />

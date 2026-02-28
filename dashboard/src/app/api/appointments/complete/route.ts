@@ -16,6 +16,7 @@ import {
   calculateCommission,
   CommissionConfig,
 } from '@/lib/commission-engine';
+import { emitAgentEvent } from '@/lib/agent-events';
 
 interface CompleteRequestBody {
   appointmentId: string;
@@ -200,6 +201,20 @@ export async function POST(request: NextRequest) {
         }
       }
     }
+
+    // 7. Emit agent event (fire-and-forget)
+    emitAgentEvent({
+      type: 'appointment.completed',
+      userId: user.id,
+      payload: {
+        appointment_id: body.appointmentId,
+        client_name: appointment.client_name || appointment.title,
+        service_name: services[0]?.name || 'appointment',
+        invoice_id: invoice?.id,
+        total_cents: totalCents,
+        tip_cents: tipAmountCents,
+      },
+    }, supabase);
 
     return successResponse({
       success: true,

@@ -9,6 +9,7 @@ import {
   serverErrorResponse,
   successResponse,
 } from '@/lib/api-helpers';
+import { emitAgentEvent } from '@/lib/agent-events';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,6 +100,18 @@ export async function POST(request: NextRequest) {
 
       invoiceId = inv?.id || null;
     }
+
+    // Emit agent event
+    emitAgentEvent({
+      type: 'appointment.no_show',
+      userId: user.id,
+      payload: {
+        appointment_id: appointmentId,
+        client_name: appointment.client_name || appointment.title,
+        fee_cents: feeCents,
+        invoice_id: invoiceId,
+      },
+    }, supabase);
 
     return successResponse({ success: true, feeCents, invoiceId });
   } catch (error) {

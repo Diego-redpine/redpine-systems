@@ -1777,5 +1777,176 @@ ALTER TABLE public.gallery_images
   ADD COLUMN IF NOT EXISTS include_in_gallery BOOLEAN DEFAULT TRUE;
 
 -- ============================================================
--- DONE! All migrations 012-045 + 028b applied.
+-- Migration 046: Portal Bridge — Silent client creation support
+-- ============================================================
+-- Track how the client was created (booking, order, form, contact, chat)
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS source TEXT;
+
+-- Link orders to clients for portal history
+ALTER TABLE online_orders ADD COLUMN IF NOT EXISTS client_id UUID REFERENCES clients(id);
+
+-- Ensure chat_conversations has visitor/client columns for conversation merge
+ALTER TABLE chat_conversations ADD COLUMN IF NOT EXISTS visitor_cookie_id TEXT;
+ALTER TABLE chat_conversations ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'widget_anonymous';
+ALTER TABLE chat_conversations ADD COLUMN IF NOT EXISTS client_id UUID REFERENCES clients(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_chat_conversations_cookie ON chat_conversations(visitor_cookie_id);
+CREATE INDEX IF NOT EXISTS idx_chat_conversations_client ON chat_conversations(client_id);
+
+-- Partial index for fast conversation merge (find anonymous chats by visitor cookie)
+CREATE INDEX IF NOT EXISTS idx_chat_conversations_visitor_cookie
+  ON chat_conversations(visitor_cookie_id) WHERE client_id IS NULL;
+
+-- ============================================================
+-- Migration 047: P2 Business Logic Wiring
+-- ============================================================
+-- Track when deposit payment was confirmed by Stripe webhook
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS deposit_paid_at TIMESTAMPTZ;
+
+-- Allow booking-level coupon tracking
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS coupon_id UUID REFERENCES coupons(id);
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS discount_cents INTEGER DEFAULT 0;
+
+-- Per-product low-stock threshold (default 10 units)
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS low_stock_threshold INTEGER DEFAULT 10;
+
+-- Ensure tip storage exists on appointments (may already exist from 041)
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS tip_amount_cents INTEGER DEFAULT 0;
+
+-- Partial index for fast low-stock queries
+CREATE INDEX IF NOT EXISTS idx_packages_low_stock
+  ON packages(user_id, quantity) WHERE item_type = 'product' AND quantity IS NOT NULL;
+
+-- ============================================================
+-- 048: Staff Delegation RLS Policies + Performance Index
+-- ============================================================
+
+CREATE INDEX IF NOT EXISTS idx_team_members_auth_user_active
+  ON public.team_members(auth_user_id, status)
+  WHERE status = 'active';
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'team_members' AND policyname = 'staff_read_own_membership') THEN
+    CREATE POLICY "staff_read_own_membership" ON public.team_members
+      FOR SELECT USING (auth_user_id = auth.uid());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'team_members' AND policyname = 'owner_manage_team') THEN
+    CREATE POLICY "owner_manage_team" ON public.team_members
+      FOR ALL USING (business_owner_id = auth.uid())
+      WITH CHECK (business_owner_id = auth.uid());
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  tbl_name text;
+BEGIN
+  FOR tbl_name IN
+    SELECT c.table_name
+    FROM information_schema.columns c
+    JOIN information_schema.tables t ON c.table_name = t.table_name AND c.table_schema = t.table_schema
+    WHERE c.column_name = 'user_id'
+      AND c.table_schema = 'public'
+      AND t.table_type = 'BASE TABLE'
+      AND c.table_name NOT IN ('profiles', 'team_members')
+  LOOP
+    BEGIN
+      EXECUTE format(
+        'CREATE POLICY "staff_delegation" ON public.%I FOR ALL USING (
+          user_id IN (
+            SELECT business_owner_id FROM public.team_members
+            WHERE auth_user_id = auth.uid() AND status = ''active''
+          )
+        ) WITH CHECK (
+          user_id IN (
+            SELECT business_owner_id FROM public.team_members
+            WHERE auth_user_id = auth.uid() AND status = ''active''
+          )
+        )', tbl_name
+      );
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END;
+  END LOOP;
+END $$;
+
+-- ============================================================
+-- 049: AI COO — Memory, Personality, Autonomy, Agent Events
+-- ============================================================
+
+-- COO Memory Journal
+CREATE TABLE IF NOT EXISTS coo_memories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  category TEXT NOT NULL CHECK (category IN ('goal', 'preference', 'client_note', 'milestone', 'decision', 'concern', 'idea')),
+  content TEXT NOT NULL,
+  confidence FLOAT DEFAULT 1.0,
+  superseded_by UUID REFERENCES coo_memories(id),
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE coo_memories ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  CREATE POLICY "owner_coo_memories" ON coo_memories
+    FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_coo_memories_user_active
+  ON coo_memories(user_id, created_at DESC)
+  WHERE superseded_by IS NULL;
+
+-- COO personality + autonomy toggles on configs
+ALTER TABLE configs ADD COLUMN IF NOT EXISTS coo_personality TEXT DEFAULT 'friendly';
+ALTER TABLE configs ADD COLUMN IF NOT EXISTS coo_permissions JSONB DEFAULT '{
+  "cancellation_rebooking": "asks_first",
+  "review_requests": "asks_first",
+  "appointment_reminders": "handles_it",
+  "client_reminders": "asks_first",
+  "invoice_generation": "asks_first",
+  "waitlist_offers": "asks_first"
+}'::jsonb;
+
+-- Agent Activity Log (tracks all COO + agent actions)
+CREATE TABLE IF NOT EXISTS agent_activity (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  agent_type TEXT NOT NULL DEFAULT 'coo',
+  event_type TEXT NOT NULL,
+  description TEXT NOT NULL,
+  metadata JSONB DEFAULT '{}',
+  status TEXT DEFAULT 'completed' CHECK (status IN ('pending', 'completed', 'failed', 'awaiting_approval')),
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE agent_activity ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  CREATE POLICY "owner_agent_activity" ON agent_activity
+    FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_agent_activity_user
+  ON agent_activity(user_id, created_at DESC);
+
+-- Agent subscriptions (tracks which paid agents a user has enabled)
+CREATE TABLE IF NOT EXISTS agent_subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  agent_id TEXT NOT NULL,
+  stripe_subscription_item_id TEXT,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'cancelled', 'past_due')),
+  created_at TIMESTAMPTZ DEFAULT now(),
+  cancelled_at TIMESTAMPTZ,
+  UNIQUE(user_id, agent_id)
+);
+
+ALTER TABLE agent_subscriptions ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  CREATE POLICY "owner_agent_subs" ON agent_subscriptions
+    FOR ALL USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- ============================================================
+-- DONE! All migrations 012-049 + 028b applied.
 -- ============================================================

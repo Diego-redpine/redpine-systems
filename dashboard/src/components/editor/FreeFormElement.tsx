@@ -80,6 +80,7 @@ interface ElementProperties {
   buttonBackgroundColor?: string;
   buttonTextColor?: string;
   buttonBorderRadius?: number;
+  linkUrl?: string;
   animation?: {
     type: string;
     speed?: number;
@@ -143,6 +144,7 @@ interface ElementContentProps {
   element: FreeFormElementData;
   theme?: 'dark' | 'light';
   isEditing?: boolean;
+  isPreviewMode?: boolean;
   contentRef?: React.RefObject<HTMLDivElement | null> | null;
   onBlur?: (() => void) | null;
 }
@@ -199,7 +201,7 @@ function RotationHandle({ onMouseDown, accentColor = '#E11D48' }: RotationHandle
 
 // ─── Element Content ────────────────────────────────────────────────────────────
 
-function ElementContent({ element, theme = 'light', isEditing = false, contentRef = null, onBlur = null }: ElementContentProps) {
+function ElementContent({ element, theme = 'light', isEditing = false, isPreviewMode = false, contentRef = null, onBlur = null }: ElementContentProps) {
   const { type, properties, width, height } = element;
   const isDark = theme === 'dark';
 
@@ -388,8 +390,8 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
       );
     }
 
-    case 'button':
-      return (
+    case 'button': {
+      const buttonEl = (
         <button
           className="w-full h-full font-semibold transition-opacity hover:opacity-90"
           style={{
@@ -406,6 +408,23 @@ function ElementContent({ element, theme = 'light', isEditing = false, contentRe
           {properties.content}
         </button>
       );
+
+      // In preview/published mode, wrap button in anchor tag if linkUrl is set
+      if (isPreviewMode && properties.linkUrl) {
+        return (
+          <a
+            href={properties.linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full h-full"
+          >
+            {buttonEl}
+          </a>
+        );
+      }
+
+      return buttonEl;
+    }
 
     case 'image': {
       // Shape styles mapping
@@ -1322,6 +1341,7 @@ export default function FreeFormElement({
           element={element}
           theme={theme}
           isEditing={isEditing}
+          isPreviewMode={isPreviewMode}
           contentRef={contentRef}
           onBlur={handleBlur}
         />
