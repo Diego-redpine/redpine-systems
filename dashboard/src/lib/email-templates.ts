@@ -385,6 +385,34 @@ ${button('Go to Dashboard', dashboardUrl)}
   return emailWrapper(content);
 }
 
+// Portal welcome email — sent when a client account is silently created
+export function portalWelcomeEmail(
+  clientName: string,
+  businessName: string,
+  portalUrl: string,
+): string {
+  const content = `
+<h1 style="margin: 0 0 8px; font-size: 24px; font-weight: 700; color: #18181b;">
+  You have a personal portal at ${businessName}
+</h1>
+<p style="margin: 0 0 16px; font-size: 16px; line-height: 24px; color: #3f3f46;">
+  Hi ${clientName}, your account has been set up automatically. From your portal you can:
+</p>
+<ul style="margin: 0 0 16px; padding-left: 24px; font-size: 16px; line-height: 24px; color: #3f3f46;">
+  <li>View your appointment &amp; order history</li>
+  <li>Rebook or reorder in one tap</li>
+  <li>Manage your loyalty rewards</li>
+  <li>Message ${businessName} directly</li>
+</ul>
+${button('Open Your Portal', portalUrl)}
+<p style="margin: 0; font-size: 14px; color: #71717a;">
+  No password needed — just click the button above.
+</p>
+  `.trim();
+
+  return emailWrapper(content);
+}
+
 // Portal magic link email
 export function portalMagicLinkEmail(
   clientName: string,
@@ -401,6 +429,99 @@ export function portalMagicLinkEmail(
 ${button('Sign In to Portal', magicLinkUrl)}
 <p style="margin: 0; font-size: 14px; color: #71717a;">
   If you didn't request this link, you can safely ignore this email.
+</p>
+  `.trim();
+
+  return emailWrapper(content);
+}
+
+// Payment receipt email — sent to clients after successful payment
+export interface PaymentReceiptItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+export function paymentReceiptEmail(params: {
+  businessName: string;
+  customerName: string;
+  items: PaymentReceiptItem[];
+  total: number;
+  date: string;
+  portalUrl?: string;
+}): string {
+  const { businessName, customerName, items, total, date, portalUrl } = params;
+
+  // Build line items rows
+  const itemRows = items.map(item => `
+        <tr>
+          <td style="padding: 8px 0; font-size: 14px; color: #3f3f46; border-bottom: 1px solid #f4f4f5;">
+            ${item.name}${item.quantity > 1 ? ` (x${item.quantity})` : ''}
+          </td>
+          <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #18181b; text-align: right; border-bottom: 1px solid #f4f4f5;">
+            $${(item.price * item.quantity).toFixed(2)}
+          </td>
+        </tr>
+  `).join('');
+
+  const portalSection = portalUrl ? `
+${button('View in Portal', portalUrl)}
+  ` : '';
+
+  const content = `
+<h1 style="margin: 0 0 16px; font-size: 24px; font-weight: 600; color: #18181b;">
+  Payment Receipt
+</h1>
+<p style="margin: 0 0 16px; font-size: 16px; line-height: 24px; color: #3f3f46;">
+  Hi ${customerName},
+</p>
+<p style="margin: 0 0 24px; font-size: 16px; line-height: 24px; color: #3f3f46;">
+  Thank you for your payment to <strong>${businessName}</strong>. Here is your receipt:
+</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 24px; background-color: #f4f4f5; border-radius: 8px;">
+  <tr>
+    <td style="padding: 20px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td style="padding: 4px 0; font-size: 14px; color: #71717a;">Date</td>
+          <td style="padding: 4px 0; font-size: 14px; font-weight: 600; color: #18181b; text-align: right;">${date}</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0; font-size: 14px; color: #71717a;">Business</td>
+          <td style="padding: 4px 0; font-size: 14px; font-weight: 600; color: #18181b; text-align: right;">${businessName}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 8px;">
+  <thead>
+    <tr>
+      <td style="padding: 8px 0; font-size: 12px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #e4e4e7;">
+        Item
+      </td>
+      <td style="padding: 8px 0; font-size: 12px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; text-align: right; border-bottom: 2px solid #e4e4e7;">
+        Amount
+      </td>
+    </tr>
+  </thead>
+  <tbody>
+    ${itemRows}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td style="padding: 12px 0 0; font-size: 16px; font-weight: 700; color: #18181b;">
+        Total
+      </td>
+      <td style="padding: 12px 0 0; font-size: 16px; font-weight: 700; color: #18181b; text-align: right;">
+        $${total.toFixed(2)}
+      </td>
+    </tr>
+  </tfoot>
+</table>
+${portalSection}
+<p style="margin: 16px 0 0; font-size: 14px; color: #71717a;">
+  If you have any questions about this payment, please contact ${businessName} directly.
 </p>
   `.trim();
 

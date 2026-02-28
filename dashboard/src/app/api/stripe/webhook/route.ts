@@ -3,7 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { stripe } from '@/lib/stripe';
 import Stripe from 'stripe';
 import { sendEmail } from '@/lib/email';
-import { paymentConfirmEmail, paymentFailedEmail, accountFrozenEmail, trialEndingEmail } from '@/lib/email-templates';
+import { paymentConfirmEmail, paymentFailedEmail, accountFrozenEmail, trialEndingEmail, paymentReceiptEmail } from '@/lib/email-templates';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,19 +56,85 @@ export async function POST(request: NextRequest) {
       case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         const appointmentId = paymentIntent.metadata?.appointment_id;
-        if (!appointmentId) break;
+        const businessOwnerId = paymentIntent.metadata?.business_owner_id;
 
-        // Transition appointment from pending_deposit → scheduled
-        await supabase
-          .from('appointments')
-          .update({
-            status: 'scheduled',
-            deposit_paid_at: new Date().toISOString(),
-          })
-          .eq('id', appointmentId)
-          .eq('status', 'pending_deposit');
+        if (appointmentId) {
+          // Transition appointment from pending_deposit → scheduled
+          await supabase
+            .from('appointments')
+            .update({
+              status: 'scheduled',
+              deposit_paid_at: new Date().toISOString(),
+            })
+            .eq('id', appointmentId)
+            .eq('status', 'pending_deposit');
 
-        console.log(`Deposit confirmed for appointment ${appointmentId}`);
+          console.log(`Deposit confirmed for appointment ${appointmentId}`);
+        }
+
+        // Send payment receipt email to the client
+        if (businessOwnerId && paymentIntent.receipt_email) {
+          try {
+            // Look up business details
+            const { data: bizProfile } = await supabase
+              .from('profiles')
+              .select('business_name, subdomain')
+              .eq('id', businessOwnerId)
+              .single();
+
+            const businessName = bizProfile?.business_name || 'Your Business';
+            const customerName = paymentIntent.metadata?.customer_name || 'Customer';
+            const amountTotal = paymentIntent.amount / 100;
+            const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'redpine.systems';
+            const portalUrl = bizProfile?.subdomain
+              ? `https://${bizProfile.subdomain}.${rootDomain}/portal`
+              : undefined;
+
+            // Build line items from metadata or use a single item
+            const items: { name: string; quantity: number; price: number }[] = [];
+            if (paymentIntent.metadata?.item_name) {
+              items.push({
+                name: paymentIntent.metadata.item_name,
+                quantity: parseInt(paymentIntent.metadata.item_quantity || '1'),
+                price: amountTotal,
+              });
+            } else if (paymentIntent.description) {
+              items.push({
+                name: paymentIntent.description,
+                quantity: 1,
+                price: amountTotal,
+              });
+            } else {
+              items.push({
+                name: 'Payment',
+                quantity: 1,
+                price: amountTotal,
+              });
+            }
+
+            await sendEmail({
+              to: paymentIntent.receipt_email,
+              subject: `Payment Receipt from ${businessName}`,
+              html: paymentReceiptEmail({
+                businessName,
+                customerName,
+                items,
+                total: amountTotal,
+                date: new Date().toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }),
+                portalUrl,
+              }),
+            });
+
+            console.log(`Payment receipt sent to ${paymentIntent.receipt_email}`);
+          } catch (receiptError) {
+            console.error('Failed to send payment receipt:', receiptError);
+          }
+        }
+
         break;
       }
 

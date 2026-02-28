@@ -151,6 +151,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
   const [showContactDrawer, setShowContactDrawer] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isMobileThreadView, setIsMobileThreadView] = useState(false);
+  const [isLiveData, setIsLiveData] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const buttonBg = colors.buttons || '#1A1A1A';
@@ -162,10 +163,58 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
   const bgColor = colors.background || '#F5F5F5';
   const hoverBg = `${borderColor}40`;
 
+  // Fetch conversations from API on mount, fall back to demo data
+  const fetchConversations = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      if (searchQuery) params.set('search', searchQuery);
+      if (channelFilter !== 'all') params.set('channel', channelFilter);
+
+      const res = await fetch(`/api/data/conversations?${params.toString()}`);
+      if (!res.ok) throw new Error('Failed to fetch');
+
+      const json = await res.json();
+      if (json.success && json.data && json.data.length > 0) {
+        setConversations(json.data);
+        setIsLiveData(true);
+      } else {
+        // No real conversations — keep demo data
+        setIsLiveData(false);
+        setConversations(DEMO_CONVERSATIONS);
+      }
+    } catch {
+      // API not available or error — fall back to demo data
+      setIsLiveData(false);
+      setConversations(DEMO_CONVERSATIONS);
+    }
+  }, [searchQuery, channelFilter]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
   // Fetch messages for selected conversation
-  const fetchMessages = useCallback((convId: string) => {
-    setMessages(DEMO_MESSAGES[convId] || []);
-  }, []);
+  const fetchMessages = useCallback(async (convId: string) => {
+    if (!isLiveData) {
+      setMessages(DEMO_MESSAGES[convId] || []);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/data/conversations/${convId}/messages`);
+      if (!res.ok) throw new Error('Failed to fetch messages');
+
+      const json = await res.json();
+      if (json.success && json.data) {
+        setMessages(json.data);
+      } else {
+        setMessages([]);
+      }
+    } catch {
+      // Fall back to demo messages if available
+      setMessages(DEMO_MESSAGES[convId] || []);
+    }
+  }, [isLiveData]);
 
   useEffect(() => {
     if (selectedId) fetchMessages(selectedId);
@@ -182,6 +231,7 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
     if (!replyText.trim() || !selectedId) return;
     setIsSending(true);
 
+    // Optimistic UI — immediately add message locally
     const newMsg: ChatMessage = {
       id: `m_${Date.now()}`,
       content: replyText.trim(),
@@ -191,9 +241,37 @@ export default function UnifiedInbox({ colors, onStatsChange }: UnifiedInboxProp
       created_at: new Date().toISOString(),
     };
     setMessages(prev => [...prev, newMsg]);
+    const sentText = replyText.trim();
     setReplyText('');
+
+    if (isLiveData) {
+      try {
+        const res = await fetch(`/api/data/conversations/${selectedId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: sentText }),
+        });
+
+        const json = await res.json();
+        if (!json.success) {
+          toast.error(json.error || 'Failed to send message');
+        } else {
+          // Replace optimistic message with real one
+          if (json.data) {
+            setMessages(prev =>
+              prev.map(m => m.id === newMsg.id ? { ...json.data, is_read: true } : m)
+            );
+          }
+          toast.success(json.sms_sent ? 'SMS sent' : 'Reply sent');
+        }
+      } catch {
+        toast.error('Failed to send message');
+      }
+    } else {
+      toast.success('Reply sent');
+    }
+
     setIsSending(false);
-    toast.success('Reply sent');
   };
 
   // End conversation
