@@ -23,9 +23,12 @@ interface DetailPanelProps {
   onClose: () => void;
   onSave: (updatedRecord: Record<string, unknown>) => void;
   onDelete: (recordId: string) => void;
+  onConvertToInvoice?: (recordId: string) => void;
   mode?: 'create' | 'edit';
   isSaving?: boolean;
   isDeleting?: boolean;
+  isConverting?: boolean;
+  componentId?: string;
   customFields?: CustomFieldDefinition[];
 }
 
@@ -74,9 +77,12 @@ export default function DetailPanel({
   onClose,
   onSave,
   onDelete,
+  onConvertToInvoice,
   mode = 'edit',
   isSaving = false,
   isDeleting = false,
+  isConverting = false,
+  componentId,
   customFields = [],
 }: DetailPanelProps) {
   const [editedRecord, setEditedRecord] = useState<Record<string, unknown>>({});
@@ -536,6 +542,32 @@ export default function DetailPanel({
             }}
           >
             PDF
+          </button>
+        )}
+
+        {/* Convert to Invoice — only for estimates that are not already invoiced */}
+        {!isCreateMode && componentId === 'estimates' && onConvertToInvoice && !!record?.id &&
+          editedRecord.status !== 'invoiced' && (
+          <button
+            onClick={() => onConvertToInvoice(String(record.id))}
+            disabled={isConverting}
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border transition-opacity hover:opacity-80 disabled:opacity-50"
+            style={{
+              borderColor: configColors.borders || '#E5E7EB',
+              color: configColors.text || '#374151',
+            }}
+          >
+            {isConverting ? (
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>
+            )}
+            {isConverting ? 'Converting...' : 'Convert to Invoice'}
           </button>
         )}
 

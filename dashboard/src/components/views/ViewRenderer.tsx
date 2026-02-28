@@ -216,6 +216,10 @@ export default function ViewRenderer({
   const [isCatalogWizardOpen, setIsCatalogWizardOpen] = useState(false);
   const isRouteEntity = entityType === 'routes';
 
+  // Estimate-to-invoice conversion state
+  const isEstimatesComponent = componentId === 'estimates';
+  const [isConverting, setIsConverting] = useState(false);
+
   // Custom fields for this entity type (only fetched in real mode)
   const { mode: dataMode } = useDataMode();
   const { fields: customFieldDefs } = useCustomFields(entityType, dataMode === 'dummy');
@@ -536,6 +540,29 @@ export default function ViewRenderer({
       showError(mutationError || 'Failed to delete record');
     } else {
       toast.success('Record deleted');
+    }
+  };
+
+  // Handle converting an estimate to an invoice
+  const handleConvertToInvoice = async (recordId: string) => {
+    setIsConverting(true);
+    try {
+      const res = await fetch(`/api/data/estimates/${recordId}/convert`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        toast.success('Estimate converted to invoice');
+        setIsDetailOpen(false);
+        setSelectedRecord(null);
+        refetch();
+      } else {
+        const json = await res.json().catch(() => ({}));
+        showError(json.error || 'Failed to convert estimate');
+      }
+    } catch {
+      showError('Failed to convert estimate');
+    } finally {
+      setIsConverting(false);
     }
   };
 
@@ -968,9 +995,12 @@ export default function ViewRenderer({
         onClose={handleDetailClose}
         onSave={handleRecordSave}
         onDelete={handleRecordDelete}
+        onConvertToInvoice={isEstimatesComponent ? handleConvertToInvoice : undefined}
         mode={detailMode}
         isSaving={isCreating || isUpdating}
         isDeleting={isDeleting}
+        isConverting={isConverting}
+        componentId={componentId}
         customFields={customFieldDefs}
       />
 
