@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/crud';
+import { findOrCreateClient } from '@/lib/silent-client';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
@@ -79,30 +80,31 @@ export async function POST(request: NextRequest) {
       subtotalCents += itemTotal;
     }
 
-    // Apply promo code
+    // Apply coupon code
     let discountCents = 0;
-    let promoCodeId: string | null = null;
+    let couponId: string | null = null;
     if (promo_code && ownerId) {
-      const { data: promo } = await supabase
-        .from('promo_codes')
+      const { data: coupon } = await supabase
+        .from('coupons')
         .select('*')
         .eq('user_id', ownerId)
-        .eq('code', promo_code.toUpperCase())
+        .ilike('code', promo_code)
         .eq('is_active', true)
         .single();
 
-      if (promo) {
-        const notExpired = !promo.expires_at || new Date(promo.expires_at) > new Date();
-        const notMaxed = !promo.max_uses || promo.current_uses < promo.max_uses;
-        const meetsMin = subtotalCents >= (promo.min_order_cents || 0);
+      if (coupon) {
+        const notExpired = !coupon.expires_at || new Date(coupon.expires_at) > new Date();
+        const notMaxed = !coupon.max_uses || coupon.current_uses < coupon.max_uses;
+        const meetsMin = subtotalCents >= (coupon.min_order_amount || 0);
 
         if (notExpired && notMaxed && meetsMin) {
-          promoCodeId = promo.id;
-          if (promo.discount_type === 'percent') {
-            discountCents = Math.round(subtotalCents * (promo.discount_value / 100));
-          } else {
-            discountCents = promo.discount_value;
+          couponId = coupon.id;
+          if (coupon.type === 'percent') {
+            discountCents = Math.round(subtotalCents * (coupon.value / 100));
+          } else if (coupon.type === 'fixed') {
+            discountCents = coupon.value;
           }
+          // free_item type: no monetary discount, UI handles it
           // Don't let discount exceed subtotal
           discountCents = Math.min(discountCents, subtotalCents);
         }
@@ -154,7 +156,7 @@ export async function POST(request: NextRequest) {
         delivery_fee_cents: deliveryFeeCents,
         discount_cents: discountCents,
         total_cents: totalCents,
-        promo_code_id: promoCodeId,
+        promo_code_id: couponId,
         special_instructions: special_instructions || null,
         scheduled_for: scheduled_for || null,
         status: 'new',
@@ -169,9 +171,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Failed to create order' }, { status: 500 });
     }
 
-    // Increment promo code usage
-    if (promoCodeId) {
-      await supabase.rpc('increment_promo_usage', { promo_id: promoCodeId });
+    // Silent client creation + link to order
+    let clientResult: { clientId: string; isNew: boolean; portalToken?: string } | null = null;
+    if (ownerId && customer_email && customer_name) {
+      clientResult = await findOrCreateClient({
+        userId: ownerId,
+        name: customer_name,
+        email: customer_email,
+        phone: customer_phone,
+        source: 'order',
+        subdomain: subdomain || '',
+        visitorCookieId: body.visitorCookieId,
+      });
+      // Link client to order
+      if (clientResult.clientId) {
+        await supabase
+          .from('online_orders')
+          .update({ client_id: clientResult.clientId })
+          .eq('id', order.id);
+      }
+    }
+
+    // Increment coupon usage
+    if (couponId) {
+      const { data: c } = await supabase
+        .from('coupons')
+        .select('current_uses')
+        .eq('id', couponId)
+        .single();
+      if (c) {
+        await supabase
+          .from('coupons')
+          .update({ current_uses: (c.current_uses || 0) + 1 })
+          .eq('id', couponId);
+      }
     }
 
     // Inventory deduction — check if menu items have linked inventory
@@ -250,6 +283,9 @@ export async function POST(request: NextRequest) {
           success: true,
           data: order,
           checkoutUrl: session.url,
+          clientId: clientResult?.clientId,
+          portalToken: clientResult?.portalToken,
+          isNewClient: clientResult?.isNew,
         });
       } catch (stripeError) {
         console.error('Stripe error:', stripeError);
@@ -266,6 +302,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: { ...order, payment_status: 'paid', status: 'confirmed' },
+      clientId: clientResult?.clientId,
+      portalToken: clientResult?.portalToken,
+      isNewClient: clientResult?.isNew,
     });
   } catch (error) {
     console.error('POST /api/public/order error:', error);
