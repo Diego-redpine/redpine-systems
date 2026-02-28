@@ -3,6 +3,7 @@ import { rateLimit, getClientId } from '@/lib/rate-limit';
 import { getConfigBySubdomain } from '@/lib/subdomain';
 import { getSupabaseAdmin } from '@/lib/crud';
 import { stripe } from '@/lib/stripe';
+import { findOrCreateClient } from '@/lib/silent-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  const { subdomain, name, email, phone, date, time, notes, service_ids: rawServiceIds } = body;
+  const { subdomain, name, email, phone, date, time, notes, service_ids: rawServiceIds, coupon_code } = body;
 
   // Validate required fields
   if (!subdomain || !name || !email || !date || !time) {
@@ -104,6 +105,40 @@ export async function POST(request: NextRequest) {
   const durationMin = totalDurationMin;
   const bufferMin = defaultBuffer;
   const serviceName = serviceNames.join(' + ');
+
+  // Apply coupon code if provided
+  let discountCents = 0;
+  let couponId: string | null = null;
+
+  if (coupon_code && userId) {
+    const { data: coupon } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('user_id', userId)
+      .ilike('code', coupon_code)
+      .eq('is_active', true)
+      .single();
+
+    if (coupon) {
+      const notExpired = !coupon.expires_at || new Date(coupon.expires_at) > new Date();
+      const notMaxed = !coupon.max_uses || coupon.current_uses < coupon.max_uses;
+      const meetsMin = totalPriceCents >= (coupon.min_order_amount || 0);
+
+      if (notExpired && notMaxed && meetsMin) {
+        couponId = coupon.id;
+        if (coupon.type === 'percent') {
+          discountCents = Math.round(totalPriceCents * (coupon.value / 100));
+        } else if (coupon.type === 'fixed') {
+          discountCents = coupon.value;
+        }
+        // free_item type: no monetary discount
+        discountCents = Math.min(discountCents, totalPriceCents);
+      }
+    }
+  }
+
+  // Apply discount to total price
+  totalPriceCents = Math.max(0, totalPriceCents - discountCents);
 
   // Parse date and time into start/end timestamps
   // date = "YYYY-MM-DD", time = "H:MM AM/PM"
@@ -191,69 +226,35 @@ export async function POST(request: NextRequest) {
     assignedStaffId = body.staff_id;
   }
 
-  // Find or create client by email
-  let clientId_db: string;
-  const { data: existingClient } = await supabase
-    .from('clients')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('email', email)
-    .single();
+  // Find or create client + portal session (silent account creation)
+  const clientResult = await findOrCreateClient({
+    userId,
+    name,
+    email,
+    phone,
+    source: 'booking',
+    subdomain,
+    visitorCookieId: body.visitorCookieId,
+  });
 
-  if (existingClient) {
-    clientId_db = existingClient.id;
-  } else {
-    const { data: newClient, error: clientError } = await supabase
-      .from('clients')
-      .insert({
-        user_id: userId,
-        name,
-        email,
-        phone: phone || null,
-        status: 'active',
-      })
-      .select('id')
-      .single();
-
-    if (clientError || !newClient) {
-      console.error('Failed to create client:', clientError);
-      return NextResponse.json({ error: 'Failed to process booking' }, { status: 500 });
-    }
-    clientId_db = newClient.id;
+  if (!clientResult.clientId) {
+    return NextResponse.json({ error: 'Failed to process booking' }, { status: 500 });
   }
+  const clientId_db = clientResult.clientId;
 
   // Generate booking reference
   const refNumber = `BK-${Date.now().toString(36).toUpperCase()}`;
 
   // Calculate deposit if configured
   let depositAmountCents = 0;
-  let depositPaymentIntentId: string | null = null;
   let clientSecret: string | null = null;
 
   if (depositPercent > 0 && totalPriceCents > 0) {
     depositAmountCents = Math.round(totalPriceCents * (depositPercent / 100));
-
-    try {
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: depositAmountCents,
-        currency: 'usd',
-        metadata: {
-          booking_ref: refNumber,
-          business_user_id: userId,
-          customer_email: email,
-          deposit_percent: String(depositPercent),
-        },
-      });
-      depositPaymentIntentId = paymentIntent.id;
-      clientSecret = paymentIntent.client_secret;
-    } catch (err) {
-      console.error('Failed to create deposit PaymentIntent:', err);
-      return NextResponse.json({ error: 'Failed to process deposit payment' }, { status: 500 });
-    }
   }
 
-  // Insert appointment with staff assignment + deposit + service stacking
-  const { error: appointmentError } = await supabase
+  // Insert appointment first to get the ID (needed for PaymentIntent metadata)
+  const { data: appointment, error: appointmentError } = await supabase
     .from('appointments')
     .insert({
       user_id: userId,
@@ -267,12 +268,65 @@ export async function POST(request: NextRequest) {
       status: depositAmountCents > 0 ? 'pending_deposit' : 'scheduled',
       description: notes ? `Ref: ${refNumber}\n${notes}` : `Ref: ${refNumber}`,
       deposit_amount_cents: depositAmountCents,
-      deposit_payment_intent_id: depositPaymentIntentId,
-    });
+      deposit_payment_intent_id: null,
+      coupon_id: couponId,
+      discount_cents: discountCents,
+    })
+    .select('id')
+    .single();
 
-  if (appointmentError) {
+  if (appointmentError || !appointment) {
     console.error('Failed to create appointment:', appointmentError);
     return NextResponse.json({ error: 'Failed to create booking' }, { status: 500 });
+  }
+
+  const appointmentId = appointment.id as string;
+
+  // Create deposit PaymentIntent with appointment_id in metadata
+  if (depositAmountCents > 0) {
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: depositAmountCents,
+        currency: 'usd',
+        metadata: {
+          appointment_id: appointmentId,
+          booking_ref: refNumber,
+          business_user_id: userId,
+          customer_email: email,
+          deposit_percent: String(depositPercent),
+        },
+      });
+      clientSecret = paymentIntent.client_secret;
+
+      // Update appointment with payment intent ID
+      await supabase
+        .from('appointments')
+        .update({ deposit_payment_intent_id: paymentIntent.id })
+        .eq('id', appointmentId);
+    } catch (err) {
+      console.error('Failed to create deposit PaymentIntent:', err);
+      // Roll back the appointment since payment setup failed
+      await supabase
+        .from('appointments')
+        .delete()
+        .eq('id', appointmentId);
+      return NextResponse.json({ error: 'Failed to process deposit payment' }, { status: 500 });
+    }
+  }
+
+  // Increment coupon usage after successful booking
+  if (couponId) {
+    const { data: c } = await supabase
+      .from('coupons')
+      .select('current_uses')
+      .eq('id', couponId)
+      .single();
+    if (c) {
+      await supabase
+        .from('coupons')
+        .update({ current_uses: (c.current_uses || 0) + 1 })
+        .eq('id', couponId);
+    }
   }
 
   // Send confirmation emails asynchronously (don't block response)
@@ -285,6 +339,9 @@ export async function POST(request: NextRequest) {
     refNumber,
     startTime: startTime.toISOString(),
     businessName,
+    clientId: clientResult.clientId,
+    portalToken: clientResult.portalToken,
+    isNewClient: clientResult.isNew,
     ...(clientSecret ? { clientSecret, depositAmountCents } : {}),
   });
 }
