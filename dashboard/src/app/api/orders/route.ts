@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'gig_id and tier are required' }, { status: 400 });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Fetch gig with freelancer
     const { data: gig, error: gigError } = await supabase
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
   const role = searchParams.get('role') || 'buyer'; // 'buyer' or 'freelancer'
 
   try {
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     let query = supabase
       .from('freelancer_orders')

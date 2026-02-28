@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   notFoundResponse,
   serverErrorResponse,
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     if (!user) return unauthorizedResponse();
 
     const { id } = await params;
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { data, error } = await supabase
       .from('clients')
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
     const body = await request.json();
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { data, error } = await supabase
       .from('clients')
@@ -75,7 +75,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (!user) return unauthorizedResponse();
 
     const { id } = await params;
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { error } = await supabase
       .from('clients')

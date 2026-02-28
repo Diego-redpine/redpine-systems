@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   notFoundResponse,
   badRequestResponse,
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return badRequestResponse('tipAmountCents cannot be negative');
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // 1. Fetch appointment (owned by authenticated user)
     const { data: appointment, error: apptError } = await supabase
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     if (appointment.staff_id) {
       const { data: staffRow } = await supabase
-        .from('staff')
+        .from('team_members')
         .select('id, commission_config')
         .eq('id', appointment.staff_id)
         .single();

@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   notFoundResponse,
   serverErrorResponse,
@@ -20,7 +20,7 @@ export async function GET(
   if (!user) return unauthorizedResponse();
 
   const { slug } = await params;
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   const { data, error } = await supabase
     .from('site_pages')
@@ -54,7 +54,7 @@ export async function PUT(
   if (body.seo_description !== undefined) updates.seo_description = body.seo_description;
   if (body.metadata !== undefined) updates.metadata = body.metadata;
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('site_pages')
     .update(updates)
@@ -76,7 +76,7 @@ export async function DELETE(
   if (!user) return unauthorizedResponse();
 
   const { slug } = await params;
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   const { error } = await supabase
     .from('site_pages')

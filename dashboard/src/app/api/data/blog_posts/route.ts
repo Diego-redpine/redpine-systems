@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createCrudHandlers } from '@/lib/crud';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   serverErrorResponse,
   successResponse,
@@ -30,7 +30,7 @@ export async function PUT(request: NextRequest) {
   const body = await request.json();
   if (!body.id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { id, ...updates } = body;
 
   const { data, error } = await supabase
@@ -52,7 +52,7 @@ export async function DELETE(request: NextRequest) {
   const body = await request.json();
   if (!body.id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { error } = await supabase
     .from('blog_posts')
     .delete()

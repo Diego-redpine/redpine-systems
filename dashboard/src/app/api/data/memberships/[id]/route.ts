@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createCrudHandlers, getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
+import { createCrudHandlers, getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
 import { MembershipMember } from '@/types/data';
 
 export const dynamic = 'force-dynamic';
@@ -58,7 +58,7 @@ export async function PATCH(
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { data, error } = await supabase
       .from('memberships')

@@ -1,6 +1,6 @@
 // Chat Conversations API — list and create conversations
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessContext, getSupabaseAdmin } from '@/lib/crud';
+import { getBusinessContext, getSupabaseUser } from '@/lib/crud';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const ctx = await getBusinessContext(request);
     if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const search = searchParams.get('search');
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const ctx = await getBusinessContext(request);
     if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const body = await request.json();
     const { data, error } = await supabase
       .from('chat_conversations')

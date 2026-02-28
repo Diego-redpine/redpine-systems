@@ -1,6 +1,6 @@
 // Gallery Image API — update and delete individual images
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
+import { getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
 
 export async function PATCH(
   request: NextRequest,
@@ -25,7 +25,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   const { data: image, error } = await supabase
     .from('gallery_images')
@@ -54,7 +54,7 @@ export async function DELETE(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   // Get image to find storage path
   const { data: image } = await supabase

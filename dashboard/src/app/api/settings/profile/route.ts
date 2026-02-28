@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   serverErrorResponse,
   successResponse,
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) return unauthorizedResponse();
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest) {
     if (body[field] !== undefined) updates[field] = body[field];
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)

@@ -1,7 +1,7 @@
 // Send review request email to a customer
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 import { createServerClient } from '@supabase/ssr';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'customerName and customerEmail are required' }, { status: 400 });
   }
 
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
 
   // Get business config for subdomain + business name
   const { data: config } = await admin

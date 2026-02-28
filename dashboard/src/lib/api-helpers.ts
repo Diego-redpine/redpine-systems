@@ -1,39 +1,8 @@
 // Shared API helpers for CRUD routes
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 
-// Get authenticated user from request
-export async function getAuthenticatedUser(request: NextRequest) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll() {},
-      },
-    }
-  );
-
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
-}
-
-// Get Supabase admin client (bypasses RLS for server operations)
-export function getSupabaseAdmin() {
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll: () => [],
-        setAll: () => {},
-      },
-    }
-  );
-}
+// Re-export from crud.ts — single source of truth for Supabase clients
+export { getAuthenticatedUser, getSupabaseAdmin, getSupabaseUser } from '@/lib/crud';
 
 // Parse query params for list endpoints
 export interface QueryParams {

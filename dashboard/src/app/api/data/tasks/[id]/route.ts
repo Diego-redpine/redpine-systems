@@ -1,7 +1,7 @@
 // Tasks by ID API - F4 CRUD endpoints + F1-B Pipeline Move
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createCrudHandlers, getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
+import { createCrudHandlers, getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
 import { Task } from '@/types/data';
 
 export const dynamic = 'force-dynamic';
@@ -60,7 +60,7 @@ export async function PATCH(
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Update only the stage_id field
     const { data, error } = await supabase

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
@@ -14,8 +14,8 @@ async function getUser() {
   return user;
 }
 
-async function verifyOrderAccess(orderId: string, userId: string) {
-  const supabase = getSupabaseAdmin();
+async function verifyOrderAccess(orderId: string, userId: string, request: NextRequest) {
+  const supabase = getSupabaseUser(request);
   const { data: order } = await supabase
     .from('freelancer_orders')
     .select('buyer_id, freelancer_id')
@@ -41,7 +41,7 @@ async function verifyOrderAccess(orderId: string, userId: string) {
 
 // GET — List milestones for an order
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   const user = await getUser();
@@ -50,13 +50,13 @@ export async function GET(
   }
 
   const { id } = await context.params;
-  const access = await verifyOrderAccess(id, user.id);
+  const access = await verifyOrderAccess(id, user.id, request);
   if (!access) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const { data, error } = await supabase
       .from('order_milestones')
       .select('*')
@@ -82,7 +82,7 @@ export async function POST(
   }
 
   const { id } = await context.params;
-  const access = await verifyOrderAccess(id, user.id);
+  const access = await verifyOrderAccess(id, user.id, request);
   if (!access?.isFreelancer) {
     return NextResponse.json({ error: 'Only freelancer can create milestones' }, { status: 403 });
   }
@@ -95,7 +95,7 @@ export async function POST(
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const { data, error } = await supabase
       .from('order_milestones')
       .insert({
@@ -129,7 +129,7 @@ export async function PATCH(
   }
 
   const { id } = await context.params;
-  const access = await verifyOrderAccess(id, user.id);
+  const access = await verifyOrderAccess(id, user.id, request);
   if (!access) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -142,7 +142,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'milestone_id and action are required' }, { status: 400 });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const updates: Record<string, unknown> = {};
 
     if (action === 'submit' && access.isFreelancer) {

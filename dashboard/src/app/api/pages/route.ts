@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   badRequestResponse,
   serverErrorResponse,
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) return unauthorizedResponse();
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const projectId = request.nextUrl.searchParams.get('project_id');
 
   let query = supabase
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     return badRequestResponse('Slug must contain only lowercase letters, numbers, and hyphens');
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   // Check for duplicate slug
   const { data: existing } = await supabase

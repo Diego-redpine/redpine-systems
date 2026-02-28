@@ -1,6 +1,6 @@
 // Data Mode API - F4 Toggle between demo/real data
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
+import { getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     if (action === 'clear') {
       // Clear all user data from all tables

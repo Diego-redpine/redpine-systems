@@ -1,6 +1,6 @@
 // Activity Logs API — read-only feed of CRUD activity
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessContext, getSupabaseAdmin, parseQueryParams } from '@/lib/crud';
+import { getBusinessContext, getSupabaseUser, parseQueryParams } from '@/lib/crud';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const { page, pageSize, sortBy, sortOrder, search, allParams } = parseQueryParams(request);
 
     let query = supabase

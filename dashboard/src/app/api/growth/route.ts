@@ -1,6 +1,6 @@
 // Growth Tracking API — Pine Tree progress
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessContext, getSupabaseAdmin } from '@/lib/crud';
+import { getBusinessContext, getSupabaseUser } from '@/lib/crud';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const ctx = await getBusinessContext(request);
     if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Get or create growth record
     let { data } = await supabase
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { action, feature } = body;
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Point values per action
     const pointMap: Record<string, number> = {

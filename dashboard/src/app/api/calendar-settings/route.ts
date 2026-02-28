@@ -1,6 +1,6 @@
 // Calendar Settings API — CRUD for calendar configuration
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessContext, getSupabaseAdmin } from '@/lib/crud';
+import { getBusinessContext, getSupabaseUser } from '@/lib/crud';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
   const { data, error } = await admin
     .from('calendar_settings')
     .select('*')
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Calendar name is required' }, { status: 400 });
   }
 
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
   const { data, error } = await admin
     .from('calendar_settings')
     .insert({
@@ -89,7 +89,7 @@ export async function PUT(request: NextRequest) {
   delete updates.created_at;
   updates.updated_at = new Date().toISOString();
 
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
   const { data, error } = await admin
     .from('calendar_settings')
     .update(updates)
@@ -117,7 +117,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Calendar setting ID is required' }, { status: 400 });
   }
 
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
   const { error } = await admin
     .from('calendar_settings')
     .delete()

@@ -1,7 +1,7 @@
 // Review Request — sends a review request email to a client
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessContext, getSupabaseAdmin } from '@/lib/crud';
+import { getBusinessContext, getSupabaseUser } from '@/lib/crud';
 import { sendEmail } from '@/lib/email';
 import crypto from 'crypto';
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Fetch client details
     const { data: client, error: clientError } = await supabase

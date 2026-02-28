@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 import { sendSMS, getOrderStatusMessage, isTwilioConfigured } from '@/lib/sms';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Fetch order details
     const { data: order, error: orderError } = await supabase

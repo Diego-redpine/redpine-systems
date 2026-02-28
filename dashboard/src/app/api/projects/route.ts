@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   badRequestResponse,
   serverErrorResponse,
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) return unauthorizedResponse();
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('site_projects')
     .select('id, name, description, project_type, is_active, metadata, created_at, updated_at')
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     return badRequestResponse('project_type must be "website", "link_tree", or "portal"');
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('site_projects')
     .insert({

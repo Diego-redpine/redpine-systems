@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
+import { getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
 
 export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'entityType and recordId required' }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('record_attachments')
     .select('*')
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   // Upload to Supabase Storage
   const fileExt = file.name.split('.').pop();
@@ -103,7 +103,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'id required' }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   // Get attachment to find storage path
   const { data: attachment } = await supabase

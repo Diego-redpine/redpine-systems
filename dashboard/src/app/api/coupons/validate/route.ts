@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 
 interface ValidateRequest {
   code: string;
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Resolve user_id from subdomain via profiles table
     const { data: profile } = await supabase

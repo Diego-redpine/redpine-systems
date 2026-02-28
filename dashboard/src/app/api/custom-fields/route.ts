@@ -1,6 +1,6 @@
 // Custom Field Definitions API — CRUD for user-defined fields
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 import { createServerClient } from '@supabase/ssr';
 
 export const dynamic = 'force-dynamic';
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
   }
 
   const entityType = request.nextUrl.searchParams.get('entity_type');
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
 
   let query = admin
     .from('custom_field_definitions')
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     .replace(/\s+/g, '_')
     .substring(0, 50);
 
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
 
   // Get the max display_order for this entity
   const { data: existing } = await admin
@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Field ID is required' }, { status: 400 });
   }
 
-  const admin = getSupabaseAdmin();
+  const admin = getSupabaseUser(request);
 
   const { error } = await admin
     .from('custom_field_definitions')

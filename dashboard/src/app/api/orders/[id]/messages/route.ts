@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
@@ -16,7 +16,7 @@ async function getUser() {
 
 // GET — List messages for an order
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   const user = await getUser();
@@ -27,7 +27,7 @@ export async function GET(
   const { id } = await context.params;
 
   try {
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Verify access
     const { data: order } = await supabase
@@ -89,7 +89,7 @@ export async function POST(
   }
 
   try {
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Verify access
     const { data: order } = await supabase

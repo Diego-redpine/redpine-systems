@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   serverErrorResponse,
   successResponse,
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) return unauthorizedResponse();
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('loyalty_config')
     .select('*')
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   if (!user) return unauthorizedResponse();
 
   const body = await request.json();
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   const upsertData = {
     user_id: user.id,

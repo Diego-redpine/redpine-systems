@@ -1,6 +1,6 @@
 // Chat Conversation by ID — get messages, reply, update status
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessContext, getSupabaseAdmin } from '@/lib/crud';
+import { getBusinessContext, getSupabaseUser } from '@/lib/crud';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export async function GET(
     const ctx = await getBusinessContext(request);
     if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { data, error } = await supabase
       .from('chat_conversations')
@@ -49,7 +49,7 @@ export async function PUT(
     if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
     const body = await request.json();
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // If sending a message
     if (body.message) {
@@ -107,7 +107,7 @@ export async function DELETE(
     const ctx = await getBusinessContext(request);
     if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { error } = await supabase
       .from('chat_conversations')

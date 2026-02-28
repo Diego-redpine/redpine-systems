@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getBusinessContext, getSupabaseAdmin } from '@/lib/crud';
+import { getBusinessContext, getSupabaseUser } from '@/lib/crud';
 
 // GET — fetch all links for a record (both directions)
 export async function GET(request: NextRequest) {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'entityType and recordId required' }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   // Fetch links where this record is source OR target
   const [sourceResult, targetResult] = await Promise.all([
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   // Check if link already exists (either direction)
   const { data: existing } = await supabase
@@ -135,7 +135,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'id required' }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   const { error } = await supabase
     .from('record_links')

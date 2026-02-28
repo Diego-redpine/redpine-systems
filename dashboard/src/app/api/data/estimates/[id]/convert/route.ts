@@ -2,7 +2,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   notFoundResponse,
   badRequestResponse,
@@ -21,7 +21,7 @@ export async function POST(
     if (!user) return unauthorizedResponse();
 
     const { id } = await params;
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Fetch estimate
     const { data: estimate, error: estError } = await supabase

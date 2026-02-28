@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   parseQueryParams,
   unauthorizedResponse,
   badRequestResponse,
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     if (!user) return unauthorizedResponse();
 
     const { search, sort, order, limit, offset } = parseQueryParams(request);
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     let query = supabase
       .from('appointments')
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       return badRequestResponse('Title, start_time, and end_time are required');
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     const { data, error } = await supabase
       .from('appointments')

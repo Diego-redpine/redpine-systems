@@ -1,6 +1,6 @@
 // Gallery Reorder API — batch update display_order for images or albums
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
+import { getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
 
 export async function PATCH(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
@@ -18,7 +18,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const table = type === 'images' ? 'gallery_images' : 'gallery_albums';
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   // Update each item's display_order
   const errors: string[] = [];

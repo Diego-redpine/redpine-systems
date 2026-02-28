@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   badRequestResponse,
   serverErrorResponse,
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
   if (!action) return badRequestResponse('action is required');
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
 
   switch (action) {
     case 'change_password': {

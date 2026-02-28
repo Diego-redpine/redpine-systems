@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { createCrudHandlers, getAuthenticatedUser, getSupabaseAdmin } from '@/lib/crud';
+import { createCrudHandlers, getAuthenticatedUser, getSupabaseUser } from '@/lib/crud';
 import { Lead } from '@/types/data';
 
 export const dynamic = 'force-dynamic';
@@ -61,7 +61,7 @@ export async function PATCH(
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Update only the stage_id field
     const { data, error } = await supabase

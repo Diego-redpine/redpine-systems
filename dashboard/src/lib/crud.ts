@@ -4,9 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { PaginatedResponse } from '@/types/data';
 
-// Get authenticated user from request cookies
-export async function getAuthenticatedUser(request: NextRequest) {
-  const supabase = createServerClient(
+// Create user-scoped Supabase client (respects RLS)
+// Use this for ALL user-data queries — RLS ensures data isolation
+export function getSupabaseUser(request: NextRequest) {
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -18,12 +19,17 @@ export async function getAuthenticatedUser(request: NextRequest) {
       },
     }
   );
+}
 
+// Get authenticated user from request cookies
+export async function getAuthenticatedUser(request: NextRequest) {
+  const supabase = getSupabaseUser(request);
   const { data: { user } } = await supabase.auth.getUser();
   return user;
 }
 
 // Create admin Supabase client (bypasses RLS)
+// ONLY use for: public routes, webhooks, audit logs, cross-tenant queries
 export function getSupabaseAdmin() {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,7 +55,8 @@ export async function getBusinessContext(request: NextRequest): Promise<Business
   const user = await getAuthenticatedUser(request);
   if (!user) return null;
 
-  const supabase = getSupabaseAdmin();
+  // User-scoped client — RLS on team_members allows staff to read own membership
+  const supabase = getSupabaseUser(request);
 
   // Check if this user is a staff member of another owner
   const { data: membership } = await supabase
@@ -141,7 +148,7 @@ export function createCrudHandlers<T = Record<string, unknown>>(
         );
       }
 
-      const supabase = getSupabaseAdmin();
+      const supabase = getSupabaseUser(request);
       const { page, pageSize, sortBy, sortOrder, search, allParams } = parseQueryParams(request);
 
       // Build query — use businessOwnerId so staff sees the owner's data
@@ -224,7 +231,7 @@ export function createCrudHandlers<T = Record<string, unknown>>(
         }
       }
 
-      const supabase = getSupabaseAdmin();
+      const supabase = getSupabaseUser(request);
 
       // Set user_id to businessOwnerId so staff-created records belong to the owner
       const record = {
@@ -281,7 +288,7 @@ export function createCrudHandlers<T = Record<string, unknown>>(
       }
 
       const body = await request.json();
-      const supabase = getSupabaseAdmin();
+      const supabase = getSupabaseUser(request);
 
       // Remove fields that shouldn't be updated
       delete body.id;
@@ -349,7 +356,7 @@ export function createCrudHandlers<T = Record<string, unknown>>(
         );
       }
 
-      const supabase = getSupabaseAdmin();
+      const supabase = getSupabaseUser(request);
 
       // Fetch the record name before deleting (for audit trail)
       let entityName = '';
@@ -412,7 +419,7 @@ export function createCrudHandlers<T = Record<string, unknown>>(
         );
       }
 
-      const supabase = getSupabaseAdmin();
+      const supabase = getSupabaseUser(request);
 
       const { data, error } = await supabase
         .from(tableName)

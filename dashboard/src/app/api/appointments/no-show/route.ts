@@ -2,7 +2,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   notFoundResponse,
   badRequestResponse,
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const { appointmentId } = await request.json();
     if (!appointmentId) return badRequestResponse('appointmentId is required');
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
 
     // Fetch appointment
     const { data: appointment, error: apptError } = await supabase

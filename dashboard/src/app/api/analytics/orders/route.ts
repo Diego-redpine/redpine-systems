@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/crud';
+import { getSupabaseUser } from '@/lib/crud';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: DEMO_ANALYTICS, isDemo: true });
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || 'today';
 

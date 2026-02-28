@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getAuthenticatedUser,
-  getSupabaseAdmin,
+  getSupabaseUser,
   unauthorizedResponse,
   badRequestResponse,
   serverErrorResponse,
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   if (!user) return unauthorizedResponse();
 
   const { id } = await context.params;
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('site_projects')
     .select('*')
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   if (body.is_active !== undefined) updates.is_active = body.is_active;
   if (body.metadata !== undefined) updates.metadata = body.metadata;
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { data, error } = await supabase
     .from('site_projects')
     .update(updates)
@@ -66,7 +66,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
   if (!user) return unauthorizedResponse();
 
   const { id } = await context.params;
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseUser(request);
   const { error } = await supabase
     .from('site_projects')
     .delete()

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin, getBusinessContext } from '@/lib/crud';
+import { getSupabaseUser, getBusinessContext } from '@/lib/crud';
 import { RecurrenceFrequency } from '@/types/data';
 
 const VALID_FREQUENCIES: RecurrenceFrequency[] = ['weekly', 'biweekly', 'monthly', 'quarterly', 'yearly'];
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = getSupabaseAdmin();
+    const supabase = getSupabaseUser(request);
     const now = new Date();
     const generated: { entity: string; templateId: string; newId: string }[] = [];
 
